@@ -29,16 +29,16 @@ export const cinematicaContent = {
         subtitle: "Velocidade Escalar Média",
         content: `A velocidade escalar média é uma grandeza que mede a rapidez com que um objeto se desloca. Ela é definida como a razão entre a distância percorrida e o intervalo de tempo gasto.
 
-**Fórmula**: v_m = Δs / Δt
+**Fórmula**: vm = Δs / Δt
 
 Onde:
-- v_m = velocidade média (m/s no SI)
+- vm = velocidade média (m/s no SI)
 - Δs = variação do espaço (m no SI)
 - Δt = intervalo de tempo (s no SI)
 
 **Origem da Fórmula**: A velocidade média surge da necessidade de quantificar o movimento. Se um objeto percorre 100 metros em 10 segundos, intuitivamente sabemos que ele se move a 10 metros por segundo em média. A fórmula formaliza essa intuição.
 
-**Exemplo Prático**: Um carro percorre 300 km em 5 horas. Sua velocidade média é: v_m = 300 km / 5 h = 60 km/h.
+**Exemplo Prático**: Um carro percorre 300 km em 5 horas. Sua velocidade média é: vm = 300 km / 5 h = 60 km/h.
 
 **Observação Importante**: A velocidade média não nos diz a velocidade instantânea em cada momento. O carro pode ter viajado a 80 km/h em algumas partes e a 40 km/h em outras, mas sua velocidade média foi de 60 km/h.`
       },
@@ -109,6 +109,21 @@ s = s₀ + v·t
 
 **Exemplo**: Um objeto começa na posição 10 m e se move a 5 m/s. Após 3 segundos:
 s = 10 + 5·3 = 10 + 15 = 25 m`
+      },
+      {
+        subtitle: "Cálculo da Velocidade no MRU",
+        content: `Para encontrar a velocidade no MRU, basta isolar v na função horária:
+
+**Fórmula**: v = (s - s₀) / t = Δs / Δt
+
+Onde:
+- v = velocidade (m/s)
+- s = posição final (m)
+- s₀ = posição inicial (m)
+- t = tempo (s)
+
+**Exemplo**: Um objeto sai da posição 5 m e chega à posição 35 m em 6 segundos. Sua velocidade é:
+v = (35 - 5) / 6 = 30 / 6 = 5 m/s`
       },
       {
         subtitle: "Gráficos no MRU",
@@ -220,6 +235,58 @@ Portanto: V² = V₀² + 2·a·ΔS
 **Exemplo**: Um objeto começa com velocidade 5 m/s, acelera a 3 m/s² e percorre 20 m. Sua velocidade final é:
 V² = 5² + 2·3·20 = 25 + 120 = 145
 V = √145 ≈ 12,04 m/s`
+      }
+    ]
+  },
+
+  mcu: {
+    title: "Movimento Circular Uniforme (MCU)",
+    description: "O MCU é um movimento em trajetória circular com velocidade constante em módulo.",
+    sections: [
+      {
+        subtitle: "Características do MCU",
+        content: `No Movimento Circular Uniforme (MCU):
+- O objeto se move em uma trajetória circular
+- A velocidade tangencial é constante em módulo
+- A direção da velocidade muda continuamente
+- Existe aceleração centrípeta (dirigida para o centro)
+- O período T e a frequência f são constantes
+
+**Exemplos Reais**: Um satélite em órbita, um ventilador ligado, um carrossel, a Lua orbitando a Terra.`
+      },
+      {
+        subtitle: "Conceitos Fundamentais",
+        content: `**Período (T)**: Tempo necessário para o objeto completar uma volta completa. Medido em segundos (s).
+
+**Frequência (f)**: Número de voltas completas por unidade de tempo. Medido em Hertz (Hz) ou rotações por segundo (rps). Relaciona-se com o período por: f = 1/T
+
+**Raio (r)**: Distância do centro da circunferência até o objeto.
+
+**Velocidade Tangencial (v)**: Velocidade do objeto ao longo da trajetória circular. É constante em módulo, mas muda de direção continuamente.
+
+**Velocidade Angular (ω)**: Taxa de variação do ângulo em relação ao tempo. Medida em radianos por segundo (rad/s).`
+      },
+      {
+        subtitle: "Fórmulas do MCU",
+        content: `**Velocidade Tangencial**: v = 2πr / T = 2πrf
+
+Derivação: O objeto percorre uma circunferência completa (2πr) em um período (T). Portanto, a velocidade é a distância dividida pelo tempo.
+
+**Velocidade Angular**: ω = 2π / T = 2πf
+
+Derivação: Em um período T, o objeto percorre um ângulo de 2π radianos. Portanto, a velocidade angular é 2π dividido por T.
+
+**Relação entre v e ω**: v = ωr
+
+Derivação: A velocidade tangencial é proporcional à velocidade angular multiplicada pelo raio.
+
+**Aceleração Centrípeta**: ac = v² / r = ω²r
+
+Derivação: A aceleração centrípeta é responsável por manter o objeto em movimento circular. Ela é sempre dirigida para o centro e seu módulo é constante.
+
+**Frequência e Período**: f = 1/T ou T = 1/f
+
+Derivação: Se o objeto completa f voltas em um segundo, então cada volta leva 1/f segundos.`
       }
     ]
   },

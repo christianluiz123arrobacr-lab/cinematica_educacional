@@ -19,6 +19,7 @@ export default function Home() {
     { id: "velocidade", title: "Velocidade e Aceleração", icon: Zap, color: "from-purple-600 to-purple-400" },
     { id: "mru", title: "Movimento Retilíneo Uniforme", icon: Target, color: "from-green-600 to-green-400" },
     { id: "mruv", title: "Movimento Uniformemente Variado", icon: Zap, color: "from-orange-600 to-orange-400" },
+    { id: "mcu", title: "Movimento Circular Uniforme", icon: Target, color: "from-cyan-600 to-cyan-400" },
     { id: "quedaLivre", title: "Queda Livre", icon: Droplet, color: "from-red-600 to-red-400" },
   ];
 
@@ -33,7 +34,7 @@ export default function Home() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-900">Cinemática</h1>
-              <p className="text-xs text-slate-500">Guia Completo de Física</p>
+              <p className="text-xs text-slate-500">Projeto ITA - Do Zero a Aprovação</p>
             </div>
           </div>
           <Button variant="outline" size="sm">Sobre</Button>
@@ -78,7 +79,7 @@ export default function Home() {
       {/* Main Content */}
       <section className="container py-16 space-y-8">
         {/* Section Navigation */}
-        <div className="grid md:grid-cols-5 gap-4">
+        <div className="grid md:grid-cols-6 gap-4">
           {sections.map((section) => {
             const Icon = section.icon;
             return (
@@ -142,6 +143,11 @@ export default function Home() {
                         <img src="/images/mruv_illustration.png" alt="MRUV" className="w-full h-auto" />
                       </div>
                     )}
+                    {section.id === "mcu" && (
+                      <div className="rounded-lg overflow-hidden shadow-md">
+                        <img src="/images/mcu_illustration.png" alt="MCU" className="w-full h-auto" />
+                      </div>
+                    )}
                     {section.id === "quedaLivre" && (
                       <div className="rounded-lg overflow-hidden shadow-md max-w-md mx-auto">
                         <img src="/images/queda_livre_illustration.png" alt="Queda Livre" className="w-full h-auto" />
@@ -172,7 +178,12 @@ export default function Home() {
       {/* Formula Reference Section */}
       <section className="bg-gradient-to-r from-blue-600/10 to-purple-600/10 border-y border-slate-200/50 py-16">
         <div className="container">
-          <h2 className="text-3xl font-bold text-slate-900 mb-12">Fórmulas Principais</h2>
+          <div className="flex items-center justify-between mb-12">
+            <h2 className="text-3xl font-bold text-slate-900">Fórmulas Principais</h2>
+            <a href="/formulas">
+              <Button className="bg-blue-600 hover:bg-blue-700">Ver Explicação Completa</Button>
+            </a>
+          </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               { title: "Velocidade Média", formula: "v_m = Δs / Δt", color: "blue" },
@@ -182,12 +193,14 @@ export default function Home() {
               { title: "MRUV - Posição", formula: "S = S₀ + V₀·t + (a·t²)/2", color: "red" },
               { title: "Torricelli", formula: "V² = V₀² + 2·a·ΔS", color: "indigo" },
             ].map((item, idx) => (
-              <Card key={idx} className="p-6 hover:shadow-lg transition-shadow">
-                <p className="text-sm font-semibold text-slate-600 mb-2">{item.title}</p>
-                <code className={`text-lg font-mono font-bold text-${item.color}-600`}>
-                  {item.formula}
-                </code>
-              </Card>
+              <a key={idx} href="/formulas">
+                <Card className="p-6 hover:shadow-lg transition-all cursor-pointer hover:scale-105">
+                  <p className="text-sm font-semibold text-slate-600 mb-2">{item.title}</p>
+                  <code className={`text-lg font-mono font-bold text-${item.color}-600`}>
+                    {item.formula}
+                  </code>
+                </Card>
+              </a>
             ))}
           </div>
         </div>

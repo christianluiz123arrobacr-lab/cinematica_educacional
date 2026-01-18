@@ -8,12 +8,18 @@ import { Link } from "wouter";
 
 export default function Calculator() {
   // MRU Calculator
-  const [mruInputs, setMruInputs] = useState({ s0: 0, v: 10, t: 5 });
+  const [mruMode, setMruMode] = useState<"position" | "velocity">("position");
+  const [mruInputs, setMruInputs] = useState({ s0: 0, v: 10, t: 5, s: 50 });
   const [mruResult, setMruResult] = useState<number | null>(null);
 
   const calculateMRU = () => {
-    const s = parseFloat(mruInputs.s0.toString()) + parseFloat(mruInputs.v.toString()) * parseFloat(mruInputs.t.toString());
-    setMruResult(s);
+    if (mruMode === "position") {
+      const s = parseFloat(mruInputs.s0.toString()) + parseFloat(mruInputs.v.toString()) * parseFloat(mruInputs.t.toString());
+      setMruResult(s);
+    } else {
+      const v = (parseFloat(mruInputs.s.toString()) - parseFloat(mruInputs.s0.toString())) / parseFloat(mruInputs.t.toString());
+      setMruResult(v);
+    }
   };
 
   // MRUV Calculator
@@ -61,6 +67,30 @@ export default function Calculator() {
     setFreefallResult({ t, v });
   };
 
+  // MCU Calculator
+  const [mcuMode, setMcuMode] = useState<"velocity" | "acceleration" | "period">("velocity");
+  const [mcuInputs, setMcuInputs] = useState({ r: 5, T: 2, f: 0.5, v: 10, omega: 3.14 });
+  const [mcuResult, setMcuResult] = useState<any>(null);
+
+  const calculateMCU = () => {
+    if (mcuMode === "velocity") {
+      const r = parseFloat(mcuInputs.r.toString());
+      const T = parseFloat(mcuInputs.T.toString());
+      const v = (2 * Math.PI * r) / T;
+      setMcuResult({ value: v, unit: "m/s", label: "Velocidade Tangencial" });
+    } else if (mcuMode === "acceleration") {
+      const v = parseFloat(mcuInputs.v.toString());
+      const r = parseFloat(mcuInputs.r.toString());
+      const ac = (v * v) / r;
+      setMcuResult({ value: ac, unit: "m/s²", label: "Aceleração Centrípeta" });
+    } else {
+      const r = parseFloat(mcuInputs.r.toString());
+      const f = parseFloat(mcuInputs.f.toString());
+      const v = 2 * Math.PI * r * f;
+      setMcuResult({ value: v, unit: "m/s", label: "Velocidade Tangencial" });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Header */}
@@ -79,60 +109,111 @@ export default function Calculator() {
       {/* Main Content */}
       <section className="container py-12">
         <Tabs defaultValue="mru" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-5 mb-8">
             <TabsTrigger value="mru">MRU</TabsTrigger>
             <TabsTrigger value="mruv">MRUV</TabsTrigger>
             <TabsTrigger value="torricelli">Torricelli</TabsTrigger>
             <TabsTrigger value="freefall">Queda Livre</TabsTrigger>
+            <TabsTrigger value="mcu">MCU</TabsTrigger>
           </TabsList>
 
           {/* MRU Tab */}
           <TabsContent value="mru" className="space-y-6">
             <Card className="p-8">
               <h2 className="text-2xl font-bold text-slate-900 mb-2">Movimento Retilíneo Uniforme</h2>
-              <p className="text-slate-600 mb-6">Fórmula: s = s₀ + v·t</p>
+              <p className="text-slate-600 mb-6">Escolha o que deseja calcular:</p>
 
-              <div className="grid md:grid-cols-3 gap-6 mb-8">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Posição Inicial (s₀) em metros</label>
-                  <Input
-                    type="number"
-                    value={mruInputs.s0}
-                    onChange={(e) => setMruInputs({ ...mruInputs, s0: parseFloat(e.target.value) || 0 })}
-                    placeholder="0"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Velocidade (v) em m/s</label>
-                  <Input
-                    type="number"
-                    value={mruInputs.v}
-                    onChange={(e) => setMruInputs({ ...mruInputs, v: parseFloat(e.target.value) || 0 })}
-                    placeholder="10"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Tempo (t) em segundos</label>
-                  <Input
-                    type="number"
-                    value={mruInputs.t}
-                    onChange={(e) => setMruInputs({ ...mruInputs, t: parseFloat(e.target.value) || 0 })}
-                    placeholder="5"
-                  />
-                </div>
+              <div className="flex gap-4 mb-8">
+                <Button 
+                  onClick={() => setMruMode("position")}
+                  variant={mruMode === "position" ? "default" : "outline"}
+                >
+                  Calcular Posição
+                </Button>
+                <Button 
+                  onClick={() => setMruMode("velocity")}
+                  variant={mruMode === "velocity" ? "default" : "outline"}
+                >
+                  Calcular Velocidade
+                </Button>
               </div>
 
+              {mruMode === "position" ? (
+                <>
+                  <div className="grid md:grid-cols-3 gap-6 mb-8">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Posição Inicial (s₀) em metros</label>
+                      <Input
+                        type="number"
+                        value={mruInputs.s0}
+                        onChange={(e) => setMruInputs({ ...mruInputs, s0: parseFloat(e.target.value) || 0 })}
+                        placeholder="0"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Velocidade (v) em m/s</label>
+                      <Input
+                        type="number"
+                        value={mruInputs.v}
+                        onChange={(e) => setMruInputs({ ...mruInputs, v: parseFloat(e.target.value) || 0 })}
+                        placeholder="10"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Tempo (t) em segundos</label>
+                      <Input
+                        type="number"
+                        value={mruInputs.t}
+                        onChange={(e) => setMruInputs({ ...mruInputs, t: parseFloat(e.target.value) || 0 })}
+                        placeholder="5"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-600 mb-4">Fórmula: s = s₀ + v·t</p>
+                </>
+              ) : (
+                <>
+                  <div className="grid md:grid-cols-3 gap-6 mb-8">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Posição Inicial (s₀) em metros</label>
+                      <Input
+                        type="number"
+                        value={mruInputs.s0}
+                        onChange={(e) => setMruInputs({ ...mruInputs, s0: parseFloat(e.target.value) || 0 })}
+                        placeholder="0"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Posição Final (s) em metros</label>
+                      <Input
+                        type="number"
+                        value={mruInputs.s}
+                        onChange={(e) => setMruInputs({ ...mruInputs, s: parseFloat(e.target.value) || 0 })}
+                        placeholder="50"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Tempo (t) em segundos</label>
+                      <Input
+                        type="number"
+                        value={mruInputs.t}
+                        onChange={(e) => setMruInputs({ ...mruInputs, t: parseFloat(e.target.value) || 0 })}
+                        placeholder="5"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-600 mb-4">Fórmula: v = (s - s₀) / t</p>
+                </>
+              )}
+
               <Button onClick={calculateMRU} size="lg" className="w-full mb-6">
-                Calcular Posição Final
+                Calcular
               </Button>
 
               {mruResult !== null && (
                 <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-6">
                   <p className="text-sm text-slate-600 mb-2">Resultado:</p>
-                  <p className="text-3xl font-bold text-green-600">s = {mruResult.toFixed(2)} m</p>
-                  <p className="text-sm text-slate-600 mt-4">
-                    O objeto estará na posição {mruResult.toFixed(2)} metros após {mruInputs.t} segundos.
-                  </p>
+                  <p className="text-3xl font-bold text-green-600">{mruResult.toFixed(2)} {mruMode === "position" ? "m" : "m/s"}</p>
                 </div>
               )}
             </Card>
@@ -246,9 +327,6 @@ export default function Calculator() {
                 <div className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-lg p-6">
                   <p className="text-sm text-slate-600 mb-2">Velocidade Final:</p>
                   <p className="text-3xl font-bold text-orange-600">v = {torricelliResult.toFixed(2)} m/s</p>
-                  <p className="text-sm text-slate-600 mt-4">
-                    Usando a equação de Torricelli, a velocidade final é {torricelliResult.toFixed(2)} m/s.
-                  </p>
                 </div>
               )}
             </Card>
@@ -295,6 +373,127 @@ export default function Calculator() {
                     <p className="text-sm text-slate-600 mb-2">Velocidade ao Chegar ao Solo:</p>
                     <p className="text-3xl font-bold text-red-600">{freefallResult.v.toFixed(2)} m/s</p>
                   </div>
+                </div>
+              )}
+            </Card>
+          </TabsContent>
+
+          {/* MCU Tab */}
+          <TabsContent value="mcu" className="space-y-6">
+            <Card className="p-8">
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Movimento Circular Uniforme</h2>
+              <p className="text-slate-600 mb-6">Escolha o que deseja calcular:</p>
+
+              <div className="flex gap-4 mb-8 flex-wrap">
+                <Button 
+                  onClick={() => setMcuMode("velocity")}
+                  variant={mcuMode === "velocity" ? "default" : "outline"}
+                  size="sm"
+                >
+                  Velocidade Tangencial
+                </Button>
+                <Button 
+                  onClick={() => setMcuMode("acceleration")}
+                  variant={mcuMode === "acceleration" ? "default" : "outline"}
+                  size="sm"
+                >
+                  Aceleração Centrípeta
+                </Button>
+                <Button 
+                  onClick={() => setMcuMode("period")}
+                  variant={mcuMode === "period" ? "default" : "outline"}
+                  size="sm"
+                >
+                  Vel. por Frequência
+                </Button>
+              </div>
+
+              {mcuMode === "velocity" && (
+                <>
+                  <div className="grid md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Raio (r) em metros</label>
+                      <Input
+                        type="number"
+                        value={mcuInputs.r}
+                        onChange={(e) => setMcuInputs({ ...mcuInputs, r: parseFloat(e.target.value) || 0 })}
+                        placeholder="5"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Período (T) em segundos</label>
+                      <Input
+                        type="number"
+                        value={mcuInputs.T}
+                        onChange={(e) => setMcuInputs({ ...mcuInputs, T: parseFloat(e.target.value) || 0 })}
+                        placeholder="2"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-600 mb-4">Fórmula: v = 2πr / T</p>
+                </>
+              )}
+
+              {mcuMode === "acceleration" && (
+                <>
+                  <div className="grid md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Velocidade Tangencial (v) em m/s</label>
+                      <Input
+                        type="number"
+                        value={mcuInputs.v}
+                        onChange={(e) => setMcuInputs({ ...mcuInputs, v: parseFloat(e.target.value) || 0 })}
+                        placeholder="10"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Raio (r) em metros</label>
+                      <Input
+                        type="number"
+                        value={mcuInputs.r}
+                        onChange={(e) => setMcuInputs({ ...mcuInputs, r: parseFloat(e.target.value) || 0 })}
+                        placeholder="5"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-600 mb-4">Fórmula: ac = v² / r</p>
+                </>
+              )}
+
+              {mcuMode === "period" && (
+                <>
+                  <div className="grid md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Raio (r) em metros</label>
+                      <Input
+                        type="number"
+                        value={mcuInputs.r}
+                        onChange={(e) => setMcuInputs({ ...mcuInputs, r: parseFloat(e.target.value) || 0 })}
+                        placeholder="5"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Frequência (f) em Hz</label>
+                      <Input
+                        type="number"
+                        value={mcuInputs.f}
+                        onChange={(e) => setMcuInputs({ ...mcuInputs, f: parseFloat(e.target.value) || 0 })}
+                        placeholder="0.5"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-600 mb-4">Fórmula: v = 2πrf</p>
+                </>
+              )}
+
+              <Button onClick={calculateMCU} size="lg" className="w-full mb-6">
+                Calcular
+              </Button>
+
+              {mcuResult !== null && (
+                <div className="bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 rounded-lg p-6">
+                  <p className="text-sm text-slate-600 mb-2">{mcuResult.label}:</p>
+                  <p className="text-3xl font-bold text-cyan-600">{mcuResult.value.toFixed(2)} {mcuResult.unit}</p>
                 </div>
               )}
             </Card>
