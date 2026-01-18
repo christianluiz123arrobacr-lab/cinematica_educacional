@@ -37,7 +37,9 @@ export default function Home() {
               <p className="text-xs text-slate-500">Projeto ITA - Do Zero a Aprovação</p>
             </div>
           </div>
-          <Button variant="outline" size="sm">Sobre</Button>
+          <a href="https://youtube.com/@projetoita-z4x?si=dIghaQjMiHZzk4R5" target="_blank" rel="noopener noreferrer">
+            <Button variant="outline" size="sm">Sobre</Button>
+          </a>
         </div>
       </header>
 
@@ -78,8 +80,8 @@ export default function Home() {
 
       {/* Main Content */}
       <section className="container py-16 space-y-8">
-        {/* Section Navigation */}
-        <div className="grid md:grid-cols-6 gap-4">
+        {/* Navigation Buttons - 3x2 Grid */}
+        <div className="grid md:grid-cols-3 gap-6">
           {sections.map((section) => {
             const Icon = section.icon;
             return (
@@ -88,10 +90,10 @@ export default function Home() {
                 onClick={() => setExpandedSection(expandedSection === section.id ? null : section.id)}
                 className="group relative overflow-hidden rounded-xl p-4 text-left transition-all hover:shadow-lg"
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${section.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
-                <div className="relative space-y-2">
-                  <Icon className="w-6 h-6 text-blue-600" />
-                  <p className="text-sm font-semibold text-slate-900 group-hover:text-slate-700">{section.title}</p>
+                <div className={`absolute inset-0 bg-gradient-to-br ${section.color} opacity-0 group-hover:opacity-20 transition-opacity`} />
+                <div className="relative space-y-3 text-center">
+                  <Icon className="w-8 h-8 text-blue-600 mx-auto" />
+                  <p className="text-base font-semibold text-slate-900 group-hover:text-slate-700">{section.title}</p>
                 </div>
               </button>
             );
@@ -153,6 +155,11 @@ export default function Home() {
                         <img src="/images/queda_livre_illustration.png" alt="Queda Livre" className="w-full h-auto" />
                       </div>
                     )}
+                    {section.id === "mcu" && (
+                      <div className="rounded-lg overflow-hidden shadow-md">
+                        <img src="/images/mcu_illustration.png" alt="MCU" className="w-full h-auto" />
+                      </div>
+                    )}
 
                     {/* Content */}
                     {content.sections?.map((subsection: any, idx: number) => (
@@ -191,7 +198,7 @@ export default function Home() {
               { title: "MRU - Posição", formula: "s = s₀ + v·t", color: "green" },
               { title: "MRUV - Velocidade", formula: "V = V₀ + a·t", color: "orange" },
               { title: "MRUV - Posição", formula: "S = S₀ + V₀·t + (a·t²)/2", color: "red" },
-              { title: "Torricelli", formula: "V² = V₀² + 2·a·ΔS", color: "indigo" },
+              { title: "MCU - Velocidade", formula: "v = 2πr / T", color: "cyan" },
             ].map((item, idx) => (
               <a key={idx} href="/formulas">
                 <Card className="p-6 hover:shadow-lg transition-all cursor-pointer hover:scale-105">
