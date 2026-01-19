@@ -3,12 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Play, Pause, RotateCcw } from "lucide-react";
 import { Link } from "wouter";
 import { Simulator } from "@/components/Simulator";
 
 export default function DynamicsSimulator() {
   const [isRunning, setIsRunning] = useState(true);
+  const [resetTrigger, setResetTrigger] = useState(0);
 
   // Acceleration parameters (for force demonstration)
   const [v0Force, setV0Force] = useState(0);
@@ -24,10 +26,21 @@ export default function DynamicsSimulator() {
   const [rCircular, setRCircular] = useState(80);
   const [wCircular, setWCircular] = useState(0.03);
 
+  // Launch parameters
+  const [launchType, setLaunchType] = useState("horizontal");
+  const [vxLaunch, setVxLaunch] = useState(5);
+  const [vyLaunch, setVyLaunch] = useState(10);
+  const [hLaunch, setHLaunch] = useState(300);
+
+  // Inclined plane parameters
+  const [anglePlane, setAnglePlane] = useState(30);
+  const [muPlane, setMuPlane] = useState(0.2);
+
   const resetForce = () => {
     setV0Force(0);
     setAForce(0.5);
     setIsRunning(true);
+    setResetTrigger(prev => prev + 1);
   };
 
   const resetCollision = () => {
@@ -36,12 +49,29 @@ export default function DynamicsSimulator() {
     setV1Collision(3);
     setV2Collision(0);
     setIsRunning(true);
+    setResetTrigger(prev => prev + 1);
   };
 
   const resetCentripetal = () => {
     setRCircular(80);
     setWCircular(0.03);
     setIsRunning(true);
+    setResetTrigger(prev => prev + 1);
+  };
+
+  const resetLaunch = () => {
+    setVxLaunch(5);
+    setVyLaunch(10);
+    setHLaunch(300);
+    setIsRunning(true);
+    setResetTrigger(prev => prev + 1);
+  };
+
+  const resetInclinedPlane = () => {
+    setAnglePlane(30);
+    setMuPlane(0.2);
+    setIsRunning(true);
+    setResetTrigger(prev => prev + 1);
   };
 
   return (
@@ -60,10 +90,12 @@ export default function DynamicsSimulator() {
       {/* Main Content */}
       <section className="container py-6 md:py-12">
         <Tabs defaultValue="force" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-5 mb-8">
             <TabsTrigger value="force">Segunda Lei (F=ma)</TabsTrigger>
             <TabsTrigger value="collision">Colisões</TabsTrigger>
             <TabsTrigger value="centripetal">Força Centrípeta</TabsTrigger>
+            <TabsTrigger value="launch">Lançamento</TabsTrigger>
+            <TabsTrigger value="inclined">Plano Inclinado</TabsTrigger>
           </TabsList>
 
           {/* Force Tab */}
@@ -85,6 +117,7 @@ export default function DynamicsSimulator() {
                     height={400}
                     isRunning={isRunning}
                     parameters={{ v0: v0Force, a: aForce }}
+                    resetTrigger={resetTrigger}
                   />
                 </div>
 
@@ -108,7 +141,7 @@ export default function DynamicsSimulator() {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label className="text-sm font-semibold text-slate-700">Aceleração (a) - Força Aplicada</label>
-                      <span className="text-sm font-bold text-blue-600">{aForce.toFixed(2)} m/s^2</span>
+                      <span className="text-sm font-bold text-blue-600">{aForce.toFixed(2)} m/s²</span>
                     </div>
                     <Slider
                       value={[aForce]}
@@ -155,7 +188,7 @@ export default function DynamicsSimulator() {
                   <p className="text-sm text-slate-700">
                     <strong>Conceito:</strong> A Segunda Lei de Newton (F = ma) estabelece que a força resultante é 
                     igual ao produto da massa pela aceleração. Aumentando a aceleração (força aplicada), você verá 
-                    o objeto acelerar mais rapidamente. A seta verde mostra o vetor de velocidade aumentando.
+                    o objeto acelerar mais rapidamente. A seta vermelha mostra o vetor de velocidade aumentando.
                   </p>
                 </div>
               </div>
@@ -186,6 +219,7 @@ export default function DynamicsSimulator() {
                       v1: v1Collision,
                       v2: v2Collision,
                     }}
+                    resetTrigger={resetTrigger}
                   />
                 </div>
 
@@ -253,7 +287,7 @@ export default function DynamicsSimulator() {
 
                   <div className="bg-orange-50 border border-orange-200 rounded p-3">
                     <p className="text-sm text-slate-700">
-                      <strong>Momentum Inicial:</strong> p = {(m1Collision * v1Collision + m2Collision * v2Collision).toFixed(2)} kg*m/s
+                      <strong>Momentum Inicial:</strong> p = {(m1Collision * v1Collision + m2Collision * v2Collision).toFixed(2)} kg·m/s
                     </p>
                   </div>
 
@@ -284,23 +318,22 @@ export default function DynamicsSimulator() {
                 {/* Explanation */}
                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                   <p className="text-sm text-slate-700">
-                    <strong>Conceito:</strong> Na colisão, o momentum total é conservado (p_antes = p_depois). 
-                    Observe como, após a colisão, os objetos se movem com novas velocidades, mas o momentum total 
-                    permanece o mesmo. Tente diferentes combinações de massas e velocidades!
+                    <strong>Conceito:</strong> Em uma colisão, o momentum total é conservado. Antes da colisão: 
+                    p_inicial = m₁v₁ + m₂v₂. Após a colisão, os objetos trocam momentum mantendo o total conservado.
                   </p>
                 </div>
               </div>
             </Card>
           </TabsContent>
 
-          {/* Centripetal Force Tab */}
+          {/* Centripetal Tab */}
           <TabsContent value="centripetal">
             <Card className="p-6 md:p-8">
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">Simulação de Força Centrípeta</h3>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">Força Centrípeta - Movimento Circular</h3>
                   <p className="text-slate-600 mb-4">
-                    Observe como a força centrípeta (F = ma_c) mantém o objeto em movimento circular.
+                    Observe como a força centrípeta mantém o objeto em movimento circular. A seta roxa aponta para o centro.
                   </p>
                 </div>
 
@@ -312,6 +345,7 @@ export default function DynamicsSimulator() {
                     height={400}
                     isRunning={isRunning}
                     parameters={{ r: rCircular, w: wCircular }}
+                    resetTrigger={resetTrigger}
                   />
                 </div>
 
@@ -319,8 +353,8 @@ export default function DynamicsSimulator() {
                 <div className="space-y-6 bg-slate-50 p-6 rounded-lg">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-semibold text-slate-700">Raio (R)</label>
-                      <span className="text-sm font-bold text-purple-600">{rCircular.toFixed(0)} pixels</span>
+                      <label className="text-sm font-semibold text-slate-700">Raio (r)</label>
+                      <span className="text-sm font-bold text-green-600">{rCircular.toFixed(0)} m</span>
                     </div>
                     <Slider
                       value={[rCircular]}
@@ -334,29 +368,29 @@ export default function DynamicsSimulator() {
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-semibold text-slate-700">Velocidade Angular (omega)</label>
-                      <span className="text-sm font-bold text-purple-600">{(wCircular * 100).toFixed(2)} rad/s</span>
+                      <label className="text-sm font-semibold text-slate-700">Velocidade Angular (ω)</label>
+                      <span className="text-sm font-bold text-green-600">{wCircular.toFixed(3)} rad/s</span>
                     </div>
                     <Slider
                       value={[wCircular]}
                       onValueChange={(value) => setWCircular(value[0])}
                       min={0.01}
-                      max={0.08}
-                      step={0.005}
+                      max={0.1}
+                      step={0.01}
                       className="w-full"
                     />
                   </div>
 
-                  <div className="bg-purple-50 border border-purple-200 rounded p-3">
+                  <div className="bg-green-50 border border-green-200 rounded p-3">
                     <p className="text-sm text-slate-700">
-                      <strong>Aceleração Centrípeta:</strong> a_c = omega^2*R = {(wCircular * wCircular * rCircular).toFixed(2)} pixels/frame^2
+                      <strong>Velocidade Linear:</strong> v = ω × r = {wCircular.toFixed(3)} × {rCircular.toFixed(0)} = {(wCircular * rCircular).toFixed(2)} m/s
                     </p>
                   </div>
 
                   <div className="flex gap-3">
                     <Button
                       onClick={() => setIsRunning(!isRunning)}
-                      className="flex-1 bg-purple-600 hover:bg-purple-700"
+                      className="flex-1 bg-green-600 hover:bg-green-700"
                     >
                       {isRunning ? (
                         <>
@@ -378,11 +412,232 @@ export default function DynamicsSimulator() {
                 </div>
 
                 {/* Explanation */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <p className="text-sm text-slate-700">
+                    <strong>Conceito:</strong> A força centrípeta (F_c = m·v²/r) é sempre direcionada para o centro do círculo. 
+                    Ela é responsável por manter o objeto em trajetória circular. Aumentando a velocidade angular, a força centrípeta aumenta.
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* Launch Tab */}
+          <TabsContent value="launch">
+            <Card className="p-6 md:p-8">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">Simulação de Lançamento de Projéteis</h3>
+                  <p className="text-slate-600 mb-4">
+                    Observe o movimento parabólico de um projétil. Escolha entre lançamento horizontal, vertical ou em plano inclinado.
+                  </p>
+                </div>
+
+                {/* Launch Type Selector */}
+                <div className="bg-slate-50 p-4 rounded-lg">
+                  <label className="block text-sm font-semibold text-slate-700 mb-3">Tipo de Lançamento:</label>
+                  <Select value={launchType} onValueChange={setLaunchType}>
+                    <SelectTrigger className="bg-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="horizontal">Lançamento Horizontal</SelectItem>
+                      <SelectItem value="vertical">Lançamento Vertical</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Canvas */}
+                <div className="flex justify-center bg-slate-50 p-4 rounded-lg overflow-x-auto">
+                  <Simulator
+                    type={launchType === "horizontal" ? "horizontalLaunch" : "verticalLaunch"}
+                    width={800}
+                    height={400}
+                    isRunning={isRunning}
+                    parameters={launchType === "horizontal" ? { vx: vxLaunch, h: hLaunch } : { v0: vyLaunch }}
+                    resetTrigger={resetTrigger}
+                  />
+                </div>
+
+                {/* Controls */}
+                <div className="space-y-6 bg-slate-50 p-6 rounded-lg">
+                  {launchType === "horizontal" ? (
+                    <>
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="text-sm font-semibold text-slate-700">Velocidade Horizontal (v_x)</label>
+                          <span className="text-sm font-bold text-blue-600">{vxLaunch.toFixed(2)} m/s</span>
+                        </div>
+                        <Slider
+                          value={[vxLaunch]}
+                          onValueChange={(value) => setVxLaunch(value[0])}
+                          min={1}
+                          max={10}
+                          step={0.5}
+                          className="w-full"
+                        />
+                      </div>
+
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="text-sm font-semibold text-slate-700">Altura Inicial (h)</label>
+                          <span className="text-sm font-bold text-blue-600">{hLaunch.toFixed(0)} m</span>
+                        </div>
+                        <Slider
+                          value={[hLaunch]}
+                          onValueChange={(value) => setHLaunch(value[0])}
+                          min={100}
+                          max={400}
+                          step={10}
+                          className="w-full"
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-sm font-semibold text-slate-700">Velocidade Inicial (v_0)</label>
+                        <span className="text-sm font-bold text-green-600">{vyLaunch.toFixed(2)} m/s</span>
+                      </div>
+                      <Slider
+                        value={[vyLaunch]}
+                        onValueChange={(value) => setVyLaunch(value[0])}
+                        min={1}
+                        max={20}
+                        step={0.5}
+                        className="w-full"
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => setIsRunning(!isRunning)}
+                      className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    >
+                      {isRunning ? (
+                        <>
+                          <Pause className="w-4 h-4 mr-2" />
+                          Pausar
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-4 h-4 mr-2" />
+                          Reproduzir
+                        </>
+                      )}
+                    </Button>
+                    <Button onClick={resetLaunch} variant="outline">
+                      <RotateCcw className="w-4 h-4 mr-2" />
+                      Reiniciar
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Explanation */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-sm text-slate-700">
+                    <strong>Conceito:</strong> No lançamento horizontal, o objeto tem velocidade inicial apenas na direção horizontal. 
+                    A gravidade causa aceleração vertical, criando uma trajetória parabólica. No lançamento vertical, o objeto sobe e desce 
+                    sob influência da gravidade.
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* Inclined Plane Tab */}
+          <TabsContent value="inclined">
+            <Card className="p-6 md:p-8">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">Simulação de Plano Inclinado</h3>
+                  <p className="text-slate-600 mb-4">
+                    Observe como um objeto desliza em um plano inclinado. Ajuste o ângulo e o coeficiente de atrito.
+                  </p>
+                </div>
+
+                {/* Canvas */}
+                <div className="flex justify-center bg-slate-50 p-4 rounded-lg overflow-x-auto">
+                  <Simulator
+                    type="inclinedPlane"
+                    width={800}
+                    height={400}
+                    isRunning={isRunning}
+                    parameters={{ angle: anglePlane, mu: muPlane }}
+                    resetTrigger={resetTrigger}
+                  />
+                </div>
+
+                {/* Controls */}
+                <div className="space-y-6 bg-slate-50 p-6 rounded-lg">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-sm font-semibold text-slate-700">Ângulo (θ)</label>
+                      <span className="text-sm font-bold text-purple-600">{anglePlane.toFixed(0)}°</span>
+                    </div>
+                    <Slider
+                      value={[anglePlane]}
+                      onValueChange={(value) => setAnglePlane(value[0])}
+                      min={0}
+                      max={60}
+                      step={5}
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-sm font-semibold text-slate-700">Coeficiente de Atrito (μ)</label>
+                      <span className="text-sm font-bold text-purple-600">{muPlane.toFixed(2)}</span>
+                    </div>
+                    <Slider
+                      value={[muPlane]}
+                      onValueChange={(value) => setMuPlane(value[0])}
+                      min={0}
+                      max={1}
+                      step={0.05}
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div className="bg-purple-50 border border-purple-200 rounded p-3">
+                    <p className="text-sm text-slate-700">
+                      <strong>Aceleração:</strong> a = g(sin θ - μ cos θ) = 9.8({Math.sin(anglePlane * Math.PI / 180).toFixed(3)} - {muPlane.toFixed(2)} × {Math.cos(anglePlane * Math.PI / 180).toFixed(3)}) = {(9.8 * (Math.sin(anglePlane * Math.PI / 180) - muPlane * Math.cos(anglePlane * Math.PI / 180))).toFixed(2)} m/s²
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => setIsRunning(!isRunning)}
+                      className="flex-1 bg-purple-600 hover:bg-purple-700"
+                    >
+                      {isRunning ? (
+                        <>
+                          <Pause className="w-4 h-4 mr-2" />
+                          Pausar
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-4 h-4 mr-2" />
+                          Reproduzir
+                        </>
+                      )}
+                    </Button>
+                    <Button onClick={resetInclinedPlane} variant="outline">
+                      <RotateCcw className="w-4 h-4 mr-2" />
+                      Reiniciar
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Explanation */}
                 <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
                   <p className="text-sm text-slate-700">
-                    <strong>Conceito:</strong> A força centrípeta (F = ma_c) é responsável por manter um objeto 
-                    em movimento circular. A seta rosa mostra a aceleração centrípeta apontando sempre para o centro. 
-                    Aumentando a velocidade angular ou diminuindo o raio, você aumenta a aceleração centrípeta necessária.
+                    <strong>Conceito:</strong> Em um plano inclinado, a aceleração depende do ângulo e do atrito. 
+                    A componente da gravidade paralela ao plano é mg sin θ, e a força de atrito é μN = μmg cos θ. 
+                    A aceleração resultante é a = g(sin θ - μ cos θ). Aumentando o ângulo, a aceleração aumenta. 
+                    Aumentando o atrito, a aceleração diminui.
                   </p>
                 </div>
               </div>

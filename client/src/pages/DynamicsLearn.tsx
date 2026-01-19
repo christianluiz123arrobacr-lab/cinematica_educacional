@@ -234,6 +234,27 @@ export default function DynamicsLearn() {
           </div>
         </Card>
 
+        {/* Plano Inclinado */}
+        <Card className="p-4 md:p-8 shadow-lg border-0">
+          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Plano Inclinado</h2>
+          <div className="space-y-4 text-slate-700 leading-relaxed">
+            <p>Um plano inclinado é uma superfície plana que forma um ângulo com a horizontal. É uma das máquinas simples mais importantes e é usada para reduzir a força necessária para levantar um objeto. Quando um objeto está em um plano inclinado, a força gravitacional pode ser decomposta em duas componentes: uma paralela ao plano (que causa o movimento) e outra perpendicular ao plano (que causa a força normal).</p>
+            <div className="bg-indigo-50 p-3 md:p-6 rounded-lg border border-indigo-200 overflow-x-auto">
+              <p className="text-center text-sm md:text-lg font-semibold mb-3">Componentes da Força Gravitacional:</p>
+              <MathFormula formula="F_{\\parallel} = m \\cdot g \\cdot \\sin(\\theta)" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="F_{\\perp} = m \\cdot g \\cdot \\cos(\\theta)" className="text-center text-lg md:text-2xl mb-4" />
+              <p className="text-sm text-slate-600">Onde: θ = ângulo do plano com a horizontal, g = aceleração da gravidade (9.8 m/s²)</p>
+            </div>
+            <p>A força normal é igual à componente perpendicular do peso: N = mg cos(θ). A força de atrito que atua no plano é f = μN = μmg cos(θ). A aceleração do objeto no plano inclinado é dada por:</p>
+            <div className="bg-indigo-50 p-3 md:p-6 rounded-lg border border-indigo-200 overflow-x-auto">
+              <p className="text-center text-sm md:text-lg font-semibold mb-3">Aceleração no Plano Inclinado:</p>
+              <MathFormula formula="a = g(\\sin(\\theta) - \\mu \\cos(\\theta))" className="text-center text-lg md:text-2xl mb-4" />
+              <p className="text-sm text-slate-600">Se a = 0, o objeto está em equilíbrio (não se move). Se a &gt; 0, o objeto acelera para baixo. Se a &lt; 0, o objeto não se move (atrito estático é suficiente).</p>
+            </div>
+            <p>Aplicações práticas do plano inclinado incluem rampas para cadeiras de rodas, escadas, correias transportadoras inclinadas e até mesmo as rodas de um carro em uma estrada inclinada. O plano inclinado é uma máquina simples que nos permite fazer trabalho com menos força, mas precisamos aplicar essa força por uma distância maior.</p>
+          </div>
+        </Card>
+
         {/* Potência */}
         <Card className="p-4 md:p-8 shadow-lg border-0">
           <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Potência</h2>
