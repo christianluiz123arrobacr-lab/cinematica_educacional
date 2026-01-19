@@ -84,25 +84,131 @@ export default function DinamicaHome() {
         <div className="mb-16">
           <h3 className="text-3xl font-bold text-slate-900 mb-8">Tópicos Principais</h3>
           <div className="grid md:grid-cols-2 gap-6">
-            {dinamicaTopics.map((topic) => (
-              <Card key={topic.id} className="p-8 hover:shadow-lg transition-all border-l-4 border-purple-500">
+            <Link href="/dinamica/topic/newton">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-purple-500 cursor-pointer hover:border-purple-700">
                 <div className="flex items-start gap-4">
-                  <div className="text-4xl">{topic.icon}</div>
+                  <div className="text-4xl">⚙️</div>
                   <div className="flex-1">
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">{topic.title}</h4>
-                    <p className="text-slate-600 mb-4">{topic.description}</p>
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">As Três Leis de Newton</h4>
+                    <p className="text-slate-600 mb-4">Os princípios fundamentais que governam o movimento de todos os corpos.</p>
                     <ul className="space-y-2 text-sm text-slate-700">
-                      {topic.sections.map((section, idx) => (
-                        <li key={idx} className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
-                          {section.title}
-                        </li>
-                      ))}
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Primeira Lei: Lei da Inércia
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Segunda Lei: F = ma
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Terceira Lei: Ação e Reação
+                      </li>
                     </ul>
                   </div>
                 </div>
               </Card>
-            ))}
+            </Link>
+            <Link href="/dinamica/topic/force">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-purple-500 cursor-pointer hover:border-purple-700">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">💪</div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Força e Atrito</h4>
+                    <p className="text-slate-600 mb-4">Como as forças causam movimento e como o atrito resiste ao movimento.</p>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Tipos de Força
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Atrito Estático e Cinético
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Diagrama de Corpo Livre
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+            <Link href="/dinamica/topic/energy">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-purple-500 cursor-pointer hover:border-purple-700">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">⚡</div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Trabalho e Energia</h4>
+                    <p className="text-slate-600 mb-4">Como o trabalho transfere energia e como a energia se conserva.</p>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Trabalho de uma Força
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Energia Cinética e Potencial
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Conservação de Energia
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+            <Link href="/dinamica/topic/momentum">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-purple-500 cursor-pointer hover:border-purple-700">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">💥</div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Momentum e Colisões</h4>
+                    <p className="text-slate-600 mb-4">A quantidade de movimento e como os objetos interagem em colisões.</p>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Definição de Momentum
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Colisões Elásticas e Inelásticas
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Conservação de Momentum
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+            <Link href="/dinamica/topic/power">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-purple-500 cursor-pointer hover:border-purple-700">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">🔋</div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Potência e Eficiência</h4>
+                    <p className="text-slate-600 mb-4">Como medir a rapidez de realização de trabalho e a eficiência de sistemas.</p>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Definição de Potência
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Eficiência Energética
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Aplicações Práticas
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </Link>
           </div>
         </div>
       </main>

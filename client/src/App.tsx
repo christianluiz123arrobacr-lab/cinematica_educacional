@@ -20,6 +20,11 @@ import DynamicsGraphs from "./pages/DynamicsGraphs";
 import CinematicaSimulator from "./pages/CinematicaSimulator";
 import DynamicsSimulator from "./pages/DynamicsSimulator";
 import Progress from "./pages/Progress";
+import DynamicsTopicNewton from "./pages/DynamicsTopicNewton";
+import DynamicsTopicForce from "./pages/DynamicsTopicForce";
+import DynamicsTopicEnergy from "./pages/DynamicsTopicEnergy";
+import DynamicsTopicMomentum from "./pages/DynamicsTopicMomentum";
+import DynamicsTopicPower from "./pages/DynamicsTopicPower";
 
 
 function Router() {
@@ -40,6 +45,11 @@ function Router() {
       <Route path="/dinamica/formulas" component={DynamicsFormulas} />
       <Route path="/dinamica/graphs" component={DynamicsGraphs} />
       <Route path="/dinamica/simulator" component={DynamicsSimulator} />
+      <Route path="/dinamica/topic/newton" component={DynamicsTopicNewton} />
+      <Route path="/dinamica/topic/force" component={DynamicsTopicForce} />
+      <Route path="/dinamica/topic/energy" component={DynamicsTopicEnergy} />
+      <Route path="/dinamica/topic/momentum" component={DynamicsTopicMomentum} />
+      <Route path="/dinamica/topic/power" component={DynamicsTopicPower} />
       <Route path="/progress" component={Progress} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
