@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { BookOpen, Zap, ArrowRight } from "lucide-react";
+import { BookOpen, Zap, ArrowRight, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Landing() {
@@ -44,7 +44,7 @@ export default function Landing() {
         </div>
 
         {/* Cards Section */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-4 gap-8 max-w-7xl mx-auto">
           {/* Cinemática Card */}
           <div className="group">
             <Link href="/cinematica">
@@ -150,11 +150,50 @@ export default function Landing() {
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="w-2 h-2 bg-amber-600 rounded-full"></span>
-                      Centro de Massa
+                      Hidrostática
                     </li>
                   </ul>
                   <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white group-hover:gap-2">
                     Explorar Estática
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </div>
+              </div>
+            </Link>
+          </div>
+
+          {/* Calculadora Card */}
+          <div className="group">
+            <Link href="/calculadora">
+              <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-indigo-400 cursor-pointer h-full">
+                <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 p-8 text-white">
+                  <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Zap className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-3xl font-bold mb-2">Calculadora</h3>
+                  <p className="text-indigo-100 mb-6">Cálculos avançados</p>
+                </div>
+                <div className="p-8">
+                  <ul className="space-y-3 mb-8 text-slate-700">
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 bg-indigo-600 rounded-full"></span>
+                      Cinemática
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 bg-indigo-600 rounded-full"></span>
+                      Dinâmica
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 bg-indigo-600 rounded-full"></span>
+                      Estática
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 bg-indigo-600 rounded-full"></span>
+                      Histórico
+                    </li>
+                  </ul>
+                  <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white group-hover:gap-2">
+                    Abrir Calculadora
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
