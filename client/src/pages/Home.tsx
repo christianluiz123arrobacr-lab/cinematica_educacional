@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChevronDown, BookOpen, Zap, Target, Droplet, MessageCircle, ArrowLeft, Play, BarChart3 } from "lucide-react";
+import { ChevronDown, BookOpen, Zap, Target, Droplet, MessageCircle, ArrowLeft, Play, BarChart3, Calculator, HelpCircle, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
 import { cinematicaContent } from "@/data/cinematica-content";
 import { MathFormula } from "@/components/MathFormula";
@@ -101,142 +101,147 @@ export default function Home() {
       </section>
 
       {/* Main Content */}
-      <section className="container py-16 space-y-8">
-        {/* Navigation Buttons - 3x2 Grid */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {sections.map((section) => {
-            const Icon = section.icon;
-            return (
-              <button
-                key={section.id}
-                onClick={() => setExpandedSection(expandedSection === section.id ? null : section.id)}
-                className="group relative overflow-hidden rounded-xl p-4 text-left transition-all hover:shadow-lg"
-              >
-                <div className={`absolute inset-0 bg-gradient-to-br ${section.color} opacity-0 group-hover:opacity-20 transition-opacity`} />
-                <div className="relative space-y-3 text-center">
-                  <Icon className="w-8 h-8 text-blue-600 mx-auto" />
-                  <p className="text-base font-semibold text-slate-900 group-hover:text-slate-700">{section.title}</p>
-                </div>
-              </button>
-            );
-          })}
+      <main className="container py-12">
+        {/* Ferramentas de Aprendizado - Navigation Cards */}
+        <div className="mb-16">
+          <h3 className="text-3xl font-bold text-slate-900 mb-8">Ferramentas de Aprendizado</h3>
+          <div className="grid md:grid-cols-6 gap-4">
+            <div className="group">
+              <Link href="/cinematica/learn">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-400">
+                  <BookOpen className="w-8 h-8 text-blue-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <h3 className="font-bold text-slate-900">Guia Completo</h3>
+                  <p className="text-xs text-slate-600 mt-1">Explicações detalhadas</p>
+                </Card>
+              </Link>
+            </div>
+            <div className="group">
+              <Link href="/cinematica/calculator">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-400">
+                  <Calculator className="w-8 h-8 text-blue-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <h3 className="font-bold text-slate-900">Calculadora</h3>
+                  <p className="text-xs text-slate-600 mt-1">Calcule qualquer variável</p>
+                </Card>
+              </Link>
+            </div>
+            <div className="group">
+              <Link href="/cinematica/formulas">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-400">
+                  <BarChart3 className="w-8 h-8 text-blue-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <h3 className="font-bold text-slate-900">Fórmulas</h3>
+                  <p className="text-xs text-slate-600 mt-1">Derivações completas</p>
+                </Card>
+              </Link>
+            </div>
+            <div className="group">
+              <Link href="/cinematica/quiz-new">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-400">
+                  <HelpCircle className="w-8 h-8 text-blue-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <h3 className="font-bold text-slate-900">Quiz</h3>
+                  <p className="text-xs text-slate-600 mt-1">Teste seu conhecimento</p>
+                </Card>
+              </Link>
+            </div>
+            <div className="group">
+              <Link href="/cinematica/graphs-new">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-400">
+                  <TrendingUp className="w-8 h-8 text-blue-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <h3 className="font-bold text-slate-900">Gráficos</h3>
+                  <p className="text-xs text-slate-600 mt-1">Visualizações dinâmicas</p>
+                </Card>
+              </Link>
+            </div>
+            <div className="group">
+              <Link href="/cinematica/simulator">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-400">
+                  <Play className="w-8 h-8 text-blue-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <h3 className="font-bold text-slate-900">Simulador</h3>
+                  <p className="text-xs text-slate-600 mt-1">Animações interativas</p>
+                </Card>
+              </Link>
+            </div>
+          </div>
         </div>
 
-        {/* Content Sections */}
-        <div className="space-y-6">
-          {sections.map((section) => {
-            const content = cinematicaContent[section.id as keyof typeof cinematicaContent] as any;
-            const isExpanded = expandedSection === section.id;
-            const Icon = section.icon;
+        {/* Tópicos Principais */}
+        <div className="mb-16">
+          <h3 className="text-3xl font-bold text-slate-900 mb-8">Tópicos Principais</h3>
+          <div className="space-y-6">
+            {sections.map((section) => {
+              const content = cinematicaContent[section.id as keyof typeof cinematicaContent] as any;
+              const isExpanded = expandedSection === section.id;
+              const Icon = section.icon;
 
-            return (
-              <Card 
-                key={section.id}
-                className={`overflow-hidden transition-all duration-300 ${isExpanded ? 'shadow-lg' : 'shadow-sm hover:shadow-md'}`}
-              >
-                <button
-                  onClick={() => setExpandedSection(isExpanded ? null : section.id)}
-                  className="w-full p-6 flex items-center justify-between hover:bg-slate-50/50 transition-colors"
+              return (
+                <Card 
+                  key={section.id}
+                  className={`overflow-hidden transition-all duration-300 ${isExpanded ? 'shadow-lg' : 'shadow-sm hover:shadow-md'}`}
                 >
-                  <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${section.color} flex items-center justify-center`}>
-                      <Icon className="w-6 h-6 text-white" />
+                  <button
+                    onClick={() => setExpandedSection(isExpanded ? null : section.id)}
+                    className="w-full p-6 flex items-center justify-between hover:bg-slate-50/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${section.color} flex items-center justify-center`}>
+                        <Icon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="text-left">
+                        <h3 className="text-xl font-bold text-slate-900">{section.title}</h3>
+                        {content.description && (
+                          <p className="text-sm text-slate-600">{content.description}</p>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-left">
-                      <h3 className="text-xl font-bold text-slate-900">{section.title}</h3>
-                      {content.description && (
-                        <p className="text-sm text-slate-600">{content.description}</p>
-                      )}
-                    </div>
-                  </div>
-                  <ChevronDown 
-                    className={`w-5 h-5 text-slate-600 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                  />
-                </button>
+                    <ChevronDown 
+                      className={`w-5 h-5 text-slate-600 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                    />
+                  </button>
 
-                {isExpanded && (
-                  <div className="border-t border-slate-200 p-6 bg-gradient-to-br from-slate-50 to-transparent space-y-6">
-                    {/* Section Image */}
-                    {section.id === "mru" && (
-                      <div className="rounded-lg overflow-hidden shadow-md">
-                        <img src="/images/mru_illustration.png" alt="MRU" className="w-full h-auto" />
-                      </div>
-                    )}
-                    {section.id === "mruv" && (
-                      <div className="rounded-lg overflow-hidden shadow-md">
-                        <img src="/images/mruv_illustration.png" alt="MRUV" className="w-full h-auto" />
-                      </div>
-                    )}
-                    {section.id === "mcu" && (
-                      <div className="rounded-lg overflow-hidden shadow-md">
-                        <img src="/images/mcu_illustration.png" alt="MCU" className="w-full h-auto" />
-                      </div>
-                    )}
-                    {section.id === "quedaLivre" && (
-                      <div className="rounded-lg overflow-hidden shadow-md max-w-md mx-auto">
-                        <img src="/images/queda_livre_illustration.png" alt="Queda Livre" className="w-full h-auto" />
-                      </div>
-                    )}
-                    {section.id === "mcu" && (
-                      <div className="rounded-lg overflow-hidden shadow-md">
-                        <img src="/images/mcu_illustration.png" alt="MCU" className="w-full h-auto" />
-                      </div>
-                    )}
-
-                    {/* Content */}
-                    {content.sections?.map((subsection: any, idx: number) => (
-                      <div key={idx} className="space-y-3">
-                        <h4 className="text-lg font-semibold text-slate-900">{subsection.subtitle}</h4>
-                        <div className="prose prose-sm max-w-none text-slate-700 space-y-3">
-                          {subsection.content.split('\n\n').map((paragraph: string, pidx: number) => (
-                            <p key={pidx} className="text-sm leading-relaxed whitespace-pre-wrap">
-                              {paragraph}
-                            </p>
-                          ))}
+                  {isExpanded && (
+                    <div className="border-t border-slate-200 p-6 bg-gradient-to-br from-slate-50 to-transparent space-y-6">
+                      {/* Section Image */}
+                      {section.id === "mru" && (
+                        <div className="rounded-lg overflow-hidden shadow-md">
+                          <img src="/images/mru_illustration.png" alt="MRU" className="w-full h-auto" />
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </Card>
-            );
-          })}
-        </div>
-      </section>
+                      )}
+                      {section.id === "mruv" && (
+                        <div className="rounded-lg overflow-hidden shadow-md">
+                          <img src="/images/mruv_illustration.png" alt="MRUV" className="w-full h-auto" />
+                        </div>
+                      )}
+                      {section.id === "mcu" && (
+                        <div className="rounded-lg overflow-hidden shadow-md">
+                          <img src="/images/mcu_illustration.png" alt="MCU" className="w-full h-auto" />
+                        </div>
+                      )}
+                      {section.id === "quedaLivre" && (
+                        <div className="rounded-lg overflow-hidden shadow-md max-w-md mx-auto">
+                          <img src="/images/queda_livre_illustration.png" alt="Queda Livre" className="w-full h-auto" />
+                        </div>
+                      )}
 
-      {/* Tools Section */}
-      <section className="container py-16">
-        <h2 className="text-3xl font-bold text-slate-900 mb-12">Ferramentas de Aprendizado</h2>
-        <div className="grid md:grid-cols-3 gap-6 mb-16">
-          <Link href="/cinematica/graphs-new">
-            <Card className="p-8 hover:shadow-lg transition-all cursor-pointer hover:scale-105 h-full">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center mb-4">
-                <Zap className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Gráficos Interativos</h3>
-              <p className="text-slate-600 text-sm">Visualize graficamente como velocidade, aceleração e posição variam com o tempo em diferentes tipos de movimento.</p>
-            </Card>
-          </Link>
-          <Link href="/cinematica/quiz-new">
-            <Card className="p-8 hover:shadow-lg transition-all cursor-pointer hover:scale-105 h-full">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-600 to-purple-400 flex items-center justify-center mb-4">
-                <Target className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Quiz de Cinemática</h3>
-              <p className="text-slate-600 text-sm">Teste seus conhecimentos com perguntas sobre cinemática e receba um certificado ao atingir 70% de acerto.</p>
-            </Card>
-          </Link>
-          <Link href="/cinematica/simulator">
-            <Card className="p-8 hover:shadow-lg transition-all cursor-pointer hover:scale-105 h-full">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-600 to-green-400 flex items-center justify-center mb-4">
-                <Play className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Simuladores Visuais</h3>
-              <p className="text-slate-600 text-sm">Experimente simulações de MRU, MRUV, queda livre, movimento circular e lançamento de projéteis.</p>
-            </Card>
-          </Link>
+                      {/* Content */}
+                      {content.sections?.map((subsection: any, idx: number) => (
+                        <div key={idx} className="space-y-3">
+                          <h4 className="text-lg font-semibold text-slate-900">{subsection.subtitle}</h4>
+                          <div className="prose prose-sm max-w-none text-slate-700 space-y-3">
+                            {subsection.content.split('\n\n').map((paragraph: string, pidx: number) => (
+                              <p key={pidx} className="text-sm leading-relaxed whitespace-pre-wrap">
+                                {paragraph}
+                              </p>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </Card>
+              );
+            })}
+          </div>
         </div>
-      </section>
+      </main>
 
       {/* Formula Reference Section */}
       <section className="bg-gradient-to-r from-blue-600/10 to-purple-600/10 border-y border-slate-200/50 py-16">
