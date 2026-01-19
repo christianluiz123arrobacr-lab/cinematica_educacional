@@ -9,7 +9,7 @@ export default function DinamicaHome() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50">
       {/* Header */}
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
             <ArrowLeft className="w-5 h-5" />

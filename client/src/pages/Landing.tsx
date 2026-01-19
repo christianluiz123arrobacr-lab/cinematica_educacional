@@ -6,7 +6,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
       {/* Header */}
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
