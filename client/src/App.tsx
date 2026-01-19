@@ -43,6 +43,15 @@ import EstaticaTopicHidrostatica from "./pages/EstaticaTopicHidrostatica";
 import FisicaSelector from "./pages/FisicaSelector";
 import FisicaIHome from "./pages/FisicaIHome";
 import FisicaIIHome from "./pages/FisicaIIHome";
+import TermologiaHome from "./pages/TermologiaHome";
+import TermologiaGraphs from "./pages/TermologiaGraphs";
+import TermologiaQuiz from "./pages/TermologiaQuiz";
+import TermologiaSimulator from "./pages/TermologiaSimulator";
+import TermologiaTopicTemperatura from "./pages/TermologiaTopicTemperatura";
+import TermologiaTopicCalor from "./pages/TermologiaTopicCalor";
+import TermologiaTopicCalorimetria from "./pages/TermologiaTopicCalorimetria";
+import TermologiaTopicTermodinamica from "./pages/TermologiaTopicTermodinamica";
+import TermologiaTopicDilatacao from "./pages/TermologiaTopicDilatacao";
 
 
 
@@ -88,6 +97,16 @@ function Router() {
       <Route path="/estatica/topic/torque" component={EstaticaTopicTorque} />
       <Route path="/estatica/topic/maquinas" component={EstaticaTopicMaquinas} />
       <Route path="/estatica/topic/hidrostatica" component={EstaticaTopicHidrostatica} />
+      
+      <Route path="/termologia" component={TermologiaHome} />
+      <Route path="/termologia/graphs" component={TermologiaGraphs} />
+      <Route path="/termologia/quiz" component={TermologiaQuiz} />
+      <Route path="/termologia/simulator" component={TermologiaSimulator} />
+      <Route path="/termologia/topic/temperatura" component={TermologiaTopicTemperatura} />
+      <Route path="/termologia/topic/calor" component={TermologiaTopicCalor} />
+      <Route path="/termologia/topic/calorimetria" component={TermologiaTopicCalorimetria} />
+      <Route path="/termologia/topic/termodinamica" component={TermologiaTopicTermodinamica} />
+      <Route path="/termologia/topic/dilatacao" component={TermologiaTopicDilatacao} />
 
       <Route path="/progress" component={Progress} />
       <Route path="/404" component={NotFound} />

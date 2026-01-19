@@ -42,38 +42,40 @@ export default function FisicaIIHome() {
         {/* Disciplinas */}
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {/* Termologia */}
-          <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-red-400 cursor-pointer">
-            <div className="bg-gradient-to-br from-red-500 to-orange-600 p-8 text-white">
-              <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Flame className="w-8 h-8" />
+          <Link href="/termologia">
+            <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-red-400 cursor-pointer">
+              <div className="bg-gradient-to-br from-red-500 to-orange-600 p-8 text-white">
+                <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Flame className="w-8 h-8" />
+                </div>
+                <h3 className="text-3xl font-bold mb-2">Termologia</h3>
+                <p className="text-red-100">Calor e Temperatura</p>
               </div>
-              <h3 className="text-3xl font-bold mb-2">Termologia</h3>
-              <p className="text-red-100">Calor e Temperatura</p>
+              <div className="p-8">
+                <ul className="space-y-3 mb-8 text-slate-700">
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-red-600 rounded-full"></span>
+                    Temperatura e Calor
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-red-600 rounded-full"></span>
+                    Calorimetria
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-red-600 rounded-full"></span>
+                    Termodinâmica
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-red-600 rounded-full"></span>
+                    Dilatação Térmica
+                  </li>
+                </ul>
+                <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+                  Começar Agora
+                </Button>
+              </div>
             </div>
-            <div className="p-8">
-              <ul className="space-y-3 mb-8 text-slate-700">
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-red-600 rounded-full"></span>
-                  Temperatura e Calor
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-red-600 rounded-full"></span>
-                  Calorimetria
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-red-600 rounded-full"></span>
-                  Termodinâmica
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-red-600 rounded-full"></span>
-                  Dilatação Térmica
-                </li>
-              </ul>
-              <Button className="w-full bg-red-600 hover:bg-red-700 text-white" disabled>
-                Em Breve
-              </Button>
-            </div>
-          </div>
+          </Link>
 
           {/* Ondulatória */}
           <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-cyan-400 cursor-pointer">
