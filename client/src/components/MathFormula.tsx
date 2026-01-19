@@ -16,24 +16,20 @@ export function MathFormula({ formula, display = true, className = '' }: MathFor
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const renderMath = async () => {
-      // Aguardar MathJax estar completamente carregado
-      if (typeof window !== 'undefined' && (window as any).MathJax) {
+    // Esperar um pouco para garantir que o DOM foi atualizado
+    const timer = setTimeout(() => {
+      if (typeof window !== 'undefined' && window.MathJax) {
         try {
-          // Renderizar novo conteúdo
-          await (window as any).MathJax.typesetPromise([ref.current]);
+          // Forçar renderização de todo o conteúdo
+          window.MathJax.typesetPromise().catch((err: any) => {
+            console.log('MathJax error:', err);
+          });
         } catch (err) {
-          console.log('MathJax render error:', err);
+          console.log('MathJax error:', err);
         }
       }
-    };
+    }, 100);
 
-    // Renderizar imediatamente
-    renderMath();
-    
-    // Renderizar novamente após delay para garantir
-    const timer = setTimeout(renderMath, 100);
-    
     return () => clearTimeout(timer);
   }, [formula]);
 
@@ -46,7 +42,11 @@ export function MathFormula({ formula, display = true, className = '' }: MathFor
     <div 
       ref={ref} 
       className={className} 
-      style={{ wordBreak: 'break-word', display: display ? 'block' : 'inline-block', overflow: 'auto' }}
+      style={{ 
+        wordBreak: 'break-word', 
+        display: display ? 'block' : 'inline-block',
+        overflow: 'auto'
+      }}
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   );
