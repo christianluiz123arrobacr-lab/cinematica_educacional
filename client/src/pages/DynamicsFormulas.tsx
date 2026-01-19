@@ -17,6 +17,7 @@ interface Formula {
   examples: { description: string; calculation: string }[];
   commonMistakes: string[];
   applications: string[];
+  image?: string;
 }
 
 const formulas: Formula[] = [
@@ -353,6 +354,86 @@ Impulso (mudança de momentum):
     ]
   },
   {
+    id: "plano-inclinado",
+    name: "Força em um Plano Inclinado",
+    category: "Força e Atrito",
+    latex: "F_{\\parallel} = m \\cdot g \\cdot \\sin(\\theta) \\quad \\text{e} \\quad N = m \\cdot g \\cdot \\cos(\\theta)",
+    explanation: "Em um plano inclinado, o peso de um objeto é decomposto em duas componentes: uma paralela ao plano (que causa deslizamento) e outra perpendicular ao plano (que causa a força normal).",
+    deepExplanation: `O plano inclinado é um dos sistemas mais importantes em física, pois demonstra como as forças podem ser decompostas em componentes. Quando um objeto está em um plano inclinado, seu peso não atua apenas na direção vertical, mas precisa ser analisado em relação ao plano.
+
+**Conceito Fundamental:**
+O peso de um objeto em um plano inclinado pode ser decomposto em duas componentes perpendiculares:
+1. **Componente paralela ao plano** (F_paralelo): causa o deslizamento do objeto para baixo
+2. **Componente perpendicular ao plano** (F_perpendicular): comprime o objeto contra o plano
+
+**Interpretação Física:**
+- A componente paralela aumenta com o ângulo (quanto mais inclinado, maior a tendência de deslizar)
+- A componente perpendicular diminui com o ângulo (quanto mais inclinado, menor a pressão sobre o plano)
+- Quando θ = 0° (plano horizontal): F_paralelo = 0, N = mg (todo o peso é normal)
+- Quando θ = 90° (plano vertical): F_paralelo = mg, N = 0 (todo o peso é paralelo)
+- A força normal é sempre perpendicular ao plano, não à vertical
+
+**Características Importantes:**
+- As duas componentes são perpendiculares entre si
+- Sua soma vetorial é igual ao peso (mg)
+- A força de atrito depende da força normal, não do peso total
+- O ângulo θ é medido entre o plano e a horizontal`,
+    derivation: `A decomposição do peso em um plano inclinado é feita usando trigonometria. Se o ângulo entre o plano e a horizontal é θ:
+
+O peso atua verticalmente para baixo: \\(P = m \\cdot g\\)
+
+Componente paralela ao plano (ao longo da inclinação):
+\\[F_{\\parallel} = m \\cdot g \\cdot \\sin(\\theta)\\]
+
+Componente perpendicular ao plano (normal):
+\\[F_{\\perp} = m \\cdot g \\cdot \\cos(\\theta)\\]
+
+Força Normal (reação do plano):
+\\[N = F_{\\perp} = m \\cdot g \\cdot \\cos(\\theta)\\]
+
+Força de Atrito (se houver movimento):
+\\[f = \\mu \\cdot N = \\mu \\cdot m \\cdot g \\cdot \\cos(\\theta)\\]
+
+Aceleração do objeto (sem atrito):
+\\[a = g \\cdot \\sin(\\theta)\\]
+
+Aceleração do objeto (com atrito):
+\\[a = g(\\sin(\\theta) - \\mu \\cdot \\cos(\\theta))\\]`,
+    physicalMeaning: "O plano inclinado mostra como as forças se comportam em diferentes orientações. A decomposição em componentes paralela e perpendicular é essencial para entender o movimento em superfícies inclinadas e para calcular a força de atrito.",
+    examples: [
+      {
+        description: "Um bloco de 10 kg em um plano inclinado a 30°. Qual é a componente paralela do peso?",
+        calculation: "\\(F_{\\parallel} = 10 \\times 10 \\times \\sin(30°) = 10 \\times 10 \\times 0.5 = 50 \\text{ N}\\)"
+      },
+      {
+        description: "Qual é a força normal do mesmo bloco?",
+        calculation: "\\(N = 10 \\times 10 \\times \\cos(30°) = 10 \\times 10 \\times 0.866 = 86.6 \\text{ N}\\)"
+      },
+      {
+        description: "Se o coeficiente de atrito é 0.2, qual é a força de atrito?",
+        calculation: "\\(f = 0.2 \\times 86.6 = 17.32 \\text{ N}\\)"
+      },
+      {
+        description: "Qual é a aceleração do bloco (sem atrito)?",
+        calculation: "\\(a = 10 \\times \\sin(30°) = 10 \\times 0.5 = 5 \\text{ m/s}^2\\)"
+      }
+    ],
+    commonMistakes: [
+      "Confundir o ângulo do plano com o ângulo que o peso faz com o plano (são complementares!)",
+      "Usar o peso total em vez das componentes para calcular atrito",
+      "Esquecer que a força normal não é igual ao peso em um plano inclinado",
+      "Não considerar que a aceleração depende do ângulo do plano"
+    ],
+    applications: [
+      "Análise de objetos deslizando em rampas",
+      "Projeto de escadas e rampas de acessibilidade",
+      "Cálculo de força em correias transportadoras inclinadas",
+      "Análise de segurança em estradas com declive",
+      "Projeto de sistemas de frenagem em veículos"
+    ],
+    image: "/images/plano-inclinado-forcas.png"
+  },
+  {
     id: "potencia",
     name: "Potência",
     category: "Energia",
@@ -480,6 +561,13 @@ export default function DynamicsFormulas() {
               <p className="text-center text-sm md:text-lg font-semibold mb-4">Fórmula Principal:</p>
               <MathFormula formula={selectedFormula.latex} className="text-center text-2xl md:text-4xl mb-4" />
             </div>
+
+            {/* Image if available */}
+            {selectedFormula.image && (
+              <div className="mb-8 flex justify-center">
+                <img src={selectedFormula.image} alt={selectedFormula.name} className="max-w-2xl w-full rounded-lg shadow-md" />
+              </div>
+            )}
 
             {/* Explanation */}
             <div className="space-y-6">
