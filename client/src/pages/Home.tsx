@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChevronDown, BookOpen, Zap, Target, Droplet, MessageCircle, ArrowLeft } from "lucide-react";
+import { ChevronDown, BookOpen, Zap, Target, Droplet, MessageCircle, ArrowLeft, Play } from "lucide-react";
 import { Link } from "wouter";
 import { cinematicaContent } from "@/data/cinematica-content";
 
@@ -70,15 +70,18 @@ export default function Home() {
                   Explore a cinemática: como os objetos se movem, as fórmulas que descrevem o movimento e as aplicações práticas no mundo real.
                 </p>
               </div>
-              <div className="flex gap-4">
+              <div className="flex gap-4 flex-wrap">
                 <Link href="/cinematica/learn">
                   <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600">
                     Começar a Aprender
                   </Button>
                 </Link>
-                <a href="/cinematica/calculator">
-                  <Button size="lg" variant="outline">Calculadora Interativa</Button>
-                </a>
+                <Link href="/cinematica/simulator">
+                  <Button size="lg" variant="outline" className="border-blue-300 hover:bg-blue-50">
+                    <Play className="w-4 h-4 mr-2" />
+                    Simulador Visual
+                  </Button>
+                </Link>
               </div>
             </div>
             <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl">

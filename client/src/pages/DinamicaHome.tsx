@@ -30,7 +30,7 @@ export default function DinamicaHome() {
           <p className="text-lg text-slate-600 mb-8">
             Dinâmica é o ramo da Mecânica que estuda as causas do movimento dos corpos. Ela analisa como as forças afetam o movimento, a energia e o momentum.
           </p>
-          <div className="grid md:grid-cols-5 gap-4 mb-12">
+          <div className="grid md:grid-cols-6 gap-4 mb-12">
             <Link href="/dinamica/learn" className="group">
               <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
                 <BookOpen className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
@@ -64,6 +64,13 @@ export default function DinamicaHome() {
                 <TrendingUp className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
                 <h3 className="font-bold text-slate-900">Gráficos</h3>
                 <p className="text-xs text-slate-600 mt-1">Visualizações dinâmicas</p>
+              </Card>
+            </Link>
+            <Link href="/dinamica/simulator" className="group">
+              <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
+                <TrendingUp className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                <h3 className="font-bold text-slate-900">Simulador</h3>
+                <p className="text-xs text-slate-600 mt-1">Animações interativas</p>
               </Card>
             </Link>
           </div>
