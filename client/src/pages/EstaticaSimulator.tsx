@@ -14,7 +14,8 @@ export default function EstaticaSimulator() {
   const [forceLeft, setForceLeft] = useState(50);
   const [forceRight, setForceRight] = useState(50);
   const [angleLeft, setAngleLeft] = useState(0);
-  const [angleRight, setAngleRight] = useState(0);
+  const [angleRight, setAngleRight] = useState(180);
+  const [animationPhase, setAnimationPhase] = useState(0);
 
   const resultantX = forceLeft * Math.cos((angleLeft * Math.PI) / 180) + forceRight * Math.cos((angleRight * Math.PI) / 180);
   const resultantY = forceLeft * Math.sin((angleLeft * Math.PI) / 180) + forceRight * Math.sin((angleRight * Math.PI) / 180);
@@ -26,6 +27,7 @@ export default function EstaticaSimulator() {
   const [distanceLeft, setDistanceLeft] = useState(2);
   const [distanceRight, setDistanceRight] = useState(3);
   const [angleAlavanca, setAngleAlavanca] = useState(90);
+  const [alavancaRotation, setAlavancaRotation] = useState(0);
 
   const torqueLeft = forceAlavanca * distanceLeft * Math.sin((angleAlavanca * Math.PI) / 180);
   const forceRightNeeded = torqueLeft / distanceRight;
@@ -35,14 +37,14 @@ export default function EstaticaSimulator() {
   const [tipoMaquina, setTipoMaquina] = useState("alavanca");
   const [cargaMaquina, setCargaMaquina] = useState(100);
   const [forcaAplicada, setForcaAplicada] = useState(50);
-
-  const vmAlavanca = distanceLeft / distanceRight;
-  const vmPlano = 1 / Math.sin(((30 * Math.PI) / 180));
-  const vmPolia = 2;
+  const [planoAngle, setPlanoAngle] = useState(30);
+  const [numPolias, setNumPolias] = useState(1);
+  const [maquinaAnimacao, setMaquinaAnimacao] = useState(0);
 
   // ===== HIDROSTÁTICA =====
   const [profundidadeHidro, setProfundidadeHidro] = useState(5);
   const [tipoFluidoHidro, setTipoFluidoHidro] = useState("agua");
+  const [bolhasAnimacao, setBolhasAnimacao] = useState<Array<{id: number; x: number; y: number; speed: number}>>([]);
 
   const densidades: { [key: string]: number } = {
     agua: 1000,
@@ -55,26 +57,37 @@ export default function EstaticaSimulator() {
   const rho = densidades[tipoFluidoHidro];
   const pressaoHidro = P0 + rho * g * profundidadeHidro;
 
-  // Animação
+  // Animações
   useEffect(() => {
     if (!isAnimating) return;
 
     const interval = setInterval(() => {
-      setForceLeft((prev) => {
-        const next = prev + 2;
-        if (next > 100) return 50;
-        return next;
-      });
+      setAnimationPhase((prev) => (prev + 1) % 360);
+      setAlavancaRotation((prev) => (prev + 2) % 360);
+      setMaquinaAnimacao((prev) => (prev + 1) % 100);
     }, 50);
 
     return () => clearInterval(interval);
   }, [isAnimating]);
 
+  // Gerar bolhas para hidrostática
+  useEffect(() => {
+    if (activeTab === "hidrostatica" && isAnimating) {
+      const newBolhas = Array.from({ length: 3 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 200 + 50,
+        y: Math.random() * profundidadeHidro * 20 + 50,
+        speed: Math.random() * 2 + 1,
+      }));
+      setBolhasAnimacao(newBolhas);
+    }
+  }, [activeTab, isAnimating, profundidadeHidro]);
+
   const resetAll = () => {
     setForceLeft(50);
     setForceRight(50);
     setAngleLeft(0);
-    setAngleRight(0);
+    setAngleRight(180);
     setForceAlavanca(50);
     setDistanceLeft(2);
     setDistanceRight(3);
@@ -82,6 +95,9 @@ export default function EstaticaSimulator() {
     setCargaMaquina(100);
     setForcaAplicada(50);
     setProfundidadeHidro(5);
+    setAnimationPhase(0);
+    setAlavancaRotation(0);
+    setMaquinaAnimacao(0);
     setIsAnimating(false);
   };
 
@@ -132,64 +148,92 @@ export default function EstaticaSimulator() {
                   <p className="text-slate-600">Ajuste as forças e ângulos para alcançar o equilíbrio (resultante ≈ 0)</p>
                 </div>
 
-                {/* Visualização de Vetores */}
-                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-8 rounded-lg border-2 border-blue-200 flex justify-center items-center min-h-64">
-                  <svg width="400" height="300" viewBox="0 0 400 300" className="w-full max-w-md">
+                {/* Visualização de Vetores com Animação */}
+                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-8 rounded-lg border-2 border-blue-200 flex justify-center items-center min-h-80">
+                  <svg width="400" height="350" viewBox="0 0 400 350" className="w-full max-w-md">
+                    {/* Grade de fundo */}
+                    <defs>
+                      <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" strokeWidth="0.5" />
+                      </pattern>
+                    </defs>
+                    <rect width="400" height="350" fill="url(#grid)" />
+
                     {/* Centro */}
-                    <circle cx="200" cy="150" r="8" fill="#1f2937" />
+                    <circle cx="200" cy="175" r="8" fill="#1f2937" />
+                    <circle cx="200" cy="175" r="15" fill="none" stroke="#1f2937" strokeWidth="1" strokeDasharray="3,3" />
 
-                    {/* Vetor Esquerdo */}
-                    <line
-                      x1="200"
-                      y1="150"
-                      x2={200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2}
-                      y2={150 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2}
-                      stroke="#ef4444"
-                      strokeWidth="3"
-                    />
-                    <polygon
-                      points={`${200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2},${150 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2} ${200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2 - 5},${150 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2 + 5} ${200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2 + 5},${150 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2 + 5}`}
-                      fill="#ef4444"
-                    />
+                    {/* Vetor Esquerdo com animação */}
+                    <g opacity={isAnimating ? 0.7 + 0.3 * Math.sin(animationPhase * Math.PI / 180) : 1}>
+                      <line
+                        x1="200"
+                        y1="175"
+                        x2={200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2}
+                        y2={175 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2}
+                        stroke="#ef4444"
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                      />
+                      <polygon
+                        points={`${200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2},${175 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2} ${200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2 - 8},${175 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2 + 8} ${200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2 + 8},${175 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2 + 8}`}
+                        fill="#ef4444"
+                      />
+                      <text x={200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2 - 30} y={175 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2 - 10} className="text-xs font-bold fill-red-600">
+                        F₁ = {forceLeft.toFixed(0)} N
+                      </text>
+                    </g>
 
-                    {/* Vetor Direito */}
-                    <line
-                      x1="200"
-                      y1="150"
-                      x2={200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2}
-                      y2={150 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2}
-                      stroke="#3b82f6"
-                      strokeWidth="3"
-                    />
-                    <polygon
-                      points={`${200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2},${150 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2} ${200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2 - 5},${150 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2 + 5} ${200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2 + 5},${150 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2 + 5}`}
-                      fill="#3b82f6"
-                    />
+                    {/* Vetor Direito com animação */}
+                    <g opacity={isAnimating ? 0.7 + 0.3 * Math.cos(animationPhase * Math.PI / 180) : 1}>
+                      <line
+                        x1="200"
+                        y1="175"
+                        x2={200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2}
+                        y2={175 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2}
+                        stroke="#3b82f6"
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                      />
+                      <polygon
+                        points={`${200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2},${175 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2} ${200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2 - 8},${175 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2 + 8} ${200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2 + 8},${175 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2 + 8}`}
+                        fill="#3b82f6"
+                      />
+                      <text x={200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2 + 10} y={175 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2 - 10} className="text-xs font-bold fill-blue-600">
+                        F₂ = {forceRight.toFixed(0)} N
+                      </text>
+                    </g>
 
-                    {/* Vetor Resultante */}
+                    {/* Vetor Resultante com animação */}
                     {resultantMagnitude > 1 && (
-                      <>
+                      <g opacity={isAnimating ? 0.5 + 0.5 * Math.abs(Math.sin(animationPhase * Math.PI / 180)) : 0.7}>
                         <line
                           x1="200"
-                          y1="150"
+                          y1="175"
                           x2={200 + resultantX / 2}
-                          y2={150 - resultantY / 2}
+                          y2={175 - resultantY / 2}
                           stroke="#10b981"
-                          strokeWidth="2"
-                          strokeDasharray="5,5"
+                          strokeWidth="3"
+                          strokeDasharray="8,4"
+                          strokeLinecap="round"
                         />
                         <polygon
-                          points={`${200 + resultantX / 2},${150 - resultantY / 2} ${200 + resultantX / 2 - 3},${150 - resultantY / 2 + 3} ${200 + resultantX / 2 + 3},${150 - resultantY / 2 + 3}`}
+                          points={`${200 + resultantX / 2},${175 - resultantY / 2} ${200 + resultantX / 2 - 6},${175 - resultantY / 2 + 6} ${200 + resultantX / 2 + 6},${175 - resultantY / 2 + 6}`}
                           fill="#10b981"
                         />
-                      </>
+                        <text x={200 + resultantX / 2 + 10} y={175 - resultantY / 2 - 10} className="text-xs font-bold fill-green-600">
+                          R = {resultantMagnitude.toFixed(1)} N
+                        </text>
+                      </g>
                     )}
 
                     {/* Indicador de Equilíbrio */}
                     {isEquilibrio && (
-                      <text x="200" y="30" textAnchor="middle" className="text-lg font-bold fill-green-600">
-                        ✓ EQUILIBRIO
-                      </text>
+                      <g>
+                        <circle cx="200" cy="175" r="50" fill="none" stroke="#10b981" strokeWidth="2" opacity="0.3" />
+                        <text x="200" y="30" textAnchor="middle" className="text-2xl font-bold fill-green-600">
+                          ✓ EQUILIBRIO
+                        </text>
+                      </g>
                     )}
                   </svg>
                 </div>
@@ -199,13 +243,13 @@ export default function EstaticaSimulator() {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-bold text-slate-900 mb-2">
-                        Força Esquerda: {forceLeft.toFixed(0)} N
+                        Força 1: {forceLeft.toFixed(0)} N
                       </label>
                       <Slider value={[forceLeft]} onValueChange={(v) => setForceLeft(v[0])} min={0} max={100} step={1} />
                     </div>
                     <div>
                       <label className="block text-sm font-bold text-slate-900 mb-2">
-                        Ângulo Esquerdo: {angleLeft.toFixed(0)}°
+                        Ângulo 1: {angleLeft.toFixed(0)}°
                       </label>
                       <Slider value={[angleLeft]} onValueChange={(v) => setAngleLeft(v[0])} min={0} max={360} step={5} />
                     </div>
@@ -213,13 +257,13 @@ export default function EstaticaSimulator() {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-bold text-slate-900 mb-2">
-                        Força Direita: {forceRight.toFixed(0)} N
+                        Força 2: {forceRight.toFixed(0)} N
                       </label>
                       <Slider value={[forceRight]} onValueChange={(v) => setForceRight(v[0])} min={0} max={100} step={1} />
                     </div>
                     <div>
                       <label className="block text-sm font-bold text-slate-900 mb-2">
-                        Ângulo Direito: {angleRight.toFixed(0)}°
+                        Ângulo 2: {angleRight.toFixed(0)}°
                       </label>
                       <Slider value={[angleRight]} onValueChange={(v) => setAngleRight(v[0])} min={0} max={360} step={5} />
                     </div>
@@ -229,16 +273,18 @@ export default function EstaticaSimulator() {
                 {/* Resultados */}
                 <div className="grid md:grid-cols-3 gap-4">
                   <Card className="p-4 bg-red-50 border-0">
-                    <p className="text-xs text-slate-600 mb-1">Força Esquerda</p>
+                    <p className="text-xs text-slate-600 mb-1">Força 1</p>
                     <p className="text-2xl font-bold text-red-600">{forceLeft.toFixed(0)} N</p>
                   </Card>
                   <Card className="p-4 bg-blue-50 border-0">
-                    <p className="text-xs text-slate-600 mb-1">Força Direita</p>
+                    <p className="text-xs text-slate-600 mb-1">Força 2</p>
                     <p className="text-2xl font-bold text-blue-600">{forceRight.toFixed(0)} N</p>
                   </Card>
-                  <Card className="p-4 bg-green-50 border-0">
+                  <Card className={`p-4 border-0 ${isEquilibrio ? "bg-green-50" : "bg-yellow-50"}`}>
                     <p className="text-xs text-slate-600 mb-1">Resultante</p>
-                    <p className="text-2xl font-bold text-green-600">{resultantMagnitude.toFixed(1)} N</p>
+                    <p className={`text-2xl font-bold ${isEquilibrio ? "text-green-600" : "text-yellow-600"}`}>
+                      {resultantMagnitude.toFixed(1)} N
+                    </p>
                   </Card>
                 </div>
 
@@ -266,41 +312,44 @@ export default function EstaticaSimulator() {
                   <p className="text-slate-600">Ajuste a força, distância e ângulo para visualizar o torque</p>
                 </div>
 
-                {/* Visualização de Alavanca */}
-                <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-8 rounded-lg border-2 border-orange-200 flex justify-center items-center min-h-64">
-                  <svg width="500" height="200" viewBox="0 0 500 200" className="w-full max-w-lg">
+                {/* Visualização de Alavanca com Animação */}
+                <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-8 rounded-lg border-2 border-orange-200 flex justify-center items-center min-h-80">
+                  <svg width="500" height="250" viewBox="0 0 500 250" className="w-full max-w-lg">
                     {/* Fulcro */}
-                    <polygon points="250,120 240,150 260,150" fill="#d97706" />
+                    <polygon points="250,130 240,160 260,160" fill="#d97706" />
 
-                    {/* Barra */}
-                    <line x1="100" y1="120" x2="400" y2="120" stroke="#1f2937" strokeWidth="10" />
+                    {/* Barra com rotação */}
+                    <g transform={`rotate(${isTorqueBalanced && isAnimating ? alavancaRotation * 0.5 : 0} 250 130)`}>
+                      <line x1="100" y1="130" x2="400" y2="130" stroke="#1f2937" strokeWidth="12" strokeLinecap="round" />
 
-                    {/* Ponto de aplicação esquerdo */}
-                    <circle cx={100 + distanceLeft * 30} cy="120" r="10" fill="#ef4444" />
-                    <line
-                      x1={100 + distanceLeft * 30}
-                      y1="120"
-                      x2={100 + distanceLeft * 30 + forceAlavanca * Math.cos((angleAlavanca * Math.PI) / 180) * 0.5}
-                      y2={120 - forceAlavanca * Math.sin((angleAlavanca * Math.PI) / 180) * 0.5}
-                      stroke="#ef4444"
-                      strokeWidth="3"
-                    />
+                      {/* Ponto de aplicação esquerdo */}
+                      <circle cx={100 + distanceLeft * 30} cy="130" r="12" fill="#ef4444" opacity={isAnimating ? 0.7 + 0.3 * Math.sin(animationPhase * Math.PI / 180) : 1} />
+                      <line
+                        x1={100 + distanceLeft * 30}
+                        y1="130"
+                        x2={100 + distanceLeft * 30 + forceAlavanca * Math.cos((angleAlavanca * Math.PI) / 180) * 0.4}
+                        y2={130 - forceAlavanca * Math.sin((angleAlavanca * Math.PI) / 180) * 0.4}
+                        stroke="#ef4444"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                      />
 
-                    {/* Ponto de aplicação direito */}
-                    <circle cx={400 - distanceRight * 30} cy="120" r="10" fill="#3b82f6" />
+                      {/* Ponto de aplicação direito */}
+                      <circle cx={400 - distanceRight * 30} cy="130" r="12" fill="#3b82f6" opacity={isAnimating ? 0.7 + 0.3 * Math.cos(animationPhase * Math.PI / 180) : 1} />
 
-                    {/* Distâncias */}
-                    <text x={100 + distanceLeft * 30} y="50" textAnchor="middle" className="text-sm font-bold fill-slate-900">
-                      d₁ = {distanceLeft.toFixed(1)} m
-                    </text>
-                    <text x={400 - distanceRight * 30} y="50" textAnchor="middle" className="text-sm font-bold fill-slate-900">
-                      d₂ = {distanceRight.toFixed(1)} m
-                    </text>
+                      {/* Distâncias */}
+                      <text x={100 + distanceLeft * 30} y="60" textAnchor="middle" className="text-sm font-bold fill-slate-900">
+                        d₁ = {distanceLeft.toFixed(1)} m
+                      </text>
+                      <text x={400 - distanceRight * 30} y="60" textAnchor="middle" className="text-sm font-bold fill-slate-900">
+                        d₂ = {distanceRight.toFixed(1)} m
+                      </text>
 
-                    {/* Força */}
-                    <text x={100 + distanceLeft * 30} y="180" textAnchor="middle" className="text-sm font-bold fill-red-600">
-                      F = {forceAlavanca.toFixed(0)} N
-                    </text>
+                      {/* Força */}
+                      <text x={100 + distanceLeft * 30} y="210" textAnchor="middle" className="text-sm font-bold fill-red-600">
+                        F = {forceAlavanca.toFixed(0)} N
+                      </text>
+                    </g>
                   </svg>
                 </div>
 
@@ -389,17 +438,19 @@ export default function EstaticaSimulator() {
                   ))}
                 </div>
 
-                {/* Visualização */}
-                <div className="bg-gradient-to-br from-yellow-50 to-amber-50 p-8 rounded-lg border-2 border-yellow-200 flex justify-center items-center min-h-64">
+                {/* Visualização com Animação */}
+                <div className="bg-gradient-to-br from-yellow-50 to-amber-50 p-8 rounded-lg border-2 border-yellow-200 flex justify-center items-center min-h-80">
                   {tipoMaquina === "alavanca" && (
-                    <svg width="400" height="200" viewBox="0 0 400 200" className="w-full max-w-md">
-                      <polygon points="200,120 190,150 210,150" fill="#d97706" />
-                      <line x1="100" y1="120" x2="300" y2="120" stroke="#1f2937" strokeWidth="8" />
-                      <circle cx="150" cy="120" r="8" fill="#ef4444" />
+                    <svg width="400" height="250" viewBox="0 0 400 250" className="w-full max-w-md">
+                      <polygon points="200,140 190,170 210,170" fill="#d97706" />
+                      <line x1="100" y1="140" x2="300" y2="140" stroke="#1f2937" strokeWidth="10" strokeLinecap="round" />
+                      <circle cx="150" cy="140" r="10" fill="#ef4444" opacity={isAnimating ? 0.7 + 0.3 * Math.sin(maquinaAnimacao * Math.PI / 50) : 1} />
+                      <line x1="150" y1="140" x2="150" y2={140 - (forcaAplicada * 0.3 * (isAnimating ? 0.5 + 0.5 * Math.sin(maquinaAnimacao * Math.PI / 50) : 1))} stroke="#ef4444" strokeWidth="3" strokeLinecap="round" />
                       <text x="150" y="60" textAnchor="middle" className="text-sm font-bold fill-red-600">
                         F aplicada
                       </text>
-                      <circle cx="280" cy="120" r="8" fill="#10b981" />
+                      <circle cx="280" cy="140" r="10" fill="#10b981" opacity={isAnimating ? 0.7 + 0.3 * Math.cos(maquinaAnimacao * Math.PI / 50) : 1} />
+                      <line x1="280" y1="140" x2="280" y2={140 - (cargaMaquina * 0.2 * (isAnimating ? 0.5 + 0.5 * Math.cos(maquinaAnimacao * Math.PI / 50) : 1))} stroke="#10b981" strokeWidth="3" strokeLinecap="round" />
                       <text x="280" y="60" textAnchor="middle" className="text-sm font-bold fill-green-600">
                         F resultado
                       </text>
@@ -407,22 +458,27 @@ export default function EstaticaSimulator() {
                   )}
 
                   {tipoMaquina === "plano" && (
-                    <svg width="400" height="200" viewBox="0 0 400 200" className="w-full max-w-md">
-                      <polygon points="100,150 300,100 300,150" fill="#fbbf24" />
-                      <circle cx="280" cy="110" r="8" fill="#10b981" />
-                      <text x="280" y="60" textAnchor="middle" className="text-sm font-bold fill-green-600">
-                        Carga
+                    <svg width="400" height="250" viewBox="0 0 400 250" className="w-full max-w-md">
+                      <polygon points="100,180 300,120 300,180" fill="#fbbf24" />
+                      <circle cx={280 - maquinaAnimacao * 0.8} cy={120 + (280 - maquinaAnimacao * 0.8 - 100) * Math.tan((planoAngle * Math.PI) / 180)} r="10" fill="#10b981" opacity={isAnimating ? 0.7 + 0.3 * Math.sin(maquinaAnimacao * Math.PI / 50) : 1} />
+                      <text x="200" y="60" textAnchor="middle" className="text-sm font-bold fill-slate-900">
+                        Ângulo: {planoAngle.toFixed(0)}°
                       </text>
                     </svg>
                   )}
 
                   {tipoMaquina === "polia" && (
-                    <svg width="400" height="200" viewBox="0 0 400 200" className="w-full max-w-md">
-                      <circle cx="200" cy="80" r="30" fill="none" stroke="#1f2937" strokeWidth="4" />
-                      <line x1="200" y1="110" x2="200" y2="160" stroke="#1f2937" strokeWidth="4" />
-                      <circle cx="200" cy="170" r="8" fill="#10b981" />
+                    <svg width="400" height="250" viewBox="0 0 400 250" className="w-full max-w-md">
+                      <g transform={`rotate(${isAnimating ? maquinaAnimacao * 3.6 : 0} 200 100)`}>
+                        <circle cx="200" cy="100" r="40" fill="none" stroke="#1f2937" strokeWidth="5" />
+                        <circle cx="200" cy="100" r="30" fill="none" stroke="#1f2937" strokeWidth="2" />
+                        <line x1="170" y1="100" x2="230" y2="100" stroke="#1f2937" strokeWidth="2" />
+                        <line x1="200" y1="70" x2="200" y2="130" stroke="#1f2937" strokeWidth="2" />
+                      </g>
+                      <line x1="200" y1="140" x2="200" y2={180 + (maquinaAnimacao * 0.4)} stroke="#1f2937" strokeWidth="4" strokeLinecap="round" />
+                      <circle cx="200" cy={190 + (maquinaAnimacao * 0.4)} r="10" fill="#10b981" opacity={isAnimating ? 0.7 + 0.3 * Math.sin(maquinaAnimacao * Math.PI / 50) : 1} />
                       <text x="200" y="50" textAnchor="middle" className="text-sm font-bold fill-slate-900">
-                        Polia
+                        {numPolias} Polia{numPolias > 1 ? "s" : ""}
                       </text>
                     </svg>
                   )}
@@ -443,6 +499,24 @@ export default function EstaticaSimulator() {
                     <Slider value={[forcaAplicada]} onValueChange={(v) => setForcaAplicada(v[0])} min={10} max={100} step={5} />
                   </div>
                 </div>
+
+                {tipoMaquina === "plano" && (
+                  <div>
+                    <label className="block text-sm font-bold text-slate-900 mb-2">
+                      Ângulo: {planoAngle.toFixed(0)}°
+                    </label>
+                    <Slider value={[planoAngle]} onValueChange={(v) => setPlanoAngle(v[0])} min={10} max={80} step={5} />
+                  </div>
+                )}
+
+                {tipoMaquina === "polia" && (
+                  <div>
+                    <label className="block text-sm font-bold text-slate-900 mb-2">
+                      Número de Polias: {numPolias}
+                    </label>
+                    <Slider value={[numPolias]} onValueChange={(v) => setNumPolias(v[0])} min={1} max={4} step={1} />
+                  </div>
+                )}
 
                 {/* Resultados */}
                 <div className="grid md:grid-cols-3 gap-4">
@@ -487,28 +561,57 @@ export default function EstaticaSimulator() {
                   <p className="text-slate-600">Visualize como a pressão aumenta com a profundidade</p>
                 </div>
 
-                {/* Visualização */}
-                <div className="bg-gradient-to-br from-cyan-50 to-blue-50 p-8 rounded-lg border-2 border-cyan-200 flex justify-center items-center min-h-64">
-                  <svg width="300" height="300" viewBox="0 0 300 300" className="w-full max-w-md">
+                {/* Visualização com Animação */}
+                <div className="bg-gradient-to-br from-cyan-50 to-blue-50 p-8 rounded-lg border-2 border-cyan-200 flex justify-center items-center min-h-80">
+                  <svg width="300" height="350" viewBox="0 0 300 350" className="w-full max-w-md">
                     {/* Água */}
-                    <rect x="50" y="50" width="200" height={profundidadeHidro * 20} fill="#3b82f6" opacity="0.3" />
+                    <defs>
+                      <linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style={{ stopColor: "#3b82f6", stopOpacity: 0.2 }} />
+                        <stop offset="100%" style={{ stopColor: "#0369a1", stopOpacity: 0.5 }} />
+                      </linearGradient>
+                    </defs>
+                    <rect x="50" y="50" width="200" height={profundidadeHidro * 20} fill="url(#waterGradient)" />
+
+                    {/* Ondas na superfície */}
+                    {isAnimating && (
+                      <path
+                        d={`M 50 50 Q 75 ${50 + 5 * Math.sin(animationPhase * Math.PI / 180)} 100 50 T 150 50 T 200 50 T 250 50`}
+                        stroke="#3b82f6"
+                        strokeWidth="2"
+                        fill="none"
+                      />
+                    )}
+
+                    {/* Bolhas animadas */}
+                    {isAnimating &&
+                      bolhasAnimacao.map((bolha: {id: number; x: number; y: number; speed: number}) => (
+                        <circle
+                          key={bolha.id}
+                          cx={bolha.x}
+                          cy={Math.max(50, bolha.y - (animationPhase * bolha.speed) % (profundidadeHidro * 20))}
+                          r="3"
+                          fill="#0369a1"
+                          opacity="0.5"
+                        />
+                      ))}
 
                     {/* Linha de profundidade */}
                     <line x1="30" y1={50 + profundidadeHidro * 20} x2="270" y2={50 + profundidadeHidro * 20} stroke="#0369a1" strokeWidth="2" strokeDasharray="5,5" />
 
                     {/* Objeto */}
-                    <circle cx="150" cy={50 + profundidadeHidro * 20} r="15" fill="#ef4444" />
+                    <circle cx="150" cy={50 + profundidadeHidro * 20} r="15" fill="#ef4444" opacity={isAnimating ? 0.7 + 0.3 * Math.sin(animationPhase * Math.PI / 180) : 1} />
 
                     {/* Profundidade label */}
                     <text x="20" y={60 + profundidadeHidro * 20} textAnchor="middle" className="text-sm font-bold fill-slate-900">
                       {profundidadeHidro.toFixed(1)} m
                     </text>
 
-                    {/* Pressão arrows */}
+                    {/* Pressão arrows com animação */}
                     {[0, 1, 2, 3].map((i) => (
-                      <g key={i}>
-                        <line x1={100 + i * 40} y1={50 + profundidadeHidro * 20 - 30} x2={100 + i * 40} y2={50 + profundidadeHidro * 20 - 10} stroke="#0369a1" strokeWidth="2" />
-                        <polygon points={`${100 + i * 40},${50 + profundidadeHidro * 20 - 10} ${100 + i * 40 - 3},${50 + profundidadeHidro * 20 - 15} ${100 + i * 40 + 3},${50 + profundidadeHidro * 20 - 15}`} fill="#0369a1" />
+                      <g key={i} opacity={isAnimating ? 0.5 + 0.5 * Math.sin((animationPhase + i * 45) * Math.PI / 180) : 0.7}>
+                        <line x1={100 + i * 40} y1={50 + profundidadeHidro * 20 - 40} x2={100 + i * 40} y2={50 + profundidadeHidro * 20 - 10} stroke="#0369a1" strokeWidth="3" strokeLinecap="round" />
+                        <polygon points={`${100 + i * 40},${50 + profundidadeHidro * 20 - 10} ${100 + i * 40 - 4},${50 + profundidadeHidro * 20 - 18} ${100 + i * 40 + 4},${50 + profundidadeHidro * 20 - 18}`} fill="#0369a1" />
                       </g>
                     ))}
                   </svg>
