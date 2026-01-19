@@ -292,10 +292,16 @@ export default function EstaticaSimulator() {
                   <p className="text-sm font-bold text-slate-900 mb-2">Fórmulas de Equilíbrio:</p>
                   <div className="space-y-3">
                     <div className="bg-white p-3 rounded-lg">
-                      <MathFormula formula="\\sum F_x = 0 \\quad \\text{e} \\quad \\sum F_y = 0" className="text-center" />
+                      <MathFormula formula="F_x = F_1 \\cos(\\theta_1) + F_2 \\cos(\\theta_2)" className="text-center" />
                     </div>
                     <div className="bg-white p-3 rounded-lg">
-                      <MathFormula formula="\\vec{F}_{resultante} = \\sqrt{F_x^2 + F_y^2} = 0" className="text-center" />
+                      <MathFormula formula="F_y = F_1 \\sin(\\theta_1) + F_2 \\sin(\\theta_2)" className="text-center" />
+                    </div>
+                    <div className="bg-white p-3 rounded-lg">
+                      <MathFormula formula="F_{resultante} = \\sqrt{F_x^2 + F_y^2}" className="text-center" />
+                    </div>
+                    <div className="bg-white p-3 rounded-lg">
+                      <MathFormula formula="\\text{Equilíbrio: } F_{resultante} \\approx 0" className="text-center" />
                     </div>
                   </div>
                 </Card>
@@ -397,13 +403,16 @@ export default function EstaticaSimulator() {
                   <p className="text-sm font-bold text-slate-900 mb-2">Fórmulas de Torque:</p>
                   <div className="space-y-3">
                     <div className="bg-white p-3 rounded-lg">
-                      <MathFormula formula="\\tau = \\vec{r} \\times \\vec{F} = r \\cdot F \\cdot \\sin(\\theta)" className="text-center" />
+                      <MathFormula formula="\\tau = r \\cdot F \\cdot \\sin(\\theta)" className="text-center" />
                     </div>
                     <div className="bg-white p-3 rounded-lg">
-                      <MathFormula formula="\\sum \\tau = 0 \\quad \\text{(Equilíbrio Rotacional)}" className="text-center" />
+                      <MathFormula formula="\\tau_1 = F_1 \\cdot d_1 \\cdot \\sin(\\theta)" className="text-center" />
                     </div>
                     <div className="bg-white p-3 rounded-lg">
-                      <MathFormula formula="\\tau_1 = \\tau_2 \\Rightarrow F_1 \\cdot d_1 = F_2 \\cdot d_2" className="text-center" />
+                      <MathFormula formula="\\text{Equilíbrio: } \\tau_1 = \\tau_2" className="text-center" />
+                    </div>
+                    <div className="bg-white p-3 rounded-lg">
+                      <MathFormula formula="F_1 \\cdot d_1 = F_2 \\cdot d_2" className="text-center" />
                     </div>
                   </div>
                 </Card>
@@ -538,13 +547,16 @@ export default function EstaticaSimulator() {
                   <p className="text-sm font-bold text-slate-900 mb-2">Fórmulas de Máquinas Simples:</p>
                   <div className="space-y-3">
                     <div className="bg-white p-3 rounded-lg">
-                      <MathFormula formula="VM = \\frac{F_{resistencia}}{F_{potencia}} = \\frac{F_{carga}}{F_{aplicada}}" className="text-center" />
+                      <MathFormula formula="VM = \\frac{F_{carga}}{F_{aplicada}}" className="text-center" />
                     </div>
                     <div className="bg-white p-3 rounded-lg">
                       <MathFormula formula="\\text{Alavanca: } VM = \\frac{d_1}{d_2}" className="text-center" />
                     </div>
                     <div className="bg-white p-3 rounded-lg">
-                      <MathFormula formula="\\text{Polia: } VM = 2n \\quad (n = \\text{número de polias})" className="text-center" />
+                      <MathFormula formula="\\text{Plano Inclinado: } VM = \\frac{1}{\\sin(\\theta)}" className="text-center" />
+                    </div>
+                    <div className="bg-white p-3 rounded-lg">
+                      <MathFormula formula="\\text{Polia: } VM = 2n" className="text-center" />
                     </div>
                   </div>
                 </Card>
@@ -666,7 +678,13 @@ export default function EstaticaSimulator() {
                       <MathFormula formula="P = P_0 + \\rho g h" className="text-center" />
                     </div>
                     <div className="bg-white p-3 rounded-lg">
-                      <MathFormula formula="\\text{Onde: } P_0 = 101.325 \\text{ kPa, } \\rho = \\text{densidade, } g = 10 \\text{ m/s}^2" className="text-center text-xs" />
+                      <MathFormula formula="P_0 = 101.325 \\text{ kPa (Pressão Atmosférica)}" className="text-center" />
+                    </div>
+                    <div className="bg-white p-3 rounded-lg">
+                      <MathFormula formula="\\rho = \\text{densidade do fluido (kg/m}^3\\text{)}" className="text-center" />
+                    </div>
+                    <div className="bg-white p-3 rounded-lg">
+                      <MathFormula formula="g = 10 \\text{ m/s}^2, \\quad h = \\text{profundidade (m)}" className="text-center" />
                     </div>
                   </div>
                 </Card>
