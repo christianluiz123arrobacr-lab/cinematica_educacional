@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
 
+declare global {
+  interface Window {
+    MathJax?: any;
+  }
+}
+
 export function useMathJax() {
   const [isReady, setIsReady] = useState(false);
 

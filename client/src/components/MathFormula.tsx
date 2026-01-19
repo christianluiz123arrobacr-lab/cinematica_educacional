@@ -12,11 +12,9 @@ export function MathFormula({ formula, display = true, className = '' }: MathFor
   const { isReady, renderMath } = useMathJax();
 
   useEffect(() => {
-    if (isReady) {
-      const timer = setTimeout(() => {
-        renderMath();
-      }, 50);
-      return () => clearTimeout(timer);
+    if (isReady && ref.current) {
+      // Renderizar MathJax imediatamente
+      renderMath();
     }
   }, [isReady, formula, renderMath]);
 
@@ -32,7 +30,8 @@ export function MathFormula({ formula, display = true, className = '' }: MathFor
       style={{ 
         wordBreak: 'break-word', 
         display: display ? 'block' : 'inline-block',
-        overflow: 'hidden'
+        overflow: 'visible',
+        minHeight: display ? '2rem' : 'auto'
       }}
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
