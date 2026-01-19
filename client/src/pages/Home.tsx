@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChevronDown, BookOpen, Zap, Target, Droplet, MessageCircle } from "lucide-react";
+import { ChevronDown, BookOpen, Zap, Target, Droplet, MessageCircle, Moon, Sun } from "lucide-react";
 import { Link } from "wouter";
 import { cinematicaContent } from "@/data/cinematica-content";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface Section {
   id: string;
@@ -14,6 +15,7 @@ interface Section {
 
 export default function Home() {
   const [expandedSection, setExpandedSection] = useState<string | null>("introduction");
+  const { theme, toggleTheme } = useTheme();
 
   const sections: Section[] = [
     { id: "introduction", title: "Introdução à Cinemática", icon: BookOpen, color: "from-blue-600 to-blue-400" },
@@ -39,6 +41,19 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleTheme}
+              className="rounded-full w-10 h-10 p-0"
+              title={`Mudar para modo ${theme === 'light' ? 'escuro' : 'claro'}`}
+            >
+              {theme === 'light' ? (
+                <Moon className="w-4 h-4" />
+              ) : (
+                <Sun className="w-4 h-4" />
+              )}
+            </Button>
             <a href="https://youtube.com/@projetoita-z4x?si=dIghaQjMiHZzk4R5" target="_blank" rel="noopener noreferrer">
               <Button variant="outline" size="sm">Sobre</Button>
             </a>

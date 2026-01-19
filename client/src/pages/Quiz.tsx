@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, Download, Share2 } from "lucide-react";
 import { Link } from "wouter";
 
 interface Question {
@@ -112,6 +112,62 @@ export default function Quiz() {
 
   const topics = ["MRU", "MRUV", "Queda Livre", "Velocidade e Aceleração", "Torricelli", "MCU"];
 
+  const generateCertificate = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1200;
+    canvas.height = 800;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Fundo
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Borda decorativa
+    ctx.strokeStyle = '#2563eb';
+    ctx.lineWidth = 8;
+    ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
+
+    // Título
+    ctx.font = 'bold 48px Arial';
+    ctx.fillStyle = '#1e40af';
+    ctx.textAlign = 'center';
+    ctx.fillText('CERTIFICADO DE CONCLUSÃO', canvas.width / 2, 150);
+
+    // Texto
+    ctx.font = '24px Arial';
+    ctx.fillStyle = '#000000';
+    ctx.fillText('Parabéns!', canvas.width / 2, 250);
+
+    ctx.font = '20px Arial';
+    ctx.fillStyle = '#333333';
+    ctx.fillText(`Você completou o Quiz de ${selectedTopic}`, canvas.width / 2, 320);
+    ctx.fillText(`com ${Math.round((score / filteredQuestions.length) * 100)}% de acerto`, canvas.width / 2, 360);
+
+    // Data
+    ctx.font = '16px Arial';
+    ctx.fillStyle = '#666666';
+    const date = new Date().toLocaleDateString('pt-BR');
+    ctx.fillText(`Data: ${date}`, canvas.width / 2, 500);
+
+    // Assinatura
+    ctx.font = 'italic 18px Arial';
+    ctx.fillText('Projeto ITA - Do Zero a Aprovação', canvas.width / 2, 700);
+
+    // Download
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = `certificado-${selectedTopic}-${new Date().getTime()}.png`;
+    link.click();
+  };
+
+  const shareResults = () => {
+    const percentage = Math.round((score / filteredQuestions.length) * 100);
+    const text = `Acabei de completar o Quiz de ${selectedTopic} no Projeto ITA - Do Zero a Aprovação! Acertei ${percentage}% das questões. Venha testar seus conhecimentos também! 🎓`;
+    const whatsappUrl = `https://chat.whatsapp.com/Grwi9hUFvFbA91gShvZGqI`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   if (!selectedTopic) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
@@ -175,7 +231,17 @@ export default function Quiz() {
               {percentage < 60 && <p className="text-lg text-orange-600 font-semibold">Revise os conceitos e tente novamente.</p>}
             </div>
 
-            <div className="flex gap-4 justify-center">
+            <div className="flex gap-4 justify-center flex-wrap">
+              {percentage >= 70 && (
+                <Button onClick={generateCertificate} size="lg" className="bg-green-600 hover:bg-green-700">
+                  <Download className="w-4 h-4 mr-2" />
+                  Baixar Certificado
+                </Button>
+              )}
+              <Button onClick={shareResults} size="lg" className="bg-green-600 hover:bg-green-700">
+                <Share2 className="w-4 h-4 mr-2" />
+                Compartilhar
+              </Button>
               <Button onClick={handleRestart} size="lg" className="bg-blue-600 hover:bg-blue-700">
                 Fazer Quiz Novamente
               </Button>
