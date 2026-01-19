@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowLeft, BookOpen, Calculator, BarChart3, HelpCircle, TrendingUp } from "lucide-react";
+import { ArrowLeft, BookOpen, Calculator, BarChart3, HelpCircle, TrendingUp, Play, MessageCircle, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { dinamicaTopics } from "@/data/dinamica-content";
@@ -10,32 +10,83 @@ export default function DinamicaHome() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
             <ArrowLeft className="w-5 h-5" />
             Voltar
           </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Dinâmica</h1>
-            <p className="text-xs text-slate-600">Projeto ITA - Do Zero a Aprovação</p>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 to-pink-400 flex items-center justify-center">
+              <Zap className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">Dinâmica</h1>
+              <p className="text-xs text-slate-500">Projeto ITA - Do Zero a Aprovação</p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <Link href="/progress">
               <Button variant="outline" size="sm">Progresso</Button>
             </Link>
+            <a href="https://youtube.com/@projetoita-z4x?si=dIghaQjMiHZzk4R5" target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" size="sm">Sobre</Button>
+            </a>
+            <a href="https://chat.whatsapp.com/Grwi9hUFvFbA91gShvZGqI" target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" size="sm" className="bg-green-50 hover:bg-green-100 text-green-700 border-green-300">
+                <MessageCircle className="w-4 h-4 mr-2" />
+                WhatsApp
+              </Button>
+            </a>
           </div>
         </div>
       </header>
 
+      {/* Hero Section */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-pink-600/5 to-transparent" />
+        <div className="container py-16 md:py-24 relative">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <h2 className="text-5xl md:text-6xl font-bold text-slate-900 leading-tight">
+                  Entenda as <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Causas</span>
+                </h2>
+                <p className="text-xl text-slate-600">
+                  Explore a dinâmica: como as forças causam movimento, as leis que governam o universo e as aplicações práticas no mundo real.
+                </p>
+              </div>
+              <div className="flex gap-4 flex-wrap">
+                <Link href="/dinamica/learn">
+                  <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600">
+                    Começar a Aprender
+                  </Button>
+                </Link>
+                <Link href="/dinamica/simulator">
+                  <Button size="lg" variant="outline" className="border-purple-300 hover:bg-purple-50">
+                    <Play className="w-4 h-4 mr-2" />
+                    Simulador Visual
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl">
+              <img 
+                src="/images/dinamica-banner.png" 
+                alt="Dinâmica" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent" />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-12">
-        {/* Intro Section */}
-        <div className="max-w-3xl mx-auto mb-16">
-          <h2 className="text-4xl font-bold text-slate-900 mb-4">Entenda as Causas do Movimento</h2>
-          <p className="text-lg text-slate-600 mb-8">
-            Dinâmica é o ramo da Mecânica que estuda as causas do movimento dos corpos. Ela analisa como as forças afetam o movimento, a energia e o momentum.
-          </p>
-          <div className="grid md:grid-cols-6 gap-4 mb-12">
+      <main className="container py-12">
+        {/* Navigation Cards */}
+        <div className="mb-16">
+          <h3 className="text-3xl font-bold text-slate-900 mb-8">Ferramentas de Aprendizado</h3>
+          <div className="grid md:grid-cols-6 gap-4">
             <div className="group">
               <Link href="/dinamica/learn">
                 <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
@@ -84,7 +135,7 @@ export default function DinamicaHome() {
             <div className="group">
               <Link href="/dinamica/simulator">
                 <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
-                  <TrendingUp className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <Play className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
                   <h3 className="font-bold text-slate-900">Simulador</h3>
                   <p className="text-xs text-slate-600 mt-1">Animações interativas</p>
                 </Card>
@@ -225,34 +276,25 @@ export default function DinamicaHome() {
           </div>
         </div>
 
-        {/* Formula Reference Section */}
-        <div className="bg-gradient-to-r from-purple-600/10 to-pink-600/10 border-y border-slate-200/50 py-16 -mx-4 px-4 mt-16">
-          <div className="container mx-auto">
-            <div className="flex items-center justify-between mb-12">
-              <h2 className="text-3xl font-bold text-slate-900">Fórmulas Principais</h2>
-              <Link href="/dinamica/formulas">
-                <Button className="bg-purple-600 hover:bg-purple-700">Ver Explicação Completa</Button>
-              </Link>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                { title: "Segunda Lei de Newton", formula: "F = m \\cdot a" },
-                { title: "Força de Atrito", formula: "f = \\mu \\cdot N" },
-                { title: "Trabalho", formula: "W = F \\cdot d \\cdot \\cos(\\theta)" },
-                { title: "Energia Cinética", formula: "E_c = \\frac{1}{2} \\cdot m \\cdot v^2" },
-                { title: "Energia Potencial", formula: "E_p = m \\cdot g \\cdot h" },
-                { title: "Momentum", formula: "p = m \\cdot v" },
-              ].map((item, idx) => (
-                <Link key={idx} href="/dinamica/formulas">
-                  <Card className="p-6 hover:shadow-lg transition-all cursor-pointer hover:scale-105">
-                    <p className="text-sm font-semibold text-slate-600 mb-2">{item.title}</p>
-                    <div className="text-lg font-bold">
-                      <MathFormula formula={item.formula} className="text-center" />
-                    </div>
-                  </Card>
-                </Link>
-              ))}
-            </div>
+        {/* Fórmulas Principais */}
+        <div className="mb-16">
+          <h3 className="text-3xl font-bold text-slate-900 mb-8">Fórmulas Principais</h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { title: "Segunda Lei de Newton", formula: "\\vec{F} = m \\cdot \\vec{a}", color: "purple" },
+              { title: "Força de Atrito", formula: "f = \\mu \\cdot N", color: "orange" },
+              { title: "Trabalho", formula: "W = F \\cdot d \\cdot \\cos(\\theta)", color: "green" },
+              { title: "Energia Cinética", formula: "E_c = \\frac{1}{2} \\cdot m \\cdot v^2", color: "red" },
+              { title: "Energia Potencial", formula: "E_p = m \\cdot g \\cdot h", color: "blue" },
+              { title: "Momentum", formula: "p = m \\cdot v", color: "indigo" },
+            ].map((item, index) => (
+              <Card key={index} className={`p-6 bg-gradient-to-br from-${item.color}-50 to-${item.color}-100 border-0`}>
+                <h4 className="font-bold text-slate-900 mb-4">{item.title}</h4>
+                <div className="bg-white rounded-lg p-4 overflow-x-auto">
+                  <MathFormula formula={item.formula} className="text-lg" />
+                </div>
+              </Card>
+            ))}
           </div>
         </div>
       </main>
