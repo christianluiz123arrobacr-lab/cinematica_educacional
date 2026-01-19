@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useMathJax } from '@/hooks/useMathJax';
 
 interface MathFormulaProps {
   formula: string;
@@ -6,32 +7,18 @@ interface MathFormulaProps {
   className?: string;
 }
 
-declare global {
-  interface Window {
-    MathJax: any;
-  }
-}
-
 export function MathFormula({ formula, display = true, className = '' }: MathFormulaProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const { isReady, renderMath } = useMathJax();
 
   useEffect(() => {
-    // Esperar um pouco para garantir que o DOM foi atualizado
-    const timer = setTimeout(() => {
-      if (typeof window !== 'undefined' && window.MathJax) {
-        try {
-          // Forçar renderização de todo o conteúdo
-          window.MathJax.typesetPromise().catch((err: any) => {
-            console.log('MathJax error:', err);
-          });
-        } catch (err) {
-          console.log('MathJax error:', err);
-        }
-      }
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [formula]);
+    if (isReady) {
+      const timer = setTimeout(() => {
+        renderMath();
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isReady, formula, renderMath]);
 
   // Usar delimitadores corretos para MathJax
   const displayStyle = display ? '\\[' : '\\(';
