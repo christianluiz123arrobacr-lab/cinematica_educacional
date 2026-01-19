@@ -4,7 +4,9 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import Landing from "./pages/Landing";
 import Home from "./pages/Home";
+import DinamicaHome from "./pages/DinamicaHome";
 import Calculator from "./pages/Calculator";
 import Formulas from "./pages/Formulas";
 import Learn from "./pages/Learn";
@@ -15,12 +17,18 @@ import Graphs from "./pages/Graphs";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/learn" component={Learn} />
-      <Route path="/quiz" component={Quiz} />
-      <Route path="/graphs" component={Graphs} />
-      <Route path="/calculator" component={Calculator} />
-      <Route path="/formulas" component={Formulas} />
+      <Route path="/" component={Landing} />
+      <Route path="/cinematica" component={Home} />
+      <Route path="/cinematica/learn" component={Learn} />
+      <Route path="/cinematica/quiz" component={Quiz} />
+      <Route path="/cinematica/graphs" component={Graphs} />
+      <Route path="/cinematica/calculator" component={Calculator} />
+      <Route path="/cinematica/formulas" component={Formulas} />
+      <Route path="/dinamica" component={DinamicaHome} />
+      <Route path="/dinamica/learn" component={Learn} />
+      <Route path="/dinamica/quiz" component={Quiz} />
+      <Route path="/dinamica/calculator" component={Calculator} />
+      <Route path="/dinamica/formulas" component={Formulas} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

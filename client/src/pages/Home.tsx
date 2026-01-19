@@ -67,12 +67,12 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex gap-4">
-                <Link href="/learn">
+                <Link href="/cinematica/learn">
                   <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600">
                     Começar a Aprender
                   </Button>
                 </Link>
-                <a href="/calculator">
+                <a href="/cinematica/calculator">
                   <Button size="lg" variant="outline">Calculadora Interativa</Button>
                 </a>
               </div>
@@ -198,7 +198,7 @@ export default function Home() {
         <div className="container">
           <div className="flex items-center justify-between mb-12">
             <h2 className="text-3xl font-bold text-slate-900">Fórmulas Principais</h2>
-            <a href="/formulas">
+            <a href="/cinematica/formulas">
               <Button className="bg-blue-600 hover:bg-blue-700">Ver Explicação Completa</Button>
             </a>
           </div>
@@ -211,7 +211,7 @@ export default function Home() {
               { title: "MRUV - Posição", formula: "S = S₀ + V₀·t + (a·t²)/2", color: "red" },
               { title: "MCU - Velocidade", formula: "v = 2πr / T", color: "cyan" },
             ].map((item, idx) => (
-              <a key={idx} href="/formulas">
+              <a key={idx} href="/cinematica/formulas">
                 <Card className="p-6 hover:shadow-lg transition-all cursor-pointer hover:scale-105">
                   <p className="text-sm font-semibold text-slate-600 mb-2">{item.title}</p>
                   <code className={`text-lg font-mono font-bold text-${item.color}-600`}>

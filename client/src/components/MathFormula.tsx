@@ -16,26 +16,31 @@ export function MathFormula({ formula, display = true, className = '' }: MathFor
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Aguardar um pouco para garantir que MathJax está pronto
-    const timer = setTimeout(() => {
+    const renderMath = () => {
       if (ref.current && (window as any).MathJax) {
         try {
           (window as any).MathJax.typesetPromise([ref.current]).catch((err: any) => console.log('MathJax error:', err));
         } catch (e) {
-          console.log('MathJax not ready yet');
+          console.log('MathJax not ready');
         }
       }
-    }, 100);
+    };
+
+    renderMath();
+    const timer = setTimeout(renderMath, 300);
     
     return () => clearTimeout(timer);
   }, [formula]);
 
   const displayStyle = display ? '$$' : '$';
-  const content = `${displayStyle}${formula}${displayStyle}`;
+  const htmlContent = `${displayStyle}${formula}${displayStyle}`;
 
   return (
-    <div ref={ref} className={className} style={{ wordBreak: 'break-word' }}>
-      {content}
-    </div>
+    <div 
+      ref={ref} 
+      className={className} 
+      style={{ wordBreak: 'break-word', display: 'inline-block' }}
+      dangerouslySetInnerHTML={{ __html: htmlContent }}
+    />
   );
 }
