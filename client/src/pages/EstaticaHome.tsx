@@ -222,6 +222,31 @@ export default function EstaticaHome() {
                 </div>
               </Card>
             </Link>
+            <Link href="/estatica/topic/hidrostatica">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-amber-500 cursor-pointer hover:border-amber-700">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">💧</div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Hidrostática</h4>
+                    <p className="text-slate-600 mb-4">Fluidos em equilíbrio: pressão, empuxo e vasos comunicantes.</p>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-amber-600 rounded-full"></span>
+                        Pressão Hidrostática
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-amber-600 rounded-full"></span>
+                        Princípio de Arquimedes
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-amber-600 rounded-full"></span>
+                        Vasos Comunicantes
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </Link>
           </div>
         </div>
 
@@ -235,6 +260,8 @@ export default function EstaticaHome() {
               { title: "Equilíbrio Rotacional", formula: "\\sum \\tau = 0", color: "yellow", link: "/estatica/topic/torque" },
               { title: "Vantagem Mecânica", formula: "VM = \\frac{F_r}{F_a}", color: "red", link: "/estatica/topic/maquinas" },
               { title: "Centro de Massa", formula: "\\bar{x} = \\frac{\\sum m_i x_i}{\\sum m_i}", color: "pink", link: "/estatica/topic/torque" },
+              { title: "Pressao Hidrostatica", formula: "P = P_0 + \\rho g h", color: "cyan", link: "/estatica/topic/hidrostatica" },
+              { title: "Empuxo", formula: "E = \\rho \\cdot g \\cdot V", color: "blue", link: "/estatica/topic/hidrostatica" },
             ].map((item, index) => (
               <Link key={index} href={item.link}>
                 <Card className={`p-6 bg-gradient-to-br from-${item.color}-50 to-${item.color}-100 border-0 hover:shadow-lg transition-all cursor-pointer`}>

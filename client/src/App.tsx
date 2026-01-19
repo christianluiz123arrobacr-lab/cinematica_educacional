@@ -39,6 +39,7 @@ import EstaticaSimulator from "./pages/EstaticaSimulator";
 import EstaticaTopicEquilibrio from "./pages/EstaticaTopicEquilibrio";
 import EstaticaTopicTorque from "./pages/EstaticaTopicTorque";
 import EstaticaTopicMaquinas from "./pages/EstaticaTopicMaquinas";
+import EstaticaTopicHidrostatica from "./pages/EstaticaTopicHidrostatica";
 
 
 function Router() {
@@ -78,6 +79,7 @@ function Router() {
       <Route path="/estatica/topic/equilibrio" component={EstaticaTopicEquilibrio} />
       <Route path="/estatica/topic/torque" component={EstaticaTopicTorque} />
       <Route path="/estatica/topic/maquinas" component={EstaticaTopicMaquinas} />
+      <Route path="/estatica/topic/hidrostatica" component={EstaticaTopicHidrostatica} />
       <Route path="/progress" component={Progress} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
