@@ -20,6 +20,11 @@ import DynamicsGraphs from "./pages/DynamicsGraphs";
 import CinematicaSimulator from "./pages/CinematicaSimulator";
 import CinematicaGraphs from "./pages/CinematicaGraphs";
 import CinematicaQuiz from "./pages/CinematicaQuiz";
+import CinematicaTopicVelocidade from "./pages/CinematicaTopicVelocidade";
+import CinematicaTopicMRU from "./pages/CinematicaTopicMRU";
+import CinematicaTopicMRUV from "./pages/CinematicaTopicMRUV";
+import CinematicaTopicCircular from "./pages/CinematicaTopicCircular";
+import CinematicaTopicQuedaLivre from "./pages/CinematicaTopicQuedaLivre";
 import DynamicsSimulator from "./pages/DynamicsSimulator";
 import Progress from "./pages/Progress";
 import DynamicsTopicNewton from "./pages/DynamicsTopicNewton";
@@ -42,6 +47,11 @@ function Router() {
       <Route path="/cinematica/formulas" component={Formulas} />
       <Route path="/cinematica/quiz-new" component={CinematicaQuiz} />
       <Route path="/cinematica/simulator" component={CinematicaSimulator} />
+      <Route path="/cinematica/topic/velocidade" component={CinematicaTopicVelocidade} />
+      <Route path="/cinematica/topic/mru" component={CinematicaTopicMRU} />
+      <Route path="/cinematica/topic/mruv" component={CinematicaTopicMRUV} />
+      <Route path="/cinematica/topic/circular" component={CinematicaTopicCircular} />
+      <Route path="/cinematica/topic/queda-livre" component={CinematicaTopicQuedaLivre} />
       <Route path="/dinamica" component={DinamicaHome} />
       <Route path="/dinamica/learn" component={DynamicsLearn} />
       <Route path="/dinamica/quiz" component={DynamicsQuiz} />

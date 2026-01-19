@@ -1,30 +1,10 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChevronDown, BookOpen, Zap, Target, Droplet, MessageCircle, ArrowLeft, Play, BarChart3, Calculator, HelpCircle, TrendingUp } from "lucide-react";
+import { BookOpen, Zap, Target, Droplet, MessageCircle, ArrowLeft, Play, BarChart3, Calculator, HelpCircle, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
-import { cinematicaContent } from "@/data/cinematica-content";
 import { MathFormula } from "@/components/MathFormula";
 
-interface Section {
-  id: string;
-  title: string;
-  icon: React.ComponentType<{ className?: string }>;
-  color: string;
-}
-
 export default function Home() {
-  const [expandedSection, setExpandedSection] = useState<string | null>("introduction");
-
-  const sections: Section[] = [
-    { id: "introduction", title: "Introdução à Cinemática", icon: BookOpen, color: "from-blue-600 to-blue-400" },
-    { id: "velocidade", title: "Velocidade e Aceleração", icon: Zap, color: "from-purple-600 to-purple-400" },
-    { id: "mru", title: "Movimento Retilíneo Uniforme", icon: Target, color: "from-green-600 to-green-400" },
-    { id: "mruv", title: "Movimento Uniformemente Variado", icon: Zap, color: "from-orange-600 to-orange-400" },
-    { id: "mcu", title: "Movimento Circular Uniforme", icon: Target, color: "from-cyan-600 to-cyan-400" },
-    { id: "quedaLivre", title: "Queda Livre", icon: Droplet, color: "from-red-600 to-red-400" },
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Header */}
@@ -166,79 +146,132 @@ export default function Home() {
         {/* Tópicos Principais */}
         <div className="mb-16">
           <h3 className="text-3xl font-bold text-slate-900 mb-8">Tópicos Principais</h3>
-          <div className="space-y-6">
-            {sections.map((section) => {
-              const content = cinematicaContent[section.id as keyof typeof cinematicaContent] as any;
-              const isExpanded = expandedSection === section.id;
-              const Icon = section.icon;
-
-              return (
-                <Card 
-                  key={section.id}
-                  className={`overflow-hidden transition-all duration-300 ${isExpanded ? 'shadow-lg' : 'shadow-sm hover:shadow-md'}`}
-                >
-                  <button
-                    onClick={() => setExpandedSection(isExpanded ? null : section.id)}
-                    className="w-full p-6 flex items-center justify-between hover:bg-slate-50/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${section.color} flex items-center justify-center`}>
-                        <Icon className="w-6 h-6 text-white" />
-                      </div>
-                      <div className="text-left">
-                        <h3 className="text-xl font-bold text-slate-900">{section.title}</h3>
-                        {content.description && (
-                          <p className="text-sm text-slate-600">{content.description}</p>
-                        )}
-                      </div>
-                    </div>
-                    <ChevronDown 
-                      className={`w-5 h-5 text-slate-600 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                    />
-                  </button>
-
-                  {isExpanded && (
-                    <div className="border-t border-slate-200 p-6 bg-gradient-to-br from-slate-50 to-transparent space-y-6">
-                      {/* Section Image */}
-                      {section.id === "mru" && (
-                        <div className="rounded-lg overflow-hidden shadow-md">
-                          <img src="/images/mru_illustration.png" alt="MRU" className="w-full h-auto" />
-                        </div>
-                      )}
-                      {section.id === "mruv" && (
-                        <div className="rounded-lg overflow-hidden shadow-md">
-                          <img src="/images/mruv_illustration.png" alt="MRUV" className="w-full h-auto" />
-                        </div>
-                      )}
-                      {section.id === "mcu" && (
-                        <div className="rounded-lg overflow-hidden shadow-md">
-                          <img src="/images/mcu_illustration.png" alt="MCU" className="w-full h-auto" />
-                        </div>
-                      )}
-                      {section.id === "quedaLivre" && (
-                        <div className="rounded-lg overflow-hidden shadow-md max-w-md mx-auto">
-                          <img src="/images/queda_livre_illustration.png" alt="Queda Livre" className="w-full h-auto" />
-                        </div>
-                      )}
-
-                      {/* Content */}
-                      {content.sections?.map((subsection: any, idx: number) => (
-                        <div key={idx} className="space-y-3">
-                          <h4 className="text-lg font-semibold text-slate-900">{subsection.subtitle}</h4>
-                          <div className="prose prose-sm max-w-none text-slate-700 space-y-3">
-                            {subsection.content.split('\n\n').map((paragraph: string, pidx: number) => (
-                              <p key={pidx} className="text-sm leading-relaxed whitespace-pre-wrap">
-                                {paragraph}
-                              </p>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </Card>
-              );
-            })}
+          <div className="grid md:grid-cols-2 gap-6">
+            <Link href="/cinematica/topic/velocidade">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-blue-500 cursor-pointer hover:border-blue-700">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">⚡</div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Velocidade e Aceleração</h4>
+                    <p className="text-slate-600 mb-4">Os conceitos fundamentais que descrevem como os objetos se movem e como seu movimento muda.</p>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Velocidade Média e Instantânea
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Aceleração e Desaceleração
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Relação entre Velocidade e Aceleração
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+            <Link href="/cinematica/topic/mru">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-blue-500 cursor-pointer hover:border-blue-700">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">🚗</div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Movimento Retilíneo Uniforme</h4>
+                    <p className="text-slate-600 mb-4">O movimento mais simples: em linha reta com velocidade constante.</p>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Equação Horária
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Gráficos do MRU
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Aplicações Práticas
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+            <Link href="/cinematica/topic/mruv">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-blue-500 cursor-pointer hover:border-blue-700">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">📈</div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Movimento Uniformemente Variado</h4>
+                    <p className="text-slate-600 mb-4">Movimento com aceleração constante, onde a velocidade muda linearmente.</p>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Equações Fundamentais
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Equação de Torricelli
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Gráficos e Interpretação
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+            <Link href="/cinematica/topic/circular">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-blue-500 cursor-pointer hover:border-blue-700">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">🔄</div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Movimento Circular Uniforme</h4>
+                    <p className="text-slate-600 mb-4">Movimento em trajetória circular com velocidade constante em módulo.</p>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Período e Frequência
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Velocidade Angular
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Aceleração Centrípeta
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+            <Link href="/cinematica/topic/queda-livre">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-blue-500 cursor-pointer hover:border-blue-700">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">⬇️</div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Queda Livre</h4>
+                    <p className="text-slate-600 mb-4">Movimento sob ação exclusiva da gravidade, sem resistência do ar.</p>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Aceleração da Gravidade
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Lançamento Vertical
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Problemas Práticos
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </Link>
           </div>
         </div>
       </main>
@@ -285,7 +318,7 @@ export default function Home() {
             <div>
               <h4 className="text-white font-semibold mb-4">Tópicos</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition">Introdução</a></li>
+                <li><a href="#" className="hover:text-white transition">Velocidade e Aceleração</a></li>
                 <li><a href="#" className="hover:text-white transition">MRU</a></li>
                 <li><a href="#" className="hover:text-white transition">MRUV</a></li>
                 <li><a href="#" className="hover:text-white transition">Queda Livre</a></li>
