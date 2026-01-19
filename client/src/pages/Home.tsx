@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { ChevronDown, BookOpen, Zap, Target, Droplet, MessageCircle, ArrowLeft, Play } from "lucide-react";
 import { Link } from "wouter";
 import { cinematicaContent } from "@/data/cinematica-content";
+import { MathFormula } from "@/components/MathFormula";
 
 interface Section {
   id: string;
@@ -214,19 +215,19 @@ export default function Home() {
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { title: "Velocidade Média", formula: "v_m = Δs / Δt", color: "blue" },
-              { title: "Aceleração", formula: "a = Δv / Δt", color: "purple" },
-              { title: "MRU - Posição", formula: "s = s₀ + v·t", color: "green" },
-              { title: "MRUV - Velocidade", formula: "V = V₀ + a·t", color: "orange" },
-              { title: "MRUV - Posição", formula: "S = S₀ + V₀·t + (a·t²)/2", color: "red" },
-              { title: "MCU - Velocidade", formula: "v = 2πr / T", color: "cyan" },
+              { title: "Velocidade Média", formula: "v_m = \\frac{\\Delta s}{\\Delta t}" },
+              { title: "Aceleração", formula: "a = \\frac{\\Delta v}{\\Delta t}" },
+              { title: "MRU - Posição", formula: "s = s_0 + v \\cdot t" },
+              { title: "MRUV - Velocidade", formula: "V = V_0 + a \\cdot t" },
+              { title: "MRUV - Posição", formula: "S = S_0 + V_0 \\cdot t + \\frac{a \\cdot t^2}{2}" },
+              { title: "MCU - Velocidade", formula: "v = \\frac{2\\pi r}{T}" },
             ].map((item, idx) => (
               <a key={idx} href="/cinematica/formulas">
                 <Card className="p-6 hover:shadow-lg transition-all cursor-pointer hover:scale-105">
                   <p className="text-sm font-semibold text-slate-600 mb-2">{item.title}</p>
-                  <code className={`text-lg font-mono font-bold text-${item.color}-600`}>
-                    {item.formula}
-                  </code>
+                  <div className="text-lg font-bold">
+                    <MathFormula formula={item.formula} className="text-center" />
+                  </div>
                 </Card>
               </a>
             ))}

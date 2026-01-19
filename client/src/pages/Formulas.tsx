@@ -24,7 +24,7 @@ const formulas: Formula[] = [
     id: "vm",
     name: "Velocidade Média",
     category: "Conceitos Básicos",
-    latex: "v_m = Δs / Δt",
+    latex: "v_m = \\frac{\\Delta s}{\\Delta t}",
     explanation: "A velocidade média mede a rapidez com que um objeto se desloca. É definida como a razão entre a distância percorrida e o intervalo de tempo gasto.",
     deepExplanation: `A velocidade média é um conceito fundamental em cinemática que quantifica o quão rápido um objeto se move em relação ao tempo. Diferentemente da velocidade instantânea (que é a velocidade em um momento específico), a velocidade média considera o trajeto completo.
 
@@ -85,7 +85,7 @@ Esta fórmula é derivada do conceito de que a velocidade é a taxa de mudança 
     id: "aceleracao",
     name: "Aceleração",
     category: "Conceitos Básicos",
-    latex: "a = Δv / Δt",
+    latex: "a = \\frac{\\Delta v}{\\Delta t}",
     explanation: "A aceleração mede a taxa de variação da velocidade ao longo do tempo. Se a velocidade de um corpo muda, ele está acelerando.",
     deepExplanation: `A aceleração é uma das grandezas mais importantes em cinemática, pois descreve como a velocidade de um objeto muda com o tempo. É fundamental para entender o comportamento de objetos em movimento.
 
@@ -153,7 +153,7 @@ a = dv/dt (derivada da velocidade em relação ao tempo)`,
     id: "mru-posicao",
     name: "MRU - Posição",
     category: "Movimento Retilíneo Uniforme",
-    latex: "s = s₀ + v·t",
+    latex: "s = s_0 + v \\cdot t",
     explanation: "A função horária da posição descreve como a posição de um objeto varia com o tempo no MRU. É uma equação do primeiro grau.",
     deepExplanation: `O Movimento Retilíneo Uniforme (MRU) é o tipo mais simples de movimento, onde um objeto se move em linha reta com velocidade constante. A função horária da posição é a equação fundamental que descreve este movimento.
 
@@ -223,7 +223,7 @@ Esta é a função horária da posição no MRU. Ela é linear em t, o que signi
     id: "mru-velocidade",
     name: "MRU - Velocidade",
     category: "Movimento Retilíneo Uniforme",
-    latex: "v = Δs / Δt = (s - s₀) / t",
+    latex: "v = \\frac{\\Delta s}{\\Delta t} = \\frac{s - s_0}{t}",
     explanation: "Para encontrar a velocidade no MRU, basta isolar v na função horária da posição.",
     deepExplanation: `Esta é a forma inversa da equação do MRU, usada quando queremos encontrar a velocidade de um objeto a partir de sua posição inicial, posição final e tempo decorrido.
 
@@ -281,7 +281,7 @@ Esta fórmula nos permite calcular a velocidade conhecendo o deslocamento e o te
     id: "mruv-velocidade",
     name: "MRUV - Velocidade",
     category: "Movimento Uniformemente Variado",
-    latex: "V = V₀ + a·t",
+    latex: "V = V_0 + a \\cdot t",
     explanation: "A função horária da velocidade descreve como a velocidade varia com o tempo no MRUV. É uma equação do primeiro grau.",
     deepExplanation: `No Movimento Uniformemente Variado (MRUV), a aceleração é constante, o que significa que a velocidade muda de forma linear com o tempo. Esta é a equação que descreve essa mudança.
 
@@ -344,7 +344,7 @@ Esta é a função horária da velocidade no MRUV.`,
     id: "mruv-posicao",
     name: "MRUV - Posição",
     category: "Movimento Uniformemente Variado",
-    latex: "S = S₀ + V₀·t + (a·t²) / 2",
+    latex: "S = S_0 + V_0 \\cdot t + \\frac{a \\cdot t^2}{2}",
     explanation: "A função horária da posição descreve como a posição varia com o tempo no MRUV. É uma equação do segundo grau (parábola).",
     deepExplanation: `Esta é uma das equações mais importantes da cinemática. Ela descreve a posição de um objeto em movimento uniformemente variado, levando em conta tanto a velocidade inicial quanto a aceleração.
 
@@ -408,7 +408,7 @@ Alternativamente, pode-se derivar usando a velocidade média:
     id: "torricelli",
     name: "Equação de Torricelli",
     category: "Movimento Uniformemente Variado",
-    latex: "V² = V₀² + 2·a·ΔS",
+    latex: "V^2 = V_0^2 + 2 \\cdot a \\cdot \\Delta S",
     explanation: "A Equação de Torricelli relaciona velocidade, aceleração e deslocamento, sem depender do tempo. Muito útil quando não conhecemos o tempo.",
     deepExplanation: `A Equação de Torricelli é uma das mais elegantes da cinemática. Ela relaciona velocidade final, velocidade inicial, aceleração e deslocamento, sem necessidade de conhecer o tempo. Isso a torna extremamente útil em muitos problemas práticos.
 
@@ -484,7 +484,7 @@ V² = V₀² + 2·a·ΔS`,
     id: "mcu-velocidade",
     name: "MCU - Velocidade Tangencial",
     category: "Movimento Circular Uniforme",
-    latex: "v = 2πr / T = 2πrf",
+    latex: "v = \\frac{2\\pi r}{T} = 2\\pi rf",
     explanation: "A velocidade tangencial é a velocidade do objeto ao longo da trajetória circular. É constante em módulo no MCU.",
     deepExplanation: `No Movimento Circular Uniforme, o objeto se move em um círculo com velocidade constante em módulo. A velocidade tangencial é a velocidade instantânea do objeto em qualquer ponto da trajetória, sempre tangente ao círculo.
 
@@ -546,7 +546,7 @@ Onde:
     id: "mcu-aceleracao",
     name: "MCU - Aceleração Centrípeta",
     category: "Movimento Circular Uniforme",
-    latex: "a_c = v² / r = ω²r",
+    latex: "a_c = \\frac{v^2}{r} = \\omega^2 r",
     explanation: "A aceleração centrípeta é responsável por manter o objeto em movimento circular. É sempre dirigida para o centro.",
     deepExplanation: `A aceleração centrípeta é a aceleração que aponta para o centro do círculo. Ela é responsável por mudar continuamente a direção da velocidade, mantendo o objeto em movimento circular.
 
@@ -607,7 +607,7 @@ Onde:
     id: "quedalivre",
     name: "Queda Livre - Velocidade",
     category: "Queda Livre",
-    latex: "V = V₀ + g·t",
+    latex: "V = V_0 + g \\cdot t",
     explanation: "A queda livre é um caso especial de MRUV onde a aceleração é a da gravidade (g ≈ 9,8 m/s²).",
     deepExplanation: `A queda livre é um dos movimentos mais importantes e comuns na natureza. É um caso especial do MRUV onde a única força atuante é a gravidade.
 
