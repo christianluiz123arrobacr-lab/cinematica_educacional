@@ -40,6 +40,9 @@ import EstaticaTopicEquilibrio from "./pages/EstaticaTopicEquilibrio";
 import EstaticaTopicTorque from "./pages/EstaticaTopicTorque";
 import EstaticaTopicMaquinas from "./pages/EstaticaTopicMaquinas";
 import EstaticaTopicHidrostatica from "./pages/EstaticaTopicHidrostatica";
+import FisicaSelector from "./pages/FisicaSelector";
+import FisicaIHome from "./pages/FisicaIHome";
+import FisicaIIHome from "./pages/FisicaIIHome";
 
 
 
@@ -47,7 +50,10 @@ import EstaticaTopicHidrostatica from "./pages/EstaticaTopicHidrostatica";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Landing} />
+      <Route path="/" component={FisicaSelector} />
+      <Route path="/landing" component={Landing} />
+      <Route path="/fisica-i" component={FisicaIHome} />
+      <Route path="/fisica-ii" component={FisicaIIHome} />
       <Route path="/cinematica" component={Home} />
       <Route path="/cinematica/learn" component={Learn} />
       <Route path="/cinematica/quiz" component={Quiz} />
