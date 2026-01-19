@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, RotateCcw, AlertCircle } from "lucide-react";
 import { Link } from "wouter";
+import { MathFormula } from "@/components/MathFormula";
 
 export default function Calculator() {
   // ============ MRU CALCULATOR ============
@@ -360,7 +361,9 @@ export default function Calculator() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-3xl font-bold text-slate-900">MRU</h2>
-                  <p className="text-slate-600 text-sm mt-1">s = s₀ + v·t</p>
+                  <div className="mt-2">
+                    <MathFormula formula="s = s_0 + v \\cdot t" className="text-sm" />
+                  </div>
                 </div>
                 <Button variant="outline" size="sm" onClick={resetMRU}>
                   <RotateCcw className="w-4 h-4 mr-2" />
@@ -528,7 +531,9 @@ export default function Calculator() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-3xl font-bold text-slate-900">Torricelli</h2>
-                  <p className="text-slate-600 text-sm mt-1">V² = V₀² + 2·a·ΔS</p>
+                  <div className="mt-2">
+                    <MathFormula formula="V^2 = V_0^2 + 2 \\cdot a \\cdot \\Delta S" className="text-sm" />
+                  </div>
                 </div>
                 <Button variant="outline" size="sm" onClick={resetTorricelli}>
                   <RotateCcw className="w-4 h-4 mr-2" />
@@ -605,7 +610,9 @@ export default function Calculator() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-3xl font-bold text-slate-900">Queda Livre</h2>
-                  <p className="text-slate-600 text-sm mt-1">Movimento sob ação da gravidade</p>
+                  <div className="mt-2">
+                    <MathFormula formula="V = V_0 + g \\cdot t" className="text-sm" />
+                  </div>
                 </div>
                 <Button variant="outline" size="sm" onClick={resetFreeFall}>
                   <RotateCcw className="w-4 h-4 mr-2" />
@@ -682,7 +689,9 @@ export default function Calculator() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-3xl font-bold text-slate-900">MCU</h2>
-                  <p className="text-slate-600 text-sm mt-1">Movimento Circular Uniforme</p>
+                  <div className="mt-2">
+                    <MathFormula formula="v = \\frac{2\\pi r}{T}" className="text-sm" />
+                  </div>
                 </div>
                 <Button variant="outline" size="sm" onClick={resetMCU}>
                   <RotateCcw className="w-4 h-4 mr-2" />

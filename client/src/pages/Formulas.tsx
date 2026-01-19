@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
+import { MathFormula } from "@/components/MathFormula";
 
 interface Formula {
   id: string;
@@ -722,7 +723,7 @@ export default function Formulas() {
                   {/* Fórmula em LaTeX */}
                   <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-l-4 border-blue-600 p-6 rounded-lg mb-8">
                     <p className="text-sm text-slate-600 mb-2">Fórmula:</p>
-                    <code className="text-2xl font-mono font-bold text-blue-600">{selectedFormula.latex}</code>
+                    <MathFormula formula={selectedFormula.latex} className="text-2xl" />
                   </div>
 
                   {/* Explicação Simples */}
