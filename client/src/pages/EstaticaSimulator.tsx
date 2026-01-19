@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { ArrowLeft, RotateCcw, Play, Pause } from "lucide-react";
 import { Link } from "wouter";
 import { Slider } from "@/components/ui/slider";
-import { MathFormula } from "@/components/MathFormula";
+
 
 export default function EstaticaSimulator() {
   const [activeTab, setActiveTab] = useState("equilibrio");
@@ -281,19 +281,11 @@ export default function EstaticaSimulator() {
                 {/* Fórmulas */}
                 <Card className="p-4 bg-cyan-50 border-l-4 border-cyan-500">
                   <p className="text-sm font-bold text-slate-900 mb-3">Fórmulas de Equilíbrio:</p>
-                  <div className="space-y-2">
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="F_x = F_1 \\cos(\\theta_1) + F_2 \\cos(\\theta_2)" display={true} className="text-center" />
-                    </div>
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="F_y = F_1 \\sin(\\theta_1) + F_2 \\sin(\\theta_2)" display={true} className="text-center" />
-                    </div>
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="F_{resultante} = \\sqrt{F_x^2 + F_y^2}" display={true} className="text-center" />
-                    </div>
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="\\text{Equilíbrio: } F_{resultante} \\approx 0" display={true} className="text-center" />
-                    </div>
+                  <div className="space-y-2 text-sm text-slate-700">
+                    <div className="bg-white p-3 rounded font-mono">Fx = F₁·cos(θ₁) + F₂·cos(θ₂)</div>
+                    <div className="bg-white p-3 rounded font-mono">Fy = F₁·sin(θ₁) + F₂·sin(θ₂)</div>
+                    <div className="bg-white p-3 rounded font-mono">F_resultante = √(Fx² + Fy²)</div>
+                    <div className="bg-white p-3 rounded font-mono">Equilíbrio: F_resultante ≈ 0</div>
                   </div>
                 </Card>
               </div>
@@ -391,19 +383,11 @@ export default function EstaticaSimulator() {
                 {/* Fórmulas */}
                 <Card className="p-4 bg-orange-50 border-l-4 border-orange-500">
                   <p className="text-sm font-bold text-slate-900 mb-3">Fórmulas de Torque:</p>
-                  <div className="space-y-2">
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="\\tau = r \\cdot F \\cdot \\sin(\\theta)" display={true} className="text-center" />
-                    </div>
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="\\tau_1 = F_1 \\cdot d_1 \\cdot \\sin(\\theta)" display={true} className="text-center" />
-                    </div>
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="\\text{Equilíbrio: } \\tau_1 = \\tau_2" display={true} className="text-center" />
-                    </div>
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="F_1 \\cdot d_1 = F_2 \\cdot d_2" display={true} className="text-center" />
-                    </div>
+                  <div className="space-y-2 text-sm text-slate-700">
+                    <div className="bg-white p-3 rounded font-mono">τ = r · F · sin(θ)</div>
+                    <div className="bg-white p-3 rounded font-mono">τ₁ = F₁ · d₁ · sin(θ)</div>
+                    <div className="bg-white p-3 rounded font-mono">Equilíbrio: τ₁ = τ₂</div>
+                    <div className="bg-white p-3 rounded font-mono">F₁ · d₁ = F₂ · d₂</div>
                   </div>
                 </Card>
               </div>
@@ -534,19 +518,11 @@ export default function EstaticaSimulator() {
                 {/* Fórmulas */}
                 <Card className="p-4 bg-yellow-50 border-l-4 border-yellow-500">
                   <p className="text-sm font-bold text-slate-900 mb-3">Fórmulas de Máquinas Simples:</p>
-                  <div className="space-y-2">
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="VM = \\frac{F_{carga}}{F_{aplicada}}" display={true} className="text-center" />
-                    </div>
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="\\text{Alavanca: } VM = \\frac{d_1}{d_2}" display={true} className="text-center" />
-                    </div>
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="\\text{Plano Inclinado: } VM = \\frac{1}{\\sin(\\theta)}" display={true} className="text-center" />
-                    </div>
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="\\text{Polia: } VM = 2n" display={true} className="text-center" />
-                    </div>
+                  <div className="space-y-2 text-sm text-slate-700">
+                    <div className="bg-white p-3 rounded font-mono">VM = F_carga / F_aplicada</div>
+                    <div className="bg-white p-3 rounded font-mono">Alavanca: VM = d₁ / d₂</div>
+                    <div className="bg-white p-3 rounded font-mono">Plano Inclinado: VM = 1 / sin(θ)</div>
+                    <div className="bg-white p-3 rounded font-mono">Polia: VM = 2n</div>
                   </div>
                 </Card>
               </div>
@@ -652,19 +628,11 @@ export default function EstaticaSimulator() {
                 {/* Fórmulas */}
                 <Card className="p-4 bg-cyan-50 border-l-4 border-cyan-500">
                   <p className="text-sm font-bold text-slate-900 mb-3">Fórmulas de Hidrostática:</p>
-                  <div className="space-y-2">
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="P = P_0 + \\rho g h" display={true} className="text-center" />
-                    </div>
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="P_0 = 101.325 \\text{ kPa}" display={true} className="text-center" />
-                    </div>
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="\\rho = \\text{densidade (kg/m}^3\\text{)}" display={true} className="text-center" />
-                    </div>
-                    <div className="bg-white p-2 rounded">
-                      <MathFormula formula="g = 10 \\text{ m/s}^2, \\quad h = \\text{profundidade (m)}" display={true} className="text-center" />
-                    </div>
+                  <div className="space-y-2 text-sm text-slate-700">
+                    <div className="bg-white p-3 rounded font-mono">P = P₀ + ρ·g·h</div>
+                    <div className="bg-white p-3 rounded font-mono">P₀ = 101.325 kPa (Pressão Atmosférica)</div>
+                    <div className="bg-white p-3 rounded font-mono">ρ = densidade do fluido (kg/m³)</div>
+                    <div className="bg-white p-3 rounded font-mono">g = 10 m/s², h = profundidade (m)</div>
                   </div>
                 </Card>
               </div>
