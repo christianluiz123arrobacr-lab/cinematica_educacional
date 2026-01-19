@@ -32,7 +32,7 @@ export function MathFormula({ formula, display = true, className = '' }: MathFor
       style={{ 
         wordBreak: 'break-word', 
         display: display ? 'block' : 'inline-block',
-        overflow: 'auto'
+        overflow: 'hidden'
       }}
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
