@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
@@ -41,31 +41,31 @@ A velocidade média não nos diz como o objeto se moveu em cada momento específ
 A velocidade média é o ponto de partida para entender conceitos mais complexos como aceleração e velocidade instantânea. Ela estabelece a base para análise de movimentos mais complexos.`,
     derivation: `A velocidade média surge da definição básica de velocidade como taxa de mudança de posição:
 
-v_m = Δs / Δt = (s_f - s_i) / (t_f - t_i)
+\\[v_m = \\frac{\\Delta s}{\\Delta t} = \\frac{s_f - s_i}{t_f - t_i}\\]
 
 Onde:
-- v_m = velocidade média (m/s)
-- Δs = variação do espaço ou deslocamento (m)
-- Δt = intervalo de tempo (s)
-- s_f = posição final (m)
-- s_i = posição inicial (m)
-- t_f = tempo final (s)
-- t_i = tempo inicial (s)
+- \\(v_m\\) = velocidade média (m/s)
+- \\(\\Delta s\\) = variação do espaço ou deslocamento (m)
+- \\(\\Delta t\\) = intervalo de tempo (s)
+- \\(s_f\\) = posição final (m)
+- \\(s_i\\) = posição inicial (m)
+- \\(t_f\\) = tempo final (s)
+- \\(t_i\\) = tempo inicial (s)
 
-Esta fórmula é derivada do conceito de que a velocidade é a taxa de mudança da posição em relação ao tempo. Se considerarmos t_i = 0, a fórmula se simplifica para v_m = s / t.`,
+Esta fórmula é derivada do conceito de que a velocidade é a taxa de mudança da posição em relação ao tempo. Se considerarmos \\(t_i = 0\\), a fórmula se simplifica para \\(v_m = \\frac{s}{t}\\).`,
     physicalMeaning: "A velocidade média representa a velocidade constante que um objeto precisaria ter para percorrer a mesma distância no mesmo tempo. É um conceito útil para análises gerais de movimento, mas não descreve como o objeto realmente se moveu em cada instante.",
     examples: [
       {
         description: "Um carro percorre 300 km em 5 horas",
-        calculation: "v_m = 300 km / 5 h = 60 km/h"
+        calculation: "\\(v_m = \\frac{300 \\text{ km}}{5 \\text{ h}} = 60 \\text{ km/h}\\)"
       },
       {
         description: "Um corredor percorre 100 m em 10 s",
-        calculation: "v_m = 100 m / 10 s = 10 m/s"
+        calculation: "\\(v_m = \\frac{100 \\text{ m}}{10 \\text{ s}} = 10 \\text{ m/s}\\)"
       },
       {
         description: "Um avião voa 1500 km em 3 horas",
-        calculation: "v_m = 1500 km / 3 h = 500 km/h"
+        calculation: "\\(v_m = \\frac{1500 \\text{ km}}{3 \\text{ h}} = 500 \\text{ km/h}\\)"
       }
     ],
     commonMistakes: [
@@ -97,50 +97,37 @@ Aceleração não significa necessariamente "ir mais rápido". Significa qualque
 
 **Tipos de Aceleração:**
 1. **Aceleração tangencial**: muda o módulo da velocidade
-2. **Aceleração centrípeta**: muda a direção da velocidade
-3. **Aceleração total**: combinação das duas anteriores
-
-**Unidades:**
-A aceleração é medida em m/s² (metros por segundo ao quadrado), o que significa "metros por segundo, por segundo". Isso indica que a velocidade muda de m/s a cada segundo.
-
-**Significado Físico:**
-Uma aceleração de 5 m/s² significa que a velocidade aumenta 5 m/s a cada segundo. Após 1 segundo, a velocidade aumentou 5 m/s; após 2 segundos, aumentou 10 m/s, e assim por diante.`,
+2. **Aceleração centrípeta**: muda a direção da velocidade`,
     derivation: `A aceleração é definida como a taxa de mudança da velocidade em relação ao tempo:
 
-a = Δv / Δt = (v_f - v_i) / (t_f - t_i)
+\\[a = \\frac{\\Delta v}{\\Delta t} = \\frac{v_f - v_i}{t_f - t_i}\\]
 
 Onde:
-- a = aceleração (m/s²)
-- Δv = variação da velocidade (m/s)
-- Δt = intervalo de tempo (s)
-- v_f = velocidade final (m/s)
-- v_i = velocidade inicial (m/s)
-
-Se considerarmos t_i = 0, a fórmula se simplifica para a = v / t.
-
-**Aceleração Instantânea:**
-Para movimentos com aceleração variável, usamos o limite:
-a = dv/dt (derivada da velocidade em relação ao tempo)`,
-    physicalMeaning: "A aceleração descreve como rapidamente a velocidade de um objeto está mudando. Uma aceleração positiva indica aumento de velocidade, enquanto uma negativa indica diminuição. A aceleração é a causa das mudanças no movimento de um objeto.",
+- \\(a\\) = aceleração (m/s²)
+- \\(\\Delta v\\) = variação da velocidade (m/s)
+- \\(\\Delta t\\) = intervalo de tempo (s)
+- \\(v_f\\) = velocidade final (m/s)
+- \\(v_i\\) = velocidade inicial (m/s)`,
+    physicalMeaning: "A aceleração descreve como rapidamente a velocidade de um objeto está mudando. Uma aceleração positiva significa que a velocidade está aumentando, enquanto uma aceleração negativa significa que está diminuindo.",
     examples: [
       {
         description: "Um carro aumenta sua velocidade de 0 m/s para 20 m/s em 5 segundos",
-        calculation: "a = (20 - 0) / 5 = 4 m/s²"
+        calculation: "\\(a = \\frac{20 - 0}{5} = 4 \\text{ m/s}^2\\)"
       },
       {
         description: "Um carro reduz sua velocidade de 30 m/s para 10 m/s em 4 segundos",
-        calculation: "a = (10 - 30) / 4 = -5 m/s² (desaceleração)"
+        calculation: "\\(a = \\frac{10 - 30}{4} = -5 \\text{ m/s}^2\\) (desaceleração)"
       },
       {
         description: "Um objeto em queda livre após 3 segundos (g = 10 m/s²)",
-        calculation: "v = 0 + 10·3 = 30 m/s (aceleração constante)"
+        calculation: "\\(v = 0 + 10 \\cdot 3 = 30 \\text{ m/s}\\) (aceleração constante)"
       }
     ],
     commonMistakes: [
-      "Pensar que aceleração sempre significa 'ir mais rápido'",
       "Confundir aceleração com velocidade",
-      "Esquecer que aceleração pode ser negativa (desaceleração)",
-      "Não considerar mudanças de direção como aceleração"
+      "Pensar que aceleração sempre significa 'ir mais rápido'",
+      "Esquecer que aceleração é uma grandeza vetorial",
+      "Não considerar acelerações negativas (desaceleração)"
     ],
     applications: [
       "Análise de segurança em veículos (airbags, freios)",
@@ -158,65 +145,52 @@ a = dv/dt (derivada da velocidade em relação ao tempo)`,
     deepExplanation: `O Movimento Retilíneo Uniforme (MRU) é o tipo mais simples de movimento, onde um objeto se move em linha reta com velocidade constante. A função horária da posição é a equação fundamental que descreve este movimento.
 
 **Características do MRU:**
-- Trajetória é uma linha reta
-- Velocidade é constante (não muda com o tempo)
-- Aceleração é zero
-- O objeto percorre distâncias iguais em tempos iguais
-
-**Interpretação Gráfica:**
-Se você plotar a posição (s) versus o tempo (t), obtém uma reta. A inclinação dessa reta é exatamente a velocidade do objeto. Uma reta mais inclinada significa maior velocidade.
-
-**Significado dos Termos:**
-- s₀: posição inicial (onde o objeto começa)
-- v: velocidade (constante durante todo o movimento)
-- t: tempo decorrido
-- s: posição final
-
-**Aplicações Práticas:**
-Esta equação é usada em inúmeras situações: carros em estradas retas, aviões em voo de cruzeiro, trens em linhas retas, e qualquer objeto movendo-se com velocidade constante.`,
+- Velocidade constante
+- Aceleração nula
+- Trajetória retilínea
+- Deslocamentos iguais em tempos iguais`,
     derivation: `Partindo da definição de velocidade média, que no MRU é igual à velocidade instantânea:
 
-v = Δs / Δt = (s - s₀) / (t - t₀)
+\\[v = \\frac{\\Delta s}{\\Delta t} = \\frac{s - s_0}{t - t_0}\\]
 
-Considerando t₀ = 0 (começamos a contar o tempo do início do movimento):
+Considerando \\(t_0 = 0\\) (começamos a contar o tempo do início do movimento):
 
-v = (s - s₀) / t
+\\[v = \\frac{s - s_0}{t}\\]
 
-Multiplicando ambos os lados por t:
+Multiplicando ambos os lados por \\(t\\):
 
-v·t = s - s₀
+\\[v \\cdot t = s - s_0\\]
 
-Isolando s:
+Isolando \\(s\\):
 
-s = s₀ + v·t
+\\[s = s_0 + v \\cdot t\\]
 
-Esta é a função horária da posição no MRU. Ela é linear em t, o que significa que o gráfico s vs t é uma reta.`,
-    physicalMeaning: "Esta equação nos diz exatamente onde um objeto estará em qualquer momento futuro, desde que ele continue se movendo com a mesma velocidade constante. É uma ferramenta poderosa para prever o movimento de objetos.",
+Esta é a função horária da posição no MRU. Ela é linear em \\(t\\), o que significa que o gráfico \\(s\\) vs \\(t\\) é uma reta.`,
+    physicalMeaning: "Esta equação nos permite saber exatamente onde um objeto estará em qualquer momento, desde que ele se mova com velocidade constante.",
     examples: [
       {
         description: "Um objeto começa na posição 10 m e se move a 5 m/s. Após 3 segundos:",
-        calculation: "s = 10 + 5·3 = 10 + 15 = 25 m"
+        calculation: "\\(s = 10 + 5 \\cdot 3 = 10 + 15 = 25 \\text{ m}\\)"
       },
       {
         description: "Um carro sai da origem (0 m) a 20 m/s. Qual sua posição após 10 s?",
-        calculation: "s = 0 + 20·10 = 200 m"
+        calculation: "\\(s = 0 + 20 \\cdot 10 = 200 \\text{ m}\\)"
       },
       {
         description: "Um trem começa no km 50 e viaja a 80 km/h. Posição após 2 horas:",
-        calculation: "s = 50 + 80·2 = 50 + 160 = 210 km"
+        calculation: "\\(s = 50 + 80 \\cdot 2 = 50 + 160 = 210 \\text{ km}\\)"
       }
     ],
     commonMistakes: [
-      "Confundir posição com distância percorrida",
-      "Esquecer de incluir a posição inicial s₀",
-      "Usar a fórmula quando a velocidade não é constante",
-      "Não converter unidades corretamente (km para m, horas para segundos)"
+      "Esquecer a posição inicial s₀",
+      "Usar unidades inconsistentes",
+      "Confundir deslocamento com distância percorrida"
     ],
     applications: [
       "Cálculo de posição de veículos em movimento",
-      "Previsão de encontros entre dois objetos",
-      "Análise de movimento em gráficos posição-tempo",
-      "Planejamento de trajetórias de objetos"
+      "Análise de movimento de trens e aviões",
+      "Determinação de tempo de encontro entre objetos",
+      "Problemas de perseguição e fuga"
     ]
   },
   {
@@ -228,53 +202,45 @@ Esta é a função horária da posição no MRU. Ela é linear em t, o que signi
     deepExplanation: `Esta é a forma inversa da equação do MRU, usada quando queremos encontrar a velocidade de um objeto a partir de sua posição inicial, posição final e tempo decorrido.
 
 **Quando Usar:**
-Use esta fórmula quando você conhece:
-- Posição inicial (s₀)
-- Posição final (s)
-- Tempo decorrido (t)
-
-E quer encontrar a velocidade (v).
-
-**Interpretação:**
-A velocidade é simplesmente o deslocamento dividido pelo tempo. Quanto maior o deslocamento em um tempo fixo, maior a velocidade. Quanto menor o tempo para um deslocamento fixo, maior a velocidade.
+- Quando você conhece as posições e o tempo
+- Quando precisa calcular a velocidade de um objeto em movimento uniforme
 
 **Velocidade Média vs Velocidade Instantânea:**
 No MRU, a velocidade média é igual à velocidade instantânea porque a velocidade não muda. Em movimentos mais complexos, essas são diferentes.`,
-    derivation: `Partindo de s = s₀ + v·t, isolamos v:
+    derivation: `Partindo de \\(s = s_0 + v \\cdot t\\), isolamos \\(v\\):
 
-s - s₀ = v·t
+\\[s - s_0 = v \\cdot t\\]
 
-v = (s - s₀) / t = Δs / Δt
+\\[v = \\frac{s - s_0}{t} = \\frac{\\Delta s}{\\Delta t}\\]
 
-Onde Δs = s - s₀ é o deslocamento.
+Onde \\(\\Delta s = s - s_0\\) é o deslocamento.
 
 Esta fórmula nos permite calcular a velocidade conhecendo o deslocamento e o tempo.`,
-    physicalMeaning: "Esta equação nos permite determinar a velocidade de um objeto observando sua mudança de posição ao longo do tempo. É fundamental para análises de movimento em situações práticas.",
+    physicalMeaning: "A velocidade é a razão entre o deslocamento e o tempo. Ela nos diz quanta distância um objeto percorre por unidade de tempo.",
     examples: [
       {
-        description: "Um objeto sai da posição 5 m e chega à posição 35 m em 6 segundos",
-        calculation: "v = (35 - 5) / 6 = 30 / 6 = 5 m/s"
+        description: "Um objeto se move de 10 m para 40 m em 6 segundos",
+        calculation: "\\(v = \\frac{40 - 10}{6} = \\frac{30}{6} = 5 \\text{ m/s}\\)"
       },
       {
-        description: "Um carro sai do km 100 e chega ao km 250 em 3 horas",
-        calculation: "v = (250 - 100) / 3 = 150 / 3 = 50 km/h"
+        description: "Um carro viaja 150 km em 3 horas",
+        calculation: "\\(v = \\frac{150}{3} = 50 \\text{ km/h}\\)"
       },
       {
-        description: "Uma bola rola de 2 m para 12 m em 2 segundos",
-        calculation: "v = (12 - 2) / 2 = 10 / 2 = 5 m/s"
+        description: "Um corredor cobre 100 m em 10 segundos",
+        calculation: "\\(v = \\frac{100}{10} = 10 \\text{ m/s}\\)"
       }
     ],
     commonMistakes: [
-      "Usar distância total em vez de deslocamento",
-      "Não considerar a direção (velocidade é vetorial)",
-      "Confundir com velocidade média em movimentos variados",
-      "Erros em conversão de unidades"
+      "Esquecer de calcular o deslocamento (s - s₀)",
+      "Usar a distância total em vez do deslocamento",
+      "Não converter unidades adequadamente"
     ],
     applications: [
-      "Determinação de velocidade de veículos em radares",
-      "Análise de movimento em vídeos",
-      "Cálculo de velocidade de corredores e atletas",
-      "Investigação de acidentes de trânsito"
+      "Cálculo de velocidade de veículos",
+      "Análise de movimento de atletas",
+      "Determinação de velocidade média em trajetos",
+      "Problemas de cinemática básica"
     ]
   },
   {
@@ -286,58 +252,52 @@ Esta fórmula nos permite calcular a velocidade conhecendo o deslocamento e o te
     deepExplanation: `No Movimento Uniformemente Variado (MRUV), a aceleração é constante, o que significa que a velocidade muda de forma linear com o tempo. Esta é a equação que descreve essa mudança.
 
 **Características do MRUV:**
-- Aceleração é constante
-- Velocidade muda linearmente com o tempo
-- A mudança de velocidade é proporcional ao tempo decorrido
-
-**Interpretação Gráfica:**
-Se você plotar velocidade (V) versus tempo (t), obtém uma reta. A inclinação dessa reta é exatamente a aceleração do objeto.
-
-**Significado Prático:**
-Se um carro tem aceleração de 2 m/s², isso significa que sua velocidade aumenta 2 m/s a cada segundo. Após 1 segundo, a velocidade aumentou 2 m/s; após 2 segundos, aumentou 4 m/s, e assim por diante.`,
+- Aceleração constante
+- Velocidade varia linearmente com o tempo
+- Trajetória retilínea
+- Deslocamentos diferentes em tempos iguais`,
     derivation: `Partindo da definição de aceleração:
 
-a = Δv / Δt = (V - V₀) / (t - t₀)
+\\[a = \\frac{\\Delta v}{\\Delta t} = \\frac{V - V_0}{t - t_0}\\]
 
-Considerando t₀ = 0:
+Considerando \\(t_0 = 0\\):
 
-a = (V - V₀) / t
+\\[a = \\frac{V - V_0}{t}\\]
 
-Multiplicando ambos os lados por t:
+Multiplicando ambos os lados por \\(t\\):
 
-a·t = V - V₀
+\\[a \\cdot t = V - V_0\\]
 
-Isolando V:
+Isolando \\(V\\):
 
-V = V₀ + a·t
+\\[V = V_0 + a \\cdot t\\]
 
 Esta é a função horária da velocidade no MRUV.`,
-    physicalMeaning: "Esta equação nos permite prever a velocidade de um objeto em qualquer momento futuro, desde que a aceleração permaneça constante. É essencial para análise de movimentos acelerados.",
+    physicalMeaning: "Esta equação nos permite calcular a velocidade de um objeto em qualquer momento, conhecendo sua velocidade inicial e sua aceleração constante.",
     examples: [
       {
         description: "Um objeto começa com velocidade 5 m/s e acelera a 2 m/s². Após 4 segundos:",
-        calculation: "V = 5 + 2·4 = 5 + 8 = 13 m/s"
+        calculation: "\\(V = 5 + 2 \\cdot 4 = 5 + 8 = 13 \\text{ m/s}\\)"
       },
       {
         description: "Um carro começa do repouso (0 m/s) com aceleração 3 m/s². Qual sua velocidade após 8 s?",
-        calculation: "V = 0 + 3·8 = 24 m/s"
+        calculation: "\\(V = 0 + 3 \\cdot 8 = 24 \\text{ m/s}\\)"
       },
       {
         description: "Um objeto com V₀ = 10 m/s desacelera a -2 m/s². Velocidade após 3 s:",
-        calculation: "V = 10 + (-2)·3 = 10 - 6 = 4 m/s"
+        calculation: "\\(V = 10 + (-2) \\cdot 3 = 10 - 6 = 4 \\text{ m/s}\\)"
       }
     ],
     commonMistakes: [
       "Confundir aceleração com velocidade",
-      "Esquecer que a aceleração pode ser negativa",
-      "Usar esta fórmula quando a aceleração não é constante",
-      "Erros de sinal ao trabalhar com desaceleração"
+      "Esquecer de considerar acelerações negativas",
+      "Usar a fórmula do MRU em vez do MRUV"
     ],
     applications: [
-      "Cálculo de velocidade de veículos em aceleração",
-      "Análise de movimento de projéteis",
-      "Dinâmica de queda de objetos",
-      "Movimento de partículas carregadas em campos elétricos"
+      "Cálculo de velocidade em movimento acelerado",
+      "Análise de queda livre",
+      "Movimento de veículos com aceleração constante",
+      "Problemas de lançamento de projéteis"
     ]
   },
   {
@@ -349,59 +309,53 @@ Esta é a função horária da velocidade no MRUV.`,
     deepExplanation: `Esta é uma das equações mais importantes da cinemática. Ela descreve a posição de um objeto em movimento uniformemente variado, levando em conta tanto a velocidade inicial quanto a aceleração.
 
 **Por que é uma parábola?**
-O termo (a·t²)/2 torna esta uma equação quadrática. Isso significa que o gráfico posição-tempo é uma parábola, não uma reta como no MRU.
+O termo \\(\\frac{a \\cdot t^2}{2}\\) cria uma dependência quadrática com o tempo, resultando em uma trajetória parabólica no gráfico posição vs tempo.
 
 **Interpretação Física:**
-- S₀: posição inicial
-- V₀·t: distância que seria percorrida se não houvesse aceleração
-- (a·t²)/2: distância adicional causada pela aceleração
+- \\(S_0\\) é a posição inicial
+- \\(V_0 \\cdot t\\) é o deslocamento devido à velocidade inicial
+- \\(\\frac{a \\cdot t^2}{2}\\) é o deslocamento adicional devido à aceleração`,
+    derivation: `A posição é a integral da velocidade em relação ao tempo. Como \\(V = V_0 + a \\cdot t\\):
 
-**Aplicações Comuns:**
-Queda de objetos, lançamento de projéteis, movimento de veículos acelerados, etc.
+\\[S = \\int(V_0 + a \\cdot t)dt = V_0 \\cdot t + \\frac{a \\cdot t^2}{2} + C\\]
 
-**Importância:**
-Esta equação é fundamental para resolver problemas de cinemática envolvendo aceleração constante.`,
-    derivation: `A posição é a integral da velocidade em relação ao tempo. Como V = V₀ + a·t:
-
-S = ∫(V₀ + a·t)dt = V₀·t + (a·t²)/2 + C
-
-Onde C é a constante de integração, que é a posição inicial S₀.
+Onde \\(C\\) é a constante de integração, que é a posição inicial \\(S_0\\).
 
 Portanto:
 
-S = S₀ + V₀·t + (a·t²)/2
+\\[S = S_0 + V_0 \\cdot t + \\frac{a \\cdot t^2}{2}\\]
 
 Alternativamente, pode-se derivar usando a velocidade média:
-- Velocidade média = (V₀ + V)/2
-- S - S₀ = velocidade média × t = [(V₀ + V)/2]·t
-- Substituindo V = V₀ + a·t:
-- S - S₀ = [(V₀ + V₀ + a·t)/2]·t = [2V₀ + a·t]/2 · t = V₀·t + (a·t²)/2`,
+- Velocidade média = \\(\\frac{V_0 + V}{2}\\)
+- \\(S - S_0\\) = velocidade média × \\(t\\) = \\(\\frac{V_0 + V}{2} \\cdot t\\)
+- Substituindo \\(V = V_0 + a \\cdot t\\):
+- \\(S - S_0 = \\frac{V_0 + V_0 + a \\cdot t}{2} \\cdot t = \\frac{2V_0 + a \\cdot t}{2} \\cdot t = V_0 \\cdot t + \\frac{a \\cdot t^2}{2}\\)`,
     physicalMeaning: "Esta equação nos permite calcular exatamente onde um objeto estará em qualquer momento, considerando tanto sua velocidade inicial quanto sua aceleração. É a ferramenta mais poderosa para análise de movimentos acelerados.",
     examples: [
       {
         description: "Um objeto começa na posição 0 m, com velocidade inicial 3 m/s e aceleração 2 m/s². Após 5 segundos:",
-        calculation: "S = 0 + 3·5 + (2·5²)/2 = 15 + (2·25)/2 = 15 + 25 = 40 m"
+        calculation: "\\(S = 0 + 3 \\cdot 5 + \\frac{2 \\cdot 5^2}{2} = 15 + \\frac{2 \\cdot 25}{2} = 15 + 25 = 40 \\text{ m}\\)"
       },
       {
         description: "Um carro começa na posição 10 m, com velocidade inicial 5 m/s e aceleração 1 m/s². Qual sua posição após 6 s?",
-        calculation: "S = 10 + 5·6 + (1·6²)/2 = 10 + 30 + 18 = 58 m"
+        calculation: "\\(S = 10 + 5 \\cdot 6 + \\frac{1 \\cdot 6^2}{2} = 10 + 30 + 18 = 58 \\text{ m}\\)"
       },
       {
         description: "Um objeto em queda livre começa em 100 m com V₀ = 0 e a = -10 m/s². Posição após 2 s:",
-        calculation: "S = 100 + 0·2 + (-10·2²)/2 = 100 - 20 = 80 m"
+        calculation: "\\(S = 100 + 0 \\cdot 2 + \\frac{-10 \\cdot 2^2}{2} = 100 - 20 = 80 \\text{ m}\\)"
       }
     ],
     commonMistakes: [
-      "Esquecer o fator 1/2 no termo (a·t²)/2",
-      "Confundir com a fórmula de MRU",
-      "Erros de sinal com aceleração negativa",
-      "Não considerar a posição inicial S₀"
+      "Esquecer o termo \\(\\frac{a \\cdot t^2}{2}\\)",
+      "Usar a fórmula do MRU em vez do MRUV",
+      "Não considerar acelerações negativas",
+      "Erros com unidades"
     ],
     applications: [
-      "Cálculo de altura de objetos em queda",
-      "Análise de movimento de projéteis",
-      "Movimento de veículos em aceleração",
-      "Dinâmica de partículas em campos de força"
+      "Cálculo de posição em movimento acelerado",
+      "Análise de queda livre",
+      "Movimento de veículos com aceleração",
+      "Problemas de lançamento vertical"
     ]
   },
   {
@@ -413,71 +367,59 @@ Alternativamente, pode-se derivar usando a velocidade média:
     deepExplanation: `A Equação de Torricelli é uma das mais elegantes da cinemática. Ela relaciona velocidade final, velocidade inicial, aceleração e deslocamento, sem necessidade de conhecer o tempo. Isso a torna extremamente útil em muitos problemas práticos.
 
 **Quando Usar:**
-Use esta fórmula quando você conhece:
-- Velocidade inicial (V₀)
-- Aceleração (a)
-- Deslocamento (ΔS)
-
-E quer encontrar a velocidade final (V), sem conhecer o tempo.
-
-**Vantagens:**
-- Elimina a necessidade de calcular o tempo intermediário
-- Simplifica muitos problemas práticos
-- Fornece resultados diretos
-
-**Aplicações Práticas:**
-Determinar a velocidade de um carro ao final de uma rampa, velocidade de um objeto ao atingir o solo, etc.`,
+- Quando não conhecemos o tempo
+- Quando queremos relacionar velocidades e deslocamento
+- Em problemas de colisão e frenagem`,
     derivation: `Partindo das duas equações fundamentais do MRUV:
 
-1) V = V₀ + a·t  →  t = (V - V₀) / a
+1) \\(V = V_0 + a \\cdot t\\) → \\(t = \\frac{V - V_0}{a}\\)
 
-2) S = S₀ + V₀·t + (a·t²)/2  →  ΔS = V₀·t + (a·t²)/2
+2) \\(S = S_0 + V_0 \\cdot t + \\frac{a \\cdot t^2}{2}\\) → \\(\\Delta S = V_0 \\cdot t + \\frac{a \\cdot t^2}{2}\\)
 
-Substituindo a expressão de t na segunda equação:
+Substituindo a expressão de \\(t\\) na segunda equação:
 
-ΔS = V₀·[(V - V₀)/a] + (a/2)·[(V - V₀)/a]²
+\\[\\Delta S = V_0 \\cdot \\frac{V - V_0}{a} + \\frac{a}{2} \\cdot \\left(\\frac{V - V_0}{a}\\right)^2\\]
 
-ΔS = [V₀·(V - V₀)]/a + (a/2)·[(V - V₀)²/a²]
+\\[\\Delta S = \\frac{V_0 \\cdot (V - V_0)}{a} + \\frac{a}{2} \\cdot \\frac{(V - V_0)^2}{a^2}\\]
 
-ΔS = [V₀·(V - V₀)]/a + [(V - V₀)²]/(2a)
+\\[\\Delta S = \\frac{V_0 \\cdot (V - V_0)}{a} + \\frac{(V - V_0)^2}{2a}\\]
 
-Multiplicando tudo por 2a:
+Multiplicando tudo por \\(2a\\):
 
-2a·ΔS = 2V₀·(V - V₀) + (V - V₀)²
+\\[2a \\cdot \\Delta S = 2V_0 \\cdot (V - V_0) + (V - V_0)^2\\]
 
-2a·ΔS = 2V₀·V - 2V₀² + V² - 2V₀·V + V₀²
+\\[2a \\cdot \\Delta S = 2V_0 \\cdot V - 2V_0^2 + V^2 - 2V_0 \\cdot V + V_0^2\\]
 
-2a·ΔS = V² - V₀²
+\\[2a \\cdot \\Delta S = V^2 - V_0^2\\]
 
 Portanto:
 
-V² = V₀² + 2·a·ΔS`,
+\\[V^2 = V_0^2 + 2 \\cdot a \\cdot \\Delta S\\]`,
     physicalMeaning: "Esta equação nos permite encontrar a velocidade final de um objeto sem precisar saber quanto tempo levou. É particularmente útil quando o tempo não é conhecido ou não é relevante para o problema.",
     examples: [
       {
         description: "Um objeto começa com velocidade 5 m/s, acelera a 3 m/s² e percorre 20 m. Qual sua velocidade final?",
-        calculation: "V² = 5² + 2·3·20 = 25 + 120 = 145 → V = √145 ≈ 12,04 m/s"
+        calculation: "\\(V^2 = 5^2 + 2 \\cdot 3 \\cdot 20 = 25 + 120 = 145\\) → \\(V = \\sqrt{145} \\approx 12,04 \\text{ m/s}\\)"
       },
       {
         description: "Um carro começa do repouso (0 m/s) com aceleração 2 m/s² e percorre 50 m",
-        calculation: "V² = 0² + 2·2·50 = 200 → V = √200 ≈ 14,14 m/s"
+        calculation: "\\(V^2 = 0^2 + 2 \\cdot 2 \\cdot 50 = 200\\) → \\(V = \\sqrt{200} \\approx 14,14 \\text{ m/s}\\)"
       },
       {
         description: "Um objeto desacelera de 30 m/s a -5 m/s² e percorre 80 m",
-        calculation: "V² = 30² + 2·(-5)·80 = 900 - 800 = 100 → V = 10 m/s"
+        calculation: "\\(V^2 = 30^2 + 2 \\cdot (-5) \\cdot 80 = 900 - 800 = 100\\) → \\(V = 10 \\text{ m/s}\\)"
       }
     ],
     commonMistakes: [
-      "Esquecer que V² é o quadrado da velocidade (não é V)",
-      "Usar distância em vez de deslocamento",
-      "Erros de sinal com aceleração negativa",
-      "Confundir com outras equações do MRUV"
+      "Esquecer de tirar a raiz quadrada",
+      "Confundir com outras equações do MRUV",
+      "Erros de sinal com aceleração negativa"
     ],
     applications: [
-      "Cálculo de velocidade ao final de uma rampa",
-      "Determinação de velocidade de impacto",
-      "Análise de freios de emergência",
-      "Movimento de projéteis sem conhecer o tempo"
+      "Cálculo de velocidade de frenagem",
+      "Análise de colisões",
+      "Movimento de projéteis",
+      "Problemas de queda livre"
     ]
   },
   {
@@ -489,57 +431,55 @@ V² = V₀² + 2·a·ΔS`,
     deepExplanation: `No Movimento Circular Uniforme, o objeto se move em um círculo com velocidade constante em módulo. A velocidade tangencial é a velocidade instantânea do objeto em qualquer ponto da trajetória, sempre tangente ao círculo.
 
 **Conceitos Importantes:**
-- A velocidade tangencial é sempre perpendicular ao raio
-- Seu módulo é constante, mas sua direção muda continuamente
-- Período (T): tempo para completar uma volta
-- Frequência (f): número de voltas por unidade de tempo (f = 1/T)
+- A velocidade é sempre tangente ao círculo
+- O módulo da velocidade é constante
+- A direção muda continuamente
 
 **Relação com Período e Frequência:**
-- v = 2πr / T (usando período)
-- v = 2πrf (usando frequência)
+- \\(v = \\frac{2\\pi r}{T}\\) (usando período)
+- \\(v = 2\\pi rf\\) (usando frequência)
 
 **Interpretação Física:**
-A velocidade tangencial representa quão rápido o objeto se move ao longo do círculo. Um objeto em um círculo maior com o mesmo período terá maior velocidade tangencial.`,
-    derivation: `O objeto percorre uma circunferência completa (2πr) em um período (T):
+O objeto percorre uma circunferência completa (\\(2\\pi r\\)) em um período (\\(T\\)).`,
+    derivation: `O objeto percorre uma circunferência completa (\\(2\\pi r\\)) em um período (\\(T\\)):
 
-v = distância / tempo = 2πr / T
+\\[v = \\frac{\\text{distância}}{\\text{tempo}} = \\frac{2\\pi r}{T}\\]
 
-Como a frequência f = 1/T, podemos escrever:
+Como a frequência \\(f = \\frac{1}{T}\\), podemos escrever:
 
-v = 2πr / (1/f) = 2πrf
+\\[v = \\frac{2\\pi r}{1/f} = 2\\pi rf\\]
 
 Onde:
-- v = velocidade tangencial (m/s)
-- r = raio (m)
-- T = período (s)
-- f = frequência (Hz)
-- π ≈ 3,14159...`,
-    physicalMeaning: "A velocidade tangencial descreve quão rápido o objeto se move ao longo da trajetória circular. Embora o módulo seja constante, a direção muda continuamente, o que causa a aceleração centrípeta.",
+- \\(v\\) = velocidade tangencial (m/s)
+- \\(r\\) = raio do círculo (m)
+- \\(T\\) = período (s)
+- \\(f\\) = frequência (Hz)
+- \\(\\pi\\) ≈ 3,14159...`,
+    physicalMeaning: "A velocidade tangencial é a velocidade linear do objeto em movimento circular. Ela representa quanta distância o objeto percorre ao longo do círculo por unidade de tempo.",
     examples: [
       {
         description: "Um objeto em movimento circular com raio 5 m e período 2 s",
-        calculation: "v = 2π·5 / 2 = 10π / 2 = 5π ≈ 15,7 m/s"
+        calculation: "\\(v = \\frac{2\\pi \\cdot 5}{2} = \\frac{10\\pi}{2} = 5\\pi \\approx 15,7 \\text{ m/s}\\)"
       },
       {
         description: "Um objeto com raio 10 m e frequência 0,5 Hz",
-        calculation: "v = 2π·10·0,5 = 10π ≈ 31,4 m/s"
+        calculation: "\\(v = 2\\pi \\cdot 10 \\cdot 0,5 = 10\\pi \\approx 31,4 \\text{ m/s}\\)"
       },
       {
         description: "Um carrossel com raio 3 m completa uma volta em 4 s",
-        calculation: "v = 2π·3 / 4 = 6π / 4 = 1,5π ≈ 4,71 m/s"
+        calculation: "\\(v = \\frac{2\\pi \\cdot 3}{4} = \\frac{6\\pi}{4} = 1,5\\pi \\approx 4,71 \\text{ m/s}\\)"
       }
     ],
     commonMistakes: [
       "Confundir velocidade tangencial com velocidade angular",
-      "Esquecer de usar 2π na fórmula",
-      "Usar diâmetro em vez de raio",
-      "Confundir período com frequência"
+      "Esquecer de converter período para frequência",
+      "Usar diâmetro em vez de raio"
     ],
     applications: [
-      "Cálculo de velocidade em carrosséis e rodas gigantes",
-      "Movimento de satélites em órbita",
-      "Velocidade de pontos em rodas e engrenagens",
-      "Análise de movimento planetário"
+      "Movimento de satélites",
+      "Movimento de rodas e engrenagens",
+      "Movimento de planetas",
+      "Carrosséis e parques de diversão"
     ]
   },
   {
@@ -552,55 +492,54 @@ Onde:
 
 **Características Importantes:**
 - Sempre aponta para o centro do círculo
-- Seu módulo é constante no MCU
-- É perpendicular à velocidade tangencial
-- É causada por uma força (força centrípeta)
+- Tem módulo constante no MCU
+- É perpendicular à velocidade
+- Causa a mudança de direção, não de módulo
 
 **Duas Formas da Fórmula:**
-1. a_c = v² / r (em função da velocidade tangencial)
-2. a_c = ω²r (em função da velocidade angular)
+1. \\(a_c = \\frac{v^2}{r}\\) (em função da velocidade tangencial)
+2. \\(a_c = \\omega^2r\\) (em função da velocidade angular)
 
 **Interpretação Física:**
-A aceleração centrípeta mede a taxa de mudança da direção da velocidade. Quanto maior a velocidade ou menor o raio, maior a aceleração centrípeta necessária.`,
-    derivation: `A aceleração centrípeta é a taxa de mudança da direção da velocidade. Para um movimento circular uniforme:
+Sem aceleração centrípeta, o objeto continuaria em linha reta (primeira lei de Newton). É essa aceleração que "puxa" o objeto para o centro, mantendo-o em movimento circular.`,
+    derivation: `Usando a definição de aceleração e geometria:
 
-Usando a definição de aceleração e geometria:
-a_c = v² / r
+\\[a_c = \\frac{v^2}{r}\\]
 
-Alternativamente, usando velocidade angular ω = v/r:
-a_c = ω²r
+Alternativamente, usando velocidade angular \\(\\omega = \\frac{v}{r}\\):
+
+\\[a_c = \\omega^2r\\]
 
 Onde:
-- a_c = aceleração centrípeta (m/s²)
-- v = velocidade tangencial (m/s)
-- r = raio (m)
-- ω = velocidade angular (rad/s)`,
+- \\(a_c\\) = aceleração centrípeta (m/s²)
+- \\(v\\) = velocidade tangencial (m/s)
+- \\(r\\) = raio (m)
+- \\(\\omega\\) = velocidade angular (rad/s)`,
     physicalMeaning: "A aceleração centrípeta é a aceleração necessária para manter um objeto em movimento circular. Sem ela, o objeto continuaria em linha reta (primeira lei de Newton). É causada por uma força dirigida para o centro.",
     examples: [
       {
         description: "Um objeto com velocidade tangencial 10 m/s em um raio de 5 m",
-        calculation: "a_c = 10² / 5 = 100 / 5 = 20 m/s²"
+        calculation: "\\(a_c = \\frac{10^2}{5} = \\frac{100}{5} = 20 \\text{ m/s}^2\\)"
       },
       {
         description: "Um objeto com velocidade angular 2 rad/s e raio 3 m",
-        calculation: "a_c = 2²·3 = 4·3 = 12 m/s²"
+        calculation: "\\(a_c = 2^2 \\cdot 3 = 4 \\cdot 3 = 12 \\text{ m/s}^2\\)"
       },
       {
         description: "Um carro em uma curva com raio 50 m a 20 m/s",
-        calculation: "a_c = 20² / 50 = 400 / 50 = 8 m/s²"
+        calculation: "\\(a_c = \\frac{20^2}{50} = \\frac{400}{50} = 8 \\text{ m/s}^2\\)"
       }
     ],
     commonMistakes: [
       "Confundir aceleração centrípeta com aceleração tangencial",
-      "Pensar que a aceleração centrípeta aumenta a velocidade",
-      "Usar diâmetro em vez de raio",
-      "Confundir com aceleração angular"
+      "Esquecer que é sempre dirigida para o centro",
+      "Usar diâmetro em vez de raio"
     ],
     applications: [
-      "Cálculo de forças em curvas de estradas",
-      "Movimento de satélites em órbita",
-      "Análise de movimento em carrosséis",
-      "Dinâmica de partículas em campos magnéticos"
+      "Movimento de satélites",
+      "Curvas de estradas",
+      "Movimento de planetas",
+      "Máquinas centrífugas"
     ]
   },
   {
@@ -615,60 +554,56 @@ Onde:
 - Aceleração é constante (g = 9,8 m/s² na Terra)
 - A resistência do ar é negligenciada
 - Todos os objetos caem com a mesma aceleração (independente da massa)
-- A velocidade aumenta linearmente com o tempo
+- A velocidade aumenta linearmente com o tempo`,
+    derivation: `A queda livre segue as mesmas equações do MRUV, mas com \\(a = g\\):
 
-**Valor de g:**
-- Na Terra: g ≈ 9,8 m/s² (ou 10 m/s² para aproximações)
-- Na Lua: g ≈ 1,6 m/s²
-- Em Júpiter: g ≈ 24,8 m/s²
-
-**Importante:**
-Galileu descobriu que todos os objetos caem com a mesma aceleração, independente de sua massa. Isso foi revolucionário na época!`,
-    derivation: `A queda livre segue as mesmas equações do MRUV, mas com a = g:
-
-V = V₀ + g·t
+\\[V = V_0 + g \\cdot t\\]
 
 Onde:
-- V = velocidade final (m/s)
-- V₀ = velocidade inicial (m/s)
-- g = aceleração da gravidade ≈ 9,8 m/s²
-- t = tempo (s)
+- \\(V\\) = velocidade final (m/s)
+- \\(V_0\\) = velocidade inicial (m/s)
+- \\(g\\) = aceleração da gravidade ≈ 9,8 m/s²
+- \\(t\\) = tempo (s)
 
-Para um objeto solto do repouso (V₀ = 0):
-V = g·t`,
+Para um objeto solto do repouso (\\(V_0 = 0\\)):
+\\[V = g \\cdot t\\]`,
     physicalMeaning: "Esta equação descreve como a velocidade de um objeto aumenta durante a queda livre. A velocidade aumenta linearmente com o tempo, aumentando 9,8 m/s a cada segundo.",
     examples: [
       {
         description: "Um objeto é solto do repouso. Qual sua velocidade após 3 segundos?",
-        calculation: "V = 0 + 9,8·3 = 29,4 m/s"
+        calculation: "\\(V = 0 + 9,8 \\cdot 3 = 29,4 \\text{ m/s}\\)"
       },
       {
         description: "Um objeto é lançado para baixo com velocidade inicial 5 m/s. Qual sua velocidade após 2 s?",
-        calculation: "V = 5 + 9,8·2 = 5 + 19,6 = 24,6 m/s"
+        calculation: "\\(V = 5 + 9,8 \\cdot 2 = 5 + 19,6 = 24,6 \\text{ m/s}\\)"
       },
       {
         description: "Um objeto é lançado para cima com velocidade inicial 20 m/s. Velocidade após 2 s (g = -9,8 m/s² para cima):",
-        calculation: "V = 20 + (-9,8)·2 = 20 - 19,6 = 0,4 m/s"
+        calculation: "\\(V = 20 + (-9,8) \\cdot 2 = 20 - 19,6 = 0,4 \\text{ m/s}\\)"
       }
     ],
     commonMistakes: [
-      "Pensar que objetos mais pesados caem mais rápido",
-      "Esquecer que g é uma aceleração (não uma velocidade)",
-      "Usar g positivo quando o objeto é lançado para cima",
-      "Não considerar a resistência do ar em situações reais"
+      "Esquecer que g é sempre 9,8 m/s² (não 10)",
+      "Não considerar a direção (positiva ou negativa)",
+      "Confundir com outras equações do MRUV"
     ],
     applications: [
-      "Cálculo de tempo de queda de objetos",
+      "Cálculo de tempo de queda",
       "Análise de lançamentos verticais",
-      "Determinação de altura de edifícios",
-      "Movimento de projéteis"
+      "Movimento de objetos em queda",
+      "Problemas de impacto"
     ]
   }
 ];
 
 export default function Formulas() {
-  const [selectedFormula, setSelectedFormula] = useState<Formula | null>(formulas[0]);
-  const categories = Array.from(new Set(formulas.map(f => f.category)));
+  const [selectedFormula, setSelectedFormula] = useState<Formula>(formulas[0]);
+
+  useEffect(() => {
+    if ((window as any).MathJax) {
+      (window as any).MathJax.typesetPromise().catch((err: any) => console.log(err));
+    }
+  }, [selectedFormula]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
@@ -676,48 +611,42 @@ export default function Formulas() {
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
         <div className="container py-4 flex items-center gap-4">
           <Link href="/">
-            <Button variant="ghost" size="sm">
+            <button className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
               ← Voltar
-            </Button>
+            </button>
           </Link>
-          <h1 className="text-2xl font-bold text-slate-900">Explicação Detalhada das Fórmulas</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Fórmulas com Explicações Completas</h1>
         </div>
       </header>
 
       {/* Main Content */}
-      <section className="container py-12">
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* Sidebar - Fórmulas */}
+      <section className="container py-6 md:py-12">
+        <div className="grid md:grid-cols-3 gap-6">
+          {/* Sidebar */}
           <div className="md:col-span-1">
-            <div className="space-y-4 sticky top-24">
-              {categories.map(category => (
-                <div key={category}>
-                  <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide mb-2">{category}</h3>
-                  <div className="space-y-2">
-                    {formulas.filter(f => f.category === category).map(formula => (
-                      <button
-                        key={formula.id}
-                        onClick={() => setSelectedFormula(formula)}
-                        className={`w-full text-left px-4 py-2 rounded-lg transition-all text-sm ${
-                          selectedFormula?.id === formula.id
-                            ? "bg-blue-600 text-white shadow-md"
-                            : "bg-white text-slate-900 hover:bg-slate-50 border border-slate-200"
-                        }`}
-                      >
-                        <p className="font-semibold">{formula.name}</p>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+            <div className="sticky top-24 space-y-2">
+              {formulas.map((formula) => (
+                <button
+                  key={formula.id}
+                  onClick={() => setSelectedFormula(formula)}
+                  className={`w-full text-left p-3 rounded-lg transition-all ${
+                    selectedFormula.id === formula.id
+                      ? "bg-blue-600 text-white shadow-lg"
+                      : "bg-white text-slate-900 hover:bg-slate-100 border border-slate-200"
+                  }`}
+                >
+                  <p className="font-semibold text-sm">{formula.name}</p>
+                  <p className="text-xs opacity-75">{formula.category}</p>
+                </button>
               ))}
             </div>
           </div>
 
-          {/* Main Content - Fórmula Selecionada */}
+          {/* Content */}
           <div className="md:col-span-2">
-            {selectedFormula && (
-              <div className="space-y-8">
-                <Card className="p-8 shadow-lg">
+            <Card className="p-6 md:p-8 shadow-lg border-0">
+              {selectedFormula && (
+                <>
                   <h2 className="text-3xl font-bold text-slate-900 mb-4">{selectedFormula.name}</h2>
                   
                   {/* Fórmula em LaTeX */}
@@ -767,7 +696,9 @@ export default function Formulas() {
                       {selectedFormula.examples.map((example, idx) => (
                         <Card key={idx} className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-600">
                           <p className="text-sm text-slate-700 mb-2"><strong>Exemplo {idx + 1}:</strong> {example.description}</p>
-                          <code className="text-lg font-mono font-bold text-green-600">{example.calculation}</code>
+                          <div className="text-lg font-mono font-bold text-green-600">
+                            <MathFormula formula={example.calculation} display={false} />
+                          </div>
                         </Card>
                       ))}
                     </div>
@@ -796,9 +727,9 @@ export default function Formulas() {
                       </ul>
                     </div>
                   </div>
-                </Card>
-              </div>
-            )}
+                </>
+              )}
+            </Card>
           </div>
         </div>
       </section>

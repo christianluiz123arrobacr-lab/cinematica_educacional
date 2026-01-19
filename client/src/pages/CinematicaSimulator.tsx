@@ -88,7 +88,7 @@ export default function CinematicaSimulator() {
                 <div className="space-y-6 bg-slate-50 p-6 rounded-lg">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-semibold text-slate-700">Velocidade Inicial (v₀)</label>
+                      <label className="text-sm font-semibold text-slate-700">Velocidade Inicial (v_0)</label>
                       <span className="text-sm font-bold text-blue-600">{v0Accel.toFixed(2)} pixels/frame</span>
                     </div>
                     <Slider
@@ -144,8 +144,8 @@ export default function CinematicaSimulator() {
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <p className="text-sm text-slate-700">
                     <strong>Conceito:</strong> No movimento uniformemente variado (MRUV), a aceleração é constante. 
-                    A posição aumenta quadraticamente com o tempo (s = v₀t + ½at²), enquanto a velocidade aumenta 
-                    linearmente (v = v₀ + at). Observe como a velocidade (seta verde) aumenta continuamente.
+                    A posição aumenta quadraticamente com o tempo (s = v_0*t + 0.5*a*t^2), enquanto a velocidade aumenta 
+                    linearmente (v = v_0 + a*t). Observe como a velocidade (seta verde) aumenta continuamente.
                   </p>
                 </div>
               </div>
@@ -234,8 +234,8 @@ export default function CinematicaSimulator() {
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                   <p className="text-sm text-slate-700">
                     <strong>Conceito:</strong> Na queda livre, um objeto cai sob a influência exclusiva da gravidade 
-                    (g = 9.8 m/s²). A velocidade aumenta linearmente com o tempo (v = gt), enquanto a altura diminui 
-                    quadraticamente (h = h₀ - ½gt²). Observe como o objeto acelera continuamente até atingir o solo.
+                    (g = 9.8 m/s^2). A velocidade aumenta linearmente com o tempo (v = g*t), enquanto a altura diminui 
+                    quadraticamente (h = h_0 - 0.5*g*t^2). Observe como o objeto acelera continuamente até atingir o solo.
                   </p>
                 </div>
               </div>
@@ -283,7 +283,7 @@ export default function CinematicaSimulator() {
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-semibold text-slate-700">Velocidade Angular (ω)</label>
+                      <label className="text-sm font-semibold text-slate-700">Velocidade Angular (omega)</label>
                       <span className="text-sm font-bold text-purple-600">{(wCircular * 100).toFixed(2)} rad/s</span>
                     </div>
                     <Slider
@@ -325,7 +325,7 @@ export default function CinematicaSimulator() {
                   <p className="text-sm text-slate-700">
                     <strong>Conceito:</strong> No movimento circular uniforme (MCU), o objeto se move em um círculo com 
                     velocidade constante. A velocidade é sempre tangente ao círculo (seta azul), enquanto a aceleração 
-                    centrípeta (seta rosa) sempre aponta para o centro. A aceleração é: a_c = ω²R = v²/R.
+                    centrípeta (seta rosa) sempre aponta para o centro. A aceleração é: a_c = omega^2*R = v^2/R.
                   </p>
                 </div>
               </div>

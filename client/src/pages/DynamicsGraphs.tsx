@@ -77,13 +77,13 @@ export default function DynamicsGraphs() {
           {/* Force Tab */}
           <TabsContent value="force">
             <Card className="p-6 md:p-8">
-              <h3 className="text-xl font-bold text-slate-900 mb-6">Relação entre Força, Massa e Aceleração (F = m·a)</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-6">Relação entre Força, Massa e Aceleração (F = m*a)</h3>
               <div className="w-full h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={forceData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="mass" label={{ value: "Massa (kg)", position: "insideBottomRight", offset: -5 }} />
-                    <YAxis label={{ value: "Força (N) / Aceleração (m/s²)", angle: -90, position: "insideLeft" }} />
+                    <YAxis label={{ value: "Força (N) / Aceleração (m/s^2)", angle: -90, position: "insideLeft" }} />
                     <Tooltip />
                     <Legend />
                     <Bar dataKey="force" fill="#9333ea" name="Força (N)" />
@@ -124,7 +124,7 @@ export default function DynamicsGraphs() {
           {/* Work Tab */}
           <TabsContent value="work">
             <Card className="p-6 md:p-8">
-              <h3 className="text-xl font-bold text-slate-900 mb-6">Trabalho Realizado por uma Força (W = F·d)</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-6">Trabalho Realizado por uma Força (W = F*d)</h3>
               <div className="w-full h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={workData}>
@@ -146,16 +146,16 @@ export default function DynamicsGraphs() {
           {/* Momentum Tab */}
           <TabsContent value="momentum">
             <Card className="p-6 md:p-8">
-              <h3 className="text-xl font-bold text-slate-900 mb-6">Momentum em Função do Tempo (p = m·v)</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-6">Momentum em Função do Tempo (p = m*v)</h3>
               <div className="w-full h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={momentumData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="time" label={{ value: "Tempo (s)", position: "insideBottomRight", offset: -5 }} />
-                    <YAxis label={{ value: "Momentum (kg·m/s) / Velocidade (m/s)", angle: -90, position: "insideLeft" }} />
+                    <YAxis label={{ value: "Momentum (kg*m/s) / Velocidade (m/s)", angle: -90, position: "insideLeft" }} />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="momentum" stroke="#8b5cf6" name="Momentum (kg·m/s)" strokeWidth={2} />
+                    <Line type="monotone" dataKey="momentum" stroke="#8b5cf6" name="Momentum (kg*m/s)" strokeWidth={2} />
                     <Line type="monotone" dataKey="velocity" stroke="#06b6d4" name="Velocidade (m/s)" strokeWidth={2} strokeDasharray="5 5" />
                   </LineChart>
                 </ResponsiveContainer>
@@ -169,7 +169,7 @@ export default function DynamicsGraphs() {
           {/* Power Tab */}
           <TabsContent value="power">
             <Card className="p-6 md:p-8">
-              <h3 className="text-xl font-bold text-slate-900 mb-6">Potência em Função do Tempo (P = W/Δt)</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-6">Potência em Função do Tempo (P = W/Delta t)</h3>
               <div className="w-full h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={powerData}>

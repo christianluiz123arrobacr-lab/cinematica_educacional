@@ -31,15 +31,15 @@ export default function Calculator() {
       let result: any = {};
 
       if (mruVariable === "s") {
-        // s = s0 + v*t
+        // s = s₀ + v·t
         const value = s0 + v * t;
         result = { value: value, unit: "m", label: "Posição Final (s)" };
       } else if (mruVariable === "s0") {
-        // s0 = s - v*t
+        // s₀ = s - v·t
         const value = s - v * t;
         result = { value: value, unit: "m", label: "Posição Inicial (s₀)" };
       } else if (mruVariable === "v") {
-        // v = (s - s0) / t
+        // v = (s - s₀) / t
         if (t === 0) {
           setMruError("Tempo não pode ser zero");
           return;
@@ -47,7 +47,7 @@ export default function Calculator() {
         const value = (s - s0) / t;
         result = { value: value, unit: "m/s", label: "Velocidade (v)" };
       } else if (mruVariable === "t") {
-        // t = (s - s0) / v
+        // t = (s - s₀) / v
         if (v === 0) {
           setMruError("Velocidade não pode ser zero");
           return;
@@ -87,23 +87,23 @@ export default function Calculator() {
       let result: any = {};
 
       if (mruvVariable === "s") {
-        // s = s0 + v0*t + (a*t²)/2
+        // s = s₀ + v₀·t + (a·t²)/2
         const value = s0 + v0 * t + (a * t * t) / 2;
         result = { value: value, unit: "m", label: "Posição Final (s)" };
       } else if (mruvVariable === "s0") {
-        // s0 = s - v0*t - (a*t²)/2
+        // s₀ = s - v₀·t - (a·t²)/2
         const value = s - v0 * t - (a * t * t) / 2;
         result = { value: value, unit: "m", label: "Posição Inicial (s₀)" };
       } else if (mruvVariable === "v") {
-        // v = v0 + a*t
+        // v = v₀ + a·t
         const value = v0 + a * t;
         result = { value: value, unit: "m/s", label: "Velocidade Final (v)" };
       } else if (mruvVariable === "v0") {
-        // v0 = v - a*t
+        // v₀ = v - a·t
         const value = v - a * t;
         result = { value: value, unit: "m/s", label: "Velocidade Inicial (v₀)" };
       } else if (mruvVariable === "a") {
-        // a = (v - v0) / t
+        // a = (v - v₀) / t
         if (t === 0) {
           setMruvError("Tempo não pode ser zero");
           return;
@@ -111,7 +111,7 @@ export default function Calculator() {
         const value = (v - v0) / t;
         result = { value: value, unit: "m/s²", label: "Aceleração (a)" };
       } else if (mruvVariable === "t") {
-        // t = (v - v0) / a
+        // t = (v - v₀) / a
         if (a === 0) {
           setMruvError("Aceleração não pode ser zero");
           return;
@@ -149,7 +149,7 @@ export default function Calculator() {
       let result: any = {};
 
       if (torriVariable === "v") {
-        // v² = v0² + 2*a*ΔS
+        // v² = v₀² + 2·a·ΔS
         const vSquared = v0 * v0 + 2 * a * deltaS;
         if (vSquared < 0) {
           setTorriError("Resultado inválido: v² não pode ser negativo");
@@ -158,7 +158,7 @@ export default function Calculator() {
         const value = Math.sqrt(vSquared);
         result = { value: value, unit: "m/s", label: "Velocidade Final (v)" };
       } else if (torriVariable === "v0") {
-        // v0² = v² - 2*a*ΔS
+        // v₀² = v² - 2·a·ΔS
         const v0Squared = v * v - 2 * a * deltaS;
         if (v0Squared < 0) {
           setTorriError("Resultado inválido: v₀² não pode ser negativo");
@@ -167,7 +167,7 @@ export default function Calculator() {
         const value = Math.sqrt(v0Squared);
         result = { value: value, unit: "m/s", label: "Velocidade Inicial (v₀)" };
       } else if (torriVariable === "a") {
-        // a = (v² - v0²) / (2*ΔS)
+        // a = (v² - v₀²) / (2·ΔS)
         if (deltaS === 0) {
           setTorriError("Deslocamento não pode ser zero");
           return;
@@ -175,7 +175,7 @@ export default function Calculator() {
         const value = (v * v - v0 * v0) / (2 * deltaS);
         result = { value: value, unit: "m/s²", label: "Aceleração (a)" };
       } else if (torriVariable === "deltaS") {
-        // ΔS = (v² - v0²) / (2*a)
+        // ΔS = (v² - v₀²) / (2·a)
         if (a === 0) {
           setTorriError("Aceleração não pode ser zero");
           return;
@@ -213,7 +213,7 @@ export default function Calculator() {
       let result: any = {};
 
       if (ffVariable === "v") {
-        // v = g*t
+        // v = g·t
         const value = g * t;
         result = { value: value, unit: "m/s", label: "Velocidade Final (v)" };
       } else if (ffVariable === "t") {
@@ -225,11 +225,11 @@ export default function Calculator() {
         const value = v / g;
         result = { value: value, unit: "s", label: "Tempo (t)" };
       } else if (ffVariable === "h") {
-        // h = (g*t²) / 2
+        // h = (g·t²) / 2
         const value = (g * t * t) / 2;
         result = { value: value, unit: "m", label: "Altura (h)" };
       } else if (ffVariable === "g") {
-        // g = 2*h / t²
+        // g = 2·h / t²
         if (t === 0) {
           setFfError("Tempo não pode ser zero");
           return;
@@ -379,7 +379,7 @@ export default function Calculator() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="s">📍 Posição Final (s)</SelectItem>
-                    <SelectItem value="s0">📍 Posição Inicial (s₀)</SelectItem>
+                    <SelectItem value="s0">📍 Posição Inicial (s_0)</SelectItem>
                     <SelectItem value="v">⚡ Velocidade (v)</SelectItem>
                     <SelectItem value="t">⏱️ Tempo (t)</SelectItem>
                   </SelectContent>
@@ -389,7 +389,7 @@ export default function Calculator() {
               <div className="grid md:grid-cols-4 gap-3 mb-6">
                 {mruVariable !== "s0" && (
                   <div className="space-y-2">
-                    <label className="block text-xs font-bold text-slate-700 uppercase">s₀ (m)</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase">s_0 (m)</label>
                     <Input type="number" value={mruInputs.s0} onChange={(e) => setMruInputs({ ...mruInputs, s0: e.target.value })} placeholder="0" />
                   </div>
                 )}
@@ -456,9 +456,9 @@ export default function Calculator() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="s">📍 Posição Final (s)</SelectItem>
-                    <SelectItem value="s0">📍 Posição Inicial (s₀)</SelectItem>
+                    <SelectItem value="s0">📍 Posição Inicial (s_0)</SelectItem>
                     <SelectItem value="v">⚡ Velocidade Final (v)</SelectItem>
-                    <SelectItem value="v0">⚡ Velocidade Inicial (v₀)</SelectItem>
+                    <SelectItem value="v0">⚡ Velocidade Inicial (v_0)</SelectItem>
                     <SelectItem value="a">🚀 Aceleração (a)</SelectItem>
                     <SelectItem value="t">⏱️ Tempo (t)</SelectItem>
                   </SelectContent>
@@ -468,13 +468,13 @@ export default function Calculator() {
               <div className="grid md:grid-cols-3 gap-3 mb-6">
                 {mruvVariable !== "s0" && (
                   <div className="space-y-2">
-                    <label className="block text-xs font-bold text-slate-700 uppercase">s₀ (m)</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase">s_0 (m)</label>
                     <Input type="number" value={mruvInputs.s0} onChange={(e) => setMruvInputs({ ...mruvInputs, s0: e.target.value })} />
                   </div>
                 )}
                 {mruvVariable !== "v0" && (
                   <div className="space-y-2">
-                    <label className="block text-xs font-bold text-slate-700 uppercase">v₀ (m/s)</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase">v_0 (m/s)</label>
                     <Input type="number" value={mruvInputs.v0} onChange={(e) => setMruvInputs({ ...mruvInputs, v0: e.target.value })} />
                   </div>
                 )}
@@ -549,9 +549,9 @@ export default function Calculator() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="v">⚡ Velocidade Final (v)</SelectItem>
-                    <SelectItem value="v0">⚡ Velocidade Inicial (v₀)</SelectItem>
+                    <SelectItem value="v0">⚡ Velocidade Inicial (v_0)</SelectItem>
                     <SelectItem value="a">🚀 Aceleração (a)</SelectItem>
-                    <SelectItem value="deltaS">📏 Deslocamento (ΔS)</SelectItem>
+                    <SelectItem value="deltaS">📏 Deslocamento (Delta S)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -559,7 +559,7 @@ export default function Calculator() {
               <div className="grid md:grid-cols-4 gap-3 mb-6">
                 {torriVariable !== "v0" && (
                   <div className="space-y-2">
-                    <label className="block text-xs font-bold text-slate-700 uppercase">v₀ (m/s)</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase">v_0 (m/s)</label>
                     <Input type="number" value={torriInputs.v0} onChange={(e) => setTorriInputs({ ...torriInputs, v0: e.target.value })} />
                   </div>
                 )}
@@ -571,7 +571,7 @@ export default function Calculator() {
                 )}
                 {torriVariable !== "deltaS" && (
                   <div className="space-y-2">
-                    <label className="block text-xs font-bold text-slate-700 uppercase">ΔS (m)</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase">Delta S (m)</label>
                     <Input type="number" value={torriInputs.deltaS} onChange={(e) => setTorriInputs({ ...torriInputs, deltaS: e.target.value })} />
                   </div>
                 )}
@@ -743,7 +743,7 @@ export default function Calculator() {
                 )}
                 {mcuVariable !== "ac" && mcuVariable !== "r_from_ac" && (
                   <div className="space-y-2">
-                    <label className="block text-xs font-bold text-slate-700 uppercase">ac (m/s²)</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase">ac (m/s^2)</label>
                     <Input type="number" value={mcuInputs.ac} onChange={(e) => setMcuInputs({ ...mcuInputs, ac: e.target.value })} />
                   </div>
                 )}

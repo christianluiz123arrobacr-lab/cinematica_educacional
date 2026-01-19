@@ -18,35 +18,35 @@ const quizQuestions: Question[] = [
     question: "Uma força de 20 N é aplicada a um objeto de 4 kg. Qual é a aceleração resultante?",
     options: ["5 m/s²", "80 m/s²", "0.2 m/s²", "4 m/s²"],
     correct: 0,
-    explanation: "Usando F = m·a, temos: a = F/m = 20/4 = 5 m/s²"
+    explanation: "Usando F = m*a, temos: a = F/m = 20/4 = 5 m/s^2"
   },
   {
     id: 2,
     question: "Qual é a energia cinética de um objeto de 2 kg movendo-se a 3 m/s?",
     options: ["6 J", "9 J", "12 J", "18 J"],
     correct: 1,
-    explanation: "Ec = ½·m·v² = ½·2·3² = ½·2·9 = 9 J"
+    explanation: "Ec = 0.5*m*v^2 = 0.5*2*3^2 = 0.5*2*9 = 9 J"
   },
   {
     id: 3,
     question: "Um objeto de 5 kg está a 10 m de altura. Qual é sua energia potencial? (g = 10 m/s²)",
     options: ["50 J", "150 J", "500 J", "1000 J"],
     correct: 2,
-    explanation: "Ep = m·g·h = 5·10·10 = 500 J"
+    explanation: "Ep = m*g*h = 5*10*10 = 500 J"
   },
   {
     id: 4,
     question: "Qual é o momentum de um objeto de 3 kg movendo-se a 4 m/s?",
     options: ["7 kg·m/s", "12 kg·m/s", "1.33 kg·m/s", "12 m/s"],
     correct: 1,
-    explanation: "p = m·v = 3·4 = 12 kg·m/s"
+    explanation: "p = m*v = 3*4 = 12 kg*m/s"
   },
   {
     id: 5,
     question: "Uma força de 10 N é aplicada a um objeto durante 5 segundos. Qual é o impulso?",
     options: ["2 N·s", "15 N·s", "50 N·s", "0.5 N·s"],
     correct: 2,
-    explanation: "I = F·Δt = 10·5 = 50 N·s"
+    explanation: "I = F*Delta t = 10*5 = 50 N*s"
   },
   {
     id: 6,

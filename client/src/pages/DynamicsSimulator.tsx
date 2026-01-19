@@ -92,7 +92,7 @@ export default function DynamicsSimulator() {
                 <div className="space-y-6 bg-slate-50 p-6 rounded-lg">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-semibold text-slate-700">Velocidade Inicial (v₀)</label>
+                      <label className="text-sm font-semibold text-slate-700">Velocidade Inicial (v_0)</label>
                       <span className="text-sm font-bold text-blue-600">{v0Force.toFixed(2)} m/s</span>
                     </div>
                     <Slider
@@ -108,7 +108,7 @@ export default function DynamicsSimulator() {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label className="text-sm font-semibold text-slate-700">Aceleração (a) - Força Aplicada</label>
-                      <span className="text-sm font-bold text-blue-600">{aForce.toFixed(2)} m/s²</span>
+                      <span className="text-sm font-bold text-blue-600">{aForce.toFixed(2)} m/s^2</span>
                     </div>
                     <Slider
                       value={[aForce]}
@@ -193,7 +193,7 @@ export default function DynamicsSimulator() {
                 <div className="space-y-6 bg-slate-50 p-6 rounded-lg">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-semibold text-slate-700">Massa 1 (m₁)</label>
+                      <label className="text-sm font-semibold text-slate-700">Massa 1 (m_1)</label>
                       <span className="text-sm font-bold text-blue-600">{m1Collision.toFixed(1)} kg</span>
                     </div>
                     <Slider
@@ -208,7 +208,7 @@ export default function DynamicsSimulator() {
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-semibold text-slate-700">Massa 2 (m₂)</label>
+                      <label className="text-sm font-semibold text-slate-700">Massa 2 (m_2)</label>
                       <span className="text-sm font-bold text-red-600">{m2Collision.toFixed(1)} kg</span>
                     </div>
                     <Slider
@@ -223,7 +223,7 @@ export default function DynamicsSimulator() {
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-semibold text-slate-700">Velocidade Inicial 1 (v₁)</label>
+                      <label className="text-sm font-semibold text-slate-700">Velocidade Inicial 1 (v_1)</label>
                       <span className="text-sm font-bold text-blue-600">{v1Collision.toFixed(2)} m/s</span>
                     </div>
                     <Slider
@@ -238,7 +238,7 @@ export default function DynamicsSimulator() {
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-semibold text-slate-700">Velocidade Inicial 2 (v₂)</label>
+                      <label className="text-sm font-semibold text-slate-700">Velocidade Inicial 2 (v_2)</label>
                       <span className="text-sm font-bold text-red-600">{v2Collision.toFixed(2)} m/s</span>
                     </div>
                     <Slider
@@ -253,7 +253,7 @@ export default function DynamicsSimulator() {
 
                   <div className="bg-orange-50 border border-orange-200 rounded p-3">
                     <p className="text-sm text-slate-700">
-                      <strong>Momentum Inicial:</strong> p = {(m1Collision * v1Collision + m2Collision * v2Collision).toFixed(2)} kg·m/s
+                      <strong>Momentum Inicial:</strong> p = {(m1Collision * v1Collision + m2Collision * v2Collision).toFixed(2)} kg*m/s
                     </p>
                   </div>
 
@@ -334,7 +334,7 @@ export default function DynamicsSimulator() {
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-semibold text-slate-700">Velocidade Angular (ω)</label>
+                      <label className="text-sm font-semibold text-slate-700">Velocidade Angular (omega)</label>
                       <span className="text-sm font-bold text-purple-600">{(wCircular * 100).toFixed(2)} rad/s</span>
                     </div>
                     <Slider
@@ -349,7 +349,7 @@ export default function DynamicsSimulator() {
 
                   <div className="bg-purple-50 border border-purple-200 rounded p-3">
                     <p className="text-sm text-slate-700">
-                      <strong>Aceleração Centrípeta:</strong> a_c = ω²R = {(wCircular * wCircular * rCircular).toFixed(2)} pixels/frame²
+                      <strong>Aceleração Centrípeta:</strong> a_c = omega^2*R = {(wCircular * wCircular * rCircular).toFixed(2)} pixels/frame^2
                     </p>
                   </div>
 
