@@ -3,6 +3,7 @@ import { ArrowLeft, BookOpen, Calculator, BarChart3, HelpCircle, TrendingUp } fr
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { dinamicaTopics } from "@/data/dinamica-content";
+import { MathFormula } from "@/components/MathFormula";
 
 export default function DinamicaHome() {
   return (
@@ -221,6 +222,37 @@ export default function DinamicaHome() {
                 </div>
               </Card>
             </Link>
+          </div>
+        </div>
+
+        {/* Formula Reference Section */}
+        <div className="bg-gradient-to-r from-purple-600/10 to-pink-600/10 border-y border-slate-200/50 py-16 -mx-4 px-4 mt-16">
+          <div className="container mx-auto">
+            <div className="flex items-center justify-between mb-12">
+              <h2 className="text-3xl font-bold text-slate-900">Fórmulas Principais</h2>
+              <Link href="/dinamica/formulas">
+                <Button className="bg-purple-600 hover:bg-purple-700">Ver Explicação Completa</Button>
+              </Link>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                { title: "Segunda Lei de Newton", formula: "F = m \\cdot a" },
+                { title: "Força de Atrito", formula: "f = \\mu \\cdot N" },
+                { title: "Trabalho", formula: "W = F \\cdot d \\cdot \\cos(\\theta)" },
+                { title: "Energia Cinética", formula: "E_c = \\frac{1}{2} \\cdot m \\cdot v^2" },
+                { title: "Energia Potencial", formula: "E_p = m \\cdot g \\cdot h" },
+                { title: "Momentum", formula: "p = m \\cdot v" },
+              ].map((item, idx) => (
+                <Link key={idx} href="/dinamica/formulas">
+                  <Card className="p-6 hover:shadow-lg transition-all cursor-pointer hover:scale-105">
+                    <p className="text-sm font-semibold text-slate-600 mb-2">{item.title}</p>
+                    <div className="text-lg font-bold">
+                      <MathFormula formula={item.formula} className="text-center" />
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </main>
