@@ -20,11 +20,6 @@ export function MathFormula({ formula, display = true, className = '' }: MathFor
       // Aguardar MathJax estar completamente carregado
       if (typeof window !== 'undefined' && (window as any).MathJax) {
         try {
-          // Limpar renderizações anteriores
-          if (ref.current) {
-            (window as any).MathJax.typesetClear([ref.current]);
-          }
-          
           // Renderizar novo conteúdo
           await (window as any).MathJax.typesetPromise([ref.current]);
         } catch (err) {
@@ -51,7 +46,7 @@ export function MathFormula({ formula, display = true, className = '' }: MathFor
     <div 
       ref={ref} 
       className={className} 
-      style={{ wordBreak: 'break-word', display: display ? 'block' : 'inline-block' }}
+      style={{ wordBreak: 'break-word', display: display ? 'block' : 'inline-block', overflow: 'auto' }}
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   );
