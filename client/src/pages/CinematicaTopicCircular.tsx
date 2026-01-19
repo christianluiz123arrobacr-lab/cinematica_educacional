@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, AlertCircle, Lightbulb } from "lucide-react";
 import { Link } from "wouter";
 import { MathFormula } from "@/components/MathFormula";
 
@@ -30,127 +30,178 @@ export default function CinematicaTopicCircular() {
       <section className="container py-6 md:py-12 space-y-6 md:space-y-12">
         {/* Introdução */}
         <Card className="p-4 md:p-8 shadow-lg border-0 bg-gradient-to-r from-blue-50 to-cyan-50">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Movimento em Trajetória Circular</h2>
+          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Quando as Coisas Giram</h2>
           <div className="space-y-4 text-slate-700 leading-relaxed">
-            <p>O Movimento Circular Uniforme (MCU) é um tipo de movimento onde um objeto se move em uma trajetória circular com velocidade constante em módulo. Embora a velocidade seja constante em magnitude, sua direção muda continuamente, resultando em uma aceleração centrípeta dirigida para o centro da circunferência.</p>
-            <p>O MCU é encontrado em muitas situações práticas: satélites orbitando a Terra, rodas girando, carrosséis, e até elétrons orbitando núcleos atômicos. É um movimento fundamental para entender sistemas rotativos e dinâmica orbital.</p>
+            <p>Pense em um carrossel girando, em um satélite orbitando a Terra, ou em uma roda de bicicleta. Todos esses são exemplos de movimento circular.</p>
+            <p>O interessante é que, mesmo que a velocidade seja constante em <strong>magnitude</strong> (rapidez), a <strong>direção</strong> está sempre mudando. E isso significa que há aceleração! Confuso? Vamos entender.</p>
           </div>
         </Card>
 
-        {/* Definição */}
+        {/* O Que é MCU */}
         <Card className="p-4 md:p-8 shadow-lg border-0">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Características do MCU</h2>
+          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">O Que é Movimento Circular Uniforme?</h2>
           <div className="space-y-4 text-slate-700 leading-relaxed">
-            <p className="text-lg font-semibold text-slate-800 italic">
-              "Um objeto em Movimento Circular Uniforme percorre uma trajetória circular com velocidade constante em módulo, mas com direção sempre tangente à circunferência."
-            </p>
-            
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Propriedades Principais</h3>
+            <div className="bg-cyan-50 p-4 rounded-lg border-l-4 border-cyan-500 my-4">
+              <p><strong>MCU:</strong> Um objeto se move em um círculo, sempre com a mesma rapidez, mas a direção muda continuamente.</p>
+            </div>
+
+            <h3 className="text-lg font-bold text-slate-900 mt-6">As Características Principais</h3>
             <ul className="space-y-3 text-slate-700">
               <li className="flex gap-3">
                 <span className="text-cyan-600 font-bold">✓</span>
-                <span><strong>Velocidade Constante em Módulo:</strong> |v| = constante</span>
+                <span><strong>Velocidade Constante em Magnitude:</strong> A rapidez não muda (sempre 60 km/h, por exemplo).</span>
               </li>
               <li className="flex gap-3">
                 <span className="text-cyan-600 font-bold">✓</span>
-                <span><strong>Velocidade Tangencial:</strong> Sempre tangente à circunferência</span>
+                <span><strong>Direção Sempre Mudando:</strong> A cada instante, o objeto aponta para uma direção diferente.</span>
               </li>
               <li className="flex gap-3">
                 <span className="text-cyan-600 font-bold">✓</span>
-                <span><strong>Aceleração Centrípeta:</strong> Dirigida para o centro, com módulo constante</span>
+                <span><strong>Trajetória Circular:</strong> O caminho é um círculo perfeito.</span>
               </li>
               <li className="flex gap-3">
                 <span className="text-cyan-600 font-bold">✓</span>
-                <span><strong>Período Constante:</strong> O tempo para completar uma volta é sempre o mesmo</span>
+                <span><strong>Aceleração Centrípeta:</strong> Há uma aceleração dirigida para o centro do círculo.</span>
               </li>
             </ul>
+
+            <div className="bg-cyan-50 p-4 rounded-lg border-l-4 border-cyan-500 my-4">
+              <p className="mb-2"><strong>Analogia:</strong> Imagine você em um carrossel. Você se move com a mesma rapidez o tempo todo, mas está sempre virando. Essa mudança de direção é aceleração!</p>
+            </div>
           </div>
         </Card>
 
         {/* Conceitos Importantes */}
         <Card className="p-4 md:p-8 shadow-lg border-0">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Conceitos e Grandezas do MCU</h2>
+          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Conceitos Importantes do MCU</h2>
           <div className="space-y-4 text-slate-700 leading-relaxed">
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Período (T)</h3>
-            <p>O tempo necessário para o objeto completar uma volta completa na circunferência.</p>
-            
-            <div className="bg-cyan-50 p-3 md:p-6 rounded-lg border border-cyan-200 overflow-x-auto">
-              <MathFormula formula="T = \\frac{2\\pi r}{v}" className="text-center text-lg md:text-2xl mb-4" />
-              <p className="text-sm text-slate-600">Onde: T = período (s), r = raio (m), v = velocidade linear (m/s)</p>
+            <h3 className="text-lg font-bold text-slate-900">1. Período (T) - Quanto Tempo Leva para Dar Uma Volta?</h3>
+            <p>É o tempo necessário para o objeto completar uma volta completa no círculo.</p>
+            <div className="bg-cyan-50 p-4 rounded-lg border-l-4 border-cyan-500 my-4">
+              <p><strong>Exemplo:</strong> Um satélite que leva 90 minutos para orbitar a Terra tem período T = 90 min.</p>
             </div>
 
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Frequência (f)</h3>
-            <p>O número de voltas completas por unidade de tempo. É o inverso do período.</p>
-            
-            <div className="bg-blue-50 p-3 md:p-6 rounded-lg border border-blue-200 overflow-x-auto">
+            <h3 className="text-lg font-bold text-slate-900 mt-6">2. Frequência (f) - Quantas Voltas por Segundo?</h3>
+            <p>É o número de voltas que o objeto completa em 1 segundo.</p>
+            <div className="bg-cyan-50 p-3 md:p-6 rounded-lg border border-cyan-200 overflow-x-auto my-4">
               <MathFormula formula="f = \\frac{1}{T}" className="text-center text-lg md:text-2xl mb-4" />
-              <p className="text-sm text-slate-600">Onde: f = frequência (Hz), T = período (s)</p>
+              <p className="text-sm text-slate-600 text-center">Frequência é o inverso do período</p>
             </div>
 
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Velocidade Angular (ω)</h3>
-            <p>A taxa de variação do ângulo em relação ao tempo. Relaciona-se com a velocidade linear pela relação v = ω·r.</p>
-            
-            <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto">
-              <MathFormula formula="\\omega = \\frac{2\\pi}{T} = 2\\pi f = \\frac{v}{r}" className="text-center text-lg md:text-2xl mb-4" />
-              <p className="text-sm text-slate-600">Onde: ω = velocidade angular (rad/s), r = raio (m), v = velocidade linear (m/s)</p>
+            <h3 className="text-lg font-bold text-slate-900 mt-6">3. Velocidade Linear (v) - Quão Rápido Ele Se Move?</h3>
+            <p>É a rapidez com que o objeto percorre o círculo.</p>
+            <div className="bg-blue-50 p-3 md:p-6 rounded-lg border border-blue-200 overflow-x-auto my-4">
+              <MathFormula formula="v = \\frac{2\\pi r}{T}" className="text-center text-lg md:text-2xl mb-4" />
+              <p className="text-sm text-slate-600 text-center">Velocidade = Perímetro do círculo / Período</p>
             </div>
 
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Aceleração Centrípeta (ac)</h3>
-            <p>A aceleração dirigida para o centro da circunferência, responsável pela mudança de direção da velocidade.</p>
-            
-            <div className="bg-orange-50 p-3 md:p-6 rounded-lg border border-orange-200 overflow-x-auto">
+            <h3 className="text-lg font-bold text-slate-900 mt-6">4. Velocidade Angular (ω) - Quão Rápido Ele Gira?</h3>
+            <p>É o ângulo que o objeto percorre por unidade de tempo. Medida em radianos por segundo (rad/s).</p>
+            <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto my-4">
+              <MathFormula formula="\\omega = \\frac{2\\pi}{T} = 2\\pi f" className="text-center text-lg md:text-2xl mb-4" />
+              <p className="text-sm text-slate-600 text-center">Velocidade angular = 2π / Período</p>
+            </div>
+
+            <div className="bg-cyan-50 p-4 rounded-lg border-l-4 border-cyan-500 my-4">
+              <p><strong>Relação importante:</strong> v = ω × r (velocidade linear = velocidade angular × raio)</p>
+            </div>
+
+            <h3 className="text-lg font-bold text-slate-900 mt-6">5. Aceleração Centrípeta (ac) - A Aceleração Dirigida para o Centro</h3>
+            <p>É a aceleração que muda a direção do objeto, mantendo-o em movimento circular.</p>
+            <div className="bg-orange-50 p-3 md:p-6 rounded-lg border border-orange-200 overflow-x-auto my-4">
               <MathFormula formula="a_c = \\frac{v^2}{r} = \\omega^2 \\cdot r" className="text-center text-lg md:text-2xl mb-4" />
-              <p className="text-sm text-slate-600">Onde: ac = aceleração centrípeta (m/s²), v = velocidade linear (m/s), r = raio (m), ω = velocidade angular (rad/s)</p>
+              <p className="text-sm text-slate-600 text-center">Aceleração centrípeta = Velocidade² / Raio</p>
+            </div>
+
+            <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500 my-4">
+              <p><strong>Importante:</strong> Essa aceleração não muda a rapidez, apenas a direção! É por isso que o movimento é "uniforme" (rapidez constante).</p>
             </div>
           </div>
         </Card>
 
         {/* Exemplos Práticos */}
         <Card className="p-4 md:p-8 shadow-lg border-0">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Exemplos Práticos de MCU</h2>
+          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Exemplos do Mundo Real</h2>
           <div className="space-y-4 text-slate-700 leading-relaxed">
             <ul className="space-y-4 text-slate-700">
               <li className="flex gap-3">
                 <span className="text-cyan-600 font-bold">1.</span>
                 <div>
-                  <strong>Satélite em órbita:</strong> Um satélite orbitando a Terra em órbita circular tem MCU com período que depende da altitude.
+                  <strong>Satélite em órbita:</strong> Um satélite orbita a Terra em uma órbita circular com período de 90 minutos. Ele se move com velocidade constante, mas está sempre acelerando em direção ao centro da Terra!
                 </div>
               </li>
               <li className="flex gap-3">
                 <span className="text-cyan-600 font-bold">2.</span>
                 <div>
-                  <strong>Roda girando:</strong> Uma roda que gira com velocidade angular constante está em MCU.
+                  <strong>Roda de bicicleta:</strong> Uma roda que gira a 100 RPM (rotações por minuto) tem frequência de 100/60 ≈ 1,67 Hz.
                 </div>
               </li>
               <li className="flex gap-3">
                 <span className="text-cyan-600 font-bold">3.</span>
                 <div>
-                  <strong>Carrossel:</strong> Um carrossel girando com velocidade constante tem todos os seus pontos em MCU.
+                  <strong>Carrossel:</strong> Um carrossel que completa uma volta a cada 10 segundos tem período T = 10 s e frequência f = 0,1 Hz.
                 </div>
               </li>
               <li className="flex gap-3">
                 <span className="text-cyan-600 font-bold">4.</span>
                 <div>
-                  <strong>Ponteiros do relógio:</strong> Os ponteiros de um relógio completam voltas com períodos bem definidos (12 horas para o ponteiro das horas, 1 hora para o dos minutos, etc.).
+                  <strong>Ponteiros do relógio:</strong> O ponteiro dos segundos completa uma volta a cada 60 segundos (T = 60 s). O ponteiro das horas leva 12 horas (T = 43.200 s).
                 </div>
               </li>
             </ul>
+          </div>
+        </Card>
 
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Problema Resolvido</h3>
-            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-              <p className="font-semibold mb-3">Um objeto move-se em círculo com raio de 2 m, completando uma volta a cada 4 segundos. Calcule a velocidade linear e a aceleração centrípeta.</p>
-              <p className="mb-2"><strong>Dados:</strong> r = 2 m, T = 4 s</p>
-              <p className="mb-2"><strong>Solução:</strong></p>
-              <div className="bg-white p-3 rounded border border-slate-300 overflow-x-auto mb-2">
-                <p className="mb-2"><strong>Velocidade linear:</strong></p>
-                <MathFormula formula="v = \\frac{2\\pi r}{T} = \\frac{2\\pi \\times 2}{4} = \\pi \\text{ m/s} \\approx 3.14 \\text{ m/s}" className="text-center text-lg" />
-              </div>
-              <div className="bg-white p-3 rounded border border-slate-300 overflow-x-auto mb-2">
-                <p className="mb-2"><strong>Aceleração centrípeta:</strong></p>
-                <MathFormula formula="a_c = \\frac{v^2}{r} = \\frac{\\pi^2}{2} \\approx 4.93 \\text{ m/s}^2" className="text-center text-lg" />
-              </div>
-              <p><strong>Resposta:</strong> v ≈ 3.14 m/s e ac ≈ 4.93 m/s²</p>
+        {/* Erros Comuns */}
+        <Card className="p-4 md:p-8 shadow-lg border-0 bg-red-50">
+          <div className="flex items-start gap-4">
+            <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
+            <div>
+              <h3 className="text-lg font-bold text-red-900 mb-4">⚠️ Erros Comuns</h3>
+              <ul className="space-y-3 text-red-900">
+                <li className="flex gap-3">
+                  <span className="font-bold">❌</span>
+                  <span><strong>Erro:</strong> "No MCU não há aceleração porque a velocidade é constante"<br/><strong>Verdade:</strong> A rapidez é constante, mas a direção muda. Isso é aceleração! É chamada aceleração centrípeta.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="font-bold">❌</span>
+                  <span><strong>Erro:</strong> "Confundir velocidade linear com velocidade angular"<br/><strong>Verdade:</strong> São coisas diferentes! Linear é em m/s, angular é em rad/s.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="font-bold">❌</span>
+                  <span><strong>Erro:</strong> "Esquecer de converter RPM para Hz"<br/><strong>Verdade:</strong> RPM = rotações por minuto. Para converter para Hz (rotações por segundo), divida por 60!</span>
+                </li>
+              </ul>
             </div>
+          </div>
+        </Card>
+
+        {/* Dicas Práticas */}
+        <Card className="p-4 md:p-8 shadow-lg border-0 bg-yellow-50">
+          <div className="flex items-start gap-4">
+            <Lightbulb className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
+            <div>
+              <h3 className="text-lg font-bold text-yellow-900 mb-4">💡 Dicas para Lembrar</h3>
+              <ul className="space-y-3 text-yellow-900">
+                <li><strong>Período:</strong> Quanto tempo leva para dar uma volta? Medido em segundos.</li>
+                <li><strong>Frequência:</strong> Quantas voltas por segundo? Medida em Hz (Hertz).</li>
+                <li><strong>Velocidade Linear:</strong> Quão rápido ele se move? Medida em m/s.</li>
+                <li><strong>Aceleração Centrípeta:</strong> Sempre aponta para o centro do círculo!</li>
+                <li><strong>Relação útil:</strong> v = ω × r (conecta velocidade linear e angular)</li>
+              </ul>
+            </div>
+          </div>
+        </Card>
+
+        {/* Resumo */}
+        <Card className="p-4 md:p-8 shadow-lg border-0 bg-gradient-to-r from-blue-50 to-cyan-50">
+          <h3 className="text-lg font-bold text-slate-900 mb-4">📌 Resumo Rápido</h3>
+          <div className="space-y-3 text-slate-700">
+            <p><strong>MCU:</strong> Movimento em círculo com velocidade constante em magnitude</p>
+            <p><strong>Período (T):</strong> Tempo para uma volta completa</p>
+            <p><strong>Frequência (f):</strong> Número de voltas por segundo (f = 1/T)</p>
+            <p><strong>Velocidade Linear:</strong> v = 2πr/T</p>
+            <p><strong>Aceleração Centrípeta:</strong> ac = v²/r (dirigida para o centro)</p>
           </div>
         </Card>
       </section>
