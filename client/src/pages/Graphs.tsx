@@ -72,12 +72,12 @@ export default function Graphs() {
       </header>
 
       {/* Main Content */}
-      <section className="container py-12 space-y-12">
+      <section className="container py-6 md:py-12 space-y-6 md:space-y-12">
         {/* MRU Graph */}
-        <Card className="p-8 shadow-lg border-0">
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">MRU - Posição e Velocidade vs Tempo</h2>
+        <Card className="p-4 md:p-8 shadow-lg border-0">
+          <h2 className="text-lg md:text-2xl font-bold text-slate-900 mb-6">MRU - Posição e Velocidade vs Tempo</h2>
           
-          <div className="grid md:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-6">
             <div className="space-y-2">
               <label className="block text-sm font-semibold text-slate-700">Posição Inicial (m)</label>
               <Input 
@@ -104,8 +104,8 @@ export default function Graphs() {
             </div>
           </div>
 
-          <div className="bg-slate-50 p-4 rounded-lg">
-            <ResponsiveContainer width="100%" height={300}>
+          <div className="bg-slate-50 p-3 md:p-4 rounded-lg overflow-x-auto">
+            <ResponsiveContainer width="100%" height={250}>
               <LineChart data={generateMRUData()}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="t" label={{ value: "Tempo (s)", position: "insideBottomRight", offset: -5 }} />
@@ -119,10 +119,10 @@ export default function Graphs() {
         </Card>
 
         {/* MRUV Graph */}
-        <Card className="p-8 shadow-lg border-0">
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">MRUV - Posição e Velocidade vs Tempo</h2>
+        <Card className="p-4 md:p-8 shadow-lg border-0">
+          <h2 className="text-lg md:text-2xl font-bold text-slate-900 mb-6">MRUV - Posição e Velocidade vs Tempo</h2>
           
-          <div className="grid md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
             <div className="space-y-2">
               <label className="block text-sm font-semibold text-slate-700">Posição Inicial (m)</label>
               <Input 
@@ -158,9 +158,9 @@ export default function Graphs() {
           </div>
 
           <div className="space-y-6">
-            <div className="bg-slate-50 p-4 rounded-lg">
-              <h3 className="text-lg font-semibold text-slate-900 mb-3">Posição vs Tempo</h3>
-              <ResponsiveContainer width="100%" height={250}>
+            <div className="bg-slate-50 p-3 md:p-4 rounded-lg overflow-x-auto">
+              <h3 className="text-base md:text-lg font-semibold text-slate-900 mb-3">Posição vs Tempo</h3>
+              <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={generateMRUVData()}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="t" label={{ value: "Tempo (s)", position: "insideBottomRight", offset: -5 }} />
@@ -172,9 +172,9 @@ export default function Graphs() {
               </ResponsiveContainer>
             </div>
 
-            <div className="bg-slate-50 p-4 rounded-lg">
-              <h3 className="text-lg font-semibold text-slate-900 mb-3">Velocidade vs Tempo</h3>
-              <ResponsiveContainer width="100%" height={250}>
+            <div className="bg-slate-50 p-3 md:p-4 rounded-lg overflow-x-auto">
+              <h3 className="text-base md:text-lg font-semibold text-slate-900 mb-3">Velocidade vs Tempo</h3>
+              <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={generateMRUVData()}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="t" label={{ value: "Tempo (s)", position: "insideBottomRight", offset: -5 }} />
@@ -189,10 +189,10 @@ export default function Graphs() {
         </Card>
 
         {/* Queda Livre Graph */}
-        <Card className="p-8 shadow-lg border-0">
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">Queda Livre - Altura e Velocidade vs Tempo</h2>
+        <Card className="p-4 md:p-8 shadow-lg border-0">
+          <h2 className="text-lg md:text-2xl font-bold text-slate-900 mb-6">Queda Livre - Altura e Velocidade vs Tempo</h2>
           
-          <div className="grid md:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-6">
             <div className="space-y-2">
               <label className="block text-sm font-semibold text-slate-700">Altura Inicial (m)</label>
               <Input 
@@ -220,9 +220,9 @@ export default function Graphs() {
           </div>
 
           <div className="space-y-6">
-            <div className="bg-slate-50 p-4 rounded-lg">
-              <h3 className="text-lg font-semibold text-slate-900 mb-3">Altura vs Tempo</h3>
-              <ResponsiveContainer width="100%" height={250}>
+            <div className="bg-slate-50 p-3 md:p-4 rounded-lg overflow-x-auto">
+              <h3 className="text-base md:text-lg font-semibold text-slate-900 mb-3">Altura vs Tempo</h3>
+              <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={generateQuedaData()}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="t" label={{ value: "Tempo (s)", position: "insideBottomRight", offset: -5 }} />
@@ -234,9 +234,9 @@ export default function Graphs() {
               </ResponsiveContainer>
             </div>
 
-            <div className="bg-slate-50 p-4 rounded-lg">
-              <h3 className="text-lg font-semibold text-slate-900 mb-3">Velocidade vs Tempo</h3>
-              <ResponsiveContainer width="100%" height={250}>
+            <div className="bg-slate-50 p-3 md:p-4 rounded-lg overflow-x-auto">
+              <h3 className="text-base md:text-lg font-semibold text-slate-900 mb-3">Velocidade vs Tempo</h3>
+              <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={generateQuedaData()}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="t" label={{ value: "Tempo (s)", position: "insideBottomRight", offset: -5 }} />
@@ -251,7 +251,7 @@ export default function Graphs() {
         </Card>
 
         {/* CTA */}
-        <div className="flex gap-4 justify-center flex-wrap">
+        <div className="flex gap-2 md:gap-4 justify-center flex-wrap">
           <Link href="/learn">
             <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
               Voltar ao Guia
