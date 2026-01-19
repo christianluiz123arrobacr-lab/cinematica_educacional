@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChevronDown, BookOpen, Zap, Target, Droplet, MessageCircle, ArrowLeft, Play } from "lucide-react";
+import { ChevronDown, BookOpen, Zap, Target, Droplet, MessageCircle, ArrowLeft, Play, BarChart3 } from "lucide-react";
 import { Link } from "wouter";
 import { cinematicaContent } from "@/data/cinematica-content";
 import { MathFormula } from "@/components/MathFormula";
@@ -201,6 +201,40 @@ export default function Home() {
               </Card>
             );
           })}
+        </div>
+      </section>
+
+      {/* Tools Section */}
+      <section className="container py-16">
+        <h2 className="text-3xl font-bold text-slate-900 mb-12">Ferramentas de Aprendizado</h2>
+        <div className="grid md:grid-cols-3 gap-6 mb-16">
+          <Link href="/cinematica/graphs-new">
+            <Card className="p-8 hover:shadow-lg transition-all cursor-pointer hover:scale-105 h-full">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center mb-4">
+                <Zap className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Gráficos Interativos</h3>
+              <p className="text-slate-600 text-sm">Visualize graficamente como velocidade, aceleração e posição variam com o tempo em diferentes tipos de movimento.</p>
+            </Card>
+          </Link>
+          <Link href="/cinematica/quiz-new">
+            <Card className="p-8 hover:shadow-lg transition-all cursor-pointer hover:scale-105 h-full">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-600 to-purple-400 flex items-center justify-center mb-4">
+                <Target className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Quiz de Cinemática</h3>
+              <p className="text-slate-600 text-sm">Teste seus conhecimentos com perguntas sobre cinemática e receba um certificado ao atingir 70% de acerto.</p>
+            </Card>
+          </Link>
+          <Link href="/cinematica/simulator">
+            <Card className="p-8 hover:shadow-lg transition-all cursor-pointer hover:scale-105 h-full">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-600 to-green-400 flex items-center justify-center mb-4">
+                <Play className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Simuladores Visuais</h3>
+              <p className="text-slate-600 text-sm">Experimente simulações de MRU, MRUV, queda livre, movimento circular e lançamento de projéteis.</p>
+            </Card>
+          </Link>
         </div>
       </section>
 

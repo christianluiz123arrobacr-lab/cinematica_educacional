@@ -18,6 +18,8 @@ import DynamicsFormulas from "./pages/DynamicsFormulas";
 import DynamicsQuiz from "./pages/DynamicsQuiz";
 import DynamicsGraphs from "./pages/DynamicsGraphs";
 import CinematicaSimulator from "./pages/CinematicaSimulator";
+import CinematicaGraphs from "./pages/CinematicaGraphs";
+import CinematicaQuiz from "./pages/CinematicaQuiz";
 import DynamicsSimulator from "./pages/DynamicsSimulator";
 import Progress from "./pages/Progress";
 import DynamicsTopicNewton from "./pages/DynamicsTopicNewton";
@@ -35,8 +37,10 @@ function Router() {
       <Route path="/cinematica/learn" component={Learn} />
       <Route path="/cinematica/quiz" component={Quiz} />
       <Route path="/cinematica/graphs" component={Graphs} />
+      <Route path="/cinematica/graphs-new" component={CinematicaGraphs} />
       <Route path="/cinematica/calculator" component={Calculator} />
       <Route path="/cinematica/formulas" component={Formulas} />
+      <Route path="/cinematica/quiz-new" component={CinematicaQuiz} />
       <Route path="/cinematica/simulator" component={CinematicaSimulator} />
       <Route path="/dinamica" component={DinamicaHome} />
       <Route path="/dinamica/learn" component={DynamicsLearn} />
