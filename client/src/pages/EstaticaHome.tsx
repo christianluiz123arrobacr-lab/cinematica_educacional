@@ -140,6 +140,15 @@ export default function EstaticaHome() {
                 </Card>
               </Link>
             </div>
+            <div className="group">
+              <Link href="/hidrostatica/simulator">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-cyan-400 bg-gradient-to-br from-cyan-50 to-blue-50">
+                  <Zap className="w-8 h-8 text-cyan-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <h3 className="font-bold text-slate-900">Simulador Hidrostatica</h3>
+                  <p className="text-xs text-slate-600 mt-1">Pressao interativa</p>
+                </Card>
+              </Link>
+            </div>
           </div>
         </div>
 
