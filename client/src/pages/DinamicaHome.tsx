@@ -10,11 +10,9 @@ export default function DinamicaHome() {
       {/* Header */}
       <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/">
-            <a className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-              Voltar
-            </a>
+          <Link href="/" className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
+            <ArrowLeft className="w-5 h-5" />
+            Voltar
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Dinâmica</h1>
@@ -33,41 +31,33 @@ export default function DinamicaHome() {
             Dinâmica é o ramo da Mecânica que estuda as causas do movimento dos corpos. Ela analisa como as forças afetam o movimento, a energia e o momentum.
           </p>
           <div className="grid md:grid-cols-4 gap-4 mb-12">
-            <Link href="/dinamica/learn">
-              <a className="group">
-                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
-                  <BookOpen className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                  <h3 className="font-bold text-slate-900">Guia Completo</h3>
-                  <p className="text-xs text-slate-600 mt-1">Explicações detalhadas</p>
-                </Card>
-              </a>
+            <Link href="/dinamica/learn" className="group">
+              <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
+                <BookOpen className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                <h3 className="font-bold text-slate-900">Guia Completo</h3>
+                <p className="text-xs text-slate-600 mt-1">Explicações detalhadas</p>
+              </Card>
             </Link>
-            <Link href="/dinamica/calculator">
-              <a className="group">
-                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
-                  <Calculator className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                  <h3 className="font-bold text-slate-900">Calculadora</h3>
-                  <p className="text-xs text-slate-600 mt-1">Calcule qualquer variável</p>
-                </Card>
-              </a>
+            <Link href="/dinamica/calculator" className="group">
+              <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
+                <Calculator className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                <h3 className="font-bold text-slate-900">Calculadora</h3>
+                <p className="text-xs text-slate-600 mt-1">Calcule qualquer variável</p>
+              </Card>
             </Link>
-            <Link href="/dinamica/formulas">
-              <a className="group">
-                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
-                  <BarChart3 className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                  <h3 className="font-bold text-slate-900">Fórmulas</h3>
-                  <p className="text-xs text-slate-600 mt-1">Derivações completas</p>
-                </Card>
-              </a>
+            <Link href="/dinamica/formulas" className="group">
+              <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
+                <BarChart3 className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                <h3 className="font-bold text-slate-900">Fórmulas</h3>
+                <p className="text-xs text-slate-600 mt-1">Derivações completas</p>
+              </Card>
             </Link>
-            <Link href="/dinamica/quiz">
-              <a className="group">
-                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
-                  <HelpCircle className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                  <h3 className="font-bold text-slate-900">Quiz</h3>
-                  <p className="text-xs text-slate-600 mt-1">Teste seu conhecimento</p>
-                </Card>
-              </a>
+            <Link href="/dinamica/quiz" className="group">
+              <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
+                <HelpCircle className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                <h3 className="font-bold text-slate-900">Quiz</h3>
+                <p className="text-xs text-slate-600 mt-1">Teste seu conhecimento</p>
+              </Card>
             </Link>
           </div>
         </div>

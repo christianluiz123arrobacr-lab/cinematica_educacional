@@ -10,10 +10,10 @@ import { MathFormula } from "@/components/MathFormula";
 
 export default function Calculator() {
   // ============ MRU CALCULATOR ============
-  const [mruVariable, setMruVariable] = useState("s");
-  const [mruInputs, setMruInputs] = useState({ s0: "0", v: "10", t: "5", s: "50" });
-  const [mruResult, setMruResult] = useState<any>(null);
-  const [mruError, setMruError] = useState("");
+  const [mruVariable, setMruVariable] = useState<string>("s");
+  const [mruInputs, setMruInputs] = useState<Record<string, string>>({ s0: "0", v: "10", t: "5", s: "50" });
+  const [mruResult, setMruResult] = useState<any | null>(null);
+  const [mruError, setMruError] = useState<string>("");
 
   const calculateMRU = () => {
     setMruError("");
@@ -69,10 +69,10 @@ export default function Calculator() {
   };
 
   // ============ MRUV CALCULATOR ============
-  const [mruvVariable, setMruvVariable] = useState("s");
-  const [mruvInputs, setMruvInputs] = useState({ s0: "0", v0: "0", a: "5", t: "3", s: "22.5", v: "15" });
-  const [mruvResult, setMruvResult] = useState<any>(null);
-  const [mruvError, setMruvError] = useState("");
+  const [mruvVariable, setMruvVariable] = useState<string>("s");
+  const [mruvInputs, setMruvInputs] = useState<Record<string, string>>({ s0: "0", v0: "0", a: "5", t: "3", s: "22.5", v: "15" });
+  const [mruvResult, setMruvResult] = useState<any | null>(null);
+  const [mruvError, setMruvError] = useState<string>("");
 
   const calculateMRUV = () => {
     setMruvError("");
@@ -133,10 +133,10 @@ export default function Calculator() {
   };
 
   // ============ TORRICELLI CALCULATOR ============
-  const [torriVariable, setTorriVariable] = useState("v");
-  const [torriInputs, setTorriInputs] = useState({ v0: "0", a: "10", deltaS: "20", v: "20" });
-  const [torriResult, setTorriResult] = useState<any>(null);
-  const [torriError, setTorriError] = useState("");
+  const [torriVariable, setTorriVariable] = useState<string>("v");
+  const [torriInputs, setTorriInputs] = useState<Record<string, string>>({ v0: "0", a: "10", deltaS: "20", v: "20" });
+  const [torriResult, setTorriResult] = useState<any | null>(null);
+  const [torriError, setTorriError] = useState<string>("");
 
   const calculateTorricelli = () => {
     setTorriError("");
@@ -197,10 +197,10 @@ export default function Calculator() {
   };
 
   // ============ FREE FALL CALCULATOR ============
-  const [ffVariable, setFfVariable] = useState("v");
-  const [ffInputs, setFfInputs] = useState({ h: "45", g: "9.8", t: "3", v: "29.4" });
-  const [ffResult, setFfResult] = useState<any>(null);
-  const [ffError, setFfError] = useState("");
+  const [ffVariable, setFfVariable] = useState<string>("v");
+  const [ffInputs, setFfInputs] = useState<Record<string, string>>({ h: "45", g: "9.8", t: "3", v: "29.4" });
+  const [ffResult, setFfResult] = useState<any | null>(null);
+  const [ffError, setFfError] = useState<string>("");
 
   const calculateFreeFall = () => {
     setFfError("");
@@ -251,10 +251,10 @@ export default function Calculator() {
   };
 
   // ============ MCU CALCULATOR ============
-  const [mcuVariable, setMcuVariable] = useState("v");
-  const [mcuInputs, setMcuInputs] = useState({ r: "5", T: "2", f: "0.5", v: "15.7", ac: "49.3" });
-  const [mcuResult, setMcuResult] = useState<any>(null);
-  const [mcuError, setMcuError] = useState("");
+  const [mcuVariable, setMcuVariable] = useState<string>("v");
+  const [mcuInputs, setMcuInputs] = useState<Record<string, string>>({ r: "5", T: "2", f: "0.5", v: "15.7", ac: "49.3" });
+  const [mcuResult, setMcuResult] = useState<any | null>(null);
+  const [mcuError, setMcuError] = useState<string>("");
 
   const calculateMCU = () => {
     setMcuError("");
