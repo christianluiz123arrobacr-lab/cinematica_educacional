@@ -35,48 +35,60 @@ export default function DinamicaHome() {
             Dinâmica é o ramo da Mecânica que estuda as causas do movimento dos corpos. Ela analisa como as forças afetam o movimento, a energia e o momentum.
           </p>
           <div className="grid md:grid-cols-6 gap-4 mb-12">
-            <Link href="/dinamica/learn" className="group">
-              <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
-                <BookOpen className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <h3 className="font-bold text-slate-900">Guia Completo</h3>
-                <p className="text-xs text-slate-600 mt-1">Explicações detalhadas</p>
-              </Card>
-            </Link>
-            <Link href="/dinamica/calculator" className="group">
-              <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
-                <Calculator className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <h3 className="font-bold text-slate-900">Calculadora</h3>
-                <p className="text-xs text-slate-600 mt-1">Calcule qualquer variável</p>
-              </Card>
-            </Link>
-            <Link href="/dinamica/formulas" className="group">
-              <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
-                <BarChart3 className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <h3 className="font-bold text-slate-900">Fórmulas</h3>
-                <p className="text-xs text-slate-600 mt-1">Derivações completas</p>
-              </Card>
-            </Link>
-            <Link href="/dinamica/quiz" className="group">
-              <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
-                <HelpCircle className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <h3 className="font-bold text-slate-900">Quiz</h3>
-                <p className="text-xs text-slate-600 mt-1">Teste seu conhecimento</p>
-              </Card>
-            </Link>
-            <Link href="/dinamica/graphs" className="group">
-              <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
-                <TrendingUp className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <h3 className="font-bold text-slate-900">Gráficos</h3>
-                <p className="text-xs text-slate-600 mt-1">Visualizações dinâmicas</p>
-              </Card>
-            </Link>
-            <Link href="/dinamica/simulator" className="group">
-              <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
-                <TrendingUp className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <h3 className="font-bold text-slate-900">Simulador</h3>
-                <p className="text-xs text-slate-600 mt-1">Animações interativas</p>
-              </Card>
-            </Link>
+            <div className="group">
+              <Link href="/dinamica/learn">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
+                  <BookOpen className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <h3 className="font-bold text-slate-900">Guia Completo</h3>
+                  <p className="text-xs text-slate-600 mt-1">Explicações detalhadas</p>
+                </Card>
+              </Link>
+            </div>
+            <div className="group">
+              <Link href="/dinamica/calculator">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
+                  <Calculator className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <h3 className="font-bold text-slate-900">Calculadora</h3>
+                  <p className="text-xs text-slate-600 mt-1">Calcule qualquer variável</p>
+                </Card>
+              </Link>
+            </div>
+            <div className="group">
+              <Link href="/dinamica/formulas">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
+                  <BarChart3 className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <h3 className="font-bold text-slate-900">Fórmulas</h3>
+                  <p className="text-xs text-slate-600 mt-1">Derivações completas</p>
+                </Card>
+              </Link>
+            </div>
+            <div className="group">
+              <Link href="/dinamica/quiz">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
+                  <HelpCircle className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <h3 className="font-bold text-slate-900">Quiz</h3>
+                  <p className="text-xs text-slate-600 mt-1">Teste seu conhecimento</p>
+                </Card>
+              </Link>
+            </div>
+            <div className="group">
+              <Link href="/dinamica/graphs">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
+                  <TrendingUp className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <h3 className="font-bold text-slate-900">Gráficos</h3>
+                  <p className="text-xs text-slate-600 mt-1">Visualizações dinâmicas</p>
+                </Card>
+              </Link>
+            </div>
+            <div className="group">
+              <Link href="/dinamica/simulator">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-400">
+                  <TrendingUp className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <h3 className="font-bold text-slate-900">Simulador</h3>
+                  <p className="text-xs text-slate-600 mt-1">Animações interativas</p>
+                </Card>
+              </Link>
+            </div>
           </div>
         </div>
 
