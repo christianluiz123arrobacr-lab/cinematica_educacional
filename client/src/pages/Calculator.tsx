@@ -17,10 +17,10 @@ export default function Calculator() {
   const calculateMRU = () => {
     setMruError("");
     try {
-      const s0 = parseFloat(mruInputs.s0);
-      const v = parseFloat(mruInputs.v);
-      const t = parseFloat(mruInputs.t);
-      const s = parseFloat(mruInputs.s);
+      const s0 = parseFloat(mruInputs.s0) || 0;
+      const v = parseFloat(mruInputs.v) || 0;
+      const t = parseFloat(mruInputs.t) || 0;
+      const s = parseFloat(mruInputs.s) || 0;
 
       if (isNaN(s0) || isNaN(v) || isNaN(t) || isNaN(s)) {
         setMruError("Preencha todos os campos com números válidos");
@@ -31,24 +31,28 @@ export default function Calculator() {
 
       if (mruVariable === "s") {
         // s = s0 + v*t
-        result = { value: s0 + v * t, unit: "m", label: "Posição Final (s)", formula: `${s0} + ${v} × ${t} = ${s0 + v * t}` };
+        const value = s0 + v * t;
+        result = { value: value, unit: "m", label: "Posição Final (s)" };
       } else if (mruVariable === "s0") {
         // s0 = s - v*t
-        result = { value: s - v * t, unit: "m", label: "Posição Inicial (s₀)", formula: `${s} - ${v} × ${t} = ${s - v * t}` };
+        const value = s - v * t;
+        result = { value: value, unit: "m", label: "Posição Inicial (s₀)" };
       } else if (mruVariable === "v") {
         // v = (s - s0) / t
         if (t === 0) {
           setMruError("Tempo não pode ser zero");
           return;
         }
-        result = { value: (s - s0) / t, unit: "m/s", label: "Velocidade (v)", formula: `(${s} - ${s0}) / ${t} = ${(s - s0) / t}` };
+        const value = (s - s0) / t;
+        result = { value: value, unit: "m/s", label: "Velocidade (v)" };
       } else if (mruVariable === "t") {
         // t = (s - s0) / v
         if (v === 0) {
           setMruError("Velocidade não pode ser zero");
           return;
         }
-        result = { value: (s - s0) / v, unit: "s", label: "Tempo (t)", formula: `(${s} - ${s0}) / ${v} = ${(s - s0) / v}` };
+        const value = (s - s0) / v;
+        result = { value: value, unit: "s", label: "Tempo (t)" };
       }
 
       setMruResult(result);
@@ -72,46 +76,47 @@ export default function Calculator() {
   const calculateMRUV = () => {
     setMruvError("");
     try {
-      const s0 = parseFloat(mruvInputs.s0);
-      const v0 = parseFloat(mruvInputs.v0);
-      const a = parseFloat(mruvInputs.a);
-      const t = parseFloat(mruvInputs.t);
-      const s = parseFloat(mruvInputs.s);
-      const v = parseFloat(mruvInputs.v);
-
-      if (isNaN(s0) || isNaN(v0) || isNaN(a) || isNaN(t) || isNaN(s) || isNaN(v)) {
-        setMruvError("Preencha todos os campos com números válidos");
-        return;
-      }
+      const s0 = parseFloat(mruvInputs.s0) || 0;
+      const v0 = parseFloat(mruvInputs.v0) || 0;
+      const a = parseFloat(mruvInputs.a) || 0;
+      const t = parseFloat(mruvInputs.t) || 0;
+      const s = parseFloat(mruvInputs.s) || 0;
+      const v = parseFloat(mruvInputs.v) || 0;
 
       let result: any = {};
 
       if (mruvVariable === "s") {
         // s = s0 + v0*t + (a*t²)/2
-        result = { value: s0 + v0 * t + (a * t * t) / 2, unit: "m", label: "Posição Final (s)" };
+        const value = s0 + v0 * t + (a * t * t) / 2;
+        result = { value: value, unit: "m", label: "Posição Final (s)" };
       } else if (mruvVariable === "s0") {
         // s0 = s - v0*t - (a*t²)/2
-        result = { value: s - v0 * t - (a * t * t) / 2, unit: "m", label: "Posição Inicial (s₀)" };
+        const value = s - v0 * t - (a * t * t) / 2;
+        result = { value: value, unit: "m", label: "Posição Inicial (s₀)" };
       } else if (mruvVariable === "v") {
         // v = v0 + a*t
-        result = { value: v0 + a * t, unit: "m/s", label: "Velocidade Final (v)" };
+        const value = v0 + a * t;
+        result = { value: value, unit: "m/s", label: "Velocidade Final (v)" };
       } else if (mruvVariable === "v0") {
         // v0 = v - a*t
-        result = { value: v - a * t, unit: "m/s", label: "Velocidade Inicial (v₀)" };
+        const value = v - a * t;
+        result = { value: value, unit: "m/s", label: "Velocidade Inicial (v₀)" };
       } else if (mruvVariable === "a") {
         // a = (v - v0) / t
         if (t === 0) {
           setMruvError("Tempo não pode ser zero");
           return;
         }
-        result = { value: (v - v0) / t, unit: "m/s²", label: "Aceleração (a)" };
+        const value = (v - v0) / t;
+        result = { value: value, unit: "m/s²", label: "Aceleração (a)" };
       } else if (mruvVariable === "t") {
-        // Resolve: v = v0 + a*t → t = (v - v0) / a
+        // t = (v - v0) / a
         if (a === 0) {
           setMruvError("Aceleração não pode ser zero");
           return;
         }
-        result = { value: (v - v0) / a, unit: "s", label: "Tempo (t)" };
+        const value = (v - v0) / a;
+        result = { value: value, unit: "s", label: "Tempo (t)" };
       }
 
       setMruvResult(result);
@@ -135,15 +140,10 @@ export default function Calculator() {
   const calculateTorricelli = () => {
     setTorriError("");
     try {
-      const v0 = parseFloat(torriInputs.v0);
-      const a = parseFloat(torriInputs.a);
-      const deltaS = parseFloat(torriInputs.deltaS);
-      const v = parseFloat(torriInputs.v);
-
-      if (isNaN(v0) || isNaN(a) || isNaN(deltaS) || isNaN(v)) {
-        setTorriError("Preencha todos os campos com números válidos");
-        return;
-      }
+      const v0 = parseFloat(torriInputs.v0) || 0;
+      const a = parseFloat(torriInputs.a) || 0;
+      const deltaS = parseFloat(torriInputs.deltaS) || 0;
+      const v = parseFloat(torriInputs.v) || 0;
 
       let result: any = {};
 
@@ -154,7 +154,8 @@ export default function Calculator() {
           setTorriError("Resultado inválido: v² não pode ser negativo");
           return;
         }
-        result = { value: Math.sqrt(vSquared), unit: "m/s", label: "Velocidade Final (v)" };
+        const value = Math.sqrt(vSquared);
+        result = { value: value, unit: "m/s", label: "Velocidade Final (v)" };
       } else if (torriVariable === "v0") {
         // v0² = v² - 2*a*ΔS
         const v0Squared = v * v - 2 * a * deltaS;
@@ -162,21 +163,24 @@ export default function Calculator() {
           setTorriError("Resultado inválido: v₀² não pode ser negativo");
           return;
         }
-        result = { value: Math.sqrt(v0Squared), unit: "m/s", label: "Velocidade Inicial (v₀)" };
+        const value = Math.sqrt(v0Squared);
+        result = { value: value, unit: "m/s", label: "Velocidade Inicial (v₀)" };
       } else if (torriVariable === "a") {
         // a = (v² - v0²) / (2*ΔS)
         if (deltaS === 0) {
           setTorriError("Deslocamento não pode ser zero");
           return;
         }
-        result = { value: (v * v - v0 * v0) / (2 * deltaS), unit: "m/s²", label: "Aceleração (a)" };
+        const value = (v * v - v0 * v0) / (2 * deltaS);
+        result = { value: value, unit: "m/s²", label: "Aceleração (a)" };
       } else if (torriVariable === "deltaS") {
         // ΔS = (v² - v0²) / (2*a)
         if (a === 0) {
           setTorriError("Aceleração não pode ser zero");
           return;
         }
-        result = { value: (v * v - v0 * v0) / (2 * a), unit: "m", label: "Deslocamento (ΔS)" };
+        const value = (v * v - v0 * v0) / (2 * a);
+        result = { value: value, unit: "m", label: "Deslocamento (ΔS)" };
       }
 
       setTorriResult(result);
@@ -200,38 +204,37 @@ export default function Calculator() {
   const calculateFreeFall = () => {
     setFfError("");
     try {
-      const h = parseFloat(ffInputs.h);
-      const g = parseFloat(ffInputs.g);
-      const t = parseFloat(ffInputs.t);
-      const v = parseFloat(ffInputs.v);
-
-      if (isNaN(h) || isNaN(g) || isNaN(t) || isNaN(v)) {
-        setFfError("Preencha todos os campos com números válidos");
-        return;
-      }
+      const h = parseFloat(ffInputs.h) || 0;
+      const g = parseFloat(ffInputs.g) || 9.8;
+      const t = parseFloat(ffInputs.t) || 0;
+      const v = parseFloat(ffInputs.v) || 0;
 
       let result: any = {};
 
       if (ffVariable === "v") {
         // v = g*t
-        result = { value: g * t, unit: "m/s", label: "Velocidade Final (v)" };
+        const value = g * t;
+        result = { value: value, unit: "m/s", label: "Velocidade Final (v)" };
       } else if (ffVariable === "t") {
         // t = v / g
         if (g === 0) {
           setFfError("Gravidade não pode ser zero");
           return;
         }
-        result = { value: v / g, unit: "s", label: "Tempo (t)" };
+        const value = v / g;
+        result = { value: value, unit: "s", label: "Tempo (t)" };
       } else if (ffVariable === "h") {
         // h = (g*t²) / 2
-        result = { value: (g * t * t) / 2, unit: "m", label: "Altura (h)" };
+        const value = (g * t * t) / 2;
+        result = { value: value, unit: "m", label: "Altura (h)" };
       } else if (ffVariable === "g") {
         // g = 2*h / t²
         if (t === 0) {
           setFfError("Tempo não pode ser zero");
           return;
         }
-        result = { value: (2 * h) / (t * t), unit: "m/s²", label: "Gravidade (g)" };
+        const value = (2 * h) / (t * t);
+        result = { value: value, unit: "m/s²", label: "Gravidade (g)" };
       }
 
       setFfResult(result);
@@ -248,23 +251,18 @@ export default function Calculator() {
 
   // ============ MCU CALCULATOR ============
   const [mcuVariable, setMcuVariable] = useState("v");
-  const [mcuInputs, setMcuInputs] = useState({ r: "5", T: "2", f: "0.5", v: "15.7", ac: "49.3", omega: "3.14" });
+  const [mcuInputs, setMcuInputs] = useState({ r: "5", T: "2", f: "0.5", v: "15.7", ac: "49.3" });
   const [mcuResult, setMcuResult] = useState<any>(null);
   const [mcuError, setMcuError] = useState("");
 
   const calculateMCU = () => {
     setMcuError("");
     try {
-      const r = parseFloat(mcuInputs.r);
-      const T = parseFloat(mcuInputs.T);
-      const f = parseFloat(mcuInputs.f);
-      const v = parseFloat(mcuInputs.v);
-      const ac = parseFloat(mcuInputs.ac);
-
-      if (isNaN(r) || isNaN(T) || isNaN(f) || isNaN(v) || isNaN(ac)) {
-        setMcuError("Preencha todos os campos com números válidos");
-        return;
-      }
+      const r = parseFloat(mcuInputs.r) || 0;
+      const T = parseFloat(mcuInputs.T) || 0;
+      const f = parseFloat(mcuInputs.f) || 0;
+      const v = parseFloat(mcuInputs.v) || 0;
+      const ac = parseFloat(mcuInputs.ac) || 0;
 
       let result: any = {};
 
@@ -274,42 +272,48 @@ export default function Calculator() {
           setMcuError("Período não pode ser zero");
           return;
         }
-        result = { value: (2 * Math.PI * r) / T, unit: "m/s", label: "Velocidade Tangencial (v)" };
+        const value = (2 * Math.PI * r) / T;
+        result = { value: value, unit: "m/s", label: "Velocidade Tangencial (v)" };
       } else if (mcuVariable === "T") {
         // T = 2πr / v
         if (v === 0) {
           setMcuError("Velocidade não pode ser zero");
           return;
         }
-        result = { value: (2 * Math.PI * r) / v, unit: "s", label: "Período (T)" };
+        const value = (2 * Math.PI * r) / v;
+        result = { value: value, unit: "s", label: "Período (T)" };
       } else if (mcuVariable === "f") {
         // f = v / (2πr)
         if (r === 0) {
           setMcuError("Raio não pode ser zero");
           return;
         }
-        result = { value: v / (2 * Math.PI * r), unit: "Hz", label: "Frequência (f)" };
+        const value = v / (2 * Math.PI * r);
+        result = { value: value, unit: "Hz", label: "Frequência (f)" };
       } else if (mcuVariable === "r_from_v") {
         // r = v / (2πf)
         if (f === 0) {
           setMcuError("Frequência não pode ser zero");
           return;
         }
-        result = { value: v / (2 * Math.PI * f), unit: "m", label: "Raio (r)" };
+        const value = v / (2 * Math.PI * f);
+        result = { value: value, unit: "m", label: "Raio (r)" };
       } else if (mcuVariable === "ac") {
         // ac = v² / r
         if (r === 0) {
           setMcuError("Raio não pode ser zero");
           return;
         }
-        result = { value: (v * v) / r, unit: "m/s²", label: "Aceleração Centrípeta (ac)" };
+        const value = (v * v) / r;
+        result = { value: value, unit: "m/s²", label: "Aceleração Centrípeta (ac)" };
       } else if (mcuVariable === "r_from_ac") {
         // r = v² / ac
         if (ac === 0) {
           setMcuError("Aceleração centrípeta não pode ser zero");
           return;
         }
-        result = { value: (v * v) / ac, unit: "m", label: "Raio (r)" };
+        const value = (v * v) / ac;
+        result = { value: value, unit: "m", label: "Raio (r)" };
       }
 
       setMcuResult(result);
@@ -319,7 +323,7 @@ export default function Calculator() {
   };
 
   const resetMCU = () => {
-    setMcuInputs({ r: "5", T: "2", f: "0.5", v: "15.7", ac: "49.3", omega: "3.14" });
+    setMcuInputs({ r: "5", T: "2", f: "0.5", v: "15.7", ac: "49.3" });
     setMcuResult(null);
     setMcuError("");
   };
@@ -380,22 +384,30 @@ export default function Calculator() {
               </div>
 
               <div className="grid md:grid-cols-4 gap-3 mb-6">
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">s₀ (m)</label>
-                  <Input type="number" value={mruInputs.s0} onChange={(e) => setMruInputs({ ...mruInputs, s0: e.target.value })} placeholder="0" />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">v (m/s)</label>
-                  <Input type="number" value={mruInputs.v} onChange={(e) => setMruInputs({ ...mruInputs, v: e.target.value })} placeholder="10" />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">t (s)</label>
-                  <Input type="number" value={mruInputs.t} onChange={(e) => setMruInputs({ ...mruInputs, t: e.target.value })} placeholder="5" />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">s (m)</label>
-                  <Input type="number" value={mruInputs.s} onChange={(e) => setMruInputs({ ...mruInputs, s: e.target.value })} placeholder="50" />
-                </div>
+                {mruVariable !== "s0" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">s₀ (m)</label>
+                    <Input type="number" value={mruInputs.s0} onChange={(e) => setMruInputs({ ...mruInputs, s0: e.target.value })} placeholder="0" />
+                  </div>
+                )}
+                {mruVariable !== "v" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">v (m/s)</label>
+                    <Input type="number" value={mruInputs.v} onChange={(e) => setMruInputs({ ...mruInputs, v: e.target.value })} placeholder="10" />
+                  </div>
+                )}
+                {mruVariable !== "t" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">t (s)</label>
+                    <Input type="number" value={mruInputs.t} onChange={(e) => setMruInputs({ ...mruInputs, t: e.target.value })} placeholder="5" />
+                  </div>
+                )}
+                {mruVariable !== "s" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">s (m)</label>
+                    <Input type="number" value={mruInputs.s} onChange={(e) => setMruInputs({ ...mruInputs, s: e.target.value })} placeholder="50" />
+                  </div>
+                )}
               </div>
 
               {mruError && (
@@ -412,7 +424,7 @@ export default function Calculator() {
               {mruResult && (
                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-lg p-6 space-y-3">
                   <p className="text-sm font-semibold text-slate-700">✓ Resultado:</p>
-                  <p className="text-4xl font-bold text-green-600">{mruResult.value.toFixed(3)}</p>
+                  <p className="text-4xl font-bold text-green-600">{mruResult.value.toFixed(2)}</p>
                   <p className="text-sm text-slate-600">{mruResult.label} ({mruResult.unit})</p>
                 </div>
               )}
@@ -451,30 +463,42 @@ export default function Calculator() {
               </div>
 
               <div className="grid md:grid-cols-3 gap-3 mb-6">
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">s₀ (m)</label>
-                  <Input type="number" value={mruvInputs.s0} onChange={(e) => setMruvInputs({ ...mruvInputs, s0: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">v₀ (m/s)</label>
-                  <Input type="number" value={mruvInputs.v0} onChange={(e) => setMruvInputs({ ...mruvInputs, v0: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">a (m/s²)</label>
-                  <Input type="number" value={mruvInputs.a} onChange={(e) => setMruvInputs({ ...mruvInputs, a: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">t (s)</label>
-                  <Input type="number" value={mruvInputs.t} onChange={(e) => setMruvInputs({ ...mruvInputs, t: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">s (m)</label>
-                  <Input type="number" value={mruvInputs.s} onChange={(e) => setMruvInputs({ ...mruvInputs, s: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">v (m/s)</label>
-                  <Input type="number" value={mruvInputs.v} onChange={(e) => setMruvInputs({ ...mruvInputs, v: e.target.value })} />
-                </div>
+                {mruvVariable !== "s0" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">s₀ (m)</label>
+                    <Input type="number" value={mruvInputs.s0} onChange={(e) => setMruvInputs({ ...mruvInputs, s0: e.target.value })} />
+                  </div>
+                )}
+                {mruvVariable !== "v0" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">v₀ (m/s)</label>
+                    <Input type="number" value={mruvInputs.v0} onChange={(e) => setMruvInputs({ ...mruvInputs, v0: e.target.value })} />
+                  </div>
+                )}
+                {mruvVariable !== "a" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">a (m/s²)</label>
+                    <Input type="number" value={mruvInputs.a} onChange={(e) => setMruvInputs({ ...mruvInputs, a: e.target.value })} />
+                  </div>
+                )}
+                {mruvVariable !== "t" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">t (s)</label>
+                    <Input type="number" value={mruvInputs.t} onChange={(e) => setMruvInputs({ ...mruvInputs, t: e.target.value })} />
+                  </div>
+                )}
+                {mruvVariable !== "s" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">s (m)</label>
+                    <Input type="number" value={mruvInputs.s} onChange={(e) => setMruvInputs({ ...mruvInputs, s: e.target.value })} />
+                  </div>
+                )}
+                {mruvVariable !== "v" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">v (m/s)</label>
+                    <Input type="number" value={mruvInputs.v} onChange={(e) => setMruvInputs({ ...mruvInputs, v: e.target.value })} />
+                  </div>
+                )}
               </div>
 
               {mruvError && (
@@ -491,7 +515,7 @@ export default function Calculator() {
               {mruvResult && (
                 <div className="bg-gradient-to-br from-orange-50 to-amber-50 border-2 border-orange-300 rounded-lg p-6 space-y-3">
                   <p className="text-sm font-semibold text-slate-700">✓ Resultado:</p>
-                  <p className="text-4xl font-bold text-orange-600">{mruvResult.value.toFixed(3)}</p>
+                  <p className="text-4xl font-bold text-orange-600">{mruvResult.value.toFixed(2)}</p>
                   <p className="text-sm text-slate-600">{mruvResult.label} ({mruvResult.unit})</p>
                 </div>
               )}
@@ -528,22 +552,30 @@ export default function Calculator() {
               </div>
 
               <div className="grid md:grid-cols-4 gap-3 mb-6">
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">v₀ (m/s)</label>
-                  <Input type="number" value={torriInputs.v0} onChange={(e) => setTorriInputs({ ...torriInputs, v0: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">a (m/s²)</label>
-                  <Input type="number" value={torriInputs.a} onChange={(e) => setTorriInputs({ ...torriInputs, a: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">ΔS (m)</label>
-                  <Input type="number" value={torriInputs.deltaS} onChange={(e) => setTorriInputs({ ...torriInputs, deltaS: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">v (m/s)</label>
-                  <Input type="number" value={torriInputs.v} onChange={(e) => setTorriInputs({ ...torriInputs, v: e.target.value })} />
-                </div>
+                {torriVariable !== "v0" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">v₀ (m/s)</label>
+                    <Input type="number" value={torriInputs.v0} onChange={(e) => setTorriInputs({ ...torriInputs, v0: e.target.value })} />
+                  </div>
+                )}
+                {torriVariable !== "a" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">a (m/s²)</label>
+                    <Input type="number" value={torriInputs.a} onChange={(e) => setTorriInputs({ ...torriInputs, a: e.target.value })} />
+                  </div>
+                )}
+                {torriVariable !== "deltaS" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">ΔS (m)</label>
+                    <Input type="number" value={torriInputs.deltaS} onChange={(e) => setTorriInputs({ ...torriInputs, deltaS: e.target.value })} />
+                  </div>
+                )}
+                {torriVariable !== "v" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">v (m/s)</label>
+                    <Input type="number" value={torriInputs.v} onChange={(e) => setTorriInputs({ ...torriInputs, v: e.target.value })} />
+                  </div>
+                )}
               </div>
 
               {torriError && (
@@ -560,7 +592,7 @@ export default function Calculator() {
               {torriResult && (
                 <div className="bg-gradient-to-br from-red-50 to-rose-50 border-2 border-red-300 rounded-lg p-6 space-y-3">
                   <p className="text-sm font-semibold text-slate-700">✓ Resultado:</p>
-                  <p className="text-4xl font-bold text-red-600">{torriResult.value.toFixed(3)}</p>
+                  <p className="text-4xl font-bold text-red-600">{torriResult.value.toFixed(2)}</p>
                   <p className="text-sm text-slate-600">{torriResult.label} ({torriResult.unit})</p>
                 </div>
               )}
@@ -597,22 +629,30 @@ export default function Calculator() {
               </div>
 
               <div className="grid md:grid-cols-4 gap-3 mb-6">
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">h (m)</label>
-                  <Input type="number" value={ffInputs.h} onChange={(e) => setFfInputs({ ...ffInputs, h: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">g (m/s²)</label>
-                  <Input type="number" value={ffInputs.g} onChange={(e) => setFfInputs({ ...ffInputs, g: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">t (s)</label>
-                  <Input type="number" value={ffInputs.t} onChange={(e) => setFfInputs({ ...ffInputs, t: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">v (m/s)</label>
-                  <Input type="number" value={ffInputs.v} onChange={(e) => setFfInputs({ ...ffInputs, v: e.target.value })} />
-                </div>
+                {ffVariable !== "h" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">h (m)</label>
+                    <Input type="number" value={ffInputs.h} onChange={(e) => setFfInputs({ ...ffInputs, h: e.target.value })} />
+                  </div>
+                )}
+                {ffVariable !== "g" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">g (m/s²)</label>
+                    <Input type="number" value={ffInputs.g} onChange={(e) => setFfInputs({ ...ffInputs, g: e.target.value })} />
+                  </div>
+                )}
+                {ffVariable !== "t" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">t (s)</label>
+                    <Input type="number" value={ffInputs.t} onChange={(e) => setFfInputs({ ...ffInputs, t: e.target.value })} />
+                  </div>
+                )}
+                {ffVariable !== "v" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">v (m/s)</label>
+                    <Input type="number" value={ffInputs.v} onChange={(e) => setFfInputs({ ...ffInputs, v: e.target.value })} />
+                  </div>
+                )}
               </div>
 
               {ffError && (
@@ -629,7 +669,7 @@ export default function Calculator() {
               {ffResult && (
                 <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-300 rounded-lg p-6 space-y-3">
                   <p className="text-sm font-semibold text-slate-700">✓ Resultado:</p>
-                  <p className="text-4xl font-bold text-purple-600">{ffResult.value.toFixed(3)}</p>
+                  <p className="text-4xl font-bold text-purple-600">{ffResult.value.toFixed(2)}</p>
                   <p className="text-sm text-slate-600">{ffResult.label} ({ffResult.unit})</p>
                 </div>
               )}
@@ -668,30 +708,36 @@ export default function Calculator() {
               </div>
 
               <div className="grid md:grid-cols-3 gap-3 mb-6">
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">r (m)</label>
-                  <Input type="number" value={mcuInputs.r} onChange={(e) => setMcuInputs({ ...mcuInputs, r: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">T (s)</label>
-                  <Input type="number" value={mcuInputs.T} onChange={(e) => setMcuInputs({ ...mcuInputs, T: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">f (Hz)</label>
-                  <Input type="number" value={mcuInputs.f} onChange={(e) => setMcuInputs({ ...mcuInputs, f: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">v (m/s)</label>
-                  <Input type="number" value={mcuInputs.v} onChange={(e) => setMcuInputs({ ...mcuInputs, v: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">ac (m/s²)</label>
-                  <Input type="number" value={mcuInputs.ac} onChange={(e) => setMcuInputs({ ...mcuInputs, ac: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">ω (rad/s)</label>
-                  <Input type="number" value={mcuInputs.omega} onChange={(e) => setMcuInputs({ ...mcuInputs, omega: e.target.value })} />
-                </div>
+                {mcuVariable !== "r_from_v" && mcuVariable !== "r_from_ac" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">r (m)</label>
+                    <Input type="number" value={mcuInputs.r} onChange={(e) => setMcuInputs({ ...mcuInputs, r: e.target.value })} />
+                  </div>
+                )}
+                {mcuVariable !== "T" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">T (s)</label>
+                    <Input type="number" value={mcuInputs.T} onChange={(e) => setMcuInputs({ ...mcuInputs, T: e.target.value })} />
+                  </div>
+                )}
+                {mcuVariable !== "f" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">f (Hz)</label>
+                    <Input type="number" value={mcuInputs.f} onChange={(e) => setMcuInputs({ ...mcuInputs, f: e.target.value })} />
+                  </div>
+                )}
+                {mcuVariable !== "v" && mcuVariable !== "r_from_v" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">v (m/s)</label>
+                    <Input type="number" value={mcuInputs.v} onChange={(e) => setMcuInputs({ ...mcuInputs, v: e.target.value })} />
+                  </div>
+                )}
+                {mcuVariable !== "ac" && mcuVariable !== "r_from_ac" && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">ac (m/s²)</label>
+                    <Input type="number" value={mcuInputs.ac} onChange={(e) => setMcuInputs({ ...mcuInputs, ac: e.target.value })} />
+                  </div>
+                )}
               </div>
 
               {mcuError && (
@@ -708,7 +754,7 @@ export default function Calculator() {
               {mcuResult && (
                 <div className="bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-300 rounded-lg p-6 space-y-3">
                   <p className="text-sm font-semibold text-slate-700">✓ Resultado:</p>
-                  <p className="text-4xl font-bold text-cyan-600">{mcuResult.value.toFixed(3)}</p>
+                  <p className="text-4xl font-bold text-cyan-600">{mcuResult.value.toFixed(2)}</p>
                   <p className="text-sm text-slate-600">{mcuResult.label} ({mcuResult.unit})</p>
                 </div>
               )}
