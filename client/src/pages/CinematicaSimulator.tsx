@@ -45,11 +45,9 @@ export default function CinematicaSimulator() {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
         <div className="container py-4 flex items-center gap-4">
-          <Link href="/cinematica">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar
-            </Button>
+          <Link href="/cinematica" className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            Voltar
           </Link>
           <h1 className="text-2xl font-bold text-slate-900">Simulador de Cinemática</h1>
         </div>

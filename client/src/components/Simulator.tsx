@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 interface SimulatorProps {
   type: "acceleration" | "freeFall" | "circular" | "collision";
@@ -16,7 +16,7 @@ export function Simulator({
   parameters = {}
 }: SimulatorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [animationId, setAnimationId] = useState<number | null>(null);
+  const animationIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -26,6 +26,7 @@ export function Simulator({
     if (!ctx) return;
 
     let frameCount = 0;
+    
     const animate = () => {
       ctx.fillStyle = "#f8fafc";
       ctx.fillRect(0, 0, width, height);
@@ -64,16 +65,17 @@ export function Simulator({
         frameCount++;
       }
 
-      const id = requestAnimationFrame(animate);
-      setAnimationId(id);
+      animationIdRef.current = requestAnimationFrame(animate);
     };
 
     animate();
 
     return () => {
-      if (animationId) cancelAnimationFrame(animationId);
+      if (animationIdRef.current) {
+        cancelAnimationFrame(animationIdRef.current);
+      }
     };
-  }, [type, width, height, isRunning, parameters, animationId]);
+  }, [type, width, height, isRunning, parameters]);
 
   return (
     <canvas
@@ -94,7 +96,6 @@ function drawAcceleration(
 ) {
   const v0 = parameters.v0 || 0; // velocidade inicial (pixels/frame)
   const a = parameters.a || 0.5; // aceleração (pixels/frame²)
-  const maxFrames = 200;
 
   // Posição do objeto
   const x = 50 + v0 * frameCount + 0.5 * a * frameCount * frameCount;
