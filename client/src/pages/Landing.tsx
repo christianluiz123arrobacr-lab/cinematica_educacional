@@ -46,8 +46,8 @@ export default function Landing() {
         {/* Cards Section */}
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {/* Cinemática Card */}
-          <Link href="/cinematica">
-            <a className="group">
+          <div className="group">
+            <Link href="/cinematica">
               <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-blue-400 cursor-pointer h-full">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-8 text-white">
                   <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -81,12 +81,12 @@ export default function Landing() {
                   </Button>
                 </div>
               </div>
-            </a>
-          </Link>
+            </Link>
+          </div>
 
           {/* Dinâmica Card */}
-          <Link href="/dinamica">
-            <a className="group">
+          <div className="group">
+            <Link href="/dinamica">
               <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-purple-400 cursor-pointer h-full">
                 <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-8 text-white">
                   <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -120,8 +120,8 @@ export default function Landing() {
                   </Button>
                 </div>
               </div>
-            </a>
-          </Link>
+            </Link>
+          </div>
         </div>
       </section>
 
