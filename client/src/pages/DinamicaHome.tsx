@@ -281,19 +281,21 @@ export default function DinamicaHome() {
           <h3 className="text-3xl font-bold text-slate-900 mb-8">Fórmulas Principais</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { title: "Segunda Lei de Newton", formula: "\\vec{F} = m \\cdot \\vec{a}", color: "purple" },
-              { title: "Força de Atrito", formula: "f = \\mu \\cdot N", color: "orange" },
-              { title: "Trabalho", formula: "W = F \\cdot d \\cdot \\cos(\\theta)", color: "green" },
-              { title: "Energia Cinética", formula: "E_c = \\frac{1}{2} \\cdot m \\cdot v^2", color: "red" },
-              { title: "Energia Potencial", formula: "E_p = m \\cdot g \\cdot h", color: "blue" },
-              { title: "Momentum", formula: "p = m \\cdot v", color: "indigo" },
+              { title: "Segunda Lei de Newton", formula: "\\vec{F} = m \\cdot \\vec{a}", color: "purple", link: "/dinamica/topic/newton" },
+              { title: "Força de Atrito", formula: "f = \\mu \\cdot N", color: "orange", link: "/dinamica/topic/force" },
+              { title: "Trabalho", formula: "W = F \\cdot d \\cdot \\cos(\\theta)", color: "green", link: "/dinamica/topic/energy" },
+              { title: "Energia Cinética", formula: "E_c = \\frac{1}{2} \\cdot m \\cdot v^2", color: "red", link: "/dinamica/topic/energy" },
+              { title: "Energia Potencial", formula: "E_p = m \\cdot g \\cdot h", color: "blue", link: "/dinamica/topic/energy" },
+              { title: "Momentum", formula: "p = m \\cdot v", color: "indigo", link: "/dinamica/topic/momentum" },
             ].map((item, index) => (
-              <Card key={index} className={`p-6 bg-gradient-to-br from-${item.color}-50 to-${item.color}-100 border-0`}>
-                <h4 className="font-bold text-slate-900 mb-4">{item.title}</h4>
-                <div className="bg-white rounded-lg p-4 overflow-x-auto">
-                  <MathFormula formula={item.formula} className="text-lg" />
-                </div>
-              </Card>
+              <Link key={index} href={item.link}>
+                <Card className={`p-6 bg-gradient-to-br from-${item.color}-50 to-${item.color}-100 border-0 hover:shadow-lg transition-all cursor-pointer`}>
+                  <h4 className="font-bold text-slate-900 mb-4">{item.title}</h4>
+                  <div className="bg-white rounded-lg p-4 overflow-x-auto">
+                    <MathFormula formula={item.formula} className="text-lg" />
+                  </div>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
