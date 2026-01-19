@@ -32,6 +32,13 @@ import DynamicsTopicForce from "./pages/DynamicsTopicForce";
 import DynamicsTopicEnergy from "./pages/DynamicsTopicEnergy";
 import DynamicsTopicMomentum from "./pages/DynamicsTopicMomentum";
 import DynamicsTopicPower from "./pages/DynamicsTopicPower";
+import EstaticaHome from "./pages/EstaticaHome";
+import EstaticaGraphs from "./pages/EstaticaGraphs";
+import EstaticaQuiz from "./pages/EstaticaQuiz";
+import EstaticaSimulator from "./pages/EstaticaSimulator";
+import EstaticaTopicEquilibrio from "./pages/EstaticaTopicEquilibrio";
+import EstaticaTopicTorque from "./pages/EstaticaTopicTorque";
+import EstaticaTopicMaquinas from "./pages/EstaticaTopicMaquinas";
 
 
 function Router() {
@@ -64,6 +71,13 @@ function Router() {
       <Route path="/dinamica/topic/energy" component={DynamicsTopicEnergy} />
       <Route path="/dinamica/topic/momentum" component={DynamicsTopicMomentum} />
       <Route path="/dinamica/topic/power" component={DynamicsTopicPower} />
+      <Route path="/estatica" component={EstaticaHome} />
+      <Route path="/estatica/graphs" component={EstaticaGraphs} />
+      <Route path="/estatica/quiz" component={EstaticaQuiz} />
+      <Route path="/estatica/simulator" component={EstaticaSimulator} />
+      <Route path="/estatica/topic/equilibrio" component={EstaticaTopicEquilibrio} />
+      <Route path="/estatica/topic/torque" component={EstaticaTopicTorque} />
+      <Route path="/estatica/topic/maquinas" component={EstaticaTopicMaquinas} />
       <Route path="/progress" component={Progress} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
