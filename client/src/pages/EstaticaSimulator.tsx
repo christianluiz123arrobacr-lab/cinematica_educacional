@@ -27,10 +27,9 @@ export default function EstaticaSimulator() {
   const [distanceLeft, setDistanceLeft] = useState(2);
   const [distanceRight, setDistanceRight] = useState(3);
   const [angleAlavanca, setAngleAlavanca] = useState(90);
-  const [alavancaRotation, setAlavancaRotation] = useState(0);
 
   const torqueLeft = forceAlavanca * distanceLeft * Math.sin((angleAlavanca * Math.PI) / 180);
-  const forceRightNeeded = torqueLeft / distanceRight;
+  const forceRightNeeded = distanceLeft > 0 ? torqueLeft / distanceRight : 0;
   const isTorqueBalanced = Math.abs(torqueLeft - (forceRightNeeded * distanceRight)) < 1;
 
   // ===== MÁQUINAS SIMPLES =====
@@ -56,6 +55,7 @@ export default function EstaticaSimulator() {
   const P0 = 101325;
   const rho = densidades[tipoFluidoHidro];
   const pressaoHidro = P0 + rho * g * profundidadeHidro;
+  const pressaoFluidoOnly = rho * g * profundidadeHidro;
 
   // Animações
   useEffect(() => {
@@ -63,7 +63,6 @@ export default function EstaticaSimulator() {
 
     const interval = setInterval(() => {
       setAnimationPhase((prev) => (prev + 1) % 360);
-      setAlavancaRotation((prev) => (prev + 2) % 360);
       setMaquinaAnimacao((prev) => (prev + 1) % 100);
     }, 50);
 
@@ -96,7 +95,6 @@ export default function EstaticaSimulator() {
     setForcaAplicada(50);
     setProfundidadeHidro(5);
     setAnimationPhase(0);
-    setAlavancaRotation(0);
     setMaquinaAnimacao(0);
     setIsAnimating(false);
   };
@@ -148,10 +146,9 @@ export default function EstaticaSimulator() {
                   <p className="text-slate-600">Ajuste as forças e ângulos para alcançar o equilíbrio (resultante ≈ 0)</p>
                 </div>
 
-                {/* Visualização de Vetores com Animação */}
+                {/* Visualização de Vetores */}
                 <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-8 rounded-lg border-2 border-blue-200 flex justify-center items-center min-h-80">
                   <svg width="400" height="350" viewBox="0 0 400 350" className="w-full max-w-md">
-                    {/* Grade de fundo */}
                     <defs>
                       <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
                         <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" strokeWidth="0.5" />
@@ -163,49 +160,45 @@ export default function EstaticaSimulator() {
                     <circle cx="200" cy="175" r="8" fill="#1f2937" />
                     <circle cx="200" cy="175" r="15" fill="none" stroke="#1f2937" strokeWidth="1" strokeDasharray="3,3" />
 
-                    {/* Vetor Esquerdo com animação */}
-                    <g opacity={isAnimating ? 0.7 + 0.3 * Math.sin(animationPhase * Math.PI / 180) : 1}>
-                      <line
-                        x1="200"
-                        y1="175"
-                        x2={200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2}
-                        y2={175 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2}
-                        stroke="#ef4444"
-                        strokeWidth="4"
-                        strokeLinecap="round"
-                      />
-                      <polygon
-                        points={`${200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2},${175 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2} ${200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2 - 8},${175 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2 + 8} ${200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2 + 8},${175 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2 + 8}`}
-                        fill="#ef4444"
-                      />
-                      <text x={200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2 - 30} y={175 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2 - 10} className="text-xs font-bold fill-red-600">
-                        F₁ = {forceLeft.toFixed(0)} N
-                      </text>
-                    </g>
+                    {/* Vetor Esquerdo */}
+                    <line
+                      x1="200"
+                      y1="175"
+                      x2={200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2}
+                      y2={175 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2}
+                      stroke="#ef4444"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                    />
+                    <polygon
+                      points={`${200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2},${175 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2} ${200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2 - 8},${175 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2 + 8} ${200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2 + 8},${175 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2 + 8}`}
+                      fill="#ef4444"
+                    />
+                    <text x={200 + (forceLeft * Math.cos((angleLeft * Math.PI) / 180)) / 2 - 30} y={175 - (forceLeft * Math.sin((angleLeft * Math.PI) / 180)) / 2 - 10} className="text-xs font-bold fill-red-600">
+                      F₁ = {forceLeft.toFixed(0)} N
+                    </text>
 
-                    {/* Vetor Direito com animação */}
-                    <g opacity={isAnimating ? 0.7 + 0.3 * Math.cos(animationPhase * Math.PI / 180) : 1}>
-                      <line
-                        x1="200"
-                        y1="175"
-                        x2={200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2}
-                        y2={175 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2}
-                        stroke="#3b82f6"
-                        strokeWidth="4"
-                        strokeLinecap="round"
-                      />
-                      <polygon
-                        points={`${200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2},${175 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2} ${200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2 - 8},${175 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2 + 8} ${200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2 + 8},${175 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2 + 8}`}
-                        fill="#3b82f6"
-                      />
-                      <text x={200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2 + 10} y={175 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2 - 10} className="text-xs font-bold fill-blue-600">
-                        F₂ = {forceRight.toFixed(0)} N
-                      </text>
-                    </g>
+                    {/* Vetor Direito */}
+                    <line
+                      x1="200"
+                      y1="175"
+                      x2={200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2}
+                      y2={175 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2}
+                      stroke="#3b82f6"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                    />
+                    <polygon
+                      points={`${200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2},${175 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2} ${200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2 - 8},${175 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2 + 8} ${200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2 + 8},${175 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2 + 8}`}
+                      fill="#3b82f6"
+                    />
+                    <text x={200 + (forceRight * Math.cos((angleRight * Math.PI) / 180)) / 2 + 10} y={175 - (forceRight * Math.sin((angleRight * Math.PI) / 180)) / 2 - 10} className="text-xs font-bold fill-blue-600">
+                      F₂ = {forceRight.toFixed(0)} N
+                    </text>
 
-                    {/* Vetor Resultante com animação */}
+                    {/* Vetor Resultante */}
                     {resultantMagnitude > 1 && (
-                      <g opacity={isAnimating ? 0.5 + 0.5 * Math.abs(Math.sin(animationPhase * Math.PI / 180)) : 0.7}>
+                      <>
                         <line
                           x1="200"
                           y1="175"
@@ -223,17 +216,14 @@ export default function EstaticaSimulator() {
                         <text x={200 + resultantX / 2 + 10} y={175 - resultantY / 2 - 10} className="text-xs font-bold fill-green-600">
                           R = {resultantMagnitude.toFixed(1)} N
                         </text>
-                      </g>
+                      </>
                     )}
 
                     {/* Indicador de Equilíbrio */}
                     {isEquilibrio && (
-                      <g>
-                        <circle cx="200" cy="175" r="50" fill="none" stroke="#10b981" strokeWidth="2" opacity="0.3" />
-                        <text x="200" y="30" textAnchor="middle" className="text-2xl font-bold fill-green-600">
-                          ✓ EQUILIBRIO
-                        </text>
-                      </g>
+                      <text x="200" y="30" textAnchor="middle" className="text-2xl font-bold fill-green-600">
+                        ✓ EQUILIBRIO
+                      </text>
                     )}
                   </svg>
                 </div>
@@ -288,20 +278,21 @@ export default function EstaticaSimulator() {
                   </Card>
                 </div>
 
+                {/* Fórmulas */}
                 <Card className="p-4 bg-cyan-50 border-l-4 border-cyan-500">
-                  <p className="text-sm font-bold text-slate-900 mb-2">Fórmulas de Equilíbrio:</p>
-                  <div className="space-y-3">
-                    <div key="eq-1" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-eq-1" formula="F_x = F_1 \\cos(\\theta_1) + F_2 \\cos(\\theta_2)" className="text-center" />
+                  <p className="text-sm font-bold text-slate-900 mb-3">Fórmulas de Equilíbrio:</p>
+                  <div className="space-y-2">
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="F_x = F_1 \\cos(\\theta_1) + F_2 \\cos(\\theta_2)" display={true} className="text-center" />
                     </div>
-                    <div key="eq-2" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-eq-2" formula="F_y = F_1 \\sin(\\theta_1) + F_2 \\sin(\\theta_2)" className="text-center" />
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="F_y = F_1 \\sin(\\theta_1) + F_2 \\sin(\\theta_2)" display={true} className="text-center" />
                     </div>
-                    <div key="eq-3" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-eq-3" formula="F_{resultante} = \\sqrt{F_x^2 + F_y^2}" className="text-center" />
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="F_{resultante} = \\sqrt{F_x^2 + F_y^2}" display={true} className="text-center" />
                     </div>
-                    <div key="eq-4" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-eq-4" formula="\\text{Equilíbrio: } F_{resultante} \\approx 0" className="text-center" />
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="\\text{Equilíbrio: } F_{resultante} \\approx 0" display={true} className="text-center" />
                     </div>
                   </div>
                 </Card>
@@ -318,44 +309,42 @@ export default function EstaticaSimulator() {
                   <p className="text-slate-600">Ajuste a força, distância e ângulo para visualizar o torque</p>
                 </div>
 
-                {/* Visualização de Alavanca com Animação */}
+                {/* Visualização de Alavanca */}
                 <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-8 rounded-lg border-2 border-orange-200 flex justify-center items-center min-h-80">
                   <svg width="500" height="250" viewBox="0 0 500 250" className="w-full max-w-lg">
                     {/* Fulcro */}
                     <polygon points="250,130 240,160 260,160" fill="#d97706" />
 
-                    {/* Barra com rotação */}
-                    <g transform={`rotate(${isTorqueBalanced && isAnimating ? alavancaRotation * 0.5 : 0} 250 130)`}>
-                      <line x1="100" y1="130" x2="400" y2="130" stroke="#1f2937" strokeWidth="12" strokeLinecap="round" />
+                    {/* Barra */}
+                    <line x1="100" y1="130" x2="400" y2="130" stroke="#1f2937" strokeWidth="12" strokeLinecap="round" />
 
-                      {/* Ponto de aplicação esquerdo */}
-                      <circle cx={100 + distanceLeft * 30} cy="130" r="12" fill="#ef4444" opacity={isAnimating ? 0.7 + 0.3 * Math.sin(animationPhase * Math.PI / 180) : 1} />
-                      <line
-                        x1={100 + distanceLeft * 30}
-                        y1="130"
-                        x2={100 + distanceLeft * 30 + forceAlavanca * Math.cos((angleAlavanca * Math.PI) / 180) * 0.4}
-                        y2={130 - forceAlavanca * Math.sin((angleAlavanca * Math.PI) / 180) * 0.4}
-                        stroke="#ef4444"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                      />
+                    {/* Ponto de aplicação esquerdo */}
+                    <circle cx={100 + distanceLeft * 30} cy="130" r="12" fill="#ef4444" />
+                    <line
+                      x1={100 + distanceLeft * 30}
+                      y1="130"
+                      x2={100 + distanceLeft * 30 + forceAlavanca * Math.cos((angleAlavanca * Math.PI) / 180) * 0.4}
+                      y2={130 - forceAlavanca * Math.sin((angleAlavanca * Math.PI) / 180) * 0.4}
+                      stroke="#ef4444"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
 
-                      {/* Ponto de aplicação direito */}
-                      <circle cx={400 - distanceRight * 30} cy="130" r="12" fill="#3b82f6" opacity={isAnimating ? 0.7 + 0.3 * Math.cos(animationPhase * Math.PI / 180) : 1} />
+                    {/* Ponto de aplicação direito */}
+                    <circle cx={400 - distanceRight * 30} cy="130" r="12" fill="#3b82f6" />
 
-                      {/* Distâncias */}
-                      <text x={100 + distanceLeft * 30} y="60" textAnchor="middle" className="text-sm font-bold fill-slate-900">
-                        d₁ = {distanceLeft.toFixed(1)} m
-                      </text>
-                      <text x={400 - distanceRight * 30} y="60" textAnchor="middle" className="text-sm font-bold fill-slate-900">
-                        d₂ = {distanceRight.toFixed(1)} m
-                      </text>
+                    {/* Distâncias */}
+                    <text x={100 + distanceLeft * 30} y="60" textAnchor="middle" className="text-sm font-bold fill-slate-900">
+                      d₁ = {distanceLeft.toFixed(1)} m
+                    </text>
+                    <text x={400 - distanceRight * 30} y="60" textAnchor="middle" className="text-sm font-bold fill-slate-900">
+                      d₂ = {distanceRight.toFixed(1)} m
+                    </text>
 
-                      {/* Força */}
-                      <text x={100 + distanceLeft * 30} y="210" textAnchor="middle" className="text-sm font-bold fill-red-600">
-                        F = {forceAlavanca.toFixed(0)} N
-                      </text>
-                    </g>
+                    {/* Força */}
+                    <text x={100 + distanceLeft * 30} y="210" textAnchor="middle" className="text-sm font-bold fill-red-600">
+                      F = {forceAlavanca.toFixed(0)} N
+                    </text>
                   </svg>
                 </div>
 
@@ -399,20 +388,21 @@ export default function EstaticaSimulator() {
                   </Card>
                 </div>
 
+                {/* Fórmulas */}
                 <Card className="p-4 bg-orange-50 border-l-4 border-orange-500">
-                  <p className="text-sm font-bold text-slate-900 mb-2">Fórmulas de Torque:</p>
-                  <div className="space-y-3">
-                    <div key="torque-1" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-torque-1" formula="\\tau = r \\cdot F \\cdot \\sin(\\theta)" className="text-center" />
+                  <p className="text-sm font-bold text-slate-900 mb-3">Fórmulas de Torque:</p>
+                  <div className="space-y-2">
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="\\tau = r \\cdot F \\cdot \\sin(\\theta)" display={true} className="text-center" />
                     </div>
-                    <div key="torque-2" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-torque-2" formula="\\tau_1 = F_1 \\cdot d_1 \\cdot \\sin(\\theta)" className="text-center" />
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="\\tau_1 = F_1 \\cdot d_1 \\cdot \\sin(\\theta)" display={true} className="text-center" />
                     </div>
-                    <div key="torque-3" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-torque-3" formula="\\text{Equilíbrio: } \\tau_1 = \\tau_2" className="text-center" />
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="\\text{Equilíbrio: } \\tau_1 = \\tau_2" display={true} className="text-center" />
                     </div>
-                    <div key="torque-4" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-torque-4" formula="F_1 \\cdot d_1 = F_2 \\cdot d_2" className="text-center" />
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="F_1 \\cdot d_1 = F_2 \\cdot d_2" display={true} className="text-center" />
                     </div>
                   </div>
                 </Card>
@@ -447,19 +437,19 @@ export default function EstaticaSimulator() {
                   ))}
                 </div>
 
-                {/* Visualização com Animação */}
+                {/* Visualização */}
                 <div className="bg-gradient-to-br from-yellow-50 to-amber-50 p-8 rounded-lg border-2 border-yellow-200 flex justify-center items-center min-h-80">
                   {tipoMaquina === "alavanca" && (
                     <svg width="400" height="250" viewBox="0 0 400 250" className="w-full max-w-md">
                       <polygon points="200,140 190,170 210,170" fill="#d97706" />
                       <line x1="100" y1="140" x2="300" y2="140" stroke="#1f2937" strokeWidth="10" strokeLinecap="round" />
-                      <circle cx="150" cy="140" r="10" fill="#ef4444" opacity={isAnimating ? 0.7 + 0.3 * Math.sin(maquinaAnimacao * Math.PI / 50) : 1} />
-                      <line x1="150" y1="140" x2="150" y2={140 - (forcaAplicada * 0.3 * (isAnimating ? 0.5 + 0.5 * Math.sin(maquinaAnimacao * Math.PI / 50) : 1))} stroke="#ef4444" strokeWidth="3" strokeLinecap="round" />
+                      <circle cx="150" cy="140" r="10" fill="#ef4444" />
+                      <line x1="150" y1="140" x2="150" y2={140 - forcaAplicada * 0.3} stroke="#ef4444" strokeWidth="3" strokeLinecap="round" />
                       <text x="150" y="60" textAnchor="middle" className="text-sm font-bold fill-red-600">
                         F aplicada
                       </text>
-                      <circle cx="280" cy="140" r="10" fill="#10b981" opacity={isAnimating ? 0.7 + 0.3 * Math.cos(maquinaAnimacao * Math.PI / 50) : 1} />
-                      <line x1="280" y1="140" x2="280" y2={140 - (cargaMaquina * 0.2 * (isAnimating ? 0.5 + 0.5 * Math.cos(maquinaAnimacao * Math.PI / 50) : 1))} stroke="#10b981" strokeWidth="3" strokeLinecap="round" />
+                      <circle cx="280" cy="140" r="10" fill="#10b981" />
+                      <line x1="280" y1="140" x2="280" y2={140 - cargaMaquina * 0.2} stroke="#10b981" strokeWidth="3" strokeLinecap="round" />
                       <text x="280" y="60" textAnchor="middle" className="text-sm font-bold fill-green-600">
                         F resultado
                       </text>
@@ -469,7 +459,7 @@ export default function EstaticaSimulator() {
                   {tipoMaquina === "plano" && (
                     <svg width="400" height="250" viewBox="0 0 400 250" className="w-full max-w-md">
                       <polygon points="100,180 300,120 300,180" fill="#fbbf24" />
-                      <circle cx={280 - maquinaAnimacao * 0.8} cy={120 + (280 - maquinaAnimacao * 0.8 - 100) * Math.tan((planoAngle * Math.PI) / 180)} r="10" fill="#10b981" opacity={isAnimating ? 0.7 + 0.3 * Math.sin(maquinaAnimacao * Math.PI / 50) : 1} />
+                      <circle cx="250" cy="135" r="10" fill="#10b981" />
                       <text x="200" y="60" textAnchor="middle" className="text-sm font-bold fill-slate-900">
                         Ângulo: {planoAngle.toFixed(0)}°
                       </text>
@@ -478,14 +468,12 @@ export default function EstaticaSimulator() {
 
                   {tipoMaquina === "polia" && (
                     <svg width="400" height="250" viewBox="0 0 400 250" className="w-full max-w-md">
-                      <g transform={`rotate(${isAnimating ? maquinaAnimacao * 3.6 : 0} 200 100)`}>
-                        <circle cx="200" cy="100" r="40" fill="none" stroke="#1f2937" strokeWidth="5" />
-                        <circle cx="200" cy="100" r="30" fill="none" stroke="#1f2937" strokeWidth="2" />
-                        <line x1="170" y1="100" x2="230" y2="100" stroke="#1f2937" strokeWidth="2" />
-                        <line x1="200" y1="70" x2="200" y2="130" stroke="#1f2937" strokeWidth="2" />
-                      </g>
-                      <line x1="200" y1="140" x2="200" y2={180 + (maquinaAnimacao * 0.4)} stroke="#1f2937" strokeWidth="4" strokeLinecap="round" />
-                      <circle cx="200" cy={190 + (maquinaAnimacao * 0.4)} r="10" fill="#10b981" opacity={isAnimating ? 0.7 + 0.3 * Math.sin(maquinaAnimacao * Math.PI / 50) : 1} />
+                      <circle cx="200" cy="100" r="40" fill="none" stroke="#1f2937" strokeWidth="5" />
+                      <circle cx="200" cy="100" r="30" fill="none" stroke="#1f2937" strokeWidth="2" />
+                      <line x1="170" y1="100" x2="230" y2="100" stroke="#1f2937" strokeWidth="2" />
+                      <line x1="200" y1="70" x2="200" y2="130" stroke="#1f2937" strokeWidth="2" />
+                      <line x1="200" y1="140" x2="200" y2="190" stroke="#1f2937" strokeWidth="4" strokeLinecap="round" />
+                      <circle cx="200" cy="200" r="10" fill="#10b981" />
                       <text x="200" y="50" textAnchor="middle" className="text-sm font-bold fill-slate-900">
                         {numPolias} Polia{numPolias > 1 ? "s" : ""}
                       </text>
@@ -543,20 +531,21 @@ export default function EstaticaSimulator() {
                   </Card>
                 </div>
 
+                {/* Fórmulas */}
                 <Card className="p-4 bg-yellow-50 border-l-4 border-yellow-500">
-                  <p className="text-sm font-bold text-slate-900 mb-2">Fórmulas de Máquinas Simples:</p>
-                  <div className="space-y-3">
-                    <div key="vm-1" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-vm-1" formula="VM = \\frac{F_{carga}}{F_{aplicada}}" className="text-center" />
+                  <p className="text-sm font-bold text-slate-900 mb-3">Fórmulas de Máquinas Simples:</p>
+                  <div className="space-y-2">
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="VM = \\frac{F_{carga}}{F_{aplicada}}" display={true} className="text-center" />
                     </div>
-                    <div key="vm-2" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-vm-2" formula="\\text{Alavanca: } VM = \\frac{d_1}{d_2}" className="text-center" />
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="\\text{Alavanca: } VM = \\frac{d_1}{d_2}" display={true} className="text-center" />
                     </div>
-                    <div key="vm-3" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-vm-3" formula="\\text{Plano Inclinado: } VM = \\frac{1}{\\sin(\\theta)}" className="text-center" />
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="\\text{Plano Inclinado: } VM = \\frac{1}{\\sin(\\theta)}" display={true} className="text-center" />
                     </div>
-                    <div key="vm-4" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-vm-4" formula="\\text{Polia: } VM = 2n" className="text-center" />
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="\\text{Polia: } VM = 2n" display={true} className="text-center" />
                     </div>
                   </div>
                 </Card>
@@ -573,10 +562,9 @@ export default function EstaticaSimulator() {
                   <p className="text-slate-600">Visualize como a pressão aumenta com a profundidade</p>
                 </div>
 
-                {/* Visualização com Animação */}
+                {/* Visualização */}
                 <div className="bg-gradient-to-br from-cyan-50 to-blue-50 p-8 rounded-lg border-2 border-cyan-200 flex justify-center items-center min-h-80">
                   <svg width="300" height="350" viewBox="0 0 300 350" className="w-full max-w-md">
-                    {/* Água */}
                     <defs>
                       <linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" style={{ stopColor: "#3b82f6", stopOpacity: 0.2 }} />
@@ -585,19 +573,9 @@ export default function EstaticaSimulator() {
                     </defs>
                     <rect x="50" y="50" width="200" height={profundidadeHidro * 20} fill="url(#waterGradient)" />
 
-                    {/* Ondas na superfície */}
-                    {isAnimating && (
-                      <path
-                        d={`M 50 50 Q 75 ${50 + 5 * Math.sin(animationPhase * Math.PI / 180)} 100 50 T 150 50 T 200 50 T 250 50`}
-                        stroke="#3b82f6"
-                        strokeWidth="2"
-                        fill="none"
-                      />
-                    )}
-
                     {/* Bolhas animadas */}
                     {isAnimating &&
-                      bolhasAnimacao.map((bolha: {id: number; x: number; y: number; speed: number}) => (
+                      bolhasAnimacao.map((bolha) => (
                         <circle
                           key={bolha.id}
                           cx={bolha.x}
@@ -612,16 +590,16 @@ export default function EstaticaSimulator() {
                     <line x1="30" y1={50 + profundidadeHidro * 20} x2="270" y2={50 + profundidadeHidro * 20} stroke="#0369a1" strokeWidth="2" strokeDasharray="5,5" />
 
                     {/* Objeto */}
-                    <circle cx="150" cy={50 + profundidadeHidro * 20} r="15" fill="#ef4444" opacity={isAnimating ? 0.7 + 0.3 * Math.sin(animationPhase * Math.PI / 180) : 1} />
+                    <circle cx="150" cy={50 + profundidadeHidro * 20} r="15" fill="#ef4444" />
 
                     {/* Profundidade label */}
                     <text x="20" y={60 + profundidadeHidro * 20} textAnchor="middle" className="text-sm font-bold fill-slate-900">
                       {profundidadeHidro.toFixed(1)} m
                     </text>
 
-                    {/* Pressão arrows com animação */}
+                    {/* Pressão arrows */}
                     {[0, 1, 2, 3].map((i) => (
-                      <g key={i} opacity={isAnimating ? 0.5 + 0.5 * Math.sin((animationPhase + i * 45) * Math.PI / 180) : 0.7}>
+                      <g key={i}>
                         <line x1={100 + i * 40} y1={50 + profundidadeHidro * 20 - 40} x2={100 + i * 40} y2={50 + profundidadeHidro * 20 - 10} stroke="#0369a1" strokeWidth="3" strokeLinecap="round" />
                         <polygon points={`${100 + i * 40},${50 + profundidadeHidro * 20 - 10} ${100 + i * 40 - 4},${50 + profundidadeHidro * 20 - 18} ${100 + i * 40 + 4},${50 + profundidadeHidro * 20 - 18}`} fill="#0369a1" />
                       </g>
@@ -663,7 +641,7 @@ export default function EstaticaSimulator() {
                   </Card>
                   <Card className="p-4 bg-blue-50 border-0">
                     <p className="text-xs text-slate-600 mb-1">Pressão do Fluido</p>
-                    <p className="text-2xl font-bold text-blue-600">{((pressaoHidro - P0) / 1000).toFixed(1)} kPa</p>
+                    <p className="text-2xl font-bold text-blue-600">{(pressaoFluidoOnly / 1000).toFixed(1)} kPa</p>
                   </Card>
                   <Card className="p-4 bg-slate-900 border-0">
                     <p className="text-xs text-slate-300 mb-1">Pressão Total</p>
@@ -671,20 +649,21 @@ export default function EstaticaSimulator() {
                   </Card>
                 </div>
 
+                {/* Fórmulas */}
                 <Card className="p-4 bg-cyan-50 border-l-4 border-cyan-500">
-                  <p className="text-sm font-bold text-slate-900 mb-2">Fórmulas de Hidrostática:</p>
-                  <div className="space-y-3">
-                    <div key="hidro-1" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-hidro-1" formula="P = P_0 + \\rho g h" className="text-center" />
+                  <p className="text-sm font-bold text-slate-900 mb-3">Fórmulas de Hidrostática:</p>
+                  <div className="space-y-2">
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="P = P_0 + \\rho g h" display={true} className="text-center" />
                     </div>
-                    <div key="hidro-2" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-hidro-2" formula="P_0 = 101.325 \\text{ kPa (Pressão Atmosférica)}" className="text-center" />
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="P_0 = 101.325 \\text{ kPa}" display={true} className="text-center" />
                     </div>
-                    <div key="hidro-3" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-hidro-3" formula="\\rho = \\text{densidade do fluido (kg/m}^3\\text{)}" className="text-center" />
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="\\rho = \\text{densidade (kg/m}^3\\text{)}" display={true} className="text-center" />
                     </div>
-                    <div key="hidro-4" className="bg-white p-3 rounded-lg">
-                      <MathFormula key="formula-hidro-4" formula="g = 10 \\text{ m/s}^2, \\quad h = \\text{profundidade (m)}" className="text-center" />
+                    <div className="bg-white p-2 rounded">
+                      <MathFormula formula="g = 10 \\text{ m/s}^2, \\quad h = \\text{profundidade (m)}" display={true} className="text-center" />
                     </div>
                   </div>
                 </Card>
