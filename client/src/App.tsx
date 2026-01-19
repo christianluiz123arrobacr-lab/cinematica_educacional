@@ -40,7 +40,7 @@ import EstaticaTopicEquilibrio from "./pages/EstaticaTopicEquilibrio";
 import EstaticaTopicTorque from "./pages/EstaticaTopicTorque";
 import EstaticaTopicMaquinas from "./pages/EstaticaTopicMaquinas";
 import EstaticaTopicHidrostatica from "./pages/EstaticaTopicHidrostatica";
-import Calculadora from "./pages/Calculadora";
+
 
 
 
@@ -82,7 +82,7 @@ function Router() {
       <Route path="/estatica/topic/torque" component={EstaticaTopicTorque} />
       <Route path="/estatica/topic/maquinas" component={EstaticaTopicMaquinas} />
       <Route path="/estatica/topic/hidrostatica" component={EstaticaTopicHidrostatica} />
-      <Route path="/calculadora" component={Calculadora} />
+
       <Route path="/progress" component={Progress} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
