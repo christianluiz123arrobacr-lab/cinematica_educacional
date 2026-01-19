@@ -18,7 +18,11 @@ export default function DinamicaHome() {
             <h1 className="text-2xl font-bold text-slate-900">Dinâmica</h1>
             <p className="text-xs text-slate-600">Projeto ITA - Do Zero a Aprovação</p>
           </div>
-          <div className="w-10"></div>
+          <div className="flex items-center gap-2">
+            <Link href="/progress">
+              <Button variant="outline" size="sm">Progresso</Button>
+            </Link>
+          </div>
         </div>
       </header>
 

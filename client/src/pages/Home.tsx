@@ -43,6 +43,9 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Link href="/progress">
+              <Button variant="outline" size="sm">Progresso</Button>
+            </Link>
             <a href="https://youtube.com/@projetoita-z4x?si=dIghaQjMiHZzk4R5" target="_blank" rel="noopener noreferrer">
               <Button variant="outline" size="sm">Sobre</Button>
             </a>

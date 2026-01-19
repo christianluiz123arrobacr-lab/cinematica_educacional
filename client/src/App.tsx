@@ -19,6 +19,7 @@ import DynamicsQuiz from "./pages/DynamicsQuiz";
 import DynamicsGraphs from "./pages/DynamicsGraphs";
 import CinematicaSimulator from "./pages/CinematicaSimulator";
 import DynamicsSimulator from "./pages/DynamicsSimulator";
+import Progress from "./pages/Progress";
 
 
 function Router() {
@@ -39,6 +40,7 @@ function Router() {
       <Route path="/dinamica/formulas" component={DynamicsFormulas} />
       <Route path="/dinamica/graphs" component={DynamicsGraphs} />
       <Route path="/dinamica/simulator" component={DynamicsSimulator} />
+      <Route path="/progress" component={Progress} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
