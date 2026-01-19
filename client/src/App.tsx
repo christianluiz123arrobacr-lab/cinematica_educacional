@@ -7,12 +7,14 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Calculator from "./pages/Calculator";
 import Formulas from "./pages/Formulas";
+import Learn from "./pages/Learn";
 
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/learn" component={Learn} />
       <Route path="/calculator" component={Calculator} />
       <Route path="/formulas" component={Formulas} />
       <Route path="/404" component={NotFound} />

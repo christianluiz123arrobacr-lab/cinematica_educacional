@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChevronDown, BookOpen, Zap, Target, Droplet } from "lucide-react";
+import { ChevronDown, BookOpen, Zap, Target, Droplet, MessageCircle } from "lucide-react";
+import { Link } from "wouter";
 import { cinematicaContent } from "@/data/cinematica-content";
 
 interface Section {
@@ -37,9 +38,17 @@ export default function Home() {
               <p className="text-xs text-slate-500">Projeto ITA - Do Zero a Aprovação</p>
             </div>
           </div>
-          <a href="https://youtube.com/@projetoita-z4x?si=dIghaQjMiHZzk4R5" target="_blank" rel="noopener noreferrer">
-            <Button variant="outline" size="sm">Sobre</Button>
-          </a>
+          <div className="flex items-center gap-2">
+            <a href="https://youtube.com/@projetoita-z4x?si=dIghaQjMiHZzk4R5" target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" size="sm">Sobre</Button>
+            </a>
+            <a href="https://chat.whatsapp.com/Grwi9hUFvFbA91gShvZGqI" target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" size="sm" className="bg-green-50 hover:bg-green-100 text-green-700 border-green-300">
+                <MessageCircle className="w-4 h-4 mr-2" />
+                WhatsApp
+              </Button>
+            </a>
+          </div>
         </div>
       </header>
 
@@ -58,9 +67,11 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex gap-4">
-                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600">
-                  Começar a Aprender
-                </Button>
+                <Link href="/learn">
+                  <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600">
+                    Começar a Aprender
+                  </Button>
+                </Link>
                 <a href="/calculator">
                   <Button size="lg" variant="outline">Calculadora Interativa</Button>
                 </a>
