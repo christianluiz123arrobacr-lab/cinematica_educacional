@@ -12,6 +12,11 @@ import Formulas from "./pages/Formulas";
 import Learn from "./pages/Learn";
 import Quiz from "./pages/Quiz";
 import Graphs from "./pages/Graphs";
+import DynamicsLearn from "./pages/DynamicsLearn";
+import DynamicsCalculator from "./pages/DynamicsCalculator";
+import DynamicsFormulas from "./pages/DynamicsFormulas";
+import DynamicsQuiz from "./pages/DynamicsQuiz";
+import DynamicsGraphs from "./pages/DynamicsGraphs";
 
 
 function Router() {
@@ -25,10 +30,11 @@ function Router() {
       <Route path="/cinematica/calculator" component={Calculator} />
       <Route path="/cinematica/formulas" component={Formulas} />
       <Route path="/dinamica" component={DinamicaHome} />
-      <Route path="/dinamica/learn" component={Learn} />
-      <Route path="/dinamica/quiz" component={Quiz} />
-      <Route path="/dinamica/calculator" component={Calculator} />
-      <Route path="/dinamica/formulas" component={Formulas} />
+      <Route path="/dinamica/learn" component={DynamicsLearn} />
+      <Route path="/dinamica/quiz" component={DynamicsQuiz} />
+      <Route path="/dinamica/calculator" component={DynamicsCalculator} />
+      <Route path="/dinamica/formulas" component={DynamicsFormulas} />
+      <Route path="/dinamica/graphs" component={DynamicsGraphs} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

@@ -16,30 +16,42 @@ export function MathFormula({ formula, display = true, className = '' }: MathFor
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const renderMath = () => {
-      if (ref.current && (window as any).MathJax) {
+    const renderMath = async () => {
+      // Aguardar MathJax estar completamente carregado
+      if (typeof window !== 'undefined' && (window as any).MathJax) {
         try {
-          (window as any).MathJax.typesetPromise([ref.current]).catch((err: any) => console.log('MathJax error:', err));
-        } catch (e) {
-          console.log('MathJax not ready');
+          // Limpar renderizações anteriores
+          if (ref.current) {
+            (window as any).MathJax.typesetClear([ref.current]);
+          }
+          
+          // Renderizar novo conteúdo
+          await (window as any).MathJax.typesetPromise([ref.current]);
+        } catch (err) {
+          console.log('MathJax render error:', err);
         }
       }
     };
 
+    // Renderizar imediatamente
     renderMath();
-    const timer = setTimeout(renderMath, 300);
+    
+    // Renderizar novamente após delay para garantir
+    const timer = setTimeout(renderMath, 100);
     
     return () => clearTimeout(timer);
   }, [formula]);
 
-  const displayStyle = display ? '$$' : '$';
-  const htmlContent = `${displayStyle}${formula}${displayStyle}`;
+  // Usar delimitadores corretos para MathJax
+  const displayStyle = display ? '\\[' : '\\(';
+  const endStyle = display ? '\\]' : '\\)';
+  const htmlContent = `${displayStyle}${formula}${endStyle}`;
 
   return (
     <div 
       ref={ref} 
       className={className} 
-      style={{ wordBreak: 'break-word', display: 'inline-block' }}
+      style={{ wordBreak: 'break-word', display: display ? 'block' : 'inline-block' }}
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   );

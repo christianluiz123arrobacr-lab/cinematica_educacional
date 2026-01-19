@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChevronDown, BookOpen, Zap, Target, Droplet, MessageCircle } from "lucide-react";
+import { ChevronDown, BookOpen, Zap, Target, Droplet, MessageCircle, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import { cinematicaContent } from "@/data/cinematica-content";
 
@@ -29,6 +29,10 @@ export default function Home() {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
         <div className="container py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
+            <ArrowLeft className="w-5 h-5" />
+            Voltar
+          </Link>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center">
               <BookOpen className="w-6 h-6 text-white" />
