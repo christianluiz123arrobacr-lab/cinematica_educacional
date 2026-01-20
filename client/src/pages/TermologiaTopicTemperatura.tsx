@@ -1,7 +1,8 @@
 import { Link } from "wouter";
-import { ArrowLeft, BookOpen, Thermometer } from "lucide-react";
+import { ArrowLeft, Thermometer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/components/MathFormula";
+import { TemperatureConverter } from "@/components/TemperatureConverter";
 
 export default function TermologiaTopicTemperatura() {
   return (
@@ -32,21 +33,19 @@ export default function TermologiaTopicTemperatura() {
         
         {/* ===== SEÇÃO 1: O QUE É TEMPERATURA? ===== */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">🌡️ O que é Temperatura? (Explicação Simples)</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🌡️ O que é Temperatura?</h2>
           
           <div className="space-y-6">
-            {/* DEFINIÇÃO SIMPLES */}
             <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-lg border-l-4 border-blue-500">
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Definição que Faz Sentido</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Definição Simples</h3>
               <p className="text-slate-700 leading-relaxed text-lg">
                 <strong>Temperatura é a medida de quão rápido as moléculas estão se movimentando.</strong>
               </p>
               <p className="text-slate-700 leading-relaxed mt-3">
-                Pronto! É só isso. Quanto mais rápido as moléculas se mexem, mais quente está. Quanto mais lento, mais frio.
+                Quanto mais rápido as moléculas se mexem, mais quente está. Quanto mais lento, mais frio.
               </p>
             </div>
 
-            {/* EXEMPLO PRÁTICO */}
             <div className="bg-yellow-50 border border-yellow-200 rounded p-6">
               <h4 className="font-bold text-slate-900 mb-3">💡 Exemplo: Água Fria vs Água Quente</h4>
               <div className="space-y-3 text-slate-700">
@@ -64,7 +63,6 @@ export default function TermologiaTopicTemperatura() {
               </div>
             </div>
 
-            {/* DIFERENÇA IMPORTANTE */}
             <div className="bg-red-50 border-l-4 border-red-500 rounded p-6">
               <h4 className="font-bold text-slate-900 mb-3">⚠️ IMPORTANTE: Temperatura vs Calor</h4>
               <div className="space-y-3 text-slate-700">
@@ -175,8 +173,11 @@ export default function TermologiaTopicTemperatura() {
           </div>
         </div>
 
+        {/* ===== SIMULADOR: CONVERSOR DE TEMPERATURA ===== */}
+        <TemperatureConverter />
+
         {/* ===== SEÇÃO 3: CONVERSÕES ===== */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+        <div className="bg-white rounded-2xl shadow-lg p-8 my-8 border border-slate-200">
           <h2 className="text-3xl font-bold text-slate-900 mb-6">🔄 Como Converter Entre Escalas</h2>
           
           <p className="text-slate-700 mb-6">
@@ -310,66 +311,7 @@ export default function TermologiaTopicTemperatura() {
           </div>
         </div>
 
-        {/* ===== SEÇÃO 5: COMO USAR NA PRÁTICA ===== */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">🎯 Como Usar Temperatura na Prática</h2>
-          
-          <div className="space-y-6">
-            <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
-              <h3 className="font-bold text-slate-900 mb-3">Situação 1: Receita de Bolo</h3>
-              <p className="text-slate-700 mb-3">A receita diz "asse a 180°C por 30 minutos". Você precisa saber:</p>
-              <div className="bg-white p-3 rounded border border-blue-300 text-slate-700">
-                <p>• Sua temperatura é em Celsius (°C)</p>
-                <p>• Você coloca no forno a 180°C (bem quente!)</p>
-                <p>• Se estivesse em Fahrenheit: 180°C ≈ 356°F</p>
-              </div>
-            </div>
-
-            <div className="bg-green-50 border-l-4 border-green-500 rounded p-6">
-              <h3 className="font-bold text-slate-900 mb-3">Situação 2: Viagem para os EUA</h3>
-              <p className="text-slate-700 mb-3">A previsão do tempo diz "será 68°F amanhã". Você quer saber se é quente ou frio:</p>
-              <div className="bg-white p-3 rounded border border-green-300 text-slate-700">
-                <MathFormula formula="°C = \\frac{68 - 32}{1,8} = \\frac{36}{1,8} = 20°C" display={true} />
-                <p className="mt-2">Resposta: 68°F = 20°C (dia fresco, leve um casaco!)</p>
-              </div>
-            </div>
-
-            <div className="bg-orange-50 border-l-4 border-orange-500 rounded p-6">
-              <h3 className="font-bold text-slate-900 mb-3">Situação 3: Experimento de Física</h3>
-              <p className="text-slate-700 mb-3">Seu professor diz "aqueça a água até 60°C". Você precisa:</p>
-              <div className="bg-white p-3 rounded border border-orange-300 text-slate-700">
-                <p>• Usar um termômetro em Celsius</p>
-                <p>• Parar quando chegar a 60°C</p>
-                <p>• Saber que 60°C é quente (mas não ferve, que é 100°C)</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ===== SEÇÃO 6: ERROS COMUNS ===== */}
-        <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-6 mb-8">
-          <h3 className="text-xl font-bold text-yellow-900 mb-4">⚠️ Erros Comuns</h3>
-          <ul className="space-y-3 text-yellow-900">
-            <li className="flex gap-3">
-              <span className="font-bold">❌</span>
-              <span><strong>Confundir Celsius com Kelvin:</strong> Kelvin não tem o símbolo "°". Escreva "300 K", não "300°K".</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="font-bold">❌</span>
-              <span><strong>Esquecer o "+32" em Celsius→Fahrenheit:</strong> Sempre some 32 no final!</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="font-bold">❌</span>
-              <span><strong>Usar 273 em vez de 273,15:</strong> Para cálculos rápidos, 273 funciona. Para precisão, use 273,15.</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="font-bold">❌</span>
-              <span><strong>Achar que temperatura negativa em Kelvin existe:</strong> Kelvin NUNCA é negativo. Começa em 0 K.</span>
-            </li>
-          </ul>
-        </div>
-
-        {/* ===== SEÇÃO 7: RESUMO RÁPIDO ===== */}
+        {/* ===== RESUMO RÁPIDO ===== */}
         <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
           <h3 className="text-xl font-bold text-green-900 mb-4">📋 Resumo Rápido</h3>
           <div className="space-y-3 text-green-900">

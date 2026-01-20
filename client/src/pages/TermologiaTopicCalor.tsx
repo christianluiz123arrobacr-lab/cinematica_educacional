@@ -1,7 +1,11 @@
 import { Link } from "wouter";
-import { ArrowLeft, BookOpen, Flame } from "lucide-react";
+import { ArrowLeft, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/components/MathFormula";
+import { HeatCalculator } from "@/components/HeatCalculator";
+import { HeatTransferSimulator } from "@/components/HeatTransferSimulator";
+import { RealWorldApplications } from "@/components/RealWorldApplications";
+import { InteractiveQuiz } from "@/components/InteractiveQuiz";
 
 export default function TermologiaTopicCalor() {
   return (
@@ -32,12 +36,11 @@ export default function TermologiaTopicCalor() {
         
         {/* ===== SEÇÃO 1: O QUE É CALOR? ===== */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">🔥 O que é Calor? (Explicação Simples)</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🔥 O que é Calor?</h2>
           
           <div className="space-y-6">
-            {/* DEFINIÇÃO SIMPLES */}
             <div className="bg-gradient-to-r from-orange-50 to-red-50 p-6 rounded-lg border-l-4 border-orange-500">
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Definição que Faz Sentido</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Definição Simples</h3>
               <p className="text-slate-700 leading-relaxed text-lg">
                 <strong>Calor é a energia que flui de um lugar quente para um lugar frio.</strong>
               </p>
@@ -46,7 +49,6 @@ export default function TermologiaTopicCalor() {
               </p>
             </div>
 
-            {/* EXEMPLO PRÁTICO */}
             <div className="bg-yellow-50 border border-yellow-200 rounded p-6">
               <h4 className="font-bold text-slate-900 mb-3">💡 Exemplo: Xícara de Café Quente</h4>
               <div className="space-y-3 text-slate-700">
@@ -65,9 +67,8 @@ export default function TermologiaTopicCalor() {
               </div>
             </div>
 
-            {/* DIFERENÇA IMPORTANTE */}
             <div className="bg-red-50 border-l-4 border-red-500 rounded p-6">
-              <h4 className="font-bold text-slate-900 mb-3">⚠️ IMPORTANTE: Temperatura vs Calor (Novamente!)</h4>
+              <h4 className="font-bold text-slate-900 mb-3">⚠️ IMPORTANTE: Temperatura vs Calor</h4>
               <div className="space-y-3 text-slate-700">
                 <div className="bg-white p-3 rounded border border-red-300">
                   <p className="font-bold text-red-900">Temperatura:</p>
@@ -77,9 +78,6 @@ export default function TermologiaTopicCalor() {
                   <p className="font-bold text-red-900">Calor:</p>
                   <p>É uma AÇÃO. É a energia fluindo de quente para frio. Você SENTE.</p>
                 </div>
-                <p className="text-sm text-slate-600 mt-3 italic">
-                  Analogia: Temperatura é como a velocidade de um carro. Calor é como o carro se movendo de um lugar para outro.
-                </p>
               </div>
             </div>
           </div>
@@ -94,7 +92,6 @@ export default function TermologiaTopicCalor() {
           </p>
 
           <div className="space-y-8">
-            {/* FÓRMULA DE CALOR */}
             <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
               <h3 className="text-2xl font-bold text-slate-900 mb-4">Fórmula da Quantidade de Calor</h3>
               
@@ -117,7 +114,6 @@ export default function TermologiaTopicCalor() {
               </div>
             </div>
 
-            {/* CALOR ESPECÍFICO */}
             <div className="bg-green-50 border-l-4 border-green-500 rounded p-6">
               <h3 className="text-2xl font-bold text-slate-900 mb-4">O que é Calor Específico?</h3>
               
@@ -139,39 +135,17 @@ export default function TermologiaTopicCalor() {
 
               <div className="bg-gradient-to-r from-green-100 to-emerald-100 p-4 rounded">
                 <p className="font-bold mb-2">💡 Exemplo Prático:</p>
-                <p className="text-slate-700 text-sm">Por que a água da praia aquece lentamente no verão mas esfria lentamente no inverno? Porque água tem calor específico MUITO alto! Ela absorve muita energia do sol para aquecer, e libera muita energia para esfriar.</p>
-              </div>
-            </div>
-
-            {/* EXEMPLO DE CÁLCULO */}
-            <div className="bg-orange-50 border-l-4 border-orange-500 rounded p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">📝 Exemplo Prático: Aquecer Água</h3>
-              
-              <div className="bg-white border border-orange-300 rounded p-4 mb-4">
-                <p className="font-bold text-slate-900 mb-3">Problema:</p>
-                <p className="text-slate-700 mb-3">Você quer aquecer 2 kg de água de 20°C para 80°C. Quanto calor precisa?</p>
-                
-                <div className="bg-slate-50 p-3 rounded mb-3">
-                  <p className="font-bold text-slate-900 mb-2">Solução:</p>
-                  <p className="text-slate-700 mb-2">Dados:</p>
-                  <p className="text-slate-700 text-sm ml-4">• m = 2 kg</p>
-                  <p className="text-slate-700 text-sm ml-4">• c = 4.200 J/(kg·°C)</p>
-                  <p className="text-slate-700 text-sm ml-4">• ΔT = 80 - 20 = 60°C</p>
-                  
-                  <p className="text-slate-700 mt-3 mb-2">Aplicar fórmula:</p>
-                  <MathFormula formula="Q = m \\cdot c \\cdot \\Delta T = 2 \\times 4.200 \\times 60 = 504.000 \\text{ J}" display={true} />
-                </div>
-
-                <p className="text-slate-700 text-sm">
-                  <strong>Resposta:</strong> Precisa de 504.000 J (ou 504 kJ) de calor para aquecer 2 kg de água em 60°C.
-                </p>
+                <p className="text-slate-700 text-sm">Por que a água da praia aquece lentamente no verão mas esfria lentamente no inverno? Porque água tem calor específico MUITO alto!</p>
               </div>
             </div>
           </div>
         </div>
 
+        {/* ===== SIMULADOR 1: CALCULADOR DE CALOR ===== */}
+        <HeatCalculator />
+
         {/* ===== SEÇÃO 3: TRANSFERÊNCIA DE CALOR ===== */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+        <div className="bg-white rounded-2xl shadow-lg p-8 my-8 border border-slate-200">
           <h2 className="text-3xl font-bold text-slate-900 mb-6">🔄 Como o Calor se Transfere? (3 Formas)</h2>
           
           <p className="text-slate-700 mb-6">
@@ -179,73 +153,46 @@ export default function TermologiaTopicCalor() {
           </p>
 
           <div className="space-y-8">
-            {/* CONDUÇÃO */}
             <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">1️⃣ Condução (Contato Direto)</h3>
-              
-              <p className="text-slate-700 mb-4">
-                <strong>Condução</strong> é quando o calor passa de um objeto para outro através de contato direto.
-              </p>
-
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">1️⃣ Condução Térmica</h3>
+              <p className="text-slate-700 mb-4">Calor passa através de contato direto entre objetos.</p>
               <div className="bg-gradient-to-r from-blue-100 to-cyan-100 p-4 rounded mb-4">
                 <p className="font-bold mb-2">💡 Exemplos:</p>
-                <p className="text-slate-700 text-sm">• Você toca uma colher quente em uma panela quente - a colher aquece</p>
-                <p className="text-slate-700 text-sm">• Você coloca a mão em um radiador quente - sua mão aquece</p>
-                <p className="text-slate-700 text-sm">• Você segura uma xícara de café quente - suas mãos aquecem</p>
-              </div>
-
-              <div className="bg-white border border-blue-300 rounded p-4">
-                <p className="font-bold text-slate-900 mb-2">Como funciona?</p>
-                <p className="text-slate-700 text-sm">As moléculas do objeto quente se mexem rápido e "batem" nas moléculas do objeto frio, fazendo-as se mexer mais rápido também.</p>
+                <p className="text-slate-700 text-sm">• Colher quente em uma panela</p>
+                <p className="text-slate-700 text-sm">• Mão tocando um radiador</p>
+                <p className="text-slate-700 text-sm">• Xícara de café aquecendo as mãos</p>
               </div>
             </div>
 
-            {/* CONVECÇÃO */}
             <div className="bg-green-50 border-l-4 border-green-500 rounded p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">2️⃣ Convecção (Movimento de Fluido)</h3>
-              
-              <p className="text-slate-700 mb-4">
-                <strong>Convecção</strong> é quando o calor passa através do movimento de um fluido (líquido ou gás).
-              </p>
-
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">2️⃣ Convecção Térmica</h3>
+              <p className="text-slate-700 mb-4">Calor passa através do movimento de um fluido (líquido ou gás).</p>
               <div className="bg-gradient-to-r from-green-100 to-emerald-100 p-4 rounded mb-4">
                 <p className="font-bold mb-2">💡 Exemplos:</p>
-                <p className="text-slate-700 text-sm">• Você coloca água em uma panela no fogo - a água quente sobe e a fria desce (correntes de convecção)</p>
-                <p className="text-slate-700 text-sm">• Ar quente sobe e ar frio desce (por isso ventiladores ajudam a resfriar)</p>
-                <p className="text-slate-700 text-sm">• Você sente o calor de um radiador mesmo sem tocá-lo (ar quente sobe)</p>
-              </div>
-
-              <div className="bg-white border border-green-300 rounded p-4">
-                <p className="font-bold text-slate-900 mb-2">Como funciona?</p>
-                <p className="text-slate-700 text-sm">O fluido quente sobe (porque fica menos denso) e o fluido frio desce (porque fica mais denso). Isso cria um ciclo que transfere calor.</p>
+                <p className="text-slate-700 text-sm">• Água fervendo em uma panela</p>
+                <p className="text-slate-700 text-sm">• Ar quente subindo de um radiador</p>
+                <p className="text-slate-700 text-sm">• Ventilador circulando ar quente</p>
               </div>
             </div>
 
-            {/* RADIAÇÃO */}
             <div className="bg-orange-50 border-l-4 border-orange-500 rounded p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">3️⃣ Radiação (Ondas Eletromagnéticas)</h3>
-              
-              <p className="text-slate-700 mb-4">
-                <strong>Radiação</strong> é quando o calor passa através de ondas eletromagnéticas (sem precisar de contato ou movimento de fluido).
-              </p>
-
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">3️⃣ Radiação Térmica</h3>
+              <p className="text-slate-700 mb-4">Calor passa através de ondas eletromagnéticas (sem contato).</p>
               <div className="bg-gradient-to-r from-orange-100 to-yellow-100 p-4 rounded mb-4">
                 <p className="font-bold mb-2">💡 Exemplos:</p>
-                <p className="text-slate-700 text-sm">• Você sente o calor do Sol mesmo estando longe dele (viaja 150 milhões de km!)</p>
-                <p className="text-slate-700 text-sm">• Você sente o calor de uma fogueira mesmo sem tocá-la</p>
-                <p className="text-slate-700 text-sm">• Um forno de micro-ondas aquece comida através de radiação</p>
-              </div>
-
-              <div className="bg-white border border-orange-300 rounded p-4">
-                <p className="font-bold text-slate-900 mb-2">Como funciona?</p>
-                <p className="text-slate-700 text-sm">Objetos quentes emitem ondas eletromagnéticas (infravermelho). Essas ondas viajam pelo espaço e aquecem o que encontram.</p>
+                <p className="text-slate-700 text-sm">• Calor do Sol chegando na Terra</p>
+                <p className="text-slate-700 text-sm">• Calor de uma fogueira</p>
+                <p className="text-slate-700 text-sm">• Forno de micro-ondas</p>
               </div>
             </div>
           </div>
         </div>
 
+        {/* ===== SIMULADOR 2: TRANSFERÊNCIA DE CALOR ===== */}
+        <HeatTransferSimulator />
+
         {/* ===== SEÇÃO 4: EQUILÍBRIO TÉRMICO ===== */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+        <div className="bg-white rounded-2xl shadow-lg p-8 my-8 border border-slate-200">
           <h2 className="text-3xl font-bold text-slate-900 mb-6">⚖️ Equilíbrio Térmico</h2>
           
           <p className="text-slate-700 mb-6">
@@ -271,75 +218,22 @@ export default function TermologiaTopicCalor() {
                 <p className="text-slate-700 text-sm mb-2">Solução:</p>
                 <p className="text-slate-700 text-sm ml-4">• Água quente perde calor: Q_perdido = 1 × 4.200 × (80 - T_final)</p>
                 <p className="text-slate-700 text-sm ml-4">• Água fria ganha calor: Q_ganho = 1 × 4.200 × (T_final - 20)</p>
-                <p className="text-slate-700 text-sm ml-4">• Igualando: 1 × 4.200 × (80 - T_final) = 1 × 4.200 × (T_final - 20)</p>
-                <p className="text-slate-700 text-sm ml-4">• Simplificando: 80 - T_final = T_final - 20</p>
-                <p className="text-slate-700 text-sm ml-4">• Resolvendo: 100 = 2 × T_final</p>
+                <p className="text-slate-700 text-sm ml-4">• Igualando: 80 - T_final = T_final - 20</p>
                 <p className="text-slate-700 text-sm ml-4">• <strong>T_final = 50°C</strong></p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ===== SEÇÃO 5: COMO USAR NA PRÁTICA ===== */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">🎯 Como Usar Calor na Prática</h2>
-          
-          <div className="space-y-6">
-            <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
-              <h3 className="font-bold text-slate-900 mb-3">Situação 1: Aquecer Água para Chá</h3>
-              <p className="text-slate-700 mb-3">Você quer aquecer 500 mL de água de 25°C para 100°C. Quanto tempo leva?</p>
-              <div className="bg-white p-3 rounded border border-blue-300 text-slate-700 text-sm">
-                <p>• Primeiro calcula o calor necessário: Q = 0,5 × 4.200 × (100 - 25) = 157.500 J</p>
-                <p>• Depois divide pela potência do aquecedor (ex: 1.000 W = 1.000 J/s)</p>
-                <p>• Tempo = 157.500 / 1.000 = 157,5 segundos ≈ 2,6 minutos</p>
-              </div>
-            </div>
+        {/* ===== SIMULADOR 3: APLICAÇÕES REAIS ===== */}
+        <RealWorldApplications />
 
-            <div className="bg-green-50 border-l-4 border-green-500 rounded p-6">
-              <h3 className="font-bold text-slate-900 mb-3">Situação 2: Resfriar Refrigerante</h3>
-              <p className="text-slate-700 mb-3">Você coloca uma lata de refrigerante quente na geladeira. Por que esfria?</p>
-              <div className="bg-white p-3 rounded border border-green-300 text-slate-700 text-sm">
-                <p>• CONDUÇÃO: O refrigerante toca a parede fria da lata</p>
-                <p>• CONVECÇÃO: O refrigerante quente sobe, o frio desce (dentro da lata)</p>
-                <p>• CONDUÇÃO: O calor passa pela lata de alumínio (que é bom condutor)</p>
-              </div>
-            </div>
-
-            <div className="bg-orange-50 border-l-4 border-orange-500 rounded p-6">
-              <h3 className="font-bold text-slate-900 mb-3">Situação 3: Por que Roupas Brancas Esquentam Menos?</h3>
-              <p className="text-slate-700 mb-3">Roupas brancas refletem a radiação do Sol, enquanto roupas pretas absorvem.</p>
-              <div className="bg-white p-3 rounded border border-orange-300 text-slate-700 text-sm">
-                <p>• Branco: Reflete a radiação (não absorve calor) - mais fresco</p>
-                <p>• Preto: Absorve a radiação (absorve muito calor) - mais quente</p>
-              </div>
-            </div>
-          </div>
+        {/* ===== SEÇÃO 5: EXERCÍCIOS INTERATIVOS ===== */}
+        <div className="my-8">
+          <InteractiveQuiz />
         </div>
 
-        {/* ===== SEÇÃO 6: ERROS COMUNS ===== */}
-        <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-6 mb-8">
-          <h3 className="text-xl font-bold text-yellow-900 mb-4">⚠️ Erros Comuns</h3>
-          <ul className="space-y-3 text-yellow-900">
-            <li className="flex gap-3">
-              <span className="font-bold">❌</span>
-              <span><strong>Confundir Calor com Temperatura:</strong> Calor é energia fluindo. Temperatura é propriedade.</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="font-bold">❌</span>
-              <span><strong>Esquecer a massa na fórmula:</strong> Q = m·c·ΔT. Se dobra a massa, dobra o calor!</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="font-bold">❌</span>
-              <span><strong>Usar Celsius em vez de Kelvin em fórmulas científicas:</strong> Para física avançada, use Kelvin.</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="font-bold">❌</span>
-              <span><strong>Achar que calor flui do frio para o quente:</strong> Nunca! Sempre flui do quente para o frio.</span>
-            </li>
-          </ul>
-        </div>
-
-        {/* ===== SEÇÃO 7: RESUMO RÁPIDO ===== */}
+        {/* ===== RESUMO RÁPIDO ===== */}
         <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
           <h3 className="text-xl font-bold text-green-900 mb-4">📋 Resumo Rápido</h3>
           <div className="space-y-3 text-green-900">
@@ -348,9 +242,9 @@ export default function TermologiaTopicCalor() {
             <p className="mt-4"><strong>Fórmula de Calor:</strong> Q = m·c·ΔT</p>
             
             <p className="mt-4"><strong>3 Formas de Transferência:</strong></p>
-            <p className="ml-4">• <strong>Condução:</strong> Contato direto (colher quente)</p>
-            <p className="ml-4">• <strong>Convecção:</strong> Movimento de fluido (água fervendo)</p>
-            <p className="ml-4">• <strong>Radiação:</strong> Ondas eletromagnéticas (Sol, fogueira)</p>
+            <p className="ml-4">• <strong>Condução:</strong> Contato direto</p>
+            <p className="ml-4">• <strong>Convecção:</strong> Movimento de fluido</p>
+            <p className="ml-4">• <strong>Radiação:</strong> Ondas eletromagnéticas</p>
             
             <p className="mt-4"><strong>Equilíbrio Térmico:</strong> Calor perdido = Calor ganho</p>
           </div>
