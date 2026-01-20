@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 declare global {
   interface Window {
@@ -13,7 +13,7 @@ export function useMathJax() {
     const checkMathJax = async () => {
       // Esperar MathJax estar disponível
       let attempts = 0;
-      const maxAttempts = 50; // 5 segundos máximo
+      const maxAttempts = 100; // 10 segundos máximo
 
       while (!window.MathJax && attempts < maxAttempts) {
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -21,6 +21,19 @@ export function useMathJax() {
       }
 
       if (window.MathJax) {
+        // Configurar MathJax se ainda não foi configurado
+        if (!window.MathJax.startup) {
+          window.MathJax = {
+            tex: {
+              inlineMath: [['$', '$'], ['\\(', '\\)']],
+              displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+              fontCache: 'global'
+            }
+          };
+        }
+
         // Esperar MathJax estar completamente inicializado
         if (window.MathJax.typesetPromise) {
           try {
@@ -42,7 +55,7 @@ export function useMathJax() {
     checkMathJax();
   }, []);
 
-  const renderMath = async () => {
+  const renderMath = useCallback(async () => {
     if (window.MathJax && window.MathJax.typesetPromise) {
       try {
         await window.MathJax.typesetPromise();
@@ -50,7 +63,7 @@ export function useMathJax() {
         console.log('MathJax render error:', err);
       }
     }
-  };
+  }, []);
 
   return { isReady, renderMath };
 }
