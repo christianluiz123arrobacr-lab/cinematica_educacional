@@ -22,7 +22,6 @@ export function MathFormula({ formula, display = true, className = '' }: MathFor
   }, [isReady, formula, renderMath]);
 
   // Usar delimitadores corretos para MathJax
-  // Importante: usar \[ e \] para display math, \( e \) para inline math
   const displayStyle = display ? '\\[' : '\\(';
   const endStyle = display ? '\\]' : '\\)';
   
@@ -32,13 +31,16 @@ export function MathFormula({ formula, display = true, className = '' }: MathFor
   return (
     <div 
       ref={ref} 
-      className={className} 
+      className={className}
       style={{ 
-        wordBreak: 'break-word', 
         display: display ? 'block' : 'inline-block',
+        textAlign: display ? 'center' : 'inherit',
+        padding: display ? '1rem 0' : '0',
+        margin: display ? '0.5rem 0' : '0',
         overflow: 'visible',
         minHeight: display ? '2rem' : 'auto',
-        textAlign: display ? 'center' : 'inherit'
+        border: 'none',
+        background: 'transparent'
       }}
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />

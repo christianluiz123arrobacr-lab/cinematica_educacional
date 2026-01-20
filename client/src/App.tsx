@@ -52,6 +52,9 @@ import TermologiaTopicCalor from "./pages/TermologiaTopicCalor";
 import TermologiaTopicCalorimetria from "./pages/TermologiaTopicCalorimetria";
 import TermologiaTopicTermodinamica from "./pages/TermologiaTopicTermodinamica";
 import TermologiaTopicDilatacao from "./pages/TermologiaTopicDilatacao";
+import MecanicaHome from "./pages/MecanicaHome";
+import MecanicaTopicCinematica from "./pages/MecanicaTopicCinematica";
+import MecanicaTopicDinamica from "./pages/MecanicaTopicDinamica";
 
 
 
@@ -107,6 +110,10 @@ function Router() {
       <Route path="/termologia/topic/calorimetria" component={TermologiaTopicCalorimetria} />
       <Route path="/termologia/topic/termodinamica" component={TermologiaTopicTermodinamica} />
       <Route path="/termologia/topic/dilatacao" component={TermologiaTopicDilatacao} />
+
+      <Route path="/mecanica" component={MecanicaHome} />
+      <Route path="/mecanica/topic/cinematica" component={MecanicaTopicCinematica} />
+      <Route path="/mecanica/topic/dinamica" component={MecanicaTopicDinamica} />
 
       <Route path="/progress" component={Progress} />
       <Route path="/404" component={NotFound} />
