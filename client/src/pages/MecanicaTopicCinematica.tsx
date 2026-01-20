@@ -48,17 +48,37 @@ export default function MecanicaTopicCinematica() {
             <div className="bg-yellow-50 border border-yellow-200 rounded p-6">
               <h4 className="font-bold text-slate-900 mb-3">🎯 Conceitos Fundamentais</h4>
               <div className="space-y-3 text-slate-700 text-sm">
-                <p><strong>Posição (x ou s):</strong> Localização do objeto em relação a um referencial (origem).</p>
-                <p><strong>Deslocamento (Δx):</strong> Variação de posição: Δx = x_final - x_inicial. É um vetor!</p>
-                <p><strong>Distância (d):</strong> Comprimento total do caminho percorrido. É um escalar (sempre positivo).</p>
-                <p><strong>Velocidade (v):</strong> Taxa de variação da posição. Pode ser média ou instantânea.</p>
-                <p><strong>Aceleração (a):</strong> Taxa de variação da velocidade.</p>
+                <div className="bg-white p-3 rounded border border-yellow-300">
+                  <p className="font-bold mb-1">Posição:</p>
+                  <MathFormula formula="x \\text{ ou } s" display={false} />
+                  <p className="text-xs mt-1">Localização do objeto em relação a um referencial (origem).</p>
+                </div>
+                <div className="bg-white p-3 rounded border border-yellow-300">
+                  <p className="font-bold mb-1">Deslocamento:</p>
+                  <MathFormula formula="\\Delta x = x_{final} - x_{inicial}" display={false} />
+                  <p className="text-xs mt-1">Variação de posição. É um vetor!</p>
+                </div>
+                <div className="bg-white p-3 rounded border border-yellow-300">
+                  <p className="font-bold mb-1">Distância:</p>
+                  <MathFormula formula="d = \\text{comprimento total do caminho percorrido}" display={false} />
+                  <p className="text-xs mt-1">É um escalar (sempre positivo).</p>
+                </div>
+                <div className="bg-white p-3 rounded border border-yellow-300">
+                  <p className="font-bold mb-1">Velocidade:</p>
+                  <MathFormula formula="v = \\frac{\\Delta x}{\\Delta t}" display={false} />
+                  <p className="text-xs mt-1">Taxa de variação da posição. Pode ser média ou instantânea.</p>
+                </div>
+                <div className="bg-white p-3 rounded border border-yellow-300">
+                  <p className="font-bold mb-1">Aceleração:</p>
+                  <MathFormula formula="a = \\frac{\\Delta v}{\\Delta t}" display={false} />
+                  <p className="text-xs mt-1">Taxa de variação da velocidade.</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ===== SEÇÃO 1: MOVIMENTO RETILÍNEO UNIFORME (MRU) ===== */}
+        {/* ===== SEÇÃO 1: MRU ===== */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
           <h2 className="text-3xl font-bold text-slate-900 mb-6">1️⃣ Movimento Retilíneo Uniforme (MRU)</h2>
           
@@ -69,11 +89,20 @@ export default function MecanicaTopicCinematica() {
                 <strong>MRU é o movimento com velocidade constante em linha reta.</strong> Isso implica aceleração nula.
               </p>
               <div className="bg-white border border-blue-300 rounded p-4 space-y-3">
-                <p className="text-slate-700"><strong>Características:</strong></p>
-                <p className="text-slate-700">• Velocidade é constante (v = const)</p>
-                <p className="text-slate-700">• Aceleração é nula (a = 0)</p>
-                <p className="text-slate-700">• Deslocamento é proporcional ao tempo</p>
-                <p className="text-slate-700">• Trajetória é uma linha reta</p>
+                <p className="font-bold text-slate-900 mb-2">Características:</p>
+                <div className="space-y-2">
+                  <div className="bg-blue-50 p-2 rounded">
+                    <MathFormula formula="v = \\text{constante}" display={false} />
+                  </div>
+                  <div className="bg-blue-50 p-2 rounded">
+                    <MathFormula formula="a = 0" display={false} />
+                  </div>
+                  <div className="bg-blue-50 p-2 rounded">
+                    <MathFormula formula="\\Delta x \\propto t" display={false} />
+                    <p className="text-xs text-slate-600 mt-1">Deslocamento é proporcional ao tempo</p>
+                  </div>
+                  <p className="text-slate-700 text-sm">• Trajetória é uma linha reta</p>
+                </div>
               </div>
             </div>
 
@@ -89,7 +118,9 @@ export default function MecanicaTopicCinematica() {
                 <div className="bg-white border border-green-300 rounded p-4">
                   <p className="font-bold text-slate-900 mb-2">Equação Horária da Posição:</p>
                   <MathFormula formula="x(t) = x_0 + v \\cdot t" display={true} />
-                  <p className="text-slate-700 text-sm mt-2">Onde: x₀ = posição inicial, v = velocidade (constante), t = tempo</p>
+                  <div className="bg-green-50 p-2 rounded mt-2">
+                    <MathFormula formula="\\text{Onde: } x_0 = \\text{posição inicial}, \\quad v = \\text{velocidade (constante)}, \\quad t = \\text{tempo}" display={true} />
+                  </div>
                 </div>
 
                 <div className="bg-white border border-green-300 rounded p-4">
@@ -100,9 +131,9 @@ export default function MecanicaTopicCinematica() {
             </div>
 
             <div className="bg-gradient-to-r from-blue-100 to-cyan-100 p-6 rounded-lg border border-blue-300">
-              <p className="font-bold mb-4 text-lg">📝 Exemplo 1: Problema Clássico de Encontro</p>
+              <p className="font-bold mb-4 text-lg">📝 Exemplo 1: Problema Clássico de Encontro (ESPCEX)</p>
               <div className="bg-white p-4 rounded mb-4">
-                <p className="text-slate-700 mb-3"><strong>Enunciado (ESPCEX):</strong></p>
+                <p className="text-slate-700 mb-3"><strong>Enunciado:</strong></p>
                 <p className="text-slate-700 text-sm mb-3">
                   Dois trens partem simultaneamente de duas estações A e B, distantes 600 km. O trem 1 sai de A com velocidade constante de 80 km/h em direção a B. O trem 2 sai de B com velocidade constante de 70 km/h em direção a A. Determine:
                 </p>
@@ -117,11 +148,15 @@ export default function MecanicaTopicCinematica() {
                   <p className="ml-4">Origem em A, sentido positivo para B.</p>
                   
                   <p className="mt-3"><strong>Passo 2: Escrever equações horárias</strong></p>
-                  <p className="ml-4">Trem 1: x₁(t) = 0 + 80t = 80t</p>
-                  <p className="ml-4">Trem 2: x₂(t) = 600 - 70t (velocidade negativa, pois vai contra o sentido positivo)</p>
-                  
-                  <p className="mt-3"><strong>Passo 3: Encontro ocorre quando x₁ = x₂</strong></p>
                   <div className="bg-white p-2 rounded ml-4 mt-2">
+                    <MathFormula formula="\\text{Trem 1: } x_1(t) = 0 + 80t = 80t" display={true} />
+                    <MathFormula formula="\\text{Trem 2: } x_2(t) = 600 - 70t" display={true} />
+                    <p className="text-xs text-slate-600 mt-2">(velocidade negativa, pois vai contra o sentido positivo)</p>
+                  </div>
+                  
+                  <p className="mt-3"><strong>Passo 3: Encontro ocorre quando</strong></p>
+                  <div className="bg-white p-2 rounded ml-4 mt-2">
+                    <MathFormula formula="x_1 = x_2" display={true} />
                     <MathFormula formula="80t = 600 - 70t" display={true} />
                     <MathFormula formula="150t = 600" display={true} />
                     <MathFormula formula="t = 4 \\text{ horas}" display={true} />
@@ -136,14 +171,20 @@ export default function MecanicaTopicCinematica() {
 
               <div className="bg-green-50 border border-green-200 rounded p-4 mt-4">
                 <p className="font-bold text-green-900 mb-2">✅ Resposta:</p>
-                <p className="text-green-900 text-sm">a) Tempo = 4 horas</p>
-                <p className="text-green-900 text-sm">b) Posição = 320 km de A (ou 280 km de B)</p>
+                <div className="space-y-2">
+                  <div className="bg-white p-2 rounded">
+                    <MathFormula formula="\\text{a) } t = 4 \\text{ horas}" display={true} />
+                  </div>
+                  <div className="bg-white p-2 rounded">
+                    <MathFormula formula="\\text{b) } x = 320 \\text{ km de A (ou } 280 \\text{ km de B)}" display={true} />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ===== SEÇÃO 2: MOVIMENTO RETILÍNEO UNIFORMEMENTE VARIADO (MRUV) ===== */}
+        {/* ===== SEÇÃO 2: MRUV ===== */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
           <h2 className="text-3xl font-bold text-slate-900 mb-6">2️⃣ Movimento Retilíneo Uniformemente Variado (MRUV)</h2>
           
@@ -154,11 +195,21 @@ export default function MecanicaTopicCinematica() {
                 <strong>MRUV é o movimento com aceleração constante em linha reta.</strong> A velocidade varia linearmente com o tempo.
               </p>
               <div className="bg-white border border-red-300 rounded p-4 space-y-3">
-                <p className="text-slate-700"><strong>Características:</strong></p>
-                <p className="text-slate-700">• Aceleração é constante (a = const ≠ 0)</p>
-                <p className="text-slate-700">• Velocidade varia linearmente: v(t) = v₀ + at</p>
-                <p className="text-slate-700">• Deslocamento varia quadraticamente com o tempo</p>
-                <p className="text-slate-700">• Trajetória é uma linha reta</p>
+                <p className="font-bold text-slate-900 mb-2">Características:</p>
+                <div className="space-y-2">
+                  <div className="bg-red-50 p-2 rounded">
+                    <MathFormula formula="a = \\text{constante} \\neq 0" display={false} />
+                  </div>
+                  <div className="bg-red-50 p-2 rounded">
+                    <MathFormula formula="v(t) = v_0 + at" display={false} />
+                    <p className="text-xs text-slate-600 mt-1">Velocidade varia linearmente</p>
+                  </div>
+                  <div className="bg-red-50 p-2 rounded">
+                    <MathFormula formula="\\Delta x \\propto t^2" display={false} />
+                    <p className="text-xs text-slate-600 mt-1">Deslocamento varia quadraticamente</p>
+                  </div>
+                  <p className="text-slate-700 text-sm">• Trajetória é uma linha reta</p>
+                </div>
               </div>
             </div>
 
@@ -169,7 +220,9 @@ export default function MecanicaTopicCinematica() {
                 <div className="bg-white border border-orange-300 rounded p-4">
                   <p className="font-bold text-slate-900 mb-2">1. Velocidade em Função do Tempo:</p>
                   <MathFormula formula="v(t) = v_0 + a \\cdot t" display={true} />
-                  <p className="text-slate-700 text-sm mt-2">Onde: v₀ = velocidade inicial, a = aceleração (constante)</p>
+                  <div className="bg-orange-50 p-2 rounded mt-2">
+                    <MathFormula formula="\\text{Onde: } v_0 = \\text{velocidade inicial}, \\quad a = \\text{aceleração (constante)}" display={true} />
+                  </div>
                 </div>
 
                 <div className="bg-white border border-orange-300 rounded p-4">
@@ -212,27 +265,32 @@ export default function MecanicaTopicCinematica() {
                 <p className="font-bold text-slate-900 mb-3">Resolução Detalhada:</p>
                 <div className="space-y-3 text-slate-700 text-sm">
                   <p><strong>Passo 1: Converter unidades</strong></p>
-                  <p className="ml-4">v₀ = 90 km/h = 90/3,6 = 25 m/s</p>
-                  <p className="ml-4">a = -5 m/s² (negativa porque freia)</p>
+                  <div className="bg-white p-2 rounded ml-4 mt-2">
+                    <MathFormula formula="v_0 = 90 \\text{ km/h} = \\frac{90}{3,6} = 25 \\text{ m/s}" display={true} />
+                    <MathFormula formula="a = -5 \\text{ m/s}^2 \\quad \\text{(negativa porque freia)}" display={true} />
+                  </div>
                   
                   <p className="mt-3"><strong>Passo 2: Velocidade ao atingir o obstáculo (50 m)</strong></p>
-                  <p className="ml-4">Usar Torricelli: v² = v₀² + 2aΔx</p>
+                  <p className="ml-4">Usar Torricelli:</p>
                   <div className="bg-white p-2 rounded ml-4 mt-2">
+                    <MathFormula formula="v^2 = v_0^2 + 2a\\Delta x" display={true} />
                     <MathFormula formula="v^2 = 25^2 + 2 \\times (-5) \\times 50" display={true} />
                     <MathFormula formula="v^2 = 625 - 500 = 125" display={true} />
                     <MathFormula formula="v = \\sqrt{125} = 5\\sqrt{5} \\approx 11,18 \\text{ m/s}" display={true} />
                   </div>
                   
                   <p className="mt-3"><strong>Passo 3: Tempo até parar completamente</strong></p>
-                  <p className="ml-4">Usar v = v₀ + at, com v = 0</p>
+                  <p className="ml-4">Usar</p>
                   <div className="bg-white p-2 rounded ml-4 mt-2">
+                    <MathFormula formula="v = v_0 + at, \\quad \\text{com } v = 0" display={true} />
                     <MathFormula formula="0 = 25 + (-5) \\times t" display={true} />
                     <MathFormula formula="t = 5 \\text{ segundos}" display={true} />
                   </div>
                   
                   <p className="mt-3"><strong>Passo 4: Distância de frenagem total</strong></p>
-                  <p className="ml-4">Usar Torricelli com v = 0</p>
+                  <p className="ml-4">Usar Torricelli com</p>
                   <div className="bg-white p-2 rounded ml-4 mt-2">
+                    <MathFormula formula="v = 0" display={true} />
                     <MathFormula formula="0 = 25^2 + 2 \\times (-5) \\times \\Delta x" display={true} />
                     <MathFormula formula="10 \\Delta x = 625" display={true} />
                     <MathFormula formula="\\Delta x = 62,5 \\text{ m}" display={true} />
@@ -248,9 +306,17 @@ export default function MecanicaTopicCinematica() {
 
               <div className="bg-green-50 border border-green-200 rounded p-4 mt-4">
                 <p className="font-bold text-green-900 mb-2">✅ Respostas:</p>
-                <p className="text-green-900 text-sm">a) v ≈ 11,18 m/s (≈ 40,2 km/h)</p>
-                <p className="text-green-900 text-sm">b) t = 5 s (tempo até parar completamente)</p>
-                <p className="text-green-900 text-sm">c) Δx = 62,5 m (distância total de frenagem)</p>
+                <div className="space-y-2">
+                  <div className="bg-white p-2 rounded">
+                    <MathFormula formula="\\text{a) } v \\approx 11,18 \\text{ m/s} \\approx 40,2 \\text{ km/h}" display={true} />
+                  </div>
+                  <div className="bg-white p-2 rounded">
+                    <MathFormula formula="\\text{b) } t = 5 \\text{ s (tempo até parar completamente)}" display={true} />
+                  </div>
+                  <div className="bg-white p-2 rounded">
+                    <MathFormula formula="\\text{c) } \\Delta x = 62,5 \\text{ m (distância total de frenagem)}" display={true} />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -267,9 +333,15 @@ export default function MecanicaTopicCinematica() {
                 <strong>Lançamentos são movimentos compostos:</strong> movimento horizontal (MRU) + movimento vertical (MRUV sob gravidade).
               </p>
               <div className="bg-white border border-purple-300 rounded p-4">
-                <p className="text-slate-700 mb-2"><strong>Decomposição:</strong></p>
-                <p className="text-slate-700 text-sm">• Eixo X (horizontal): v_x = constante (sem aceleração)</p>
-                <p className="text-slate-700 text-sm">• Eixo Y (vertical): a_y = -g = -10 m/s² (aceleração da gravidade)</p>
+                <p className="font-bold text-slate-900 mb-2">Decomposição:</p>
+                <div className="space-y-2">
+                  <div className="bg-purple-50 p-2 rounded">
+                    <MathFormula formula="\\text{Eixo X (horizontal): } v_x = \\text{constante (sem aceleração)}" display={true} />
+                  </div>
+                  <div className="bg-purple-50 p-2 rounded">
+                    <MathFormula formula="\\text{Eixo Y (vertical): } a_y = -g = -10 \\text{ m/s}^2 \\text{ (aceleração da gravidade)}" display={true} />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -325,7 +397,9 @@ export default function MecanicaTopicCinematica() {
                 <div className="bg-white border border-green-300 rounded p-4">
                   <p className="font-bold text-slate-900 mb-2">Alcance Máximo:</p>
                   <MathFormula formula="A = \\frac{v_0^2 \\sin(2\\theta)}{g}" display={true} />
-                  <p className="text-slate-700 text-sm mt-2">Máximo quando θ = 45°</p>
+                  <div className="bg-green-50 p-2 rounded mt-2">
+                    <MathFormula formula="\\text{Máximo quando } \\theta = 45°" display={true} />
+                  </div>
                 </div>
 
                 <div className="bg-white border border-green-300 rounded p-4">
@@ -375,15 +449,23 @@ export default function MecanicaTopicCinematica() {
 
               <div className="bg-green-50 border border-green-200 rounded p-4 mt-4">
                 <p className="font-bold text-green-900 mb-2">✅ Respostas:</p>
-                <p className="text-green-900 text-sm">a) h_max = 31,25 m</p>
-                <p className="text-green-900 text-sm">b) t_voo = 5 s</p>
-                <p className="text-green-900 text-sm">c) A = 125√3 ≈ 216,5 m</p>
+                <div className="space-y-2">
+                  <div className="bg-white p-2 rounded">
+                    <MathFormula formula="\\text{a) } h_{max} = 31,25 \\text{ m}" display={true} />
+                  </div>
+                  <div className="bg-white p-2 rounded">
+                    <MathFormula formula="\\text{b) } t_{voo} = 5 \\text{ s}" display={true} />
+                  </div>
+                  <div className="bg-white p-2 rounded">
+                    <MathFormula formula="\\text{c) } A = 125\\sqrt{3} \\approx 216,5 \\text{ m}" display={true} />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ===== SEÇÃO 4: MOVIMENTO CIRCULAR ===== */}
+        {/* ===== SEÇÃO 4: MCU ===== */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
           <h2 className="text-3xl font-bold text-slate-900 mb-6">4️⃣ Movimento Circular Uniforme (MCU)</h2>
           
@@ -397,9 +479,9 @@ export default function MecanicaTopicCinematica() {
               <div className="space-y-4">
                 <div className="bg-white border border-indigo-300 rounded p-4">
                   <p className="font-bold text-slate-900 mb-2">Grandezas Angulares:</p>
-                  <MathFormula formula="\\omega = \\frac{\\theta}{t} \\text{ (velocidade angular)}" display={true} />
-                  <MathFormula formula="f = \\frac{1}{T} \\text{ (frequência)}" display={true} />
-                  <MathFormula formula="T = \\frac{2\\pi}{\\omega} \\text{ (período)}" display={true} />
+                  <MathFormula formula="\\omega = \\frac{\\theta}{t} \\quad \\text{(velocidade angular)}" display={true} />
+                  <MathFormula formula="f = \\frac{1}{T} \\quad \\text{(frequência)}" display={true} />
+                  <MathFormula formula="T = \\frac{2\\pi}{\\omega} \\quad \\text{(período)}" display={true} />
                 </div>
 
                 <div className="bg-white border border-indigo-300 rounded p-4">
@@ -431,8 +513,10 @@ export default function MecanicaTopicCinematica() {
                 <p className="font-bold text-slate-900 mb-3">Resolução Detalhada:</p>
                 <div className="space-y-3 text-slate-700 text-sm">
                   <p><strong>Passo 1: Converter unidades</strong></p>
-                  <p className="ml-4">T = 24 h = 24 × 3600 = 86.400 s</p>
-                  <p className="ml-4">R = 42.000 km = 42 × 10⁶ m</p>
+                  <div className="bg-white p-2 rounded ml-4 mt-2">
+                    <MathFormula formula="T = 24 \\text{ h} = 24 \\times 3600 = 86.400 \\text{ s}" display={true} />
+                    <MathFormula formula="R = 42.000 \\text{ km} = 42 \\times 10^6 \\text{ m}" display={true} />
+                  </div>
                   
                   <p className="mt-3"><strong>Passo 2: Velocidade angular</strong></p>
                   <div className="bg-white p-2 rounded ml-4 mt-2">
@@ -453,22 +537,38 @@ export default function MecanicaTopicCinematica() {
 
               <div className="bg-green-50 border border-green-200 rounded p-4 mt-4">
                 <p className="font-bold text-green-900 mb-2">✅ Respostas:</p>
-                <p className="text-green-900 text-sm">a) ω ≈ 7,27 × 10⁻⁵ rad/s</p>
-                <p className="text-green-900 text-sm">b) v ≈ 3.054 m/s (≈ 11.000 km/h)</p>
-                <p className="text-green-900 text-sm">c) a_c ≈ 0,22 m/s²</p>
+                <div className="space-y-2">
+                  <div className="bg-white p-2 rounded">
+                    <MathFormula formula="\\text{a) } \\omega \\approx 7,27 \\times 10^{-5} \\text{ rad/s}" display={true} />
+                  </div>
+                  <div className="bg-white p-2 rounded">
+                    <MathFormula formula="\\text{b) } v \\approx 3.054 \\text{ m/s (≈ 11.000 km/h)}" display={true} />
+                  </div>
+                  <div className="bg-white p-2 rounded">
+                    <MathFormula formula="\\text{c) } a_c \\approx 0,22 \\text{ m/s}^2" display={true} />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ===== RESUMO E PRÓXIMOS PASSOS ===== */}
+        {/* ===== RESUMO ===== */}
         <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
           <h3 className="text-xl font-bold text-green-900 mb-4">📋 Resumo de Fórmulas Essenciais</h3>
           <div className="space-y-3 text-green-900 text-sm">
-            <p><strong>MRU:</strong> x = x₀ + vt</p>
-            <p><strong>MRUV:</strong> v = v₀ + at; x = x₀ + v₀t + ½at²; v² = v₀² + 2aΔx</p>
-            <p><strong>Lançamento Oblíquo:</strong> A = (v₀²sin2θ)/g; h_max = (v₀²sin²θ)/(2g)</p>
-            <p><strong>MCU:</strong> v = ωR; a_c = v²/R = ω²R; T = 2π/ω</p>
+            <div className="bg-white p-2 rounded">
+              <MathFormula formula="\\text{MRU: } x = x_0 + vt" display={true} />
+            </div>
+            <div className="bg-white p-2 rounded">
+              <MathFormula formula="\\text{MRUV: } v = v_0 + at; \\quad x = x_0 + v_0 t + \\frac{1}{2}at^2; \\quad v^2 = v_0^2 + 2a\\Delta x" display={true} />
+            </div>
+            <div className="bg-white p-2 rounded">
+              <MathFormula formula="\\text{Lançamento Oblíquo: } A = \\frac{v_0^2\\sin 2\\theta}{g}; \\quad h_{max} = \\frac{v_0^2\\sin^2\\theta}{2g}" display={true} />
+            </div>
+            <div className="bg-white p-2 rounded">
+              <MathFormula formula="\\text{MCU: } v = \\omega R; \\quad a_c = \\frac{v^2}{R} = \\omega^2 R; \\quad T = \\frac{2\\pi}{\\omega}" display={true} />
+            </div>
           </div>
         </div>
 
