@@ -85,7 +85,7 @@ export default function CinematicaTopicMRUV() {
             <p>Quando você quer saber qual será a velocidade após um certo tempo.</p>
             
             <div className="bg-orange-50 p-3 md:p-6 rounded-lg border border-orange-200 overflow-x-auto my-4">
-              <MathFormula formula="v = v_0 + a \\cdot t" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$v = v_0 + a \\cdot t$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center"><strong>Lê-se:</strong> "Velocidade final = Velocidade inicial + Aceleração × Tempo"</p>
             </div>
 
@@ -93,7 +93,7 @@ export default function CinematicaTopicMRUV() {
             <p>Quando você quer saber onde o objeto estará após um certo tempo.</p>
             
             <div className="bg-blue-50 p-3 md:p-6 rounded-lg border border-blue-200 overflow-x-auto my-4">
-              <MathFormula formula="s = s_0 + v_0 \\cdot t + \\frac{a \\cdot t^2}{2}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$s = s_0 + v_0 \\cdot t + \\frac{a \\cdot t^2}{2}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center"><strong>Lê-se:</strong> "Posição = Posição inicial + Velocidade inicial × Tempo + (Aceleração × Tempo²) / 2"</p>
             </div>
 
@@ -101,7 +101,7 @@ export default function CinematicaTopicMRUV() {
             <p>Quando você não sabe o tempo, mas sabe a distância percorrida.</p>
             
             <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto my-4">
-              <MathFormula formula="v^2 = v_0^2 + 2 \\cdot a \\cdot \\Delta s" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$v^2 = v_0^2 + 2 \\cdot a \\cdot \\Delta s$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center"><strong>Lê-se:</strong> "Velocidade final² = Velocidade inicial² + 2 × Aceleração × Deslocamento"</p>
             </div>
 

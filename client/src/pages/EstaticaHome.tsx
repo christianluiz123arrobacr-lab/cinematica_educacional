@@ -162,7 +162,7 @@ export default function EstaticaHome() {
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-amber-600 rounded-full"></span>
-                        <span>Fórmula: <MathFormula formula="\\sum \\vec{F} = 0" className="inline text-sm" /></span>
+                        <span>Fórmula: <MathFormula formula="$$$$\\sum \\vec{F} = 0$$$$" className="inline text-sm" /></span>
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-amber-600 rounded-full"></span>
@@ -187,7 +187,7 @@ export default function EstaticaHome() {
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-amber-600 rounded-full"></span>
-                        <span>Fórmula: <MathFormula formula="\\sum \\tau = 0" className="inline text-sm" /></span>
+                        <span>Fórmula: <MathFormula formula="$$$$\\sum \\tau = 0$$$$" className="inline text-sm" /></span>
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-amber-600 rounded-full"></span>

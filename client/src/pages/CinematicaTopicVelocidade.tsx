@@ -55,7 +55,7 @@ export default function CinematicaTopicVelocidade() {
             
             <div className="bg-blue-50 p-3 md:p-6 rounded-lg border border-blue-200 overflow-x-auto my-4">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula da Velocidade Média:</p>
-              <MathFormula formula="v_m = \\frac{\\text{distância total}}{\\text{tempo total}}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$v_m = \\frac{\\text{distância total}}{\\text{tempo total}}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Ou em letras: v_m = Δs / Δt</p>
             </div>
 
@@ -122,7 +122,7 @@ export default function CinematicaTopicVelocidade() {
 
             <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto my-4">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula da Aceleração:</p>
-              <MathFormula formula="a = \\frac{\\text{mudança de velocidade}}{\\text{tempo}}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$a = \\frac{\\text{mudança de velocidade}}{\\text{tempo}}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Ou em letras: a = Δv / Δt</p>
             </div>
 

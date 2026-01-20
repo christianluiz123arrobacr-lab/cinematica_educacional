@@ -349,7 +349,7 @@ export default function DynamicsCalculator() {
               <h3 className="text-xl font-bold text-slate-900 mb-6">Calculadora: Segunda Lei de Newton (F = ma)</h3>
               <div className="space-y-6">
                 <div className="bg-purple-50 p-4 rounded-lg border border-purple-200 overflow-x-auto">
-                  <MathFormula formula="\\vec{F} = m \\cdot \\vec{a}" className="text-center text-lg md:text-2xl" />
+                  <MathFormula formula="$$$$\\vec{F} = m \\cdot \\vec{a}$$$$" className="text-center text-lg md:text-2xl" />
                 </div>
 
                 <div className="space-y-4">
@@ -422,7 +422,7 @@ export default function DynamicsCalculator() {
               <h3 className="text-xl font-bold text-slate-900 mb-6">Calculadora: Trabalho (W = F·d·cos θ)</h3>
               <div className="space-y-6">
                 <div className="bg-cyan-50 p-4 rounded-lg border border-cyan-200 overflow-x-auto">
-                  <MathFormula formula="W = F \\cdot d \\cdot \\cos(\\theta)" className="text-center text-lg md:text-2xl" />
+                  <MathFormula formula="$$$$W = F \\cdot d \\cdot \\cos(\\theta)$$$$" className="text-center text-lg md:text-2xl" />
                 </div>
 
                 <div className="space-y-4">
@@ -499,7 +499,7 @@ export default function DynamicsCalculator() {
               <h3 className="text-xl font-bold text-slate-900 mb-6">Calculadora: Energia Cinética (Ec = ½mv²)</h3>
               <div className="space-y-6">
                 <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-200 overflow-x-auto">
-                  <MathFormula formula="E_c = \\frac{1}{2} \\cdot m \\cdot v^2" className="text-center text-lg md:text-2xl" />
+                  <MathFormula formula="$$$$E_c = \\frac{1}{2} \\cdot m \\cdot v^2$$$$" className="text-center text-lg md:text-2xl" />
                 </div>
 
                 <div className="space-y-4">
@@ -572,7 +572,7 @@ export default function DynamicsCalculator() {
               <h3 className="text-xl font-bold text-slate-900 mb-6">Calculadora: Energia Potencial (Ep = mgh)</h3>
               <div className="space-y-6">
                 <div className="bg-pink-50 p-4 rounded-lg border border-pink-200 overflow-x-auto">
-                  <MathFormula formula="E_p = m \\cdot g \\cdot h" className="text-center text-lg md:text-2xl" />
+                  <MathFormula formula="$$$$E_p = m \\cdot g \\cdot h$$$$" className="text-center text-lg md:text-2xl" />
                 </div>
 
                 <div className="space-y-4">
@@ -649,7 +649,7 @@ export default function DynamicsCalculator() {
               <h3 className="text-xl font-bold text-slate-900 mb-6">Calculadora: Momentum (p = mv)</h3>
               <div className="space-y-6">
                 <div className="bg-lime-50 p-4 rounded-lg border border-lime-200 overflow-x-auto">
-                  <MathFormula formula="\\vec{p} = m \\cdot \\vec{v}" className="text-center text-lg md:text-2xl" />
+                  <MathFormula formula="$$$$\\vec{p} = m \\cdot \\vec{v}$$$$" className="text-center text-lg md:text-2xl" />
                 </div>
 
                 <div className="space-y-4">
@@ -722,7 +722,7 @@ export default function DynamicsCalculator() {
               <h3 className="text-xl font-bold text-slate-900 mb-6">Calculadora: Potência (P = W/t)</h3>
               <div className="space-y-6">
                 <div className="bg-sky-50 p-4 rounded-lg border border-sky-200 overflow-x-auto">
-                  <MathFormula formula="P = \\frac{W}{\\Delta t}" className="text-center text-lg md:text-2xl" />
+                  <MathFormula formula="$$$$P = \\frac{W}{\\Delta t}$$$$" className="text-center text-lg md:text-2xl" />
                 </div>
 
                 <div className="space-y-4">

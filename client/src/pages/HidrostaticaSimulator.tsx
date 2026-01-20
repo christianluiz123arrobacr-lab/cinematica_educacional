@@ -224,7 +224,7 @@ export default function HidrostaticaSimulator() {
               <Card className="p-4 bg-cyan-50 border-l-4 border-cyan-500">
                 <p className="text-sm font-bold text-slate-900 mb-3">Fórmula Usada:</p>
                 <div className="bg-white p-3 rounded-lg overflow-x-auto">
-                  <MathFormula formula="P = P_0 + \\rho g h" className="text-center text-lg" />
+                  <MathFormula formula="$$$$P = P_0 + \\rho g h$$$$" className="text-center text-lg" />
                 </div>
                 <div className="mt-3 text-sm text-slate-700 space-y-1">
                   <p><strong>P₀</strong> = {(P0 / 1000).toFixed(1)} kPa (pressão atmosférica)</p>

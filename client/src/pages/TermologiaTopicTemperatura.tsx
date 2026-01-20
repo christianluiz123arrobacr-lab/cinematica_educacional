@@ -190,13 +190,13 @@ export default function TermologiaTopicTemperatura() {
               <h3 className="text-2xl font-bold text-slate-900 mb-4">Celsius → Fahrenheit</h3>
               
               <div className="bg-white border border-blue-300 rounded p-4 mb-4">
-                <MathFormula formula="°F = (°C \\times 1,8) + 32" display={true} />
+                <MathFormula formula="$$$$°F = (°C \\times 1,8) + 32$$$$" display={true} />
               </div>
 
               <div className="bg-gradient-to-r from-blue-100 to-cyan-100 p-4 rounded mb-4">
                 <p className="font-bold mb-3">📝 Exemplo Prático:</p>
                 <p className="text-slate-700 mb-2">Converter 25°C para Fahrenheit:</p>
-                <MathFormula formula="°F = (25 \\times 1,8) + 32 = 45 + 32 = 77°F" display={true} />
+                <MathFormula formula="$$$$°F = (25 \\times 1,8) + 32 = 45 + 32 = 77°F$$$$" display={true} />
                 <p className="text-slate-700 text-sm mt-2">Resposta: 25°C = 77°F (dia quente!)</p>
               </div>
 
@@ -211,13 +211,13 @@ export default function TermologiaTopicTemperatura() {
               <h3 className="text-2xl font-bold text-slate-900 mb-4">Fahrenheit → Celsius</h3>
               
               <div className="bg-white border border-orange-300 rounded p-4 mb-4">
-                <MathFormula formula="°C = \\frac{°F - 32}{1,8}" display={true} />
+                <MathFormula formula="$$$$°C = \\frac{°F - 32}{1,8}$$$$" display={true} />
               </div>
 
               <div className="bg-gradient-to-r from-orange-100 to-yellow-100 p-4 rounded mb-4">
                 <p className="font-bold mb-3">📝 Exemplo Prático:</p>
                 <p className="text-slate-700 mb-2">Converter 86°F para Celsius:</p>
-                <MathFormula formula="°C = \\frac{86 - 32}{1,8} = \\frac{54}{1,8} = 30°C" display={true} />
+                <MathFormula formula="$$$$°C = \\frac{86 - 32}{1,8} = \\frac{54}{1,8} = 30°C$$$$" display={true} />
                 <p className="text-slate-700 text-sm mt-2">Resposta: 86°F = 30°C (dia quente!)</p>
               </div>
 
@@ -232,19 +232,19 @@ export default function TermologiaTopicTemperatura() {
               <h3 className="text-2xl font-bold text-slate-900 mb-4">Celsius ↔ Kelvin</h3>
               
               <div className="bg-white border border-purple-300 rounded p-4 mb-4">
-                <MathFormula formula="K = °C + 273,15" display={true} />
+                <MathFormula formula="$$$$K = °C + 273,15$$$$" display={true} />
               </div>
 
               <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 rounded mb-4">
                 <p className="font-bold mb-3">📝 Exemplo Prático:</p>
                 <p className="text-slate-700 mb-2">Converter 25°C para Kelvin:</p>
-                <MathFormula formula="K = 25 + 273,15 = 298,15 \\text{ K}" display={true} />
+                <MathFormula formula="$$$$K = 25 + 273,15 = 298,15 \\text{ K}$$$$" display={true} />
                 <p className="text-slate-700 text-sm mt-2">Resposta: 25°C = 298,15 K (aproximadamente 298 K)</p>
               </div>
 
               <div className="bg-white border border-purple-300 rounded p-4 mb-4">
                 <p className="font-bold text-slate-900 mb-2">Kelvin → Celsius (inverso):</p>
-                <MathFormula formula="°C = K - 273,15" display={true} />
+                <MathFormula formula="$$$$°C = K - 273,15$$$$" display={true} />
               </div>
 
               <div className="bg-yellow-50 border border-yellow-200 rounded p-4">

@@ -43,7 +43,7 @@ export default function DynamicsTopicPower() {
           <div className="space-y-4 text-slate-700 leading-relaxed">
             <div className="bg-pink-50 p-3 md:p-6 rounded-lg border border-pink-200 overflow-x-auto mb-3">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula Principal:</p>
-              <MathFormula formula="P = \\frac{W}{\\Delta t}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$P = \\frac{W}{\\Delta t}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">Onde: P = potência (W), W = trabalho (J), Δt = intervalo de tempo (s)</p>
             </div>
 
@@ -53,7 +53,7 @@ export default function DynamicsTopicPower() {
             <h3 className="text-lg font-bold text-slate-900 mt-6">Potência Instantânea</h3>
             <div className="bg-pink-50 p-3 md:p-6 rounded-lg border border-pink-200 overflow-x-auto mb-3">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Forma Diferencial:</p>
-              <MathFormula formula="P = \\frac{dW}{dt} = \\vec{F} \\cdot \\vec{v}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$P = \\frac{dW}{dt} = \\vec{F} \\cdot \\vec{v}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">A potência instantânea é o produto escalar da força pela velocidade.</p>
             </div>
 
@@ -85,7 +85,7 @@ export default function DynamicsTopicPower() {
 
             <div className="bg-rose-50 p-3 md:p-6 rounded-lg border border-rose-200 overflow-x-auto mb-3">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Relação Fundamental:</p>
-              <MathFormula formula="E = P \\cdot \\Delta t" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$E = P \\cdot \\Delta t$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">A energia é o produto da potência pelo tempo de funcionamento.</p>
             </div>
 
@@ -94,7 +94,7 @@ export default function DynamicsTopicPower() {
 
             <div className="bg-rose-50 p-3 md:p-6 rounded-lg border border-rose-200 overflow-x-auto mb-3">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Conversão:</p>
-              <MathFormula formula="1 \\text{ kWh} = 1000 \\text{ W} \\times 3600 \\text{ s} = 3.6 \\times 10^6 \\text{ J}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$1 \\text{ kWh} = 1000 \\text{ W} \\times 3600 \\text{ s} = 3.6 \\times 10^6 \\text{ J}$$$$" className="text-center text-lg md:text-2xl mb-4" />
             </div>
           </div>
         </Card>
@@ -107,7 +107,7 @@ export default function DynamicsTopicPower() {
 
             <div className="bg-purple-50 p-3 md:p-6 rounded-lg border border-purple-200 overflow-x-auto mb-3">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula de Eficiência:</p>
-              <MathFormula formula="\\eta = \\frac{P_{\\text{útil}}}{P_{\\text{entrada}}} \\times 100\\%" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$\\eta = \\frac{P_{\\text{útil}}}{P_{\\text{entrada}}} \\times 100\\%$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">Onde: η = eficiência (%), P_útil = potência de saída útil (W), P_entrada = potência de entrada (W)</p>
             </div>
 

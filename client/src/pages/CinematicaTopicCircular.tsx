@@ -84,21 +84,21 @@ export default function CinematicaTopicCircular() {
             <h3 className="text-lg font-bold text-slate-900 mt-6">2. Frequência (f) - Quantas Voltas por Segundo?</h3>
             <p>É o número de voltas que o objeto completa em 1 segundo.</p>
             <div className="bg-cyan-50 p-3 md:p-6 rounded-lg border border-cyan-200 overflow-x-auto my-4">
-              <MathFormula formula="f = \\frac{1}{T}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$f = \\frac{1}{T}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Frequência é o inverso do período</p>
             </div>
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">3. Velocidade Linear (v) - Quão Rápido Ele Se Move?</h3>
             <p>É a rapidez com que o objeto percorre o círculo.</p>
             <div className="bg-blue-50 p-3 md:p-6 rounded-lg border border-blue-200 overflow-x-auto my-4">
-              <MathFormula formula="v = \\frac{2\\pi r}{T}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$v = \\frac{2\\pi r}{T}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Velocidade = Perímetro do círculo / Período</p>
             </div>
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">4. Velocidade Angular (ω) - Quão Rápido Ele Gira?</h3>
             <p>É o ângulo que o objeto percorre por unidade de tempo. Medida em radianos por segundo (rad/s).</p>
             <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto my-4">
-              <MathFormula formula="\\omega = \\frac{2\\pi}{T} = 2\\pi f" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$\\omega = \\frac{2\\pi}{T} = 2\\pi f$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Velocidade angular = 2π / Período</p>
             </div>
 
@@ -109,7 +109,7 @@ export default function CinematicaTopicCircular() {
             <h3 className="text-lg font-bold text-slate-900 mt-6">5. Aceleração Centrípeta (ac) - A Aceleração Dirigida para o Centro</h3>
             <p>É a aceleração que muda a direção do objeto, mantendo-o em movimento circular.</p>
             <div className="bg-orange-50 p-3 md:p-6 rounded-lg border border-orange-200 overflow-x-auto my-4">
-              <MathFormula formula="a_c = \\frac{v^2}{r} = \\omega^2 \\cdot r" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$a_c = \\frac{v^2}{r} = \\omega^2 \\cdot r$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Aceleração centrípeta = Velocidade² / Raio</p>
             </div>
 

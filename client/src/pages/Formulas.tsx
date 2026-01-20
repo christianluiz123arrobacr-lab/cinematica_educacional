@@ -57,15 +57,15 @@ Esta fórmula é derivada do conceito de que a velocidade é a taxa de mudança 
     examples: [
       {
         description: "Um carro percorre 300 km em 5 horas",
-        calculation: "\\(v_m = \\frac{300 \\text{ km}}{5 \\text{ h}} = 60 \\text{ km/h}\\)"
+        calculation: "\\(v_m = \\frac{300 \\text{ km}}{5 \\text{ h}} = 60 \\text{ km/h}\$"
       },
       {
         description: "Um corredor percorre 100 m em 10 s",
-        calculation: "\\(v_m = \\frac{100 \\text{ m}}{10 \\text{ s}} = 10 \\text{ m/s}\\)"
+        calculation: "\\(v_m = \\frac{100 \\text{ m}}{10 \\text{ s}} = 10 \\text{ m/s}\$"
       },
       {
         description: "Um avião voa 1500 km em 3 horas",
-        calculation: "\\(v_m = \\frac{1500 \\text{ km}}{3 \\text{ h}} = 500 \\text{ km/h}\\)"
+        calculation: "\\(v_m = \\frac{1500 \\text{ km}}{3 \\text{ h}} = 500 \\text{ km/h}\$"
       }
     ],
     commonMistakes: [
@@ -112,7 +112,7 @@ Onde:
     examples: [
       {
         description: "Um carro aumenta sua velocidade de 0 m/s para 20 m/s em 5 segundos",
-        calculation: "\\(a = \\frac{20 - 0}{5} = 4 \\text{ m/s}^2\\)"
+        calculation: "\\(a = \\frac{20 - 0}{5} = 4 \\text{ m/s}^2\$"
       },
       {
         description: "Um carro reduz sua velocidade de 30 m/s para 10 m/s em 4 segundos",
@@ -170,15 +170,15 @@ Esta é a função horária da posição no MRU. Ela é linear em \\(t\\), o que
     examples: [
       {
         description: "Um objeto começa na posição 10 m e se move a 5 m/s. Após 3 segundos:",
-        calculation: "\\(s = 10 + 5 \\cdot 3 = 10 + 15 = 25 \\text{ m}\\)"
+        calculation: "\\(s = 10 + 5 \\cdot 3 = 10 + 15 = 25 \\text{ m}\$"
       },
       {
         description: "Um carro sai da origem (0 m) a 20 m/s. Qual sua posição após 10 s?",
-        calculation: "\\(s = 0 + 20 \\cdot 10 = 200 \\text{ m}\\)"
+        calculation: "\\(s = 0 + 20 \\cdot 10 = 200 \\text{ m}\$"
       },
       {
         description: "Um trem começa no km 50 e viaja a 80 km/h. Posição após 2 horas:",
-        calculation: "\\(s = 50 + 80 \\cdot 2 = 50 + 160 = 210 \\text{ km}\\)"
+        calculation: "\\(s = 50 + 80 \\cdot 2 = 50 + 160 = 210 \\text{ km}\$"
       }
     ],
     commonMistakes: [
@@ -220,15 +220,15 @@ Esta fórmula nos permite calcular a velocidade conhecendo o deslocamento e o te
     examples: [
       {
         description: "Um objeto se move de 10 m para 40 m em 6 segundos",
-        calculation: "\\(v = \\frac{40 - 10}{6} = \\frac{30}{6} = 5 \\text{ m/s}\\)"
+        calculation: "\\(v = \\frac{40 - 10}{6} = \\frac{30}{6} = 5 \\text{ m/s}\$"
       },
       {
         description: "Um carro viaja 150 km em 3 horas",
-        calculation: "\\(v = \\frac{150}{3} = 50 \\text{ km/h}\\)"
+        calculation: "\\(v = \\frac{150}{3} = 50 \\text{ km/h}\$"
       },
       {
         description: "Um corredor cobre 100 m em 10 segundos",
-        calculation: "\\(v = \\frac{100}{10} = 10 \\text{ m/s}\\)"
+        calculation: "\\(v = \\frac{100}{10} = 10 \\text{ m/s}\$"
       }
     ],
     commonMistakes: [
@@ -277,15 +277,15 @@ Esta é a função horária da velocidade no MRUV.`,
     examples: [
       {
         description: "Um objeto começa com velocidade 5 m/s e acelera a 2 m/s². Após 4 segundos:",
-        calculation: "\\(V = 5 + 2 \\cdot 4 = 5 + 8 = 13 \\text{ m/s}\\)"
+        calculation: "\\(V = 5 + 2 \\cdot 4 = 5 + 8 = 13 \\text{ m/s}\$"
       },
       {
         description: "Um carro começa do repouso (0 m/s) com aceleração 3 m/s². Qual sua velocidade após 8 s?",
-        calculation: "\\(V = 0 + 3 \\cdot 8 = 24 \\text{ m/s}\\)"
+        calculation: "\\(V = 0 + 3 \\cdot 8 = 24 \\text{ m/s}\$"
       },
       {
         description: "Um objeto com V₀ = 10 m/s desacelera a -2 m/s². Velocidade após 3 s:",
-        calculation: "\\(V = 10 + (-2) \\cdot 3 = 10 - 6 = 4 \\text{ m/s}\\)"
+        calculation: "\\(V = 10 + (-2) \\cdot 3 = 10 - 6 = 4 \\text{ m/s}\$"
       }
     ],
     commonMistakes: [
@@ -334,19 +334,19 @@ Alternativamente, pode-se derivar usando a velocidade média:
     examples: [
       {
         description: "Um objeto começa na posição 0 m, com velocidade inicial 3 m/s e aceleração 2 m/s². Após 5 segundos:",
-        calculation: "\\(S = 0 + 3 \\cdot 5 + \\frac{2 \\cdot 5^2}{2} = 15 + \\frac{2 \\cdot 25}{2} = 15 + 25 = 40 \\text{ m}\\)"
+        calculation: "\\(S = 0 + 3 \\cdot 5 + \\frac{2 \\cdot 5^2}{2} = 15 + \\frac{2 \\cdot 25}{2} = 15 + 25 = 40 \\text{ m}\$"
       },
       {
         description: "Um carro começa na posição 10 m, com velocidade inicial 5 m/s e aceleração 1 m/s². Qual sua posição após 6 s?",
-        calculation: "\\(S = 10 + 5 \\cdot 6 + \\frac{1 \\cdot 6^2}{2} = 10 + 30 + 18 = 58 \\text{ m}\\)"
+        calculation: "\\(S = 10 + 5 \\cdot 6 + \\frac{1 \\cdot 6^2}{2} = 10 + 30 + 18 = 58 \\text{ m}\$"
       },
       {
         description: "Um objeto em queda livre começa em 100 m com V₀ = 0 e a = -10 m/s². Posição após 2 s:",
-        calculation: "\\(S = 100 + 0 \\cdot 2 + \\frac{-10 \\cdot 2^2}{2} = 100 - 20 = 80 \\text{ m}\\)"
+        calculation: "\\(S = 100 + 0 \\cdot 2 + \\frac{-10 \\cdot 2^2}{2} = 100 - 20 = 80 \\text{ m}\$"
       }
     ],
     commonMistakes: [
-      "Esquecer o termo \\(\\frac{a \\cdot t^2}{2}\\)",
+      "Esquecer o termo \\(\\frac{a \\cdot t^2}{2}\$",
       "Usar a fórmula do MRU em vez do MRUV",
       "Não considerar acelerações negativas",
       "Erros com unidades"
@@ -399,15 +399,15 @@ Portanto:
     examples: [
       {
         description: "Um objeto começa com velocidade 5 m/s, acelera a 3 m/s² e percorre 20 m. Qual sua velocidade final?",
-        calculation: "\\(V^2 = 5^2 + 2 \\cdot 3 \\cdot 20 = 25 + 120 = 145\\) → \\(V = \\sqrt{145} \\approx 12,04 \\text{ m/s}\\)"
+        calculation: "\\(V^2 = 5^2 + 2 \\cdot 3 \\cdot 20 = 25 + 120 = 145\\) → \\(V = \\sqrt{145} \\approx 12,04 \\text{ m/s}\$"
       },
       {
         description: "Um carro começa do repouso (0 m/s) com aceleração 2 m/s² e percorre 50 m",
-        calculation: "\\(V^2 = 0^2 + 2 \\cdot 2 \\cdot 50 = 200\\) → \\(V = \\sqrt{200} \\approx 14,14 \\text{ m/s}\\)"
+        calculation: "\\(V^2 = 0^2 + 2 \\cdot 2 \\cdot 50 = 200\\) → \\(V = \\sqrt{200} \\approx 14,14 \\text{ m/s}\$"
       },
       {
         description: "Um objeto desacelera de 30 m/s a -5 m/s² e percorre 80 m",
-        calculation: "\\(V^2 = 30^2 + 2 \\cdot (-5) \\cdot 80 = 900 - 800 = 100\\) → \\(V = 10 \\text{ m/s}\\)"
+        calculation: "\\(V^2 = 30^2 + 2 \\cdot (-5) \\cdot 80 = 900 - 800 = 100\\) → \\(V = 10 \\text{ m/s}\$"
       }
     ],
     commonMistakes: [
@@ -459,15 +459,15 @@ Onde:
     examples: [
       {
         description: "Um objeto em movimento circular com raio 5 m e período 2 s",
-        calculation: "\\(v = \\frac{2\\pi \\cdot 5}{2} = \\frac{10\\pi}{2} = 5\\pi \\approx 15,7 \\text{ m/s}\\)"
+        calculation: "\\(v = \\frac{2\\pi \\cdot 5}{2} = \\frac{10\\pi}{2} = 5\\pi \\approx 15,7 \\text{ m/s}\$"
       },
       {
         description: "Um objeto com raio 10 m e frequência 0,5 Hz",
-        calculation: "\\(v = 2\\pi \\cdot 10 \\cdot 0,5 = 10\\pi \\approx 31,4 \\text{ m/s}\\)"
+        calculation: "\\(v = 2\\pi \\cdot 10 \\cdot 0,5 = 10\\pi \\approx 31,4 \\text{ m/s}\$"
       },
       {
         description: "Um carrossel com raio 3 m completa uma volta em 4 s",
-        calculation: "\\(v = \\frac{2\\pi \\cdot 3}{4} = \\frac{6\\pi}{4} = 1,5\\pi \\approx 4,71 \\text{ m/s}\\)"
+        calculation: "\\(v = \\frac{2\\pi \\cdot 3}{4} = \\frac{6\\pi}{4} = 1,5\\pi \\approx 4,71 \\text{ m/s}\$"
       }
     ],
     commonMistakes: [
@@ -519,15 +519,15 @@ Onde:
     examples: [
       {
         description: "Um objeto com velocidade tangencial 10 m/s em um raio de 5 m",
-        calculation: "\\(a_c = \\frac{10^2}{5} = \\frac{100}{5} = 20 \\text{ m/s}^2\\)"
+        calculation: "\\(a_c = \\frac{10^2}{5} = \\frac{100}{5} = 20 \\text{ m/s}^2\$"
       },
       {
         description: "Um objeto com velocidade angular 2 rad/s e raio 3 m",
-        calculation: "\\(a_c = 2^2 \\cdot 3 = 4 \\cdot 3 = 12 \\text{ m/s}^2\\)"
+        calculation: "\\(a_c = 2^2 \\cdot 3 = 4 \\cdot 3 = 12 \\text{ m/s}^2\$"
       },
       {
         description: "Um carro em uma curva com raio 50 m a 20 m/s",
-        calculation: "\\(a_c = \\frac{20^2}{50} = \\frac{400}{50} = 8 \\text{ m/s}^2\\)"
+        calculation: "\\(a_c = \\frac{20^2}{50} = \\frac{400}{50} = 8 \\text{ m/s}^2\$"
       }
     ],
     commonMistakes: [
@@ -571,15 +571,15 @@ Para um objeto solto do repouso (\\(V_0 = 0\\)):
     examples: [
       {
         description: "Um objeto é solto do repouso. Qual sua velocidade após 3 segundos?",
-        calculation: "\\(V = 0 + 9,8 \\cdot 3 = 29,4 \\text{ m/s}\\)"
+        calculation: "\\(V = 0 + 9,8 \\cdot 3 = 29,4 \\text{ m/s}\$"
       },
       {
         description: "Um objeto é lançado para baixo com velocidade inicial 5 m/s. Qual sua velocidade após 2 s?",
-        calculation: "\\(V = 5 + 9,8 \\cdot 2 = 5 + 19,6 = 24,6 \\text{ m/s}\\)"
+        calculation: "\\(V = 5 + 9,8 \\cdot 2 = 5 + 19,6 = 24,6 \\text{ m/s}\$"
       },
       {
         description: "Um objeto é lançado para cima com velocidade inicial 20 m/s. Velocidade após 2 s (g = -9,8 m/s² para cima):",
-        calculation: "\\(V = 20 + (-9,8) \\cdot 2 = 20 - 19,6 = 0,4 \\text{ m/s}\\)"
+        calculation: "\\(V = 20 + (-9,8) \\cdot 2 = 20 - 19,6 = 0,4 \\text{ m/s}\$"
       }
     ],
     commonMistakes: [

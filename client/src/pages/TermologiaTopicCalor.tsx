@@ -96,7 +96,7 @@ export default function TermologiaTopicCalor() {
               <h3 className="text-2xl font-bold text-slate-900 mb-4">Fórmula da Quantidade de Calor</h3>
               
               <div className="bg-white border border-blue-300 rounded p-4 mb-4">
-                <MathFormula formula="Q = m \\cdot c \\cdot \\Delta T" display={true} />
+                <MathFormula formula="$$$$Q = m \\cdot c \\cdot \\Delta T$$$$" display={true} />
               </div>
 
               <div className="space-y-3 text-slate-700 mb-4">
@@ -207,7 +207,7 @@ export default function TermologiaTopicCalor() {
             </p>
 
             <div className="bg-white border border-blue-300 rounded p-4 mb-4">
-              <MathFormula formula="Q_{perdido} = Q_{ganho}" display={true} />
+              <MathFormula formula="$$$$Q_{perdido} = Q_{ganho}$$$$" display={true} />
             </div>
 
             <div className="bg-gradient-to-r from-blue-100 to-cyan-100 p-4 rounded mb-4">

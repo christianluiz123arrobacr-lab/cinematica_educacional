@@ -21,19 +21,6 @@ export function useMathJax() {
       }
 
       if (window.MathJax) {
-        // Configurar MathJax se ainda não foi configurado
-        if (!window.MathJax.startup) {
-          window.MathJax = {
-            tex: {
-              inlineMath: [['$', '$'], ['\\(', '\\)']],
-              displayMath: [['$$', '$$'], ['\\[', '\\]']]
-            },
-            svg: {
-              fontCache: 'global'
-            }
-          };
-        }
-
         // Esperar MathJax estar completamente inicializado
         if (window.MathJax.typesetPromise) {
           try {
@@ -55,13 +42,24 @@ export function useMathJax() {
     checkMathJax();
   }, []);
 
-  const renderMath = useCallback(async () => {
-    if (window.MathJax && window.MathJax.typesetPromise) {
-      try {
-        await window.MathJax.typesetPromise();
-      } catch (err) {
-        console.log('MathJax render error:', err);
+  const renderMath = useCallback((element?: HTMLElement | null) => {
+    if (!window.MathJax || !window.MathJax.typesetPromise) {
+      console.warn('MathJax não está disponível');
+      return;
+    }
+
+    try {
+      if (element) {
+        // Renderizar apenas o elemento específico
+        window.MathJax.typesetPromise([element])
+          .catch((err: any) => console.log('MathJax element render error:', err));
+      } else {
+        // Renderizar toda a página
+        window.MathJax.typesetPromise()
+          .catch((err: any) => console.log('MathJax page render error:', err));
       }
+    } catch (error) {
+      console.log('Erro ao chamar renderMath:', error);
     }
   }, []);
 

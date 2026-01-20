@@ -65,15 +65,15 @@ Para múltiplas forças:
     examples: [
       {
         description: "Uma força de 20 N é aplicada a uma massa de 4 kg. Qual é a aceleração?",
-        calculation: "\\(a = \\frac{F}{m} = \\frac{20 \\text{ N}}{4 \\text{ kg}} = 5 \\text{ m/s}^2\\)"
+        calculation: "\\(a = \\frac{F}{m} = \\frac{20 \\text{ N}}{4 \\text{ kg}} = 5 \\text{ m/s}^2\$"
       },
       {
         description: "Um carro de 1000 kg acelera a 2 m/s². Qual é a força resultante?",
-        calculation: "\\(F = m \\cdot a = 1000 \\text{ kg} \\times 2 \\text{ m/s}^2 = 2000 \\text{ N}\\)"
+        calculation: "\\(F = m \\cdot a = 1000 \\text{ kg} \\times 2 \\text{ m/s}^2 = 2000 \\text{ N}\$"
       },
       {
         description: "Qual é a massa de um objeto que acelera a 3 m/s² quando submetido a 60 N?",
-        calculation: "\\(m = \\frac{F}{a} = \\frac{60 \\text{ N}}{3 \\text{ m/s}^2} = 20 \\text{ kg}\\)"
+        calculation: "\\(m = \\frac{F}{a} = \\frac{60 \\text{ N}}{3 \\text{ m/s}^2} = 20 \\text{ kg}\$"
       }
     ],
     commonMistakes: [
@@ -132,15 +132,15 @@ Para força variável:
     examples: [
       {
         description: "Uma força de 50 N empurra um objeto 10 m na mesma direção da força",
-        calculation: "\\(W = 50 \\times 10 \\times \\cos(0°) = 500 \\text{ J}\\)"
+        calculation: "\\(W = 50 \\times 10 \\times \\cos(0°) = 500 \\text{ J}\$"
       },
       {
         description: "Uma força de 30 N atua em um ângulo de 60° sobre um deslocamento de 5 m",
-        calculation: "\\(W = 30 \\times 5 \\times \\cos(60°) = 30 \\times 5 \\times 0.5 = 75 \\text{ J}\\)"
+        calculation: "\\(W = 30 \\times 5 \\times \\cos(60°) = 30 \\times 5 \\times 0.5 = 75 \\text{ J}\$"
       },
       {
         description: "Uma força de 20 N atua perpendicular ao deslocamento de 8 m",
-        calculation: "\\(W = 20 \\times 8 \\times \\cos(90°) = 0 \\text{ J}\\)"
+        calculation: "\\(W = 20 \\times 8 \\times \\cos(90°) = 0 \\text{ J}\$"
       }
     ],
     commonMistakes: [
@@ -197,11 +197,11 @@ Teorema do Trabalho-Energia:
     examples: [
       {
         description: "Um objeto de 2 kg se move a 5 m/s. Qual é sua energia cinética?",
-        calculation: "\\(E_c = \\frac{1}{2} \\times 2 \\times 5^2 = \\frac{1}{2} \\times 2 \\times 25 = 25 \\text{ J}\\)"
+        calculation: "\\(E_c = \\frac{1}{2} \\times 2 \\times 5^2 = \\frac{1}{2} \\times 2 \\times 25 = 25 \\text{ J}\$"
       },
       {
         description: "Um carro de 1000 kg se move a 20 m/s. Qual é sua energia cinética?",
-        calculation: "\\(E_c = \\frac{1}{2} \\times 1000 \\times 20^2 = \\frac{1}{2} \\times 1000 \\times 400 = 200000 \\text{ J}\\)"
+        calculation: "\\(E_c = \\frac{1}{2} \\times 1000 \\times 20^2 = \\frac{1}{2} \\times 1000 \\times 400 = 200000 \\text{ J}\$"
       },
       {
         description: "Se a velocidade de um objeto dobra, como muda sua energia cinética?",
@@ -263,11 +263,11 @@ Relação com trabalho:
     examples: [
       {
         description: "Um objeto de 5 kg está a uma altura de 10 m. Qual é sua energia potencial? (g = 10 m/s²)",
-        calculation: "\\(E_p = 5 \\times 10 \\times 10 = 500 \\text{ J}\\)"
+        calculation: "\\(E_p = 5 \\times 10 \\times 10 = 500 \\text{ J}\$"
       },
       {
         description: "Um livro de 2 kg é levantado de 1 m para 3 m de altura. Qual é a variação de energia potencial?",
-        calculation: "\\(\\Delta E_p = 2 \\times 10 \\times (3 - 1) = 2 \\times 10 \\times 2 = 40 \\text{ J}\\)"
+        calculation: "\\(\\Delta E_p = 2 \\times 10 \\times (3 - 1) = 2 \\times 10 \\times 2 = 40 \\text{ J}\$"
       },
       {
         description: "Se um objeto cai de uma altura de 20 m, qual é a energia potencial perdida?",
@@ -328,15 +328,15 @@ Impulso (mudança de momentum):
     examples: [
       {
         description: "Um carro de 1000 kg se move a 20 m/s. Qual é seu momentum?",
-        calculation: "\\(p = 1000 \\times 20 = 20000 \\text{ kg·m/s}\\)"
+        calculation: "\\(p = 1000 \\times 20 = 20000 \\text{ kg·m/s}\$"
       },
       {
         description: "Uma bola de 0.5 kg se move a 30 m/s. Qual é seu momentum?",
-        calculation: "\\(p = 0.5 \\times 30 = 15 \\text{ kg·m/s}\\)"
+        calculation: "\\(p = 0.5 \\times 30 = 15 \\text{ kg·m/s}\$"
       },
       {
         description: "Qual é a velocidade de um objeto de 2 kg com momentum de 50 kg·m/s?",
-        calculation: "\\(v = \\frac{p}{m} = \\frac{50}{2} = 25 \\text{ m/s}\\)"
+        calculation: "\\(v = \\frac{p}{m} = \\frac{50}{2} = 25 \\text{ m/s}\$"
       }
     ],
     commonMistakes: [
@@ -403,19 +403,19 @@ Aceleração do objeto (com atrito):
     examples: [
       {
         description: "Um bloco de 10 kg em um plano inclinado a 30°. Qual é a componente paralela do peso?",
-        calculation: "\\(F_{\\parallel} = 10 \\times 10 \\times \\sin(30°) = 10 \\times 10 \\times 0.5 = 50 \\text{ N}\\)"
+        calculation: "\\(F_{\\parallel} = 10 \\times 10 \\times \\sin(30°) = 10 \\times 10 \\times 0.5 = 50 \\text{ N}\$"
       },
       {
         description: "Qual é a força normal do mesmo bloco?",
-        calculation: "\\(N = 10 \\times 10 \\times \\cos(30°) = 10 \\times 10 \\times 0.866 = 86.6 \\text{ N}\\)"
+        calculation: "\\(N = 10 \\times 10 \\times \\cos(30°) = 10 \\times 10 \\times 0.866 = 86.6 \\text{ N}\$"
       },
       {
         description: "Se o coeficiente de atrito é 0.2, qual é a força de atrito?",
-        calculation: "\\(f = 0.2 \\times 86.6 = 17.32 \\text{ N}\\)"
+        calculation: "\\(f = 0.2 \\times 86.6 = 17.32 \\text{ N}\$"
       },
       {
         description: "Qual é a aceleração do bloco (sem atrito)?",
-        calculation: "\\(a = 10 \\times \\sin(30°) = 10 \\times 0.5 = 5 \\text{ m/s}^2\\)"
+        calculation: "\\(a = 10 \\times \\sin(30°) = 10 \\times 0.5 = 5 \\text{ m/s}^2\$"
       }
     ],
     commonMistakes: [
@@ -476,15 +476,15 @@ Para força constante:
     examples: [
       {
         description: "Um motor realiza 1000 J de trabalho em 5 segundos. Qual é sua potência?",
-        calculation: "\\(P = \\frac{1000}{5} = 200 \\text{ W}\\)"
+        calculation: "\\(P = \\frac{1000}{5} = 200 \\text{ W}\$"
       },
       {
         description: "Uma lâmpada de 60 W funciona por 2 horas. Quanto de energia ela consome?",
-        calculation: "\\(E = P \\times t = 60 \\times (2 \\times 3600) = 60 \\times 7200 = 432000 \\text{ J} = 0.12 \\text{ kWh}\\)"
+        calculation: "\\(E = P \\times t = 60 \\times (2 \\times 3600) = 60 \\times 7200 = 432000 \\text{ J} = 0.12 \\text{ kWh}\$"
       },
       {
         description: "Uma força de 50 N atua sobre um objeto que se move a 10 m/s. Qual é a potência?",
-        calculation: "\\(P = F \\times v = 50 \\times 10 = 500 \\text{ W}\\)"
+        calculation: "\\(P = F \\times v = 50 \\times 10 = 500 \\text{ W}\$"
       }
     ],
     commonMistakes: [

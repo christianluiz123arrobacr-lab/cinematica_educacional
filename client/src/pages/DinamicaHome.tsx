@@ -162,7 +162,7 @@ export default function DinamicaHome() {
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
-                        <span>Segunda Lei: <MathFormula formula="F = m \\cdot a" className="inline text-sm" /></span>
+                        <span>Segunda Lei: <MathFormula formula="$$$$F = m \\cdot a$$$$" className="inline text-sm" /></span>
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>

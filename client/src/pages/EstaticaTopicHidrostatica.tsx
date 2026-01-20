@@ -53,7 +53,7 @@ export default function EstaticaTopicHidrostatica() {
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">A Fórmula de Pressão</h3>
             <div className="bg-cyan-50 p-3 md:p-6 rounded-lg border border-cyan-200 overflow-x-auto my-4">
-              <MathFormula formula="P = \\frac{F}{A}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$P = \\frac{F}{A}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Pressão = Força / Área</p>
               <p className="text-sm text-slate-600 text-center mt-2">Unidade: Pascal (Pa) = N/m²</p>
             </div>
@@ -84,7 +84,7 @@ export default function EstaticaTopicHidrostatica() {
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">A Fórmula de Pressão Hidrostática</h3>
             <div className="bg-cyan-50 p-3 md:p-6 rounded-lg border border-cyan-200 overflow-x-auto my-4">
-              <MathFormula formula="P = P_0 + \\rho g h" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$P = P_0 + \\rho g h$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <div className="space-y-2 text-sm text-slate-600">
                 <p><strong>P</strong> = Pressão total</p>
                 <p><strong>P₀</strong> = Pressão atmosférica (≈ 101.325 Pa ao nível do mar)</p>
@@ -133,7 +133,7 @@ export default function EstaticaTopicHidrostatica() {
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">A Fórmula de Empuxo</h3>
             <div className="bg-cyan-50 p-3 md:p-6 rounded-lg border border-cyan-200 overflow-x-auto my-4">
-              <MathFormula formula="E = \\rho_{fluido} \\cdot g \\cdot V_{deslocado}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$E = \\rho_{fluido} \\cdot g \\cdot V_{deslocado}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <div className="space-y-2 text-sm text-slate-600">
                 <p><strong>E</strong> = Empuxo (N)</p>
                 <p><strong>ρ_fluido</strong> = Densidade do fluido (kg/m³)</p>

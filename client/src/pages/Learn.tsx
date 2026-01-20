@@ -38,7 +38,7 @@ export default function Learn() {
             <p>A velocidade média é a razão entre o deslocamento total e o intervalo de tempo gasto.</p>
             <div className="bg-blue-50 p-3 md:p-6 rounded-lg border border-blue-200 overflow-x-auto">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula:</p>
-              <MathFormula formula="v_m = \\frac{\\Delta s}{\\Delta t} = \\frac{s_f - s_i}{t_f - t_i}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$v_m = \\frac{\\Delta s}{\\Delta t} = \\frac{s_f - s_i}{t_f - t_i}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">Onde: v_m = velocidade média, Δs = deslocamento, Δt = intervalo de tempo</p>
             </div>
           </div>
@@ -51,7 +51,7 @@ export default function Learn() {
             <p>A aceleração é a taxa de variação da velocidade em relação ao tempo.</p>
             <div className="bg-purple-50 p-3 md:p-6 rounded-lg border border-purple-200 overflow-x-auto">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula:</p>
-              <MathFormula formula="a = \\frac{\\Delta v}{\\Delta t} = \\frac{v_f - v_i}{t_f - t_i}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$a = \\frac{\\Delta v}{\\Delta t} = \\frac{v_f - v_i}{t_f - t_i}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">Onde: a = aceleração, Δv = variação de velocidade, Δt = intervalo de tempo</p>
             </div>
           </div>
@@ -64,7 +64,7 @@ export default function Learn() {
             <p>O MRU é o movimento em linha reta com velocidade constante.</p>
             <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula Fundamental:</p>
-              <MathFormula formula="s = s_0 + v \\cdot t" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$s = s_0 + v \\cdot t$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">Onde: s = posição final, s_0 = posição inicial, v = velocidade, t = tempo</p>
             </div>
           </div>
@@ -77,9 +77,9 @@ export default function Learn() {
             <p>O MRUV é o movimento com aceleração constante.</p>
             <div className="bg-orange-50 p-3 md:p-6 rounded-lg border border-orange-200 overflow-x-auto">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula de Velocidade:</p>
-              <MathFormula formula="v = v_0 + a \\cdot t" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$v = v_0 + a \\cdot t$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-center text-sm md:text-lg font-semibold mb-3 mt-6">Fórmula de Posição:</p>
-              <MathFormula formula="s = s_0 + v_0 \\cdot t + \\frac{a \\cdot t^2}{2}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$s = s_0 + v_0 \\cdot t + \\frac{a \\cdot t^2}{2}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">Onde: v = velocidade final, v_0 = velocidade inicial, a = aceleração, t = tempo</p>
             </div>
           </div>
@@ -92,7 +92,7 @@ export default function Learn() {
             <p>A equação de Torricelli relaciona velocidade, aceleração e deslocamento sem necessidade do tempo.</p>
             <div className="bg-red-50 p-3 md:p-6 rounded-lg border border-red-200 overflow-x-auto">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula:</p>
-              <MathFormula formula="v^2 = v_0^2 + 2 \\cdot a \\cdot \\Delta s" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$v^2 = v_0^2 + 2 \\cdot a \\cdot \\Delta s$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">Onde: v = velocidade final, v_0 = velocidade inicial, a = aceleração, Δs = deslocamento</p>
             </div>
           </div>
@@ -105,9 +105,9 @@ export default function Learn() {
             <p>Queda livre é um caso especial de MRUV onde a aceleração é a gravidade (g = 9,8 m/s²).</p>
             <div className="bg-cyan-50 p-3 md:p-6 rounded-lg border border-cyan-200 overflow-x-auto">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula de Altura:</p>
-              <MathFormula formula="h = \\frac{g \\cdot t^2}{2}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$h = \\frac{g \\cdot t^2}{2}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-center text-sm md:text-lg font-semibold mb-3 mt-6">Fórmula de Velocidade:</p>
-              <MathFormula formula="v = g \\cdot t" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$v = g \\cdot t$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">Onde: h = altura, g = aceleração da gravidade (9,8 m/s²), t = tempo, v = velocidade</p>
             </div>
           </div>
@@ -120,11 +120,11 @@ export default function Learn() {
             <p>MCU é o movimento em trajetória circular com velocidade constante.</p>
             <div className="bg-indigo-50 p-3 md:p-6 rounded-lg border border-indigo-200 overflow-x-auto">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Velocidade Angular:</p>
-              <MathFormula formula="\\omega = \\frac{\\Delta \\theta}{\\Delta t}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$\\omega = \\frac{\\Delta \\theta}{\\Delta t}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-center text-sm md:text-lg font-semibold mb-3 mt-6">Velocidade Linear:</p>
-              <MathFormula formula="v = \\omega \\cdot R" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$v = \\omega \\cdot R$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-center text-sm md:text-lg font-semibold mb-3 mt-6">Período e Frequência:</p>
-              <MathFormula formula="T = \\frac{2\\pi}{\\omega}, \\quad f = \\frac{1}{T}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$T = \\frac{2\\pi}{\\omega}, \\quad f = \\frac{1}{T}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">Onde: ω = velocidade angular, θ = ângulo, v = velocidade linear, R = raio, T = período, f = frequência</p>
             </div>
           </div>

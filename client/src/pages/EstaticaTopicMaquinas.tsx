@@ -47,7 +47,7 @@ export default function EstaticaTopicMaquinas() {
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">A Fórmula</h3>
             <div className="bg-red-50 p-3 md:p-6 rounded-lg border border-red-200 overflow-x-auto my-4">
-              <MathFormula formula="VM = \\frac{F_{resistência}}{F_{aplicada}}" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$VM = \\frac{F_{resistência}}{F_{aplicada}}$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Vantagem Mecânica = Força que você precisa vencer / Força que você aplica</p>
             </div>
 
@@ -70,7 +70,7 @@ export default function EstaticaTopicMaquinas() {
               <p className="mb-2">Uma barra rígida que gira em torno de um ponto de apoio (fulcro).</p>
               <p className="text-sm"><strong>Exemplos:</strong> Pé de cabra, tesoura, balancim</p>
               <div className="bg-white p-2 rounded mt-2 overflow-x-auto">
-                <MathFormula formula="VM = \\frac{r_{resistência}}{r_{aplicada}}" className="text-center text-sm" />
+                <MathFormula formula="$$$$VM = \\frac{r_{resistência}}{r_{aplicada}}$$$$" className="text-center text-sm" />
               </div>
             </div>
 
@@ -87,7 +87,7 @@ export default function EstaticaTopicMaquinas() {
               <p className="mb-2">Uma superfície inclinada que permite subir algo com menos força.</p>
               <p className="text-sm"><strong>Exemplos:</strong> Rampa, escada, estrada em montanha</p>
               <div className="bg-white p-2 rounded mt-2 overflow-x-auto">
-                <MathFormula formula="VM = \\frac{L}{h}" className="text-center text-sm" />
+                <MathFormula formula="$$$$VM = \\frac{L}{h}$$$$" className="text-center text-sm" />
               </div>
               <p className="text-sm mt-2">L = comprimento da rampa, h = altura</p>
             </div>
@@ -111,7 +111,7 @@ export default function EstaticaTopicMaquinas() {
               <p className="mb-2">Uma roda grande ligada a um eixo pequeno.</p>
               <p className="text-sm"><strong>Exemplos:</strong> Volante, maçaneta de porta, roda de bicicleta</p>
               <div className="bg-white p-2 rounded mt-2 overflow-x-auto">
-                <MathFormula formula="VM = \\frac{r_{roda}}{r_{eixo}}" className="text-center text-sm" />
+                <MathFormula formula="$$$$VM = \\frac{r_{roda}}{r_{eixo}}$$$$" className="text-center text-sm" />
               </div>
             </div>
           </div>

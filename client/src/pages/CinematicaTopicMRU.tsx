@@ -81,7 +81,7 @@ export default function CinematicaTopicMRU() {
             <p>Existe apenas <strong>uma fórmula principal</strong> no MRU. É muito simples:</p>
             
             <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto my-4">
-              <MathFormula formula="s = s_0 + v \\cdot t" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula="$$$$s = s_0 + v \\cdot t$$$$" className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center"><strong>Lê-se:</strong> "Posição final = Posição inicial + Velocidade × Tempo"</p>
             </div>
 
@@ -111,7 +111,7 @@ export default function CinematicaTopicMRU() {
               <p className="mb-2"><strong>Dados:</strong> s₀ = 0 km, v = 100 km/h, t = 3 h</p>
               <p className="mb-2"><strong>Cálculo:</strong></p>
               <div className="bg-white p-3 rounded border border-slate-300 overflow-x-auto mb-2">
-                <MathFormula formula="s = 0 + 100 \\times 3 = 300 \\text{ km}" className="text-center text-lg" />
+                <MathFormula formula="$$$$s = 0 + 100 \\times 3 = 300 \\text{ km}$$$$" className="text-center text-lg" />
               </div>
               <p><strong>Resposta:</strong> O carro estará no km 300.</p>
             </div>

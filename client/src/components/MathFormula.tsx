@@ -9,24 +9,21 @@ interface MathFormulaProps {
 
 export function MathFormula({ formula, display = true, className = '' }: MathFormulaProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const { isReady, renderMath } = useMathJax();
+  const { renderMath } = useMathJax();
 
   useEffect(() => {
-    if (isReady && ref.current) {
-      // Renderizar MathJax após um pequeno delay para garantir que o DOM foi atualizado
+    if (ref.current) {
+      // Renderizar MathJax no elemento específico após um pequeno delay
       const timer = setTimeout(() => {
-        renderMath();
+        renderMath(ref.current);
       }, 0);
       return () => clearTimeout(timer);
     }
-  }, [isReady, formula, renderMath]);
+  }, [formula, renderMath]);
 
-  // Usar delimitadores corretos para MathJax
-  const displayStyle = display ? '\\[' : '\\(';
-  const endStyle = display ? '\\]' : '\\)';
-  
-  // Construir o HTML com a fórmula LaTeX
-  const htmlContent = `${displayStyle}${formula}${endStyle}`;
+  // Usar delimitadores corretos: $ $ para inline, $$ $$ para display
+  const delimiter = display ? '$$' : '$';
+  const htmlContent = `${delimiter}${formula}${delimiter}`;
 
   return (
     <div 
