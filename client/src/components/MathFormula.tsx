@@ -16,28 +16,31 @@ export function MathFormula({ formula, display = true, className = '' }: MathFor
     const renderMath = async () => {
       if (typeof window !== 'undefined' && (window as any).MathJax) {
         try {
-          // Limpar renderizações anteriores
-          (window as any).MathJax.typesetClear?.([ref.current]);
-          
           // Renderizar o elemento específico
           await (window as any).MathJax.typesetPromise?.([ref.current]);
         } catch (error) {
-          console.log('MathJax render error:', error);
+          console.error('MathJax render error:', error);
         }
       }
     };
 
-    // Renderizar imediatamente
-    renderMath();
-
-    // Também renderizar após um pequeno delay para garantir
-    const timer = setTimeout(renderMath, 100);
+    // Renderizar com delay para garantir que o DOM está pronto
+    const timer = setTimeout(renderMath, 50);
     return () => clearTimeout(timer);
-  }, [formula]);
+  }, [formula, display]);
 
   // Delimitadores corretos: $$ para display, $ para inline
   const delimiter = display ? '$$' : '$';
-  const content = `${delimiter}${formula}${delimiter}`;
+  
+  // Remover delimitadores se já existirem na fórmula
+  let cleanFormula = formula.trim();
+  if (cleanFormula.startsWith('$$') && cleanFormula.endsWith('$$')) {
+    cleanFormula = cleanFormula.slice(2, -2).trim();
+  } else if (cleanFormula.startsWith('$') && cleanFormula.endsWith('$')) {
+    cleanFormula = cleanFormula.slice(1, -1).trim();
+  }
+  
+  const content = `${delimiter}${cleanFormula}${delimiter}`;
 
   return (
     <div
@@ -52,7 +55,8 @@ export function MathFormula({ formula, display = true, className = '' }: MathFor
         minHeight: display ? '2.5rem' : 'auto',
         border: 'none',
         background: 'transparent',
-        lineHeight: display ? '1.5' : 'inherit'
+        lineHeight: display ? '1.5' : 'inherit',
+        fontFamily: 'inherit'
       }}
       dangerouslySetInnerHTML={{ __html: content }}
     />

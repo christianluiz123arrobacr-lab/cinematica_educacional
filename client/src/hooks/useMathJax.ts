@@ -13,7 +13,7 @@ export function useMathJax() {
     const checkMathJax = async () => {
       // Esperar MathJax estar disponível
       let attempts = 0;
-      const maxAttempts = 100; // 10 segundos máximo
+      const maxAttempts = 200; // 20 segundos máximo
 
       while (!window.MathJax && attempts < maxAttempts) {
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -28,14 +28,14 @@ export function useMathJax() {
             setIsReady(true);
           } catch (err) {
             console.log('MathJax initialization error:', err);
-            setIsReady(true); // Mesmo com erro, marcar como pronto
+            setIsReady(true);
           }
         } else {
           setIsReady(true);
         }
       } else {
         console.warn('MathJax não carregou');
-        setIsReady(true); // Marcar como pronto mesmo se não carregou
+        setIsReady(true);
       }
     };
 
@@ -44,17 +44,14 @@ export function useMathJax() {
 
   const renderMath = useCallback((element?: HTMLElement | null) => {
     if (!window.MathJax || !window.MathJax.typesetPromise) {
-      console.warn('MathJax não está disponível');
       return;
     }
 
     try {
       if (element) {
-        // Renderizar apenas o elemento específico
         window.MathJax.typesetPromise([element])
           .catch((err: any) => console.log('MathJax element render error:', err));
       } else {
-        // Renderizar toda a página
         window.MathJax.typesetPromise()
           .catch((err: any) => console.log('MathJax page render error:', err));
       }

@@ -1,7 +1,6 @@
 import { Link } from "wouter";
 import { ArrowLeft, Waves } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MathFormula } from "@/components/MathFormula";
 
 export default function OndulatóriaTopicFenomenos() {
   return (
@@ -27,20 +26,9 @@ export default function OndulatóriaTopicFenomenos() {
       </header>
 
       <section className="container mx-auto px-4 py-12 max-w-5xl">
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">🌊 Fenômenos Ondulatórios</h2>
-          
-          <div className="space-y-6">
-            <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Interferência de Ondas</h3>
-              <p className="text-slate-700">Interferência é a superposição de duas ou mais ondas no mesmo espaço.</p>
-            </div>
-          </div>
-        </div>
-
         <div className="bg-green-50 border-l-4 border-green-600 rounded-2xl p-8">
-          <h2 className="text-3xl font-bold text-green-900 mb-6">💪 Conteúdo em Desenvolvimento</h2>
-          <p className="text-green-800">Esta página está sendo expandida com exemplos militares completos.</p>
+          <h2 className="text-3xl font-bold text-green-900 mb-6">📝 Em Desenvolvimento</h2>
+          <p className="text-green-800">Conteúdo em desenvolvimento. Volte em breve!</p>
         </div>
       </section>
     </div>
