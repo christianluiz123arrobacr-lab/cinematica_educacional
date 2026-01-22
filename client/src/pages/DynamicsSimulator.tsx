@@ -7,6 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Play, Pause, RotateCcw } from "lucide-react";
 import { Link } from "wouter";
 import { Simulator } from "@/components/Simulator";
+import { InclinedPlaneSimulator } from "@/components/InclinedPlaneSimulator";
+import { LaunchVerticalGroundSimulator } from "@/components/LaunchVerticalGroundSimulator";
+import { LaunchVerticalBuildingSimulator } from "@/components/LaunchVerticalBuildingSimulator";
+import { LaunchObliqueGroundSimulator } from "@/components/LaunchObliqueGroundSimulator";
+import { LaunchObliqueBuildingSimulator } from "@/components/LaunchObliqueBuildingSimulator";
 
 export default function DynamicsSimulator() {
   const [isRunning, setIsRunning] = useState(true);
@@ -26,16 +31,16 @@ export default function DynamicsSimulator() {
   const [rCircular, setRCircular] = useState(80);
   const [wCircular, setWCircular] = useState(0.03);
 
-  // Launch parameters
-  const [launchType, setLaunchType] = useState("horizontal");
-  const [vxLaunch, setVxLaunch] = useState(5);
-  const [vyLaunch, setVyLaunch] = useState(10);
-  const [hLaunch, setHLaunch] = useState(300);
-
   // Inclined plane parameters
   const [anglePlane, setAnglePlane] = useState(30);
   const [muPlane, setMuPlane] = useState(0.2);
   const [modePlane, setModePlane] = useState(0); // 0: descendo, 1: subindo, 2: repouso
+
+  // Launch parameters
+  const [launchV0, setLaunchV0] = useState(20);
+  const [launchAngle, setLaunchAngle] = useState(45);
+  const [launchH0, setLaunchH0] = useState(30);
+  const [launchType, setLaunchType] = useState("verticalGround"); // verticalGround, verticalBuilding, obliqueGround, obliqueBuilding
 
   const resetForce = () => {
     setV0Force(0);
