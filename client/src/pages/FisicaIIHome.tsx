@@ -78,38 +78,40 @@ export default function FisicaIIHome() {
           </Link>
 
           {/* Ondulatória */}
-          <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-cyan-400 cursor-pointer">
-            <div className="bg-gradient-to-br from-cyan-500 to-blue-600 p-8 text-white">
-              <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Waves className="w-8 h-8" />
+          <Link href="/ondulatoria/topic/conceitos">
+            <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-cyan-400 cursor-pointer">
+              <div className="bg-gradient-to-br from-cyan-500 to-blue-600 p-8 text-white">
+                <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Waves className="w-8 h-8" />
+                </div>
+                <h3 className="text-3xl font-bold mb-2">Ondulatória</h3>
+                <p className="text-cyan-100">Ondas e Som</p>
               </div>
-              <h3 className="text-3xl font-bold mb-2">Ondulatória</h3>
-              <p className="text-cyan-100">Ondas e Som</p>
+              <div className="p-8">
+                <ul className="space-y-3 mb-8 text-slate-700">
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-cyan-600 rounded-full"></span>
+                    Conceitos Fundamentais
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-cyan-600 rounded-full"></span>
+                    Movimento Harmônico Simples
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-cyan-600 rounded-full"></span>
+                    Som e Acústica
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-cyan-600 rounded-full"></span>
+                    Interferência e Difração
+                  </li>
+                </ul>
+                <Button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white">
+                  Começar Agora
+                </Button>
+              </div>
             </div>
-            <div className="p-8">
-              <ul className="space-y-3 mb-8 text-slate-700">
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-cyan-600 rounded-full"></span>
-                  Movimento Ondulatório
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-cyan-600 rounded-full"></span>
-                  Ondas Mecânicas
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-cyan-600 rounded-full"></span>
-                  Som e Acústica
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-cyan-600 rounded-full"></span>
-                  Interferência e Difração
-                </li>
-              </ul>
-              <Button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white" disabled>
-                Em Breve
-              </Button>
-            </div>
-          </div>
+          </Link>
 
           {/* Óptica */}
           <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-yellow-400 cursor-pointer">

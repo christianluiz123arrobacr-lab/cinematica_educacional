@@ -55,6 +55,8 @@ import TermologiaTopicDilatacao from "./pages/TermologiaTopicDilatacao";
 import MecanicaHome from "./pages/MecanicaHome";
 import MecanicaTopicCinematica from "./pages/MecanicaTopicCinematica";
 import MecanicaTopicDinamica from "./pages/MecanicaTopicDinamica";
+import OndulatóriaTopicConceitos from "./pages/OndulatóriaTopicConceitos";
+import OndulatóriaTopicMHS from "./pages/OndulatóriaTopicMHS";
 
 
 
@@ -114,6 +116,9 @@ function Router() {
       <Route path="/mecanica" component={MecanicaHome} />
       <Route path="/mecanica/topic/cinematica" component={MecanicaTopicCinematica} />
       <Route path="/mecanica/topic/dinamica" component={MecanicaTopicDinamica} />
+
+      <Route path="/ondulatoria/topic/conceitos" component={OndulatóriaTopicConceitos} />
+      <Route path="/ondulatoria/topic/mhs" component={OndulatóriaTopicMHS} />
 
       <Route path="/progress" component={Progress} />
       <Route path="/404" component={NotFound} />
