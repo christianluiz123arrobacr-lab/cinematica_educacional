@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 
 interface SimulatorProps {
   type: "acceleration" | "freeFall" | "circular" | "collision" | "horizontalLaunch" | "verticalLaunch" | "inclinedPlane" | "launchVerticalGround" | "launchVerticalBuilding" | "launchOblique" | "launchObliqueBuilding";
@@ -18,8 +18,26 @@ export function Simulator({
   resetTrigger = 0
 }: SimulatorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const animationIdRef = useRef<number | null>(null);
   const frameCountRef = useRef(0);
+  const [canvasWidth, setCanvasWidth] = useState(width);
+  const [canvasHeight, setCanvasHeight] = useState(height);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.clientWidth;
+        const maxWidth = Math.min(containerWidth - 16, width);
+        setCanvasWidth(maxWidth);
+        setCanvasHeight(Math.round((maxWidth / width) * height));
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [width, height]);
 
   useEffect(() => {
     frameCountRef.current = 0;
@@ -103,12 +121,14 @@ export function Simulator({
   }, [type, width, height, isRunning, parameters]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={width}
-      height={height}
-      className="border-2 border-slate-300 rounded-lg bg-slate-50 shadow-md"
-    />
+    <div ref={containerRef} className="w-full flex justify-center">
+      <canvas
+        ref={canvasRef}
+        width={canvasWidth}
+        height={canvasHeight}
+        className="border-2 border-slate-300 rounded-lg bg-slate-50 shadow-md max-w-full"
+      />
+    </div>
   );
 }
 

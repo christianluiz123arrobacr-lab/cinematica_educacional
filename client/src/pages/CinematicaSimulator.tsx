@@ -70,24 +70,24 @@ export default function CinematicaSimulator() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-50 to-slate-100">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
-        <div className="container py-4 flex items-center gap-4">
+        <div className="container py-4 flex items-center gap-2 sm:gap-4">
           <Link href="/" className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
             <ArrowLeft className="w-4 h-4" />
-            Voltar
+            <span className="hidden sm:inline">Voltar</span>
           </Link>
-          <h1 className="text-2xl font-bold text-slate-900">Simulador de Cinemática</h1>
+          <h1 className="text-lg sm:text-2xl font-bold text-slate-900">Simulador de Cinemática</h1>
         </div>
       </header>
 
       {/* Main Content */}
       <section className="container py-6 md:py-12">
         <Tabs defaultValue="mru" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-8">
-            <TabsTrigger value="mru">MRU</TabsTrigger>
-            <TabsTrigger value="mruv">MRUV</TabsTrigger>
-            <TabsTrigger value="freefall">Queda Livre</TabsTrigger>
-            <TabsTrigger value="circular">Circular</TabsTrigger>
-            <TabsTrigger value="launch">Lançamento</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 mb-4 sm:mb-8 gap-1 sm:gap-0 h-auto">
+            <TabsTrigger value="mru" className="text-xs sm:text-sm">MRU</TabsTrigger>
+            <TabsTrigger value="mruv" className="text-xs sm:text-sm">MRUV</TabsTrigger>
+            <TabsTrigger value="freefall" className="text-xs sm:text-sm hidden sm:inline-flex">Queda</TabsTrigger>
+            <TabsTrigger value="circular" className="text-xs sm:text-sm">Circular</TabsTrigger>
+            <TabsTrigger value="launch" className="text-xs sm:text-sm hidden lg:inline-flex">Lançamento</TabsTrigger>
           </TabsList>
 
           {/* MRU Tab - Movimento Retilíneo Uniforme */}
@@ -95,7 +95,7 @@ export default function CinematicaSimulator() {
             <Card className="p-6 md:p-8">
               <h3 className="text-xl font-bold text-slate-900 mb-6">Movimento Retilíneo Uniforme (MRU) - v = constante</h3>
               
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                 {/* Simulator */}
                 <div className="flex flex-col items-center justify-center">
                   <Simulator
@@ -164,7 +164,7 @@ export default function CinematicaSimulator() {
             <Card className="p-6 md:p-8">
               <h3 className="text-xl font-bold text-slate-900 mb-6">Movimento Retilíneo Uniformemente Variado (MRUV) - a = constante</h3>
               
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                 {/* Simulator */}
                 <div className="flex flex-col items-center justify-center">
                   <Simulator
@@ -246,7 +246,7 @@ export default function CinematicaSimulator() {
             <Card className="p-6 md:p-8">
               <h3 className="text-xl font-bold text-slate-900 mb-6">Queda Livre - h = h₀ - ½gt²</h3>
               
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                 {/* Simulator */}
                 <div className="flex flex-col items-center justify-center">
                   <Simulator
@@ -315,7 +315,7 @@ export default function CinematicaSimulator() {
             <Card className="p-6 md:p-8">
               <h3 className="text-xl font-bold text-slate-900 mb-6">Movimento Circular Uniforme - v = ωr</h3>
               
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                 {/* Simulator */}
                 <div className="flex flex-col items-center justify-center">
                   <Simulator
@@ -398,7 +398,7 @@ export default function CinematicaSimulator() {
             <Card className="p-6 md:p-8">
               <h3 className="text-xl font-bold text-slate-900 mb-6">Lançamento de Projétil</h3>
               
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                 {/* Simulator */}
                 <div className="flex flex-col items-center justify-center">
                   <Simulator

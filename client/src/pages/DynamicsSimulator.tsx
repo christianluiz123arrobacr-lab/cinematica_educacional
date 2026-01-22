@@ -84,24 +84,24 @@ export default function DynamicsSimulator() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-50 to-slate-100">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
-        <div className="container py-4 flex items-center gap-4">
+        <div className="container py-4 flex items-center gap-2 sm:gap-4">
           <Link href="/dinamica" className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
             <ArrowLeft className="w-4 h-4" />
-            Voltar
+            <span className="hidden sm:inline">Voltar</span>
           </Link>
-          <h1 className="text-2xl font-bold text-slate-900">Simulador de Dinâmica</h1>
+          <h1 className="text-lg sm:text-2xl font-bold text-slate-900">Simulador de Dinâmica</h1>
         </div>
       </header>
 
       {/* Main Content */}
       <section className="container py-6 md:py-12">
         <Tabs defaultValue="force" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-8">
-            <TabsTrigger value="force">Segunda Lei (F=ma)</TabsTrigger>
-            <TabsTrigger value="collision">Colisões</TabsTrigger>
-            <TabsTrigger value="centripetal">Força Centrípeta</TabsTrigger>
-            <TabsTrigger value="launch">Lançamento</TabsTrigger>
-            <TabsTrigger value="inclined">Plano Inclinado</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 mb-4 sm:mb-8 gap-1 sm:gap-0 h-auto">
+            <TabsTrigger value="force" className="text-xs sm:text-sm">F=ma</TabsTrigger>
+            <TabsTrigger value="collision" className="text-xs sm:text-sm">Colisões</TabsTrigger>
+            <TabsTrigger value="centripetal" className="text-xs sm:text-sm hidden sm:inline-flex">Centrípeta</TabsTrigger>
+            <TabsTrigger value="launch" className="text-xs sm:text-sm">Lançamento</TabsTrigger>
+            <TabsTrigger value="inclined" className="text-xs sm:text-sm hidden lg:inline-flex">Plano</TabsTrigger>
           </TabsList>
 
           {/* Force Tab */}
@@ -116,7 +116,7 @@ export default function DynamicsSimulator() {
                 </div>
 
                 {/* Canvas */}
-                <div className="flex justify-center bg-slate-50 p-4 rounded-lg overflow-x-auto">
+                <div className="flex justify-center bg-slate-50 p-2 sm:p-4 rounded-lg overflow-x-auto w-full">
                   <Simulator
                     type="acceleration"
                     width={800}
@@ -128,7 +128,7 @@ export default function DynamicsSimulator() {
                 </div>
 
                 {/* Controls */}
-                <div className="space-y-6 bg-slate-50 p-6 rounded-lg">
+                <div className="space-y-4 sm:space-y-6 bg-slate-50 p-4 sm:p-6 rounded-lg">
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label className="text-sm font-semibold text-slate-700">Velocidade Inicial (v_0)</label>
@@ -213,7 +213,7 @@ export default function DynamicsSimulator() {
                 </div>
 
                 {/* Canvas */}
-                <div className="flex justify-center bg-slate-50 p-4 rounded-lg overflow-x-auto">
+                <div className="flex justify-center bg-slate-50 p-2 sm:p-4 rounded-lg overflow-x-auto w-full">
                   <Simulator
                     type="collision"
                     width={800}
@@ -230,7 +230,7 @@ export default function DynamicsSimulator() {
                 </div>
 
                 {/* Controls */}
-                <div className="space-y-6 bg-slate-50 p-6 rounded-lg">
+                <div className="space-y-4 sm:space-y-6 bg-slate-50 p-4 sm:p-6 rounded-lg">
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label className="text-sm font-semibold text-slate-700">Massa 1 (m_1)</label>
@@ -344,7 +344,7 @@ export default function DynamicsSimulator() {
                 </div>
 
                 {/* Canvas */}
-                <div className="flex justify-center bg-slate-50 p-4 rounded-lg overflow-x-auto">
+                <div className="flex justify-center bg-slate-50 p-2 sm:p-4 rounded-lg overflow-x-auto w-full">
                   <Simulator
                     type="circular"
                     width={800}
@@ -356,7 +356,7 @@ export default function DynamicsSimulator() {
                 </div>
 
                 {/* Controls */}
-                <div className="space-y-6 bg-slate-50 p-6 rounded-lg">
+                <div className="space-y-4 sm:space-y-6 bg-slate-50 p-4 sm:p-6 rounded-lg">
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label className="text-sm font-semibold text-slate-700">Raio (r)</label>
@@ -454,7 +454,7 @@ export default function DynamicsSimulator() {
                 </div>
 
                 {/* Canvas */}
-                <div className="flex justify-center bg-slate-50 p-4 rounded-lg overflow-x-auto">
+                <div className="flex justify-center bg-slate-50 p-2 sm:p-4 rounded-lg overflow-x-auto w-full">
                   {launchType === "verticalGround" && (
                     <LaunchVerticalGroundSimulator
                       v0={launchV0}
@@ -490,7 +490,7 @@ export default function DynamicsSimulator() {
                 </div>
 
                 {/* Controls */}
-                <div className="space-y-6 bg-slate-50 p-6 rounded-lg">
+                <div className="space-y-4 sm:space-y-6 bg-slate-50 p-4 sm:p-6 rounded-lg">
                   {launchType === "horizontal" ? (
                     <>
                       <div>
@@ -588,7 +588,7 @@ export default function DynamicsSimulator() {
                 </div>
 
                 {/* Canvas */}
-                <div className="flex justify-center bg-slate-50 p-4 rounded-lg overflow-x-auto">
+                <div className="flex justify-center bg-slate-50 p-2 sm:p-4 rounded-lg overflow-x-auto w-full">
                   <Simulator
                     type="inclinedPlane"
                     width={800}
@@ -600,7 +600,7 @@ export default function DynamicsSimulator() {
                 </div>
 
                 {/* Controls */}
-                <div className="space-y-6 bg-slate-50 p-6 rounded-lg">
+                <div className="space-y-4 sm:space-y-6 bg-slate-50 p-4 sm:p-6 rounded-lg">
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label className="text-sm font-semibold text-slate-700">Ângulo (θ)</label>
