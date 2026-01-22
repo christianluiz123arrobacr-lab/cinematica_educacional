@@ -18,7 +18,7 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
   const [m2, setM2] = useState(1);
   const [v1Initial, setV1Initial] = useState(4);
   const [v2Initial, setV2Initial] = useState(0);
-  const [frameCount, setFrameCount] = useState(0);
+  const frameCountRef = useRef(0);
   const animationIdRef = useRef<number | null>(null);
 
   // Cálculos de colisão
@@ -30,7 +30,7 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
   const ecFinal = 0.5 * m1 * v1After * v1After + 0.5 * m2 * v2After * v2After;
 
   useEffect(() => {
-    setFrameCount(0);
+    frameCountRef.current = 0;
   }, [resetTrigger]);
 
   useEffect(() => {
@@ -61,15 +61,15 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
 
       let x1, x2, v1Current, v2Current;
 
-      if (frameCount < collisionFrame) {
+      if (frameCountRef.current < collisionFrame) {
         // Antes da colisão
-        x1 = 80 + v1Initial * frameCount * 2.5;
-        x2 = width - 80 - v2Initial * frameCount * 2.5;
+        x1 = 80 + v1Initial * frameCountRef.current * 2.5;
+        x2 = width - 80 - v2Initial * frameCountRef.current * 2.5;
         v1Current = v1Initial;
         v2Current = v2Initial;
       } else {
         // Depois da colisão
-        const t = frameCount - collisionFrame;
+        const t = frameCountRef.current - collisionFrame;
         x1 = width / 2 - 60 + v1After * t * 2.5;
         x2 = width / 2 + 60 + v2After * t * 2.5;
         v1Current = v1After;
@@ -108,7 +108,7 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
 
       // Status
       ctx.font = "bold 13px Arial";
-      if (frameCount < collisionFrame) {
+      if (frameCountRef.current < collisionFrame) {
         ctx.fillText("ANTES DA COLISÃO", 10, 25);
       } else {
         ctx.fillText("APÓS COLISÃO", 10, 25);
@@ -123,7 +123,11 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
       ctx.fillText(`EC_final = ${ecFinal.toFixed(2)} J`, 10, 105);
 
       if (isRunning) {
-        setFrameCount((prev) => (prev > 200 ? 0 : prev + 1));
+        if (frameCountRef.current > 200) {
+          frameCountRef.current = 0;
+        } else {
+          frameCountRef.current += 1;
+        }
       }
 
       animationIdRef.current = requestAnimationFrame(animate);
@@ -136,7 +140,7 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
         cancelAnimationFrame(animationIdRef.current);
       }
     };
-  }, [frameCount, isRunning, m1, m2, v1Initial, v2Initial, v1After, v2After]);
+  }, [isRunning, m1, m2, v1Initial, v2Initial, v1After, v2After]);
 
   return (
     <div className="w-full space-y-6">

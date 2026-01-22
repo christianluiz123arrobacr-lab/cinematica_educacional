@@ -14,7 +14,7 @@ export const LaunchVerticalGroundSimulatorNew: React.FC<LaunchVerticalGroundSimu
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [v0, setV0] = useState(20);
-  const [frameCount, setFrameCount] = useState(0);
+  const frameCountRef = useRef(0);
   const animationIdRef = useRef<number | null>(null);
 
   const g = 9.8;
@@ -23,7 +23,7 @@ export const LaunchVerticalGroundSimulatorNew: React.FC<LaunchVerticalGroundSimu
   const tTotal = 2 * tSubida;
 
   useEffect(() => {
-    setFrameCount(0);
+    frameCountRef.current = 0;
   }, [resetTrigger]);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export const LaunchVerticalGroundSimulatorNew: React.FC<LaunchVerticalGroundSimu
       }
 
       // Tempo atual
-      const t = (frameCount / 60) * tTotal;
+      const t = (frameCountRef.current / 60) * tTotal;
 
       if (t <= tTotal) {
         // Posição e velocidade
@@ -105,7 +105,11 @@ export const LaunchVerticalGroundSimulatorNew: React.FC<LaunchVerticalGroundSimu
       }
 
       if (isRunning) {
-        setFrameCount((prev) => (prev > 60 * tTotal ? 0 : prev + 1));
+        if (frameCountRef.current > 60 * tTotal) {
+          frameCountRef.current = 0;
+        } else {
+          frameCountRef.current += 1;
+        }
       }
 
       animationIdRef.current = requestAnimationFrame(animate);
@@ -118,7 +122,7 @@ export const LaunchVerticalGroundSimulatorNew: React.FC<LaunchVerticalGroundSimu
         cancelAnimationFrame(animationIdRef.current);
       }
     };
-  }, [frameCount, isRunning, v0, tSubida, hMax, tTotal]);
+  }, [isRunning, v0, tSubida, hMax, tTotal]);
 
   return (
     <div className="w-full space-y-6">

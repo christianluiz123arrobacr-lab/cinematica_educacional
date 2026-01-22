@@ -15,7 +15,7 @@ export const LaunchObliqueGroundSimulatorNew: React.FC<LaunchObliqueGroundSimula
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [v0, setV0] = useState(25);
   const [angle, setAngle] = useState(45);
-  const [frameCount, setFrameCount] = useState(0);
+  const frameCountRef = useRef(0);
   const animationIdRef = useRef<number | null>(null);
 
   const g = 9.8;
@@ -29,7 +29,7 @@ export const LaunchObliqueGroundSimulatorNew: React.FC<LaunchObliqueGroundSimula
   const alcance = v0x * tTotal;
 
   useEffect(() => {
-    setFrameCount(0);
+    frameCountRef.current = 0;
   }, [resetTrigger]);
 
   useEffect(() => {
@@ -89,7 +89,7 @@ export const LaunchObliqueGroundSimulatorNew: React.FC<LaunchObliqueGroundSimula
       ctx.setLineDash([]);
 
       // Tempo atual
-      const t = (frameCount / 60) * tTotal;
+      const t = (frameCountRef.current / 60) * tTotal;
 
       if (t <= tTotal) {
         // Posição
@@ -126,7 +126,11 @@ export const LaunchObliqueGroundSimulatorNew: React.FC<LaunchObliqueGroundSimula
       }
 
       if (isRunning) {
-        setFrameCount((prev) => (prev > 60 * tTotal ? 0 : prev + 1));
+        if (frameCountRef.current > 60 * tTotal) {
+          frameCountRef.current = 0;
+        } else {
+          frameCountRef.current += 1;
+        }
       }
 
       animationIdRef.current = requestAnimationFrame(animate);
@@ -139,7 +143,7 @@ export const LaunchObliqueGroundSimulatorNew: React.FC<LaunchObliqueGroundSimula
         cancelAnimationFrame(animationIdRef.current);
       }
     };
-  }, [frameCount, isRunning, v0, angle, v0x, v0y, tSubida, hMax, tTotal, alcance]);
+  }, [isRunning, v0, angle, v0x, v0y, tSubida, hMax, tTotal, alcance]);
 
   return (
     <div className="w-full space-y-6">

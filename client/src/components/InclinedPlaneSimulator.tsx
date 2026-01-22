@@ -17,11 +17,11 @@ export function InclinedPlaneSimulator({
   resetTrigger,
 }: InclinedPlaneSimulatorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [frameCount, setFrameCount] = useState(0);
+  const frameCountRef = useRef(0);
   const animationIdRef = useRef<number | null>(null);
 
   useEffect(() => {
-    setFrameCount(0);
+    frameCountRef.current = 0;
   }, [resetTrigger]);
 
   useEffect(() => {
@@ -195,7 +195,7 @@ export function InclinedPlaneSimulator({
       ctx.fillText(`P∥ = mg·sinθ = ${Pparallel.toFixed(2)} N`, 10, 125);
 
       if (isRunning) {
-        setFrameCount((prev) => prev + 1);
+        frameCountRef.current += 1;
       }
 
       animationIdRef.current = requestAnimationFrame(animate);

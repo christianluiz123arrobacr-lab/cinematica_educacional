@@ -15,7 +15,7 @@ export const LaunchVerticalBuildingSimulatorNew: React.FC<LaunchVerticalBuilding
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [v0, setV0] = useState(15);
   const [h0, setH0] = useState(20);
-  const [frameCount, setFrameCount] = useState(0);
+  const frameCountRef = useRef(0);
   const animationIdRef = useRef<number | null>(null);
 
   const g = 9.8;
@@ -34,7 +34,7 @@ export const LaunchVerticalBuildingSimulatorNew: React.FC<LaunchVerticalBuilding
   };
 
   useEffect(() => {
-    setFrameCount(0);
+    frameCountRef.current = 0;
   }, [resetTrigger]);
 
   useEffect(() => {
@@ -77,7 +77,7 @@ export const LaunchVerticalBuildingSimulatorNew: React.FC<LaunchVerticalBuilding
       drawStructure(ctx, structureX, structureY, h0 * scale, getStructureType());
 
       // Tempo atual
-      const t = (frameCount / 60) * tTotal;
+      const t = (frameCountRef.current / 60) * tTotal;
 
       if (t <= tTotal) {
         // Posição e velocidade
@@ -121,7 +121,11 @@ export const LaunchVerticalBuildingSimulatorNew: React.FC<LaunchVerticalBuilding
       }
 
       if (isRunning) {
-        setFrameCount((prev) => (prev > 60 * tTotal ? 0 : prev + 1));
+        if (frameCountRef.current > 60 * tTotal) {
+          frameCountRef.current = 0;
+        } else {
+          frameCountRef.current += 1;
+        }
       }
 
       animationIdRef.current = requestAnimationFrame(animate);
@@ -134,7 +138,7 @@ export const LaunchVerticalBuildingSimulatorNew: React.FC<LaunchVerticalBuilding
         cancelAnimationFrame(animationIdRef.current);
       }
     };
-  }, [frameCount, isRunning, v0, h0, tSubida, hMax, tTotal]);
+  }, [isRunning, v0, h0, tSubida, hMax, tTotal]);
 
   return (
     <div className="w-full space-y-6">
