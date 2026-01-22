@@ -71,7 +71,7 @@ export default function MecanicaTopicDinamica() {
                 <p className="text-slate-700 mb-3">
                   <strong>"Um corpo em repouso permanece em repouso, e um corpo em movimento permanece em movimento uniforme, a menos que uma força resultante atue sobre ele."</strong>
                 </p>
-                <MathFormula formula={String.raw`$$$$\\sum \\vec{F} = 0 \\Rightarrow \\vec{a} = 0$$$$`} display={true} />
+                <MathFormula formula={String.raw`$$\sum \vec{F} = 0 \Rightarrow \vec{a} = 0$$`} display={true} />
               </div>
 
               <div className="bg-yellow-50 border border-yellow-200 rounded p-4">
@@ -87,12 +87,20 @@ export default function MecanicaTopicDinamica() {
                 <p className="text-slate-700 mb-3">
                   <strong>"A força resultante é igual ao produto da massa pela aceleração."</strong>
                 </p>
-                <MathFormula formula={String.raw`$$$$\\vec{F}_{res} = m \\cdot \\vec{a}$$$$`} display={true} />
+                <MathFormula formula={String.raw`$$\vec{F}_{res} = m \cdot \vec{a}$$`} display={true} />
                 <p className="text-slate-700 text-sm mt-3">Ou em componentes:</p>
-                <MathFormula formula={String.raw`$$$$F_x = m \\cdot a_x \\quad ; \\quad F_y = m \\cdot a_y$$$$`} display={true} />
+                <MathFormula formula={String.raw`$$F_x = m \cdot a_x \quad ; \quad F_y = m \cdot a_y$$`} display={true} />
               </div>
 
               <div className="space-y-3">
+                <div className="bg-white border border-green-300 rounded p-4">
+                  <p className="font-bold text-slate-900 mb-3">Derivação: Por que F = ma?</p>
+                  <p className="text-slate-700 text-sm mb-2">A força resultante causa mudança na velocidade (aceleração). Quanto maior a força, maior a aceleração. Quanto maior a massa, menor a aceleração para mesma força:</p>
+                  <MathFormula formula={String.raw`$$\vec{F}_{res} \propto m \cdot \vec{a}$$`} display={true} />
+                  <p className="text-slate-700 text-sm mt-2">A constante de proporcionalidade é a massa:</p>
+                  <MathFormula formula={String.raw`$$\boxed{\vec{F}_{res} = m \cdot \vec{a}}$$`} display={true} />
+                </div>
+
                 <div className="bg-white border border-green-300 rounded p-4">
                   <p className="font-bold text-slate-900 mb-2">Consequências Importantes:</p>
                   <p className="text-slate-700 text-sm">• Força e aceleração são vetores na mesma direção</p>
@@ -102,7 +110,7 @@ export default function MecanicaTopicDinamica() {
 
                 <div className="bg-white border border-green-300 rounded p-4">
                   <p className="font-bold text-slate-900 mb-2">Força Resultante (Soma Vetorial):</p>
-                  <MathFormula formula={String.raw`$$$$F_{res} = \\sqrt{F_x^2 + F_y^2}$$$$`} display={true} />
+                  <MathFormula formula={String.raw`$$F_{res} = \sqrt{F_x^2 + F_y^2}$$`} display={true} />
                 </div>
               </div>
             </div>
@@ -115,7 +123,7 @@ export default function MecanicaTopicDinamica() {
                 <p className="text-slate-700 mb-3">
                   <strong>"Se um corpo A exerce uma força sobre um corpo B, então B exerce uma força igual e oposta sobre A."</strong>
                 </p>
-                <MathFormula formula={String.raw`$$$$\\vec{F}_{A \\rightarrow B} = -\\vec{F}_{B \\rightarrow A}$$$$`} display={true} />
+                <MathFormula formula={String.raw`$$\vec{F}_{A \rightarrow B} = -\vec{F}_{B \rightarrow A}$$`} display={true} />
               </div>
 
               <div className="space-y-3">
@@ -145,7 +153,7 @@ export default function MecanicaTopicDinamica() {
               
               <div className="bg-white border border-red-300 rounded p-4 mb-4">
                 <p className="text-slate-700 mb-3"><strong>Peso é a força gravitacional exercida pela Terra sobre um corpo.</strong></p>
-                <MathFormula formula={String.raw`$$$$P = m \\cdot g$$$$`} display={true} />
+                <MathFormula formula={String.raw`$$P = m \cdot g$$`} display={true} />
                 <p className="text-slate-700 text-sm mt-3">Onde: m = massa (kg), g = aceleração da gravidade (m/s²)</p>
               </div>
 
@@ -185,15 +193,15 @@ export default function MecanicaTopicDinamica() {
                 <div className="bg-white border border-orange-300 rounded p-4">
                   <p className="font-bold text-slate-900 mb-2">Atrito Estático (f_s):</p>
                   <p className="text-slate-700 text-sm mb-2">Atua quando não há movimento relativo. Pode variar de 0 até um máximo.</p>
-                  <MathFormula formula={String.raw`$$$$0 \\leq f_s \\leq \\mu_s \\cdot N$$$$`} display={true} />
+                  <MathFormula formula={String.raw`$$0 \leq f_s \leq \mu_s \cdot N$$`} display={true} />
                   <p className="text-slate-700 text-sm mt-2">Onde: μ_s = coeficiente de atrito estático</p>
                 </div>
 
                 <div className="bg-white border border-orange-300 rounded p-4">
                   <p className="font-bold text-slate-900 mb-2">Atrito Cinético (f_k):</p>
                   <p className="text-slate-700 text-sm mb-2">Atua quando há movimento relativo. É constante.</p>
-                  <MathFormula formula={String.raw`$$$$f_k = \\mu_k \\cdot N$$$$`} display={true} />
-                  <p className="text-slate-700 text-sm mt-2">Onde: mu_k = coeficiente de atrito cinético (mu_k &lt; mu_s)</p>
+                  <MathFormula formula={String.raw`$$f_k = \mu_k \cdot N$$`} display={true} />
+                  <p className="text-slate-700 text-sm mt-2">Onde: μ_k = coeficiente de atrito cinético (μ_k &lt; μ_s)</p>
                 </div>
 
                 <div className="bg-yellow-50 border border-yellow-200 rounded p-4">
@@ -217,9 +225,68 @@ export default function MecanicaTopicDinamica() {
           </div>
         </div>
 
-        {/* ===== SEÇÃO 3: APLICAÇÕES PRÁTICAS ===== */}
+        {/* ===== SEÇÃO 3: DERIVAÇÕES IMPORTANTES ===== */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">3️⃣ Aplicações Práticas: Problemas Clássicos</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">3️⃣ Derivações Importantes de Fórmulas</h2>
+          
+          <div className="space-y-8">
+            <div className="bg-amber-50 border-l-4 border-amber-500 rounded p-6">
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Força Normal em Plano Inclinado</h3>
+              <div className="space-y-4">
+                <div className="bg-white border border-amber-300 rounded p-4">
+                  <p className="text-slate-700 text-sm mb-3">Em um plano inclinado de ângulo θ, o peso pode ser decomposto em duas componentes:</p>
+                  <p className="text-slate-700 text-sm mb-2"><strong>Paralela ao plano:</strong></p>
+                  <MathFormula formula={String.raw`$$P_\parallel = mg \sin\theta$$`} display={true} />
+                  <p className="text-slate-700 text-sm mt-3 mb-2"><strong>Perpendicular ao plano:</strong></p>
+                  <MathFormula formula={String.raw`$$P_\perp = mg \cos\theta$$`} display={true} />
+                  <p className="text-slate-700 text-sm mt-3 mb-2">Como não há movimento perpendicular ao plano:</p>
+                  <MathFormula formula={String.raw`$$N = P_\perp = \boxed{mg \cos\theta}$$`} display={true} />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-teal-50 border-l-4 border-teal-500 rounded p-6">
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Força Normal em Elevador Acelerado</h3>
+              <div className="space-y-4">
+                <div className="bg-white border border-teal-300 rounded p-4">
+                  <p className="text-slate-700 text-sm mb-3"><strong>Elevador Subindo com Aceleração a:</strong></p>
+                  <p className="text-slate-700 text-sm mb-2">A força resultante deve apontar para cima:</p>
+                  <MathFormula formula={String.raw`$$N - P = ma$$`} display={true} />
+                  <MathFormula formula={String.raw`$$N = P + ma = mg + ma = \boxed{m(g + a)}$$`} display={true} />
+                </div>
+
+                <div className="bg-white border border-teal-300 rounded p-4">
+                  <p className="text-slate-700 text-sm mb-3"><strong>Elevador Descendo com Aceleração a:</strong></p>
+                  <p className="text-slate-700 text-sm mb-2">A força resultante aponta para baixo:</p>
+                  <MathFormula formula={String.raw`$$P - N = ma$$`} display={true} />
+                  <MathFormula formula={String.raw`$$N = P - ma = mg - ma = \boxed{m(g - a)}$$`} display={true} />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-indigo-50 border-l-4 border-indigo-500 rounded p-6">
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Máquina de Atwood: Aceleração do Sistema</h3>
+              <div className="space-y-4">
+                <div className="bg-white border border-indigo-300 rounded p-4">
+                  <p className="text-slate-700 text-sm mb-3">Dois blocos m₁ e m₂ (com m₂ &gt; m₁) conectados por corda ideal em polia:</p>
+                  <p className="text-slate-700 text-sm mb-2"><strong>Para m₁ (subindo):</strong></p>
+                  <MathFormula formula={String.raw`$$T - m_1 g = m_1 a$$`} display={true} />
+                  <p className="text-slate-700 text-sm mt-3 mb-2"><strong>Para m₂ (descendo):</strong></p>
+                  <MathFormula formula={String.raw`$$m_2 g - T = m_2 a$$`} display={true} />
+                  <p className="text-slate-700 text-sm mt-3 mb-2"><strong>Somando as equações:</strong></p>
+                  <MathFormula formula={String.raw`$$(m_2 - m_1)g = (m_1 + m_2)a$$`} display={true} />
+                  <MathFormula formula={String.raw`$$\boxed{a = \frac{(m_2 - m_1)g}{m_1 + m_2}}$$`} display={true} />
+                  <p className="text-slate-700 text-sm mt-3 mb-2"><strong>Tração na corda:</strong></p>
+                  <MathFormula formula={String.raw`$$\boxed{T = \frac{2m_1 m_2 g}{m_1 + m_2}}$$`} display={true} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===== SEÇÃO 4: APLICAÇÕES PRÁTICAS ===== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">4️⃣ Aplicações Práticas: Problemas Clássicos</h2>
           
           <div className="space-y-8">
             {/* PROBLEMA 1 */}
@@ -246,17 +313,17 @@ export default function MecanicaTopicDinamica() {
                   
                   <p className="mt-3"><strong>Passo 3: Força de Atrito</strong></p>
                   <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$$$f_k = \\mu_k \\cdot N = 0,2 \\times 43,3 = 8,66 \\text{ N}$$$$`} display={true} />
+                    <MathFormula formula={String.raw`$$f_k = \mu_k \cdot N = 0,2 \times 43,3 = 8,66 \text{ N}$$`} display={true} />
                   </div>
                   
                   <p className="mt-3"><strong>Passo 4: Força Resultante (paralela ao plano)</strong></p>
                   <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$$$F_{res} = P_\\parallel - f_k = 25 - 8,66 = 16,34 \\text{ N}$$$$`} display={true} />
+                    <MathFormula formula={String.raw`$$F_{res} = P_\parallel - f_k = 25 - 8,66 = 16,34 \text{ N}$$`} display={true} />
                   </div>
                   
                   <p className="mt-3"><strong>Passo 5: Aceleração</strong></p>
                   <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$$$a = \\frac{F_{res}}{m} = \\frac{16,34}{5} = 3,27 \\text{ m/s}^2$$$$`} display={true} />
+                    <MathFormula formula={String.raw`$$a = \frac{F_{res}}{m} = \frac{16,34}{5} = 3,27 \text{ m/s}^2$$`} display={true} />
                   </div>
                 </div>
               </div>
@@ -287,21 +354,14 @@ export default function MecanicaTopicDinamica() {
                   <p className="ml-4">Como m2 &gt; m1, o bloco m2 desce e m1 sobe.</p>
                   <p className="ml-4">Ambos têm mesma aceleração a (conectados pela corda).</p>
                   
-                  <p className="mt-3"><strong>Passo 2: Equações para cada bloco</strong></p>
-                  <p className="ml-4">Para m1 (subindo): T - m1*g = m1*a</p>
-                  <p className="ml-4">Para m2 (descendo): m2*g - T = m2*a</p>
-                  
-                  <p className="mt-3"><strong>Passo 3: Somar as equações</strong></p>
+                  <p className="mt-3"><strong>Passo 2: Usar fórmula derivada</strong></p>
                   <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$$$m_2 g - m_1 g = m_1 a + m_2 a$$$$`} display={true} />
-                    <MathFormula formula={String.raw`$$$$(m_2 - m_1)g = (m_1 + m_2)a$$$$`} display={true} />
-                    <MathFormula formula={String.raw`$$$$a = \\frac{(m_2 - m_1)g}{m_1 + m_2} = \\frac{(5-3) \\times 10}{3+5} = \\frac{20}{8} = 2,5 \\text{ m/s}^2$$$$`} display={true} />
+                    <MathFormula formula={String.raw`$$a = \frac{(m_2 - m_1)g}{m_1 + m_2} = \frac{(5-3) \times 10}{3+5} = \frac{20}{8} = 2,5 \text{ m/s}^2$$`} display={true} />
                   </div>
                   
-                  <p className="mt-3"><strong>Passo 4: Tração na corda</strong></p>
-                  <p className="ml-4">Usar a primeira equação: T = m₁(g + a)</p>
+                  <p className="mt-3"><strong>Passo 3: Tração na corda</strong></p>
                   <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$$$T = 3 \\times (10 + 2,5) = 3 \\times 12,5 = 37,5 \\text{ N}$$$$`} display={true} />
+                    <MathFormula formula={String.raw`$$T = \frac{2m_1 m_2 g}{m_1 + m_2} = \frac{2 \times 3 \times 5 \times 10}{3+5} = \frac{300}{8} = 37,5 \text{ N}$$`} display={true} />
                   </div>
                 </div>
               </div>
@@ -332,9 +392,9 @@ export default function MecanicaTopicDinamica() {
                   <p><strong>Passo 1: Elevador Subindo com Aceleração</strong></p>
                   <p className="ml-4">Força resultante deve apontar para cima (direção da aceleração).</p>
                   <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$$$N - P = ma$$$$`} display={true} />
-                    <MathFormula formula={String.raw`$$$$N = P + ma = mg + ma = m(g + a)$$$$`} display={true} />
-                    <MathFormula formula={String.raw`$$$$N = 60 \\times (10 + 2) = 60 \\times 12 = 720 \\text{ N}$$$$`} display={true} />
+                    <MathFormula formula={String.raw`$$N - P = ma$$`} display={true} />
+                    <MathFormula formula={String.raw`$$N = P + ma = mg + ma = m(g + a)$$`} display={true} />
+                    <MathFormula formula={String.raw`$$N = 60 \times (10 + 2) = 60 \times 12 = 720 \text{ N}$$`} display={true} />
                   </div>
                   
                   <p className="mt-3"><strong>Passo 2: Peso Aparente</strong></p>
@@ -344,9 +404,9 @@ export default function MecanicaTopicDinamica() {
                   <p className="mt-3"><strong>Passo 3: Elevador Descendo com Aceleração</strong></p>
                   <p className="ml-4">Força resultante aponta para baixo (direção da aceleração).</p>
                   <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$$$P - N = ma$$$$`} display={true} />
-                    <MathFormula formula={String.raw`$$$$N = P - ma = mg - ma = m(g - a)$$$$`} display={true} />
-                    <MathFormula formula={String.raw`$$$$N = 60 \\times (10 - 2) = 60 \\times 8 = 480 \\text{ N}$$$$`} display={true} />
+                    <MathFormula formula={String.raw`$$P - N = ma$$`} display={true} />
+                    <MathFormula formula={String.raw`$$N = P - ma = mg - ma = m(g - a)$$`} display={true} />
+                    <MathFormula formula={String.raw`$$N = 60 \times (10 - 2) = 60 \times 8 = 480 \text{ N}$$`} display={true} />
                   </div>
                 </div>
               </div>
@@ -358,6 +418,51 @@ export default function MecanicaTopicDinamica() {
                 <p className="text-green-900 text-sm">c) N = 480 N (descendo - pessoa se sente mais leve)</p>
               </div>
             </div>
+
+            {/* PROBLEMA 4 */}
+            <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-6 rounded-lg border border-purple-300">
+              <p className="font-bold mb-4 text-lg">📝 Exemplo 4: Blocos Conectados com Atrito (ITA)</p>
+              <div className="bg-white p-4 rounded mb-4">
+                <p className="text-slate-700 mb-3"><strong>Enunciado:</strong></p>
+                <p className="text-slate-700 text-sm mb-3">
+                  Dois blocos A (m_A = 2 kg) e B (m_B = 3 kg) estão em contato em uma superfície horizontal. Uma força F = 20 N é aplicada em A, empurrando B. O coeficiente de atrito cinético é μ_k = 0,1. Determine:
+                </p>
+                <p className="text-slate-700 text-sm mb-2">a) A aceleração do sistema</p>
+                <p className="text-slate-700 text-sm mb-3">b) A força de contato entre os blocos</p>
+              </div>
+
+              <div className="bg-yellow-50 p-4 rounded">
+                <p className="font-bold text-slate-900 mb-3">Resolução Detalhada:</p>
+                <div className="space-y-3 text-slate-700 text-sm">
+                  <p><strong>Passo 1: Calcular força de atrito total</strong></p>
+                  <div className="bg-white p-2 rounded ml-4 mt-2">
+                    <MathFormula formula={String.raw`$$N_{total} = (m_A + m_B)g = (2 + 3) \times 10 = 50 \text{ N}$$`} display={true} />
+                    <MathFormula formula={String.raw`$$f_{total} = \mu_k \times N_{total} = 0,1 \times 50 = 5 \text{ N}$$`} display={true} />
+                  </div>
+                  
+                  <p className="mt-3"><strong>Passo 2: Aceleração do sistema</strong></p>
+                  <div className="bg-white p-2 rounded ml-4 mt-2">
+                    <MathFormula formula={String.raw`$$F - f_{total} = (m_A + m_B)a$$`} display={true} />
+                    <MathFormula formula={String.raw`$$20 - 5 = 5a$$`} display={true} />
+                    <MathFormula formula={String.raw`$$a = 3 \text{ m/s}^2$$`} display={true} />
+                  </div>
+                  
+                  <p className="mt-3"><strong>Passo 3: Força de contato entre blocos</strong></p>
+                  <p className="ml-4">Analisar bloco B isoladamente:</p>
+                  <div className="bg-white p-2 rounded ml-4 mt-2">
+                    <MathFormula formula={String.raw`$$F_c - f_B = m_B a$$`} display={true} />
+                    <MathFormula formula={String.raw`$$f_B = \mu_k m_B g = 0,1 \times 3 \times 10 = 3 \text{ N}$$`} display={true} />
+                    <MathFormula formula={String.raw`$$F_c = m_B a + f_B = 3 \times 3 + 3 = 12 \text{ N}$$`} display={true} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-green-50 border border-green-200 rounded p-4 mt-4">
+                <p className="font-bold text-green-900 mb-2">✅ Respostas:</p>
+                <p className="text-green-900 text-sm">a) a = 3 m/s²</p>
+                <p className="text-green-900 text-sm">b) F_c = 12 N</p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -365,11 +470,21 @@ export default function MecanicaTopicDinamica() {
         <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
           <h3 className="text-xl font-bold text-green-900 mb-4">📋 Resumo de Fórmulas Essenciais</h3>
           <div className="space-y-3 text-green-900 text-sm">
-            <p><strong>2ª Lei de Newton:</strong> F_res = ma</p>
-            <p><strong>Peso:</strong> P = mg</p>
-            <p><strong>Atrito Cinético:</strong> f_k = μ_k × N</p>
-            <p><strong>Atrito Estático:</strong> f_s ≤ μ_s × N</p>
-            <p><strong>Plano Inclinado:</strong> N = mg cos(θ); P_∥ = mg sin(θ)</p>
+            <div className="bg-white p-2 rounded">
+              <MathFormula formula={String.raw`$$\text{2ª Lei de Newton: } F_{res} = ma$$`} display={true} />
+            </div>
+            <div className="bg-white p-2 rounded">
+              <MathFormula formula={String.raw`$$\text{Peso: } P = mg$$`} display={true} />
+            </div>
+            <div className="bg-white p-2 rounded">
+              <MathFormula formula={String.raw`$$\text{Atrito Cinético: } f_k = \mu_k \times N$$`} display={true} />
+            </div>
+            <div className="bg-white p-2 rounded">
+              <MathFormula formula={String.raw`$$\text{Plano Inclinado: } N = mg \cos\theta; \quad P_\parallel = mg \sin\theta$$`} display={true} />
+            </div>
+            <div className="bg-white p-2 rounded">
+              <MathFormula formula={String.raw`$$\text{Máquina de Atwood: } a = \frac{(m_2-m_1)g}{m_1+m_2}; \quad T = \frac{2m_1 m_2 g}{m_1+m_2}$$`} display={true} />
+            </div>
           </div>
         </div>
 
@@ -378,11 +493,8 @@ export default function MecanicaTopicDinamica() {
           <h3 className="text-xl font-bold text-blue-900 mb-4">🚀 Próximos Passos</h3>
           <p className="text-blue-900 mb-4">Agora que domina Dinâmica, estude:</p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/mecanica/topic/trabalho-energia">
-              <Button className="bg-blue-600 hover:bg-blue-700">Trabalho e Energia</Button>
-            </Link>
             <Link href="/mecanica">
-              <Button variant="outline">Voltar para Mecânica</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700">Voltar para Mecânica</Button>
             </Link>
           </div>
         </div>
