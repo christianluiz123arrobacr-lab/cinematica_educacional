@@ -35,6 +35,7 @@ export default function DynamicsSimulator() {
   // Inclined plane parameters
   const [anglePlane, setAnglePlane] = useState(30);
   const [muPlane, setMuPlane] = useState(0.2);
+  const [modePlane, setModePlane] = useState(0); // 0: descendo, 1: subindo, 2: repouso
 
   const resetForce = () => {
     setV0Force(0);
@@ -564,7 +565,7 @@ export default function DynamicsSimulator() {
                     width={800}
                     height={400}
                     isRunning={isRunning}
-                    parameters={{ angle: anglePlane, mu: muPlane }}
+                    parameters={{ angle: anglePlane, mu: muPlane, mode: modePlane }}
                     resetTrigger={resetTrigger}
                   />
                 </div>
