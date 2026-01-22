@@ -52,52 +52,53 @@ export function Simulator({
 
     const animate = () => {
       ctx.fillStyle = "#f8fafc";
-      ctx.fillRect(0, 0, width, height);
+      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
       // Draw grid
       ctx.strokeStyle = "#e2e8f0";
       ctx.lineWidth = 1;
-      for (let i = 0; i <= width; i += 50) {
+      const gridSpacing = Math.round(50 * (canvasWidth / width));
+      for (let i = 0; i <= canvasWidth; i += gridSpacing) {
         ctx.beginPath();
         ctx.moveTo(i, 0);
-        ctx.lineTo(i, height);
+        ctx.lineTo(i, canvasHeight);
         ctx.stroke();
       }
-      for (let i = 0; i <= height; i += 50) {
+      for (let i = 0; i <= canvasHeight; i += gridSpacing) {
         ctx.beginPath();
         ctx.moveTo(0, i);
-        ctx.lineTo(width, i);
+        ctx.lineTo(canvasWidth, i);
         ctx.stroke();
       }
 
       if (isRunning) {
         switch (type) {
           case "acceleration":
-            drawAcceleration(ctx, frameCountRef.current, width, height, parameters);
+            drawAcceleration(ctx, frameCountRef.current, canvasWidth, canvasHeight, parameters);
             break;
           case "freeFall":
-            drawFreeFall(ctx, frameCountRef.current, width, height, parameters);
+            drawFreeFall(ctx, frameCountRef.current, canvasWidth, canvasHeight, parameters);
             break;
           case "circular":
-            drawCircular(ctx, frameCountRef.current, width, height, parameters);
+            drawCircular(ctx, frameCountRef.current, canvasWidth, canvasHeight, parameters);
             break;
           case "collision":
-            drawCollision(ctx, frameCountRef.current, width, height, parameters);
+            drawCollision(ctx, frameCountRef.current, canvasWidth, canvasHeight, parameters);
             break;
           case "inclinedPlane":
-            drawInclinedPlane(ctx, frameCountRef.current, width, height, parameters);
+            drawInclinedPlane(ctx, frameCountRef.current, canvasWidth, canvasHeight, parameters);
             break;
           case "launchVerticalGround":
-            drawLaunchVerticalGround(ctx, frameCountRef.current, width, height, parameters);
+            drawLaunchVerticalGround(ctx, frameCountRef.current, canvasWidth, canvasHeight, parameters);
             break;
           case "launchVerticalBuilding":
-            drawLaunchVerticalBuilding(ctx, frameCountRef.current, width, height, parameters);
+            drawLaunchVerticalBuilding(ctx, frameCountRef.current, canvasWidth, canvasHeight, parameters);
             break;
           case "launchOblique":
-            drawLaunchOblique(ctx, frameCountRef.current, width, height, parameters);
+            drawLaunchOblique(ctx, frameCountRef.current, canvasWidth, canvasHeight, parameters);
             break;
           case "launchObliqueBuilding":
-            drawLaunchObliqueBuilding(ctx, frameCountRef.current, width, height, parameters);
+            drawLaunchObliqueBuilding(ctx, frameCountRef.current, canvasWidth, canvasHeight, parameters);
             break;
         }
         frameCountRef.current++;
@@ -118,7 +119,7 @@ export function Simulator({
         cancelAnimationFrame(animationIdRef.current);
       }
     };
-  }, [type, width, height, isRunning, parameters]);
+  }, [type, canvasWidth, canvasHeight, isRunning, parameters]);
 
   return (
     <div ref={containerRef} className="w-full flex justify-center">
