@@ -57,6 +57,7 @@ import MecanicaTopicCinematica from "./pages/MecanicaTopicCinematica";
 import MecanicaTopicDinamica from "./pages/MecanicaTopicDinamica";
 import OndulatóriaHome from "./pages/OndulatóriaHome";
 import OndulatóriaTopicConceitos from "./pages/OndulatóriaTopicConceitos";
+import OndulatóriaTopicMHS from "./pages/OndulatóriaTopicMHS";
 
 
 
@@ -119,6 +120,14 @@ function Router() {
 
       <Route path="/ondulatoria" component={OndulatóriaHome} />
       <Route path="/ondulatoria/topic/conceitos" component={OndulatóriaTopicConceitos} />
+      <Route path="/ondulatoria/topic/mhs" component={OndulatóriaTopicMHS} />
+      <Route path="/ondulatoria/topic/equacao" component={() => <div className="p-8">Em desenvolvimento</div>} />
+      <Route path="/ondulatoria/topic/fenomenos" component={() => <div className="p-8">Em desenvolvimento</div>} />
+      <Route path="/ondulatoria/topic/som" component={() => <div className="p-8">Em desenvolvimento</div>} />
+      <Route path="/ondulatoria/topic/luz" component={() => <div className="p-8">Em desenvolvimento</div>} />
+      <Route path="/ondulatoria/simulator" component={() => <div className="p-8">Simulador em desenvolvimento</div>} />
+      <Route path="/ondulatoria/quiz" component={() => <div className="p-8">Quiz em desenvolvimento</div>} />
+      <Route path="/ondulatoria/graphs" component={() => <div className="p-8">Gráficos em desenvolvimento</div>} />
 
       <Route path="/progress" component={Progress} />
       <Route path="/404" component={NotFound} />
