@@ -1,14 +1,9 @@
-import { useEffect } from "react";
 import { Link } from "wouter";
 import { ArrowLeft, Waves } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/components/MathFormula";
 
 export default function OndulatóriaTopicSom() {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-slate-50 to-blue-50">
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">

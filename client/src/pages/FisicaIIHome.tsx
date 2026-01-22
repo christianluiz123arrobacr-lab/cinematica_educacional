@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export default function FisicaIIHome() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-slate-50 to-pink-50">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -16,7 +16,7 @@ export default function FisicaIIHome() {
               </Button>
             </Link>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
                 <BookOpen className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -31,10 +31,10 @@ export default function FisicaIIHome() {
       {/* Main Content */}
       <section className="container mx-auto px-4 py-20">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
             Bem-vindo à Física II
           </h2>
-          <p className="text-lg text-white/90 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
             Explore Termologia, Ondulatória e Óptica com explicações didáticas, simuladores interativos e ferramentas de aprendizado.
           </p>
         </div>
