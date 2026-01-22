@@ -58,6 +58,10 @@ import MecanicaTopicDinamica from "./pages/MecanicaTopicDinamica";
 import OndulatóriaHome from "./pages/OndulatóriaHome";
 import OndulatóriaTopicConceitos from "./pages/OndulatóriaTopicConceitos";
 import OndulatóriaTopicMHS from "./pages/OndulatóriaTopicMHS";
+import OndulatóriaTopicEquacao from "./pages/OndulatóriaTopicEquacao";
+import OndulatóriaTopicFenomenos from "./pages/OndulatóriaTopicFenomenos";
+import OndulatóriaTopicSom from "./pages/OndulatóriaTopicSom";
+import OndulatóriaTopicLuz from "./pages/OndulatóriaTopicLuz";
 
 
 
@@ -121,10 +125,10 @@ function Router() {
       <Route path="/ondulatoria" component={OndulatóriaHome} />
       <Route path="/ondulatoria/topic/conceitos" component={OndulatóriaTopicConceitos} />
       <Route path="/ondulatoria/topic/mhs" component={OndulatóriaTopicMHS} />
-      <Route path="/ondulatoria/topic/equacao" component={() => <div className="p-8">Em desenvolvimento</div>} />
-      <Route path="/ondulatoria/topic/fenomenos" component={() => <div className="p-8">Em desenvolvimento</div>} />
-      <Route path="/ondulatoria/topic/som" component={() => <div className="p-8">Em desenvolvimento</div>} />
-      <Route path="/ondulatoria/topic/luz" component={() => <div className="p-8">Em desenvolvimento</div>} />
+      <Route path="/ondulatoria/topic/equacao" component={OndulatóriaTopicEquacao} />
+      <Route path="/ondulatoria/topic/fenomenos" component={OndulatóriaTopicFenomenos} />
+      <Route path="/ondulatoria/topic/som" component={OndulatóriaTopicSom} />
+      <Route path="/ondulatoria/topic/luz" component={OndulatóriaTopicLuz} />
       <Route path="/ondulatoria/simulator" component={() => <div className="p-8">Simulador em desenvolvimento</div>} />
       <Route path="/ondulatoria/quiz" component={() => <div className="p-8">Quiz em desenvolvimento</div>} />
       <Route path="/ondulatoria/graphs" component={() => <div className="p-8">Gráficos em desenvolvimento</div>} />
