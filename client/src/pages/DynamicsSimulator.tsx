@@ -12,6 +12,11 @@ import { LaunchVerticalGroundSimulator } from "@/components/LaunchVerticalGround
 import { LaunchVerticalBuildingSimulator } from "@/components/LaunchVerticalBuildingSimulator";
 import { LaunchObliqueGroundSimulator } from "@/components/LaunchObliqueGroundSimulator";
 import { LaunchObliqueBuildingSimulator } from "@/components/LaunchObliqueBuildingSimulator";
+import { CollisionSimulator } from "@/components/CollisionSimulator";
+import { LaunchVerticalGroundSimulatorNew } from "@/components/LaunchVerticalGroundSimulatorNew";
+import { LaunchVerticalBuildingSimulatorNew } from "@/components/LaunchVerticalBuildingSimulatorNew";
+import { LaunchObliqueGroundSimulatorNew } from "@/components/LaunchObliqueGroundSimulatorNew";
+import { LaunchObliqueBuildingSimulatorNew } from "@/components/LaunchObliqueBuildingSimulatorNew";
 
 export default function DynamicsSimulator() {
   const [isRunning, setIsRunning] = useState(true);
@@ -214,17 +219,8 @@ export default function DynamicsSimulator() {
 
                 {/* Canvas */}
                 <div className="flex justify-center bg-slate-50 p-2 sm:p-4 rounded-lg overflow-x-auto w-full">
-                  <Simulator
-                    type="collision"
-                    width={800}
-                    height={400}
+                  <CollisionSimulator
                     isRunning={isRunning}
-                    parameters={{
-                      m1: m1Collision,
-                      m2: m2Collision,
-                      v1: v1Collision,
-                      v2: v2Collision,
-                    }}
                     resetTrigger={resetTrigger}
                   />
                 </div>
@@ -458,33 +454,25 @@ export default function DynamicsSimulator() {
                 {/* Canvas */}
                 <div className="flex justify-center bg-slate-50 p-2 sm:p-4 rounded-lg overflow-x-auto w-full">
                   {launchType === "verticalGround" && (
-                    <LaunchVerticalGroundSimulator
-                      v0={launchV0}
+                    <LaunchVerticalGroundSimulatorNew
                       isRunning={isRunning}
                       resetTrigger={resetTrigger}
                     />
                   )}
                   {launchType === "verticalBuilding" && (
-                    <LaunchVerticalBuildingSimulator
-                      v0={launchV0}
-                      h0={launchH0}
+                    <LaunchVerticalBuildingSimulatorNew
                       isRunning={isRunning}
                       resetTrigger={resetTrigger}
                     />
                   )}
                   {launchType === "obliqueGround" && (
-                    <LaunchObliqueGroundSimulator
-                      v0={launchV0}
-                      angle={launchAngle}
+                    <LaunchObliqueGroundSimulatorNew
                       isRunning={isRunning}
                       resetTrigger={resetTrigger}
                     />
                   )}
                   {launchType === "obliqueBuilding" && (
-                    <LaunchObliqueBuildingSimulator
-                      v0={launchV0}
-                      angle={launchAngle}
-                      h0={launchH0}
+                    <LaunchObliqueBuildingSimulatorNew
                       isRunning={isRunning}
                       resetTrigger={resetTrigger}
                     />
@@ -493,7 +481,7 @@ export default function DynamicsSimulator() {
 
                 {/* Controls */}
                 <div className="space-y-4 sm:space-y-6 bg-slate-50 p-4 sm:p-6 rounded-lg">
-                  {launchType === "horizontal" ? (
+                  {launchType === "verticalGround" ? (
                     <>
                       <div>
                         <div className="flex items-center justify-between mb-2">
