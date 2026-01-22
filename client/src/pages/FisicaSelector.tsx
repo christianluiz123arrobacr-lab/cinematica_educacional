@@ -87,7 +87,7 @@ export default function FisicaSelector() {
           <div className="group">
             <Link href="/fisica-ii">
               <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-purple-400 cursor-pointer h-full">
-                <div className="bg-gradient-to-br from-purple-500 via-purple-600 to-pink-600 p-12 text-white">
+                <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-12 text-white">
                   <div className="w-20 h-20 bg-white/20 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Flame className="w-10 h-10" />
                   </div>
