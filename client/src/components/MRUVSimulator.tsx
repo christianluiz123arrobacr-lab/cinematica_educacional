@@ -17,16 +17,65 @@ export const MRUVSimulator: React.FC<MRUVSimulatorProps> = ({
   const [s0, setS0] = useState(0);
   const [v0, setV0] = useState(0);
   const [a, setA] = useState(1);
-  const frameCountRef = useRef(0);
+  
+  // Estado para controle de tempo preciso
+  const startTimeRef = useRef<number>(0);
+  const pausedTimeRef = useRef<number>(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
   const animationIdRef = useRef<number | null>(null);
 
   const trackLength = 100; // metros representados na tela
-  const speedFactor = 0.5;
+  const timeScale = 0.5; // Fator de câmera lenta (0.5x velocidade real)
 
+  // Reset
   useEffect(() => {
-    frameCountRef.current = 0;
+    setElapsedTime(0);
+    startTimeRef.current = 0;
+    pausedTimeRef.current = 0;
+    if (animationIdRef.current) cancelAnimationFrame(animationIdRef.current);
   }, [resetTrigger, s0, v0, a]);
 
+  // Controle de Animação
+  useEffect(() => {
+    if (isRunning) {
+      if (startTimeRef.current === 0) {
+        startTimeRef.current = performance.now() - pausedTimeRef.current;
+      } else {
+        // Ajustar start time ao retomar para descontar o tempo pausado
+        startTimeRef.current = performance.now() - (pausedTimeRef.current > 0 ? pausedTimeRef.current : 0);
+      }
+
+      const animate = (time: number) => {
+        // Tempo decorrido em segundos (com fator de escala)
+        const rawTime = (time - startTimeRef.current) / 1000;
+        const t = rawTime * timeScale;
+        
+        setElapsedTime(t);
+        
+        // Loop se sair da tela (opcional, aqui vamos parar no fim)
+        const currentS = s0 + v0 * t + 0.5 * a * t * t;
+        if (currentS <= trackLength + 20) {
+          animationIdRef.current = requestAnimationFrame(animate);
+        } else {
+           // Reset automático ou parar? Vamos parar.
+           // setElapsedTime(0); startTimeRef.current = performance.now(); // Loop
+        }
+      };
+      animationIdRef.current = requestAnimationFrame(animate);
+    } else {
+      if (animationIdRef.current) cancelAnimationFrame(animationIdRef.current);
+      // Salvar tempo pausado (em ms relativos ao start)
+      if (startTimeRef.current > 0) {
+        pausedTimeRef.current = performance.now() - startTimeRef.current;
+      }
+    }
+
+    return () => {
+      if (animationIdRef.current) cancelAnimationFrame(animationIdRef.current);
+    };
+  }, [isRunning]);
+
+  // Renderização do Canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -38,106 +87,88 @@ export const MRUVSimulator: React.FC<MRUVSimulatorProps> = ({
     const height = canvas.height;
     const scale = width / trackLength;
 
-    const animate = () => {
-      // Fundo
-      ctx.fillStyle = "#f8fafc";
-      ctx.fillRect(0, 0, width, height);
+    // Limpar
+    ctx.clearRect(0, 0, width, height);
 
-      // Grid e Régua
-      ctx.strokeStyle = "#e2e8f0";
-      ctx.lineWidth = 1;
-      ctx.fillStyle = "#64748b";
-      ctx.font = "10px Arial";
+    // Fundo
+    ctx.fillStyle = "#f8fafc";
+    ctx.fillRect(0, 0, width, height);
+
+    // Grid e Régua
+    ctx.strokeStyle = "#e2e8f0";
+    ctx.lineWidth = 1;
+    ctx.fillStyle = "#64748b";
+    ctx.font = "10px Arial";
+    
+    for (let i = 0; i <= trackLength; i += 10) {
+      const x = i * scale;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
       
-      for (let i = 0; i <= trackLength; i += 10) {
-        const x = i * scale;
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
-        ctx.stroke();
-        
-        ctx.fillRect(x - 1, height - 45, 2, 10);
-        ctx.fillText(`${i}m`, x - 8, height - 20);
+      ctx.fillRect(x - 1, height - 45, 2, 10);
+      ctx.fillText(`${i}m`, x - 8, height - 20);
+    }
+
+    // Estrada
+    ctx.fillStyle = "#334155";
+    ctx.fillRect(0, height - 40, width, 40);
+    
+    // Faixas da estrada
+    ctx.fillStyle = "#fbbf24";
+    for (let i = 0; i < width; i += 40) {
+      ctx.fillRect(i, height - 22, 20, 4);
+    }
+
+    // Cálculos Físicos
+    const t = elapsedTime;
+    const currentS = s0 + v0 * t + 0.5 * a * t * t;
+    const currentV = v0 + a * t;
+    
+    // Desenhar carro
+    const carX = currentS * scale;
+    const carY = height - 55;
+
+    if (carX > -50 && carX < width + 50) {
+      drawCar(ctx, carX, carY, "#f97316"); // Laranja para MRUV
+      
+      // Vetor velocidade
+      if (Math.abs(currentV) > 0.1) {
+        const arrowLen = currentV * 3; 
+        drawArrow(ctx, carX, carY - 20, carX + arrowLen, carY - 20, "#ef4444", 2);
+        ctx.fillStyle = "#ef4444";
+        ctx.fillText(`v = ${formatUnit(currentV, "m/s")}`, carX - 10, carY - 30);
       }
 
-      // Estrada
-      ctx.fillStyle = "#334155";
-      ctx.fillRect(0, height - 40, width, 40);
-      
-      // Faixas da estrada
-      ctx.fillStyle = "#fbbf24";
-      for (let i = 0; i < width; i += 40) {
-        ctx.fillRect(i, height - 22, 20, 4);
+      // Vetor aceleração (constante)
+      if (a !== 0) {
+        const accLen = a * 10;
+        drawArrow(ctx, carX, carY - 40, carX + accLen, carY - 40, "#8b5cf6", 2);
+        ctx.fillStyle = "#8b5cf6";
+        ctx.fillText(`a = ${formatUnit(a, "m/s²")}`, carX - 10, carY - 50);
       }
-
-      // Tempo atual
-      const t = (frameCountRef.current / 60) * speedFactor;
-      
-      // Cálculos MRUV
-      // S = S0 + v0*t + 0.5*a*t²
-      const currentS = s0 + v0 * t + 0.5 * a * t * t;
-      // v = v0 + a*t
-      const currentV = v0 + a * t;
-      
-      // Desenhar carro
-      const carX = currentS * scale;
-      const carY = height - 55;
-
-      if (carX > -50 && carX < width + 50) {
-        drawCar(ctx, carX, carY, "#f97316"); // Laranja para MRUV
-        
-        // Vetor velocidade
-        if (Math.abs(currentV) > 0.1) {
-          const arrowLen = currentV * 3; 
-          drawArrow(ctx, carX, carY - 20, carX + arrowLen, carY - 20, "#ef4444", 2);
-          ctx.fillStyle = "#ef4444";
-          ctx.fillText(`v = ${formatUnit(currentV, "m/s")}`, carX - 10, carY - 30);
-        }
-
-        // Vetor aceleração (constante)
-        if (a !== 0) {
-          const accLen = a * 10;
-          drawArrow(ctx, carX, carY - 40, carX + accLen, carY - 40, "#8b5cf6", 2);
-          ctx.fillStyle = "#8b5cf6";
-          ctx.fillText(`a = ${formatUnit(a, "m/s²")}`, carX - 10, carY - 50);
-        }
-        
-        ctx.fillStyle = "#1e293b";
-        ctx.font = "bold 12px Arial";
-        ctx.fillText(`S = ${formatUnit(currentS, "m")}`, carX - 15, carY - 5);
-      }
-
-      // HUD
-      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-      ctx.fillRect(10, 10, 180, 80);
-      ctx.strokeStyle = "#cbd5e1";
-      ctx.strokeRect(10, 10, 180, 80);
       
       ctx.fillStyle = "#1e293b";
-      ctx.font = "bold 14px Arial";
-      ctx.fillText(`Tempo: ${formatUnit(t, "s")}`, 20, 30);
-      ctx.fillText(`Posição: ${formatUnit(currentS, "m")}`, 20, 50);
-      ctx.fillText(`Velocidade: ${formatUnit(currentV, "m/s")}`, 20, 70);
+      ctx.font = "bold 12px Arial";
+      ctx.fillText(`S = ${formatUnit(currentS, "m")}`, carX - 15, carY - 5);
+    }
 
-      if (isRunning) {
-        if (currentS > trackLength + 20) {
-           frameCountRef.current = 0;
-        } else {
-           frameCountRef.current += 1;
-        }
-      }
+    // HUD
+    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.fillRect(10, 10, 200, 90);
+    ctx.strokeStyle = "#cbd5e1";
+    ctx.strokeRect(10, 10, 200, 90);
+    
+    ctx.fillStyle = "#1e293b";
+    ctx.font = "bold 14px Arial";
+    ctx.fillText(`Tempo: ${formatUnit(t, "s")}`, 20, 30);
+    ctx.fillText(`Posição: ${formatUnit(currentS, "m")}`, 20, 50);
+    ctx.fillText(`Velocidade: ${formatUnit(currentV, "m/s")}`, 20, 70);
+    ctx.fillStyle = "#8b5cf6";
+    ctx.fillText(`Aceleração: ${formatUnit(a, "m/s²")}`, 20, 90);
 
-      animationIdRef.current = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      if (animationIdRef.current) {
-        cancelAnimationFrame(animationIdRef.current);
-      }
-    };
-  }, [isRunning, s0, v0, a]);
+  }, [elapsedTime, s0, v0, a]); // Re-renderizar quando o tempo muda
 
   return (
     <div className="w-full space-y-6">
@@ -176,7 +207,7 @@ export const MRUVSimulator: React.FC<MRUVSimulatorProps> = ({
               value={[v0]}
               onValueChange={(value) => setV0(value[0])}
               min={0}
-              max={10}
+              max={20}
               step={0.5}
               className="w-full"
             />
@@ -190,7 +221,7 @@ export const MRUVSimulator: React.FC<MRUVSimulatorProps> = ({
             <Slider
               value={[a]}
               onValueChange={(value) => setA(value[0])}
-              min={0}
+              min={-5}
               max={5}
               step={0.1}
               className="w-full"
@@ -210,7 +241,9 @@ export const MRUVSimulator: React.FC<MRUVSimulatorProps> = ({
               <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
                 <MathFormula formula={String.raw`$$ S(t) = S_0 + v_0 t + \frac{1}{2} a t^2 $$`} />
                 <div className="mt-2"></div>
-                <MathFormula formula={String.raw`$$ S(t) = ${formatNumber(s0)} + ${formatNumber(v0)} t + \frac{1}{2} (${formatNumber(a)}) t^2 $$`} />
+                <MathFormula formula={String.raw`$$ S(${formatNumber(elapsedTime, 2)}) = ${formatNumber(s0)} + ${formatNumber(v0)} \cdot ${formatNumber(elapsedTime, 2)} + \frac{1}{2} \cdot (${formatNumber(a)}) \cdot (${formatNumber(elapsedTime, 2)})^2 $$`} />
+                <div className="mt-2"></div>
+                <MathFormula formula={String.raw`$$ S = ${formatUnit(s0 + v0 * elapsedTime + 0.5 * a * elapsedTime * elapsedTime, "m")} $$`} />
               </div>
             </div>
 
@@ -221,7 +254,9 @@ export const MRUVSimulator: React.FC<MRUVSimulatorProps> = ({
               <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
                 <MathFormula formula={String.raw`$$ v(t) = v_0 + a t $$`} />
                 <div className="mt-2"></div>
-                <MathFormula formula={String.raw`$$ v(t) = ${formatNumber(v0)} + ${formatNumber(a)} t $$`} />
+                <MathFormula formula={String.raw`$$ v(${formatNumber(elapsedTime, 2)}) = ${formatNumber(v0)} + ${formatNumber(a)} \cdot ${formatNumber(elapsedTime, 2)} $$`} />
+                <div className="mt-2"></div>
+                <MathFormula formula={String.raw`$$ v = ${formatUnit(v0 + a * elapsedTime, "m/s")} $$`} />
               </div>
             </div>
             

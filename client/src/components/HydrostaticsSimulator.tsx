@@ -8,39 +8,38 @@ import { formatNumber, formatUnit } from "@/lib/utils";
 export const HydrostaticsSimulator: React.FC = () => {
   const [profundidade, setProfundidade] = useState(5);
   const [tipoFluido, setTipoFluido] = useState("agua");
+  const [gravidade, setGravidade] = useState(9.8);
+  const [pressaoAtm, setPressaoAtm] = useState(101325); // Pa
   const [bolhas, setBolhas] = useState<Array<{id: number; x: number; y: number; speed: number}>>([]);
 
   const densidades: { [key: string]: number } = {
     agua: 1000,
     oleo: 900,
     mercurio: 13600,
+    gasolina: 720,
+    agua_salgada: 1030
   };
 
-  const g = 9.8;
-  const P0 = 101325; // Pressão atmosférica em Pa
   const rho = densidades[tipoFluido];
   
   // Pressão Hidrostática (manométrica): P = rho * g * h
-  const pressaoHidro = rho * g * profundidade;
+  const pressaoHidro = rho * gravidade * profundidade;
   // Pressão Absoluta: P_abs = P0 + P
-  const pressaoAbsoluta = P0 + pressaoHidro;
+  const pressaoAbsoluta = pressaoAtm + pressaoHidro;
 
   // Animação de bolhas
   useEffect(() => {
     const interval = setInterval(() => {
       setBolhas(prev => {
-        // Remover bolhas que saíram
         const filtered = prev.filter(b => b.y > 0);
-        // Adicionar novas bolhas aleatoriamente
         if (filtered.length < 10 && Math.random() > 0.7) {
           filtered.push({
             id: Math.random(),
             x: Math.random() * 180 + 10,
-            y: 200, // Fundo do tanque visual
+            y: 200,
             speed: Math.random() * 2 + 1
           });
         }
-        // Mover bolhas
         return filtered.map(b => ({ ...b, y: b.y - b.speed }));
       });
     }, 50);
@@ -49,9 +48,11 @@ export const HydrostaticsSimulator: React.FC = () => {
 
   const getFluidColor = () => {
     switch (tipoFluido) {
-      case "agua": return "#3b82f6"; // Azul
-      case "oleo": return "#eab308"; // Amarelo
-      case "mercurio": return "#94a3b8"; // Cinza
+      case "agua": return "#3b82f6";
+      case "oleo": return "#eab308";
+      case "mercurio": return "#94a3b8";
+      case "gasolina": return "#f59e0b";
+      case "agua_salgada": return "#1e40af";
       default: return "#3b82f6";
     }
   };
@@ -64,6 +65,9 @@ export const HydrostaticsSimulator: React.FC = () => {
             <pattern id="grid-hydro" width="20" height="20" patternUnits="userSpaceOnUse">
               <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" strokeWidth="1" />
             </pattern>
+            <marker id="arrowhead-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+            </marker>
           </defs>
           <rect width="400" height="300" fill="url(#grid-hydro)" />
 
@@ -85,22 +89,18 @@ export const HydrostaticsSimulator: React.FC = () => {
               <circle key={b.id} cx={b.x} cy={b.y} r={3} fill="white" opacity="0.6" />
             ))}
 
-            {/* Medidor de Profundidade (Objeto) */}
-            {/* Escala visual: 200px = 20m (exemplo) -> 10px/m */}
-            {/* Vamos usar uma escala relativa à profundidade máxima do slider (20m) */}
-            {/* Se profundidade = 5m, objeto está em 5/20 do caminho? Não, o slider define onde medimos. */}
-            {/* Vamos fixar o fundo como 20m e o topo como 0m. */}
-            {/* y = 20 + (profundidade / 20) * 180 */}
-            
+            {/* Medidor de Profundidade (Ponto A) */}
+            {/* Mapeamento: 0m -> y=20 (superfície), 20m -> y=190 (fundo visual) */}
+            {/* y = 20 + (profundidade / 20) * 170 */}
             <g transform={`translate(100, ${20 + (profundidade / 20) * 170})`}>
-              <circle cx="0" cy="0" r="8" fill="#ef4444" stroke="white" strokeWidth="2" />
-              <line x1="10" y1="0" x2="50" y2="0" stroke="#ef4444" strokeDasharray="2,2" />
-              <text x="55" y="4" fontSize="12" fill="#ef4444" fontWeight="bold">Ponto A</text>
+              <circle cx="0" cy="0" r="6" fill="#ef4444" stroke="white" strokeWidth="2" />
+              <line x1="10" y1="0" x2="80" y2="0" stroke="#ef4444" strokeDasharray="2,2" />
+              <text x="85" y="4" fontSize="12" fill="#ef4444" fontWeight="bold">Ponto A</text>
             </g>
             
             {/* Régua Lateral */}
             <g transform="translate(-10, 20)">
-              <line x1="0" y1="0" x2="0" y2="180" stroke="#64748b" />
+              <line x1="0" y1="0" x2="0" y2="170" stroke="#64748b" />
               {[0, 5, 10, 15, 20].map(h => (
                 <g key={h} transform={`translate(0, ${(h / 20) * 170})`}>
                   <line x1="-5" y1="0" x2="0" y2="0" stroke="#64748b" />
@@ -112,7 +112,7 @@ export const HydrostaticsSimulator: React.FC = () => {
             {/* Seta P0 */}
             <g transform="translate(100, 0)">
               <line x1="0" y1="-20" x2="0" y2="10" stroke="#64748b" strokeWidth="2" markerEnd="url(#arrowhead-gray)" />
-              <text x="5" y="-10" fontSize="12" fill="#64748b">P₀ (atm)</text>
+              <text x="5" y="-10" fontSize="12" fill="#64748b">P₀</text>
             </g>
           </g>
         </svg>
@@ -130,6 +130,8 @@ export const HydrostaticsSimulator: React.FC = () => {
                 <SelectItem value="agua">Água (1000 kg/m³)</SelectItem>
                 <SelectItem value="oleo">Óleo (900 kg/m³)</SelectItem>
                 <SelectItem value="mercurio">Mercúrio (13600 kg/m³)</SelectItem>
+                <SelectItem value="gasolina">Gasolina (720 kg/m³)</SelectItem>
+                <SelectItem value="agua_salgada">Água Salgada (1030 kg/m³)</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -144,7 +146,37 @@ export const HydrostaticsSimulator: React.FC = () => {
               onValueChange={(value) => setProfundidade(value[0])}
               min={0}
               max={20}
-              step={0.5}
+              step={0.1}
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="text-sm font-semibold text-slate-700">Gravidade (<MathFormula formula={String.raw`$g$`} />)</label>
+              <span className="text-sm font-bold text-purple-600">{formatUnit(gravidade, "m/s²")}</span>
+            </div>
+            <Slider
+              value={[gravidade]}
+              onValueChange={(value) => setGravidade(value[0])}
+              min={1.6} // Lua
+              max={24.8} // Júpiter
+              step={0.1}
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="text-sm font-semibold text-slate-700">Pressão Atmosférica (<MathFormula formula={String.raw`$P_0$`} />)</label>
+              <span className="text-sm font-bold text-slate-600">{formatUnit(pressaoAtm, "Pa")}</span>
+            </div>
+            <Slider
+              value={[pressaoAtm]}
+              onValueChange={(value) => setPressaoAtm(value[0])}
+              min={0}
+              max={200000}
+              step={1000}
               className="w-full"
             />
           </div>
@@ -160,7 +192,9 @@ export const HydrostaticsSimulator: React.FC = () => {
                 Pressão Hidrostática (devida apenas ao líquido):
               </p>
               <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
-                <MathFormula formula={String.raw`$$ P_{hidro} = \rho \cdot g \cdot h = ${formatNumber(rho)} \cdot ${formatNumber(g)} \cdot ${formatNumber(profundidade)} = ${formatUnit(pressaoHidro, "Pa")} $$`} />
+                <MathFormula formula={String.raw`$$ P_{hidro} = \rho \cdot g \cdot h $$`} />
+                <div className="mt-2"></div>
+                <MathFormula formula={String.raw`$$ P_{hidro} = ${formatNumber(rho)} \cdot ${formatNumber(gravidade)} \cdot ${formatNumber(profundidade)} = ${formatUnit(pressaoHidro, "Pa")} $$`} />
               </div>
             </div>
 
@@ -169,10 +203,12 @@ export const HydrostaticsSimulator: React.FC = () => {
                 Pressão Absoluta (Total):
               </p>
               <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
-                <MathFormula formula={String.raw`$$ P_{abs} = P_0 + P_{hidro} = ${formatNumber(P0)} + ${formatNumber(pressaoHidro)} = ${formatUnit(pressaoAbsoluta, "Pa")} $$`} />
+                <MathFormula formula={String.raw`$$ P_{abs} = P_0 + P_{hidro} $$`} />
+                <div className="mt-2"></div>
+                <MathFormula formula={String.raw`$$ P_{abs} = ${formatNumber(pressaoAtm)} + ${formatNumber(pressaoHidro)} = ${formatUnit(pressaoAbsoluta, "Pa")} $$`} />
                 <div className="mt-2"></div>
                 <p className="text-xs text-slate-500">
-                  Em atmosferas: {formatNumber(pressaoAbsoluta / 101325, 2)} atm
+                  Em atmosferas: {formatNumber(pressaoAbsoluta / 101325, 3)} atm
                 </p>
               </div>
             </div>

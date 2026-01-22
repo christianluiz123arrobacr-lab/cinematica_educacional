@@ -16,19 +16,65 @@ export const FreeFallSimulator: React.FC<FreeFallSimulatorProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [h0, setH0] = useState(50);
   const [g, setG] = useState(9.8);
-  const frameCountRef = useRef(0);
+  
+  // Estado para controle de tempo preciso
+  const startTimeRef = useRef<number>(0);
+  const pausedTimeRef = useRef<number>(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
   const animationIdRef = useRef<number | null>(null);
 
-  const speedFactor = 0.5;
-  
-  // Tempo de queda: h = 0.5 * g * t^2 => t = sqrt(2h/g)
-  const tQueda = Math.sqrt((2 * h0) / g);
-  const vFinal = g * tQueda;
+  const maxHeight = 100; // metros representados na tela
+  const timeScale = 0.5; // Fator de câmera lenta
 
+  // Reset
   useEffect(() => {
-    frameCountRef.current = 0;
+    setElapsedTime(0);
+    startTimeRef.current = 0;
+    pausedTimeRef.current = 0;
+    if (animationIdRef.current) cancelAnimationFrame(animationIdRef.current);
   }, [resetTrigger, h0, g]);
 
+  // Controle de Animação
+  useEffect(() => {
+    if (isRunning) {
+      if (startTimeRef.current === 0) {
+        startTimeRef.current = performance.now() - pausedTimeRef.current;
+      } else {
+        startTimeRef.current = performance.now() - (pausedTimeRef.current > 0 ? pausedTimeRef.current : 0);
+      }
+
+      const animate = (time: number) => {
+        const rawTime = (time - startTimeRef.current) / 1000;
+        const t = rawTime * timeScale;
+        
+        setElapsedTime(t);
+        
+        // h = h0 - 0.5 * g * t^2
+        const currentH = h0 - 0.5 * g * t * t;
+        
+        if (currentH >= 0) {
+          animationIdRef.current = requestAnimationFrame(animate);
+        } else {
+          // Parar no chão
+          // Calcular tempo exato de queda para exibir no final
+          const t_final = Math.sqrt(2 * h0 / g);
+          setElapsedTime(t_final);
+        }
+      };
+      animationIdRef.current = requestAnimationFrame(animate);
+    } else {
+      if (animationIdRef.current) cancelAnimationFrame(animationIdRef.current);
+      if (startTimeRef.current > 0) {
+        pausedTimeRef.current = performance.now() - startTimeRef.current;
+      }
+    }
+
+    return () => {
+      if (animationIdRef.current) cancelAnimationFrame(animationIdRef.current);
+    };
+  }, [isRunning]);
+
+  // Renderização do Canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -38,133 +84,98 @@ export const FreeFallSimulator: React.FC<FreeFallSimulatorProps> = ({
 
     const width = canvas.width;
     const height = canvas.height;
+    const scale = height / maxHeight; // Escala vertical
+
+    // Limpar
+    ctx.clearRect(0, 0, width, height);
+
+    // Fundo (Céu)
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0, "#3b82f6");
+    gradient.addColorStop(1, "#93c5fd");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    // Chão
+    ctx.fillStyle = "#166534";
+    ctx.fillRect(0, height - 20, width, 20);
+
+    // Régua Lateral
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+    ctx.lineWidth = 1;
+    ctx.fillStyle = "white";
+    ctx.font = "10px Arial";
     
-    // Escala vertical: pixels por metro
-    // Deixar margem em cima e embaixo
-    const scale = (height - 80) / h0;
-
-    const animate = () => {
-      // Fundo
-      ctx.fillStyle = "#f8fafc";
-      ctx.fillRect(0, 0, width, height);
-
-      // Grid e Régua Vertical
-      ctx.strokeStyle = "#e2e8f0";
-      ctx.lineWidth = 1;
-      ctx.fillStyle = "#64748b";
-      ctx.font = "10px Arial";
-      
-      // Régua de altura
-      const rulerX = 50;
+    for (let i = 0; i <= maxHeight; i += 10) {
+      const y = height - 20 - (i * scale);
       ctx.beginPath();
-      ctx.moveTo(rulerX, 20);
-      ctx.lineTo(rulerX, height - 40);
+      ctx.moveTo(width - 50, y);
+      ctx.lineTo(width, y);
       ctx.stroke();
+      ctx.fillText(`${i}m`, width - 40, y + 3);
+    }
 
-      for (let h = 0; h <= h0; h += 10) {
-        const y = height - 40 - h * scale;
-        ctx.beginPath();
-        ctx.moveTo(rulerX - 5, y);
-        ctx.lineTo(rulerX + 5, y);
-        ctx.stroke();
-        ctx.fillText(`${h}m`, rulerX - 30, y + 3);
-      }
+    // Cálculos Físicos
+    const t = elapsedTime;
+    let currentH = h0 - 0.5 * g * t * t;
+    if (currentH < 0) currentH = 0;
+    
+    const currentV = g * t;
+    
+    // Desenhar bola
+    const ballX = width / 2;
+    const ballY = height - 20 - (currentH * scale);
+    const radius = 10;
 
-      // Chão
-      ctx.fillStyle = "#22c55e";
-      ctx.fillRect(0, height - 40, width, 40);
-      
-      // Tempo atual
-      const t = (frameCountRef.current / 60) * speedFactor;
-      
-      // Cálculos Queda Livre
-      // h(t) = h0 - 0.5 * g * t^2
-      let currentH = h0 - 0.5 * g * t * t;
-      let currentV = g * t;
-      
-      // Limitar ao chão
-      if (currentH < 0) {
-        currentH = 0;
-        currentV = vFinal;
-      }
+    // Sombra
+    ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+    ctx.beginPath();
+    const shadowScale = 1 - (currentH / maxHeight);
+    ctx.ellipse(ballX, height - 15, radius * shadowScale * 1.5, radius * shadowScale * 0.5, 0, 0, Math.PI * 2);
+    ctx.fill();
 
-      // Desenhar objeto (bola)
-      const ballX = width / 2;
-      const ballY = height - 40 - currentH * scale;
+    // Bola
+    ctx.fillStyle = "#ef4444";
+    ctx.beginPath();
+    ctx.arc(ballX, ballY - radius, radius, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Brilho na bola
+    ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+    ctx.beginPath();
+    ctx.arc(ballX - 3, ballY - radius - 3, 3, 0, Math.PI * 2);
+    ctx.fill();
 
-      // Sombra
-      const shadowScale = 1 - (currentH / h0) * 0.5;
-      ctx.fillStyle = "rgba(0,0,0,0.2)";
-      ctx.beginPath();
-      ctx.ellipse(ballX, height - 30, 15 * shadowScale, 5 * shadowScale, 0, 0, Math.PI * 2);
-      ctx.fill();
+    // Vetor velocidade
+    if (currentV > 0.1) {
+      const arrowLen = currentV * 2; 
+      drawArrow(ctx, ballX + 20, ballY - radius, ballX + 20, ballY - radius + arrowLen, "#fbbf24", 2);
+      ctx.fillStyle = "#fbbf24";
+      ctx.fillText(`v = ${formatUnit(currentV, "m/s")}`, ballX + 25, ballY);
+    }
 
-      // Bola
-      ctx.fillStyle = "#ef4444";
-      ctx.beginPath();
-      ctx.arc(ballX, ballY, 15, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Brilho na bola
-      ctx.fillStyle = "rgba(255,255,255,0.3)";
-      ctx.beginPath();
-      ctx.arc(ballX - 5, ballY - 5, 5, 0, Math.PI * 2);
-      ctx.fill();
+    // HUD
+    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.fillRect(10, 10, 180, 70);
+    ctx.strokeStyle = "#cbd5e1";
+    ctx.strokeRect(10, 10, 180, 70);
+    
+    ctx.fillStyle = "#1e293b";
+    ctx.font = "bold 14px Arial";
+    ctx.fillText(`Tempo: ${formatUnit(t, "s")}`, 20, 30);
+    ctx.fillText(`Altura: ${formatUnit(currentH, "m")}`, 20, 50);
+    ctx.fillText(`Velocidade: ${formatUnit(currentV, "m/s")}`, 20, 70);
 
-      // Vetor velocidade
-      if (currentV > 0.1) {
-        const arrowLen = currentV * 3; 
-        drawArrow(ctx, ballX + 30, ballY, ballX + 30, ballY + arrowLen, "#3b82f6", 2);
-        ctx.fillStyle = "#3b82f6";
-        ctx.fillText(`v = ${formatUnit(currentV, "m/s")}`, ballX + 40, ballY + arrowLen / 2);
-      }
-
-      // Vetor aceleração (g)
-      const gLen = g * 3;
-      drawArrow(ctx, ballX - 30, ballY, ballX - 30, ballY + gLen, "#8b5cf6", 2);
-      ctx.fillStyle = "#8b5cf6";
-      ctx.fillText(`g = ${formatUnit(g, "m/s²")}`, ballX - 80, ballY + gLen / 2);
-
-      // HUD
-      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-      ctx.fillRect(width - 180, 10, 170, 80);
-      ctx.strokeStyle = "#cbd5e1";
-      ctx.strokeRect(width - 180, 10, 170, 80);
-      
-      ctx.fillStyle = "#1e293b";
-      ctx.font = "bold 14px Arial";
-      ctx.fillText(`Tempo: ${formatUnit(t, "s")}`, width - 170, 30);
-      ctx.fillText(`Altura: ${formatUnit(currentH, "m")}`, width - 170, 50);
-      ctx.fillText(`Velocidade: ${formatUnit(currentV, "m/s")}`, width - 170, 70);
-
-      if (isRunning) {
-        if (t < tQueda + 0.5) { // Para um pouco depois de cair
-           frameCountRef.current += 1;
-        } else {
-           frameCountRef.current = 0; // Loop
-        }
-      }
-
-      animationIdRef.current = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      if (animationIdRef.current) {
-        cancelAnimationFrame(animationIdRef.current);
-      }
-    };
-  }, [isRunning, h0, g, tQueda, vFinal]);
+  }, [elapsedTime, h0, g]);
 
   return (
     <div className="w-full space-y-6">
       <div className="flex justify-center bg-slate-50 p-4 rounded-lg overflow-x-auto">
         <canvas
           ref={canvasRef}
-          width={600}
+          width={400}
           height={500}
-          className="w-full max-w-full border border-slate-300 rounded"
+          className="max-w-full border border-slate-300 rounded shadow-inner"
         />
       </div>
 
@@ -172,14 +183,14 @@ export const FreeFallSimulator: React.FC<FreeFallSimulatorProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <div className="flex justify-between mb-2">
-              <label className="text-sm font-semibold text-slate-700">Altura Inicial (<MathFormula formula={String.raw`$h_0$`} />)</label>
+              <label className="text-sm font-semibold text-slate-700">Altura Inicial (<MathFormula formula={String.raw`$H_0$`} />)</label>
               <span className="text-sm font-bold text-blue-600">{formatUnit(h0, "m")}</span>
             </div>
             <Slider
               value={[h0]}
               onValueChange={(value) => setH0(value[0])}
               min={10}
-              max={200}
+              max={100}
               step={1}
               className="w-full"
             />
@@ -193,42 +204,49 @@ export const FreeFallSimulator: React.FC<FreeFallSimulatorProps> = ({
             <Slider
               value={[g]}
               onValueChange={(value) => setG(value[0])}
-              min={1.6} // Lua
-              max={24.8} // Júpiter
+              min={1.6}
+              max={24.8}
               step={0.1}
               className="w-full"
             />
-            <div className="flex justify-between text-xs text-slate-500 mt-1">
-              <span>Lua (1.6)</span>
-              <span>Terra (9.8)</span>
-              <span>Júpiter (24.8)</span>
-            </div>
           </div>
         </div>
 
         {/* Cálculos Detalhados */}
         <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-4">
-          <h4 className="font-bold text-slate-900">Equações da Queda Livre</h4>
+          <h4 className="font-bold text-slate-900">Queda Livre</h4>
           
           <div className="space-y-4">
             <div>
               <p className="text-sm text-slate-600 mb-2">
-                Tempo de Queda (partindo do repouso):
+                Altura em função do tempo:
               </p>
               <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
-                <MathFormula formula={String.raw`$$ t_q = \sqrt{\frac{2h}{g}} = \sqrt{\frac{2 \cdot ${formatNumber(h0)}}{${formatNumber(g)}}} = ${formatUnit(tQueda, "s")} $$`} />
+                <MathFormula formula={String.raw`$$ h(t) = H_0 - \frac{1}{2} g t^2 $$`} />
+                <div className="mt-2"></div>
+                <MathFormula formula={String.raw`$$ h(${formatNumber(elapsedTime, 2)}) = ${formatNumber(h0)} - \frac{1}{2} \cdot ${formatNumber(g)} \cdot (${formatNumber(elapsedTime, 2)})^2 $$`} />
+                <div className="mt-2"></div>
+                <MathFormula formula={String.raw`$$ h = ${formatUnit(Math.max(0, h0 - 0.5 * g * elapsedTime * elapsedTime), "m")} $$`} />
               </div>
             </div>
 
             <div>
               <p className="text-sm text-slate-600 mb-2">
-                Velocidade Final (ao tocar o solo):
+                Velocidade de queda:
               </p>
               <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
-                <MathFormula formula={String.raw`$$ v_f = g \cdot t_q = ${formatNumber(g)} \cdot ${formatNumber(tQueda)} = ${formatUnit(vFinal, "m/s")} $$`} />
+                <MathFormula formula={String.raw`$$ v(t) = g \cdot t $$`} />
                 <div className="mt-2"></div>
-                <p className="text-xs text-slate-500 mb-1">Ou por Torricelli:</p>
-                <MathFormula formula={String.raw`$$ v_f = \sqrt{2gh} = \sqrt{2 \cdot ${formatNumber(g)} \cdot ${formatNumber(h0)}} = ${formatUnit(Math.sqrt(2 * g * h0), "m/s")} $$`} />
+                <MathFormula formula={String.raw`$$ v = ${formatNumber(g)} \cdot ${formatNumber(elapsedTime, 2)} = ${formatUnit(g * elapsedTime, "m/s")} $$`} />
+              </div>
+            </div>
+            
+            <div>
+              <p className="text-sm text-slate-600 mb-2">
+                Tempo total de queda (estimado):
+              </p>
+              <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
+                <MathFormula formula={String.raw`$$ t_{queda} = \sqrt{\frac{2 H_0}{g}} = \sqrt{\frac{2 \cdot ${formatNumber(h0)}}{${formatNumber(g)}}} = ${formatUnit(Math.sqrt(2 * h0 / g), "s")} $$`} />
               </div>
             </div>
           </div>

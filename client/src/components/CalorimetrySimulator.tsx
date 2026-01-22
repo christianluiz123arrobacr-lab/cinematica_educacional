@@ -19,8 +19,42 @@ export const CalorimetrySimulator: React.FC = () => {
   
   const heat = mass * specificHeats[material] * tempChange;
 
+  // Cor do termômetro baseada na variação de temperatura (0 a 100)
+  // Azul (frio) -> Vermelho (quente)
+  const getThermometerColor = (temp: number) => {
+    // Mapear 0-100 para hue 240 (azul) a 0 (vermelho)
+    const hue = Math.max(0, 240 - (temp * 2.4));
+    return `hsl(${hue}, 100%, 50%)`;
+  };
+
   return (
     <div className="w-full space-y-6">
+      <div className="flex justify-center bg-slate-50 p-8 rounded-lg">
+        <div className="relative w-24 h-64 bg-white rounded-full border-4 border-slate-300 shadow-inner flex items-end justify-center p-2">
+           {/* Bulbo */}
+           <div className="absolute -bottom-4 w-32 h-32 bg-slate-100 rounded-full -z-10 border-4 border-slate-300"></div>
+           
+           {/* Líquido */}
+           <div 
+             className="w-full rounded-b-full transition-all duration-500 ease-out"
+             style={{ 
+               height: `${Math.max(10, tempChange)}%`, 
+               backgroundColor: getThermometerColor(tempChange),
+               boxShadow: `0 0 20px ${getThermometerColor(tempChange)}`
+             }}
+           ></div>
+           
+           {/* Marcas */}
+           <div className="absolute right-0 top-0 h-full w-full flex flex-col justify-between py-4 px-2 pointer-events-none">
+             {[100, 80, 60, 40, 20, 0].map(t => (
+               <div key={t} className="w-full border-t border-slate-400 h-0 flex items-center justify-end">
+                 <span className="text-xs text-slate-500 mr-6">{t}°C</span>
+               </div>
+             ))}
+           </div>
+        </div>
+      </div>
+
       <Card className="p-6 space-y-6">
         <div className="space-y-6">
           <div>
@@ -56,12 +90,12 @@ export const CalorimetrySimulator: React.FC = () => {
           <div>
             <div className="flex justify-between mb-2">
               <label className="text-sm font-semibold text-slate-700">Variação de Temperatura (<MathFormula formula={String.raw`$\Delta T$`} />)</label>
-              <span className="text-sm font-bold text-slate-900">{formatUnit(tempChange, "K")}</span>
+              <span className="text-sm font-bold" style={{ color: getThermometerColor(tempChange) }}>{formatUnit(tempChange, "K")}</span>
             </div>
             <Slider
               value={[tempChange]}
               onValueChange={(value) => setTempChange(value[0])}
-              min={1}
+              min={0}
               max={100}
               step={1}
               className="w-full"
