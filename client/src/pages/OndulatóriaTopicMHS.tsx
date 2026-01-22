@@ -90,9 +90,9 @@ export default function OndulatóriaTopicMHS() {
               <div className="bg-white border border-green-300 rounded p-4 mb-4">
                 <MathFormula formula="v(t) = -A \omega \sin(\omega t + \phi)" display={true} />
               </div>
-              <p className="text-slate-600 text-sm">
+              <div className="text-slate-600 text-sm">
                 Note: A velocidade máxima é <MathFormula formula="v_{max} = A \omega" display={false} />, e ocorre quando o objeto passa pela posição de equilíbrio.
-              </p>
+              </div>
             </div>
 
             <div className="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-600 rounded p-6">
@@ -158,9 +158,9 @@ export default function OndulatóriaTopicMHS() {
               <div className="bg-white border border-purple-300 rounded p-4 mb-4">
                 <MathFormula formula="E_{total} = E_c + E_p = \frac{1}{2} m A^2 \omega^2 = \text{constante}" display={true} />
               </div>
-              <p className="text-slate-600 text-sm">
+              <div className="text-slate-600 text-sm">
                 A energia oscila entre cinética e potencial, mas a soma permanece sempre a mesma!
-              </p>
+              </div>
             </div>
           </div>
         </div>
