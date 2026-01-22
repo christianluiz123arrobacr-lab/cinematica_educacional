@@ -3,6 +3,8 @@ import { Slider } from "@/components/ui/slider";
 import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { formatNumber, formatUnit } from "@/lib/utils";
+import { AdvancedTheory } from "@/components/AdvancedTheory";
+import { FreeFallTheory } from "@/content/kinematics/freefall_theory";
 
 interface LaunchVerticalGroundSimulatorNewProps {
   isRunning: boolean;
@@ -210,6 +212,13 @@ export const LaunchVerticalGroundSimulatorNew: React.FC<LaunchVerticalGroundSimu
           </div>
         </div>
       </Card>
+
+      {/* Teoria Avançada */}
+      <AdvancedTheory
+        title={FreeFallTheory.title}
+        introduction={FreeFallTheory.introduction}
+        sections={FreeFallTheory.sections}
+      />
     </div>
   );
 };

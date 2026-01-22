@@ -3,6 +3,8 @@ import { MathFormula } from "@/components/MathFormula";
 import { Slider } from "@/components/ui/slider";
 import { Card } from "@/components/ui/card";
 import { formatNumber, formatUnit } from "@/lib/utils";
+import { AdvancedTheory } from "@/components/AdvancedTheory";
+import { NewtonLawsTheory } from "@/content/dynamics/newton_laws_theory";
 
 interface InclinedPlaneSimulatorProps {
   angle: number;
@@ -314,36 +316,28 @@ export function InclinedPlaneSimulator({
             <div>
               <p className="text-sm font-semibold text-slate-700 mb-1">Decomposição do Peso</p>
               <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
-                <MathFormula formula={String.raw`$$ P = m \cdot g = ${formatNumber(mass)} \cdot ${formatNumber(g)} = ${formatUnit(P, "N")} $$`} />
+                <MathFormula formula={String.raw`$$ P_{\parallel} = P \sin\theta = ${formatNumber(mass)} \cdot ${formatNumber(g)} \cdot \sin(${formatNumber(angle)}^\circ) = ${formatUnit(Pparallel, "N")} $$`} />
                 <div className="mt-2"></div>
-                <MathFormula formula={String.raw`$$ P_{\parallel} = P \cdot \sin\theta = ${formatNumber(P)} \cdot \sin(${formatNumber(angle)}^\circ) = ${formatUnit(Pparallel, "N")} $$`} />
-                <div className="mt-2"></div>
-                <MathFormula formula={String.raw`$$ N = P \cdot \cos\theta = ${formatNumber(P)} \cdot \cos(${formatNumber(angle)}^\circ) = ${formatUnit(N, "N")} $$`} />
+                <MathFormula formula={String.raw`$$ N = P \cos\theta = ${formatNumber(mass)} \cdot ${formatNumber(g)} \cdot \cos(${formatNumber(angle)}^\circ) = ${formatUnit(N, "N")} $$`} />
               </div>
             </div>
 
             <div>
-              <p className="text-sm font-semibold text-slate-700 mb-1">Força de Atrito</p>
+              <p className="text-sm font-semibold text-slate-700 mb-1">Força de Atrito Cinético</p>
               <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
                 <MathFormula formula={String.raw`$$ f = \mu \cdot N = ${formatNumber(mu)} \cdot ${formatNumber(N)} = ${formatUnit(f, "N")} $$`} />
-              </div>
-            </div>
-
-            <div>
-              <p className="text-sm font-semibold text-slate-700 mb-1">Aceleração Resultante</p>
-              <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
-                {mode === 0 ? (
-                  <MathFormula formula={String.raw`$$ a = g(\sin\theta - \mu\cos\theta) = ${formatNumber(g)}(\sin${formatNumber(angle)}^\circ - ${formatNumber(mu)}\cos${formatNumber(angle)}^\circ) = ${formatUnit(g * (Math.sin(angleRad) - mu * Math.cos(angleRad)), "m/s²")} $$`} />
-                ) : mode === 1 ? (
-                  <MathFormula formula={String.raw`$$ a = -g(\sin\theta + \mu\cos\theta) = -${formatNumber(g)}(\sin${formatNumber(angle)}^\circ + ${formatNumber(mu)}\cos${formatNumber(angle)}^\circ) = ${formatUnit(-g * (Math.sin(angleRad) + mu * Math.cos(angleRad)), "m/s²")} $$`} />
-                ) : (
-                  <p className="text-sm text-slate-600">Em repouso, a aceleração é zero.</p>
-                )}
               </div>
             </div>
           </div>
         </div>
       </Card>
+
+      {/* Teoria Avançada */}
+      <AdvancedTheory
+        title={NewtonLawsTheory.title}
+        introduction={NewtonLawsTheory.introduction}
+        sections={NewtonLawsTheory.sections}
+      />
     </div>
   );
 }
@@ -355,14 +349,14 @@ function drawArrow(
   toX: number,
   toY: number,
   color: string,
-  label: string = ""
+  label: string
 ) {
-  const headlen = 12;
+  const headlen = 10;
   const angle = Math.atan2(toY - fromY, toX - fromX);
 
   ctx.strokeStyle = color;
   ctx.fillStyle = color;
-  ctx.lineWidth = 2.5;
+  ctx.lineWidth = 2;
 
   ctx.beginPath();
   ctx.moveTo(fromX, fromY);
@@ -371,22 +365,13 @@ function drawArrow(
 
   ctx.beginPath();
   ctx.moveTo(toX, toY);
-  ctx.lineTo(
-    toX - headlen * Math.cos(angle - Math.PI / 6),
-    toY - headlen * Math.sin(angle - Math.PI / 6)
-  );
-  ctx.lineTo(
-    toX - headlen * Math.cos(angle + Math.PI / 6),
-    toY - headlen * Math.sin(angle + Math.PI / 6)
-  );
+  ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+  ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
   ctx.closePath();
   ctx.fill();
 
-  if (label) {
-    ctx.fillStyle = color;
-    ctx.font = "bold 11px Arial";
-    const labelX = toX + 8;
-    const labelY = toY - 8;
-    ctx.fillText(label, labelX, labelY);
-  }
+  // Label
+  ctx.fillStyle = color;
+  ctx.font = "bold 12px Arial";
+  ctx.fillText(label, toX + 10, toY);
 }

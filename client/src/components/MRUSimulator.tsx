@@ -3,6 +3,8 @@ import { Slider } from "@/components/ui/slider";
 import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { formatNumber, formatUnit } from "@/lib/utils";
+import { AdvancedTheory } from "@/components/AdvancedTheory";
+import { MRUTheory } from "@/content/kinematics/mru_theory";
 
 interface MRUSimulatorProps {
   isRunning: boolean;
@@ -215,6 +217,13 @@ export const MRUSimulator: React.FC<MRUSimulatorProps> = ({
           </div>
         </div>
       </Card>
+
+      {/* Teoria Avançada */}
+      <AdvancedTheory
+        title={MRUTheory.title}
+        introduction={MRUTheory.introduction}
+        sections={MRUTheory.sections}
+      />
     </div>
   );
 };

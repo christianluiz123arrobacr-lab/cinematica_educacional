@@ -3,6 +3,8 @@ import { Slider } from "@/components/ui/slider";
 import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { formatNumber, formatUnit } from "@/lib/utils";
+import { AdvancedTheory } from "@/components/AdvancedTheory";
+import { CollisionsTheory } from "@/content/dynamics/collisions_theory";
 
 interface CollisionSimulatorProps {
   isRunning: boolean;
@@ -288,6 +290,13 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
           </div>
         </div>
       </Card>
+
+      {/* Teoria Avançada */}
+      <AdvancedTheory
+        title={CollisionsTheory.title}
+        introduction={CollisionsTheory.introduction}
+        sections={CollisionsTheory.sections}
+      />
     </div>
   );
 };

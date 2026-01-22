@@ -3,6 +3,8 @@ import { Slider } from "@/components/ui/slider";
 import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { formatNumber, formatUnit } from "@/lib/utils";
+import { AdvancedTheory } from "@/components/AdvancedTheory";
+import { MRUVTheory } from "@/content/kinematics/mruv_theory";
 
 interface MRUVSimulatorProps {
   isRunning: boolean;
@@ -271,6 +273,13 @@ export const MRUVSimulator: React.FC<MRUVSimulatorProps> = ({
           </div>
         </div>
       </Card>
+
+      {/* Teoria Avançada */}
+      <AdvancedTheory
+        title={MRUVTheory.title}
+        introduction={MRUVTheory.introduction}
+        sections={MRUVTheory.sections}
+      />
     </div>
   );
 };

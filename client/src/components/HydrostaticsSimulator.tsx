@@ -4,6 +4,8 @@ import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatNumber, formatUnit } from "@/lib/utils";
+import { AdvancedTheory } from "@/components/AdvancedTheory";
+import { HydrostaticsTheory } from "@/content/statics/hydrostatics_theory";
 
 export const HydrostaticsSimulator: React.FC = () => {
   const [profundidade, setProfundidade] = useState(5);
@@ -215,6 +217,13 @@ export const HydrostaticsSimulator: React.FC = () => {
           </div>
         </div>
       </Card>
+
+      {/* Teoria Avançada */}
+      <AdvancedTheory
+        title={HydrostaticsTheory.title}
+        introduction={HydrostaticsTheory.introduction}
+        sections={HydrostaticsTheory.sections}
+      />
     </div>
   );
 };

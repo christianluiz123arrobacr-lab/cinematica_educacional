@@ -3,6 +3,8 @@ import { Slider } from "@/components/ui/slider";
 import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { formatNumber, formatUnit } from "@/lib/utils";
+import { AdvancedTheory } from "@/components/AdvancedTheory";
+import { EquilibriumTheory } from "@/content/statics/equilibrium_theory";
 
 export const ForceBalanceSimulator: React.FC = () => {
   const [forceLeft, setForceLeft] = useState(50);
@@ -219,6 +221,13 @@ export const ForceBalanceSimulator: React.FC = () => {
           </div>
         </div>
       </Card>
+
+      {/* Teoria Avançada */}
+      <AdvancedTheory
+        title={EquilibriumTheory.title}
+        introduction={EquilibriumTheory.introduction}
+        sections={EquilibriumTheory.sections}
+      />
     </div>
   );
 };
