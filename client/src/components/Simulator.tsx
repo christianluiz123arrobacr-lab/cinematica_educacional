@@ -106,6 +106,45 @@ export function Simulator({
   );
 }
 
+// Função auxiliar para desenhar um carro
+function drawCar(ctx: CanvasRenderingContext2D, x: number, y: number, size: number = 30) {
+  // Corpo do carro
+  ctx.fillStyle = "#ef4444";
+  ctx.fillRect(x - size/2, y - size/3, size, size/1.5);
+  
+  // Janela
+  ctx.fillStyle = "#93c5fd";
+  ctx.fillRect(x - size/3, y - size/4, size/2, size/4);
+  
+  // Roda esquerda
+  ctx.fillStyle = "#1f2937";
+  ctx.beginPath();
+  ctx.arc(x - size/3, y + size/3, size/6, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Roda direita
+  ctx.beginPath();
+  ctx.arc(x + size/3, y + size/3, size/6, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// Função auxiliar para desenhar estrada
+function drawRoad(ctx: CanvasRenderingContext2D, y: number, width: number) {
+  // Asfalto
+  ctx.fillStyle = "#374151";
+  ctx.fillRect(0, y - 20, width, 40);
+  
+  // Linha branca do meio
+  ctx.strokeStyle = "#fbbf24";
+  ctx.lineWidth = 2;
+  ctx.setLineDash([20, 10]);
+  ctx.beginPath();
+  ctx.moveTo(0, y);
+  ctx.lineTo(width, y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
 function drawAcceleration(
   ctx: CanvasRenderingContext2D,
   frameCount: number,
@@ -116,34 +155,37 @@ function drawAcceleration(
   const v0 = parameters.v0 || 0;
   const a = parameters.a || 0.5;
 
-  const y = height - 50;
+  const y = height - 80;
   const x = 50 + (v0 * frameCount + 0.5 * a * frameCount * frameCount) * 0.5;
 
-  // Draw object
-  ctx.fillStyle = "#3b82f6";
-  ctx.fillRect(Math.min(x, width - 30), y, 30, 30);
+  // Draw road
+  drawRoad(ctx, y, width);
+
+  // Draw car
+  drawCar(ctx, Math.min(x, width - 30), y, 30);
 
   // Draw velocity vector
   ctx.strokeStyle = "#ef4444";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(Math.min(x, width - 30) + 15, y + 15);
-  ctx.lineTo(Math.min(x, width - 30) + 15 + (v0 + a * frameCount) * 2, y + 15);
+  ctx.moveTo(Math.min(x, width - 30), y - 40);
+  ctx.lineTo(Math.min(x, width - 30) + (v0 + a * frameCount) * 2, y - 40);
   ctx.stroke();
-
-  // Draw acceleration vector
-  ctx.strokeStyle = "#8b5cf6";
-  ctx.lineWidth = 2;
+  
+  // Arrowhead for velocity
+  const vx = (v0 + a * frameCount) * 2;
   ctx.beginPath();
-  ctx.moveTo(Math.min(x, width - 30) + 15, y + 25);
-  ctx.lineTo(Math.min(x, width - 30) + 15 + a * 20, y + 25);
-  ctx.stroke();
+  ctx.moveTo(Math.min(x, width - 30) + vx, y - 40);
+  ctx.lineTo(Math.min(x, width - 30) + vx - 8, y - 45);
+  ctx.lineTo(Math.min(x, width - 30) + vx - 8, y - 35);
+  ctx.fill();
 
   // Draw labels
   ctx.fillStyle = "#1e293b";
-  ctx.font = "12px Arial";
+  ctx.font = "bold 14px Arial";
   ctx.fillText(`v = ${(v0 + a * frameCount).toFixed(1)} m/s`, 10, 20);
   ctx.fillText(`a = ${a.toFixed(1)} m/s²`, 10, 40);
+  ctx.fillText(`s = ${((v0 * frameCount + 0.5 * a * frameCount * frameCount) * 0.5).toFixed(1)} m`, 10, 60);
 }
 
 function drawFreeFall(
@@ -159,11 +201,16 @@ function drawFreeFall(
   const y = 50 + (v0 * frameCount + 0.5 * g * frameCount * frameCount) * 0.3;
   const x = width / 2;
 
-  // Draw object
+  // Draw object as circle
   ctx.fillStyle = "#f59e0b";
   ctx.beginPath();
   ctx.arc(x, Math.min(y, height - 20), 15, 0, Math.PI * 2);
   ctx.fill();
+  
+  // Circle outline
+  ctx.strokeStyle = "#d97706";
+  ctx.lineWidth = 2;
+  ctx.stroke();
 
   // Draw velocity vector
   ctx.strokeStyle = "#ef4444";
@@ -183,7 +230,7 @@ function drawFreeFall(
 
   // Draw labels
   ctx.fillStyle = "#1e293b";
-  ctx.font = "12px Arial";
+  ctx.font = "bold 14px Arial";
   ctx.fillText(`v = ${(v0 + g * frameCount).toFixed(1)} m/s`, 10, 20);
   ctx.fillText(`h = ${Math.max(0, (height - 50 - y)).toFixed(1)} m`, 10, 40);
 }
@@ -211,11 +258,16 @@ function drawCircular(
   ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
   ctx.stroke();
 
-  // Draw object
+  // Draw object as circle
   ctx.fillStyle = "#10b981";
   ctx.beginPath();
   ctx.arc(x, y, 12, 0, Math.PI * 2);
   ctx.fill();
+  
+  // Circle outline
+  ctx.strokeStyle = "#059669";
+  ctx.lineWidth = 2;
+  ctx.stroke();
 
   // Draw centripetal force vector
   ctx.strokeStyle = "#8b5cf6";
@@ -237,7 +289,7 @@ function drawCircular(
 
   // Draw labels
   ctx.fillStyle = "#1e293b";
-  ctx.font = "12px Arial";
+  ctx.font = "bold 14px Arial";
   ctx.fillText(`r = ${r.toFixed(0)} m`, 10, 20);
   ctx.fillText(`ω = ${w.toFixed(3)} rad/s`, 10, 40);
 }
@@ -272,16 +324,26 @@ function drawCollision(
     x2 = width - 100 - v2 * collisionFrame * 1.5;
   }
 
-  // Draw objects
+  // Draw objects as circles
   ctx.fillStyle = "#3b82f6";
-  ctx.fillRect(Math.max(50, Math.min(x1, width - 80)), height / 2 - 20, 40, 40);
+  ctx.beginPath();
+  ctx.arc(Math.max(50, Math.min(x1, width - 80)), height / 2, 20, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#1e40af";
+  ctx.lineWidth = 2;
+  ctx.stroke();
 
   ctx.fillStyle = "#ef4444";
-  ctx.fillRect(Math.max(50, Math.min(x2, width - 80)), height / 2 - 20, 40, 40);
+  ctx.beginPath();
+  ctx.arc(Math.max(50, Math.min(x2, width - 80)), height / 2, 20, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#991b1b";
+  ctx.lineWidth = 2;
+  ctx.stroke();
 
   // Draw labels
   ctx.fillStyle = "#1e293b";
-  ctx.font = "12px Arial";
+  ctx.font = "bold 14px Arial";
   ctx.fillText(`m₁ = ${m1.toFixed(1)} kg`, 10, 20);
   ctx.fillText(`m₂ = ${m2.toFixed(1)} kg`, 10, 40);
 }
@@ -296,29 +358,33 @@ function drawHorizontalLaunch(
   const vx = parameters.vx || 5;
   const h = parameters.h || 300;
   const g = 9.8;
+  const scale = 0.15; // Escala para ajustar a trajetória
 
   const x = 50 + vx * frameCount * 2;
-  const y = h - (0.5 * g * frameCount * frameCount * 0.1);
+  // Trajetória parabólica corrigida: y = y0 - (1/2)gt²
+  const y = h - (0.5 * g * frameCount * frameCount * scale);
 
   if (y >= height - 30) {
     return;
   }
 
-  // Draw object
+  // Draw object as circle
   ctx.fillStyle = "#3b82f6";
   ctx.beginPath();
   ctx.arc(x, y, 10, 0, Math.PI * 2);
   ctx.fill();
+  ctx.strokeStyle = "#1e40af";
+  ctx.lineWidth = 2;
+  ctx.stroke();
 
-  // Draw trajectory
+  // Draw trajectory (parabola)
   ctx.strokeStyle = "#cbd5e1";
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 2;
   ctx.setLineDash([5, 5]);
   ctx.beginPath();
-  ctx.moveTo(50, h);
   for (let i = 0; i <= frameCount; i++) {
     const tx = 50 + vx * i * 2;
-    const ty = h - (0.5 * g * i * i * 0.1);
+    const ty = h - (0.5 * g * i * i * scale);
     if (i === 0) ctx.moveTo(tx, ty);
     else ctx.lineTo(tx, ty);
   }
@@ -326,11 +392,13 @@ function drawHorizontalLaunch(
   ctx.setLineDash([]);
 
   // Draw velocity vector
+  const vy = g * frameCount * scale;
+  const vMag = Math.sqrt(vx * vx + vy * vy);
   ctx.strokeStyle = "#ef4444";
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(x, y);
-  ctx.lineTo(x + vx * 2, y + frameCount * 0.5);
+  ctx.lineTo(x + (vx * 2), y + vy * 2);
   ctx.stroke();
 
   // Draw ground
@@ -343,9 +411,10 @@ function drawHorizontalLaunch(
 
   // Draw labels
   ctx.fillStyle = "#1e293b";
-  ctx.font = "12px Arial";
+  ctx.font = "bold 14px Arial";
   ctx.fillText(`v_x = ${vx.toFixed(1)} m/s`, 10, 20);
-  ctx.fillText(`v_y = ${(frameCount * 0.5).toFixed(1)} m/s`, 10, 40);
+  ctx.fillText(`v_y = ${(vy).toFixed(1)} m/s`, 10, 40);
+  ctx.fillText(`v = ${vMag.toFixed(1)} m/s`, 10, 60);
 }
 
 function drawVerticalLaunch(
@@ -357,39 +426,45 @@ function drawVerticalLaunch(
 ) {
   const v0 = parameters.v0 || 10;
   const g = 9.8;
+  const scale = 0.1;
 
   const x = width / 2;
-  const y = height - 50 - (v0 * frameCount * 2 - 0.5 * g * frameCount * frameCount * 0.1);
+  // Trajetória vertical corrigida: y = y0 + v0*t - (1/2)gt²
+  const y = height - 50 - (v0 * frameCount * 2 - 0.5 * g * frameCount * frameCount * scale);
 
   if (y > height - 30) {
     return;
   }
 
-  // Draw object
+  // Draw object as circle
   ctx.fillStyle = "#10b981";
   ctx.beginPath();
   ctx.arc(x, y, 10, 0, Math.PI * 2);
   ctx.fill();
+  ctx.strokeStyle = "#059669";
+  ctx.lineWidth = 2;
+  ctx.stroke();
 
   // Draw trajectory
   ctx.strokeStyle = "#cbd5e1";
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 2;
   ctx.setLineDash([5, 5]);
   ctx.beginPath();
   for (let i = 0; i <= frameCount; i++) {
-    const ty = height - 50 - (v0 * i * 2 - 0.5 * g * i * i * 0.1);
-    if (i === 0) ctx.moveTo(x - 20, ty);
-    else ctx.lineTo(x - 20 + i * 0.5, ty);
+    const ty = height - 50 - (v0 * i * 2 - 0.5 * g * i * i * scale);
+    if (i === 0) ctx.moveTo(x, ty);
+    else ctx.lineTo(x, ty);
   }
   ctx.stroke();
   ctx.setLineDash([]);
 
   // Draw velocity vector
+  const vy = v0 * 2 - g * frameCount * scale;
   ctx.strokeStyle = "#ef4444";
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(x, y);
-  ctx.lineTo(x, y + (frameCount * 0.5 - v0 * 2));
+  ctx.lineTo(x, y + vy);
   ctx.stroke();
 
   // Draw ground
@@ -402,9 +477,9 @@ function drawVerticalLaunch(
 
   // Draw labels
   ctx.fillStyle = "#1e293b";
-  ctx.font = "12px Arial";
-  ctx.fillText(`v_0 = ${v0.toFixed(1)} m/s`, 10, 20);
-  ctx.fillText(`v = ${(v0 - frameCount * 0.5).toFixed(1)} m/s`, 10, 40);
+  ctx.font = "bold 14px Arial";
+  ctx.fillText(`v₀ = ${v0.toFixed(1)} m/s`, 10, 20);
+  ctx.fillText(`v = ${(vy).toFixed(1)} m/s`, 10, 40);
 }
 
 function drawInclinedPlane(
@@ -414,70 +489,38 @@ function drawInclinedPlane(
   height: number,
   parameters: Record<string, number>
 ) {
-  const angle = (parameters.angle || 30) * (Math.PI / 180);
-  const mu = parameters.mu || 0.2;
-  const g = 9.8;
+  const angle = parameters.angle || 30;
+  const a = parameters.a || 2;
 
+  const angleRad = (angle * Math.PI) / 180;
   const planeLength = 400;
-  const planeX = 100;
-  const planeY = height - 50;
+  const startX = 50;
+  const startY = height - 50;
 
   // Draw inclined plane
   ctx.strokeStyle = "#94a3b8";
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(planeX, planeY);
-  ctx.lineTo(planeX + planeLength * Math.cos(angle), planeY - planeLength * Math.sin(angle));
+  ctx.moveTo(startX, startY);
+  ctx.lineTo(startX + planeLength * Math.cos(angleRad), startY - planeLength * Math.sin(angleRad));
   ctx.stroke();
 
-  // Calculate acceleration
-  const a = g * (Math.sin(angle) - mu * Math.cos(angle));
-  const distance = 0.5 * a * frameCount * frameCount * 0.5;
-  const x = planeX + distance * Math.cos(angle);
-  const y = planeY - distance * Math.sin(angle);
+  // Draw object as circle
+  const distance = a * frameCount * frameCount * 0.5 * 0.5;
+  const objX = startX + distance * Math.cos(angleRad);
+  const objY = startY - distance * Math.sin(angleRad);
 
-  if (distance > planeLength) {
-    return;
-  }
-
-  // Draw object
   ctx.fillStyle = "#f59e0b";
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(angle);
-  ctx.fillRect(-10, -10, 20, 20);
-  ctx.restore();
-
-  // Draw velocity vector
-  const v = a * frameCount * 0.5;
-  ctx.strokeStyle = "#ef4444";
+  ctx.beginPath();
+  ctx.arc(objX, objY, 12, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#d97706";
   ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(x, y);
-  ctx.lineTo(x + v * Math.cos(angle), y - v * Math.sin(angle));
-  ctx.stroke();
-
-  // Draw forces
-  ctx.strokeStyle = "#8b5cf6";
-  ctx.lineWidth = 1.5;
-  
-  // Weight
-  ctx.beginPath();
-  ctx.moveTo(x, y);
-  ctx.lineTo(x, y + 30);
-  ctx.stroke();
-
-  // Normal force
-  ctx.strokeStyle = "#10b981";
-  ctx.beginPath();
-  ctx.moveTo(x, y);
-  ctx.lineTo(x - 30 * Math.sin(angle), y - 30 * Math.cos(angle));
   ctx.stroke();
 
   // Draw labels
   ctx.fillStyle = "#1e293b";
-  ctx.font = "12px Arial";
-  ctx.fillText(`θ = ${(angle * 180 / Math.PI).toFixed(0)}°`, 10, 20);
-  ctx.fillText(`μ = ${mu.toFixed(2)}`, 10, 40);
-  ctx.fillText(`a = ${a.toFixed(1)} m/s²`, 10, 60);
+  ctx.font = "bold 14px Arial";
+  ctx.fillText(`θ = ${angle}°`, 10, 20);
+  ctx.fillText(`a = ${a.toFixed(1)} m/s²`, 10, 40);
 }
