@@ -1,7 +1,6 @@
-import { Link } from "wouter";
 import { useEffect } from "react";
-import { ArrowLeft, Waves } from "lucide-react";
 import { Link } from "wouter";
+import { ArrowLeft, Waves } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/components/MathFormula";
 
