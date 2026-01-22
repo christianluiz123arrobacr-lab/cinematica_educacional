@@ -66,9 +66,9 @@ export default function DynamicsSimulator() {
   };
 
   const resetLaunch = () => {
-    setVxLaunch(5);
-    setVyLaunch(10);
-    setHLaunch(300);
+    setLaunchV0(20);
+    setLaunchAngle(45);
+    setLaunchH0(30);
     setIsRunning(true);
     setResetTrigger(prev => prev + 1);
   };
@@ -455,14 +455,38 @@ export default function DynamicsSimulator() {
 
                 {/* Canvas */}
                 <div className="flex justify-center bg-slate-50 p-4 rounded-lg overflow-x-auto">
-                  <Simulator
-                    type={launchType === "horizontal" ? "horizontalLaunch" : "verticalLaunch"}
-                    width={800}
-                    height={400}
-                    isRunning={isRunning}
-                    parameters={launchType === "horizontal" ? { vx: vxLaunch, h: hLaunch } : { v0: vyLaunch }}
-                    resetTrigger={resetTrigger}
-                  />
+                  {launchType === "verticalGround" && (
+                    <LaunchVerticalGroundSimulator
+                      v0={launchV0}
+                      isRunning={isRunning}
+                      resetTrigger={resetTrigger}
+                    />
+                  )}
+                  {launchType === "verticalBuilding" && (
+                    <LaunchVerticalBuildingSimulator
+                      v0={launchV0}
+                      h0={launchH0}
+                      isRunning={isRunning}
+                      resetTrigger={resetTrigger}
+                    />
+                  )}
+                  {launchType === "obliqueGround" && (
+                    <LaunchObliqueGroundSimulator
+                      v0={launchV0}
+                      angle={launchAngle}
+                      isRunning={isRunning}
+                      resetTrigger={resetTrigger}
+                    />
+                  )}
+                  {launchType === "obliqueBuilding" && (
+                    <LaunchObliqueBuildingSimulator
+                      v0={launchV0}
+                      angle={launchAngle}
+                      h0={launchH0}
+                      isRunning={isRunning}
+                      resetTrigger={resetTrigger}
+                    />
+                  )}
                 </div>
 
                 {/* Controls */}
@@ -472,11 +496,11 @@ export default function DynamicsSimulator() {
                       <div>
                         <div className="flex items-center justify-between mb-2">
                           <label className="text-sm font-semibold text-slate-700">Velocidade Horizontal (v_x)</label>
-                          <span className="text-sm font-bold text-blue-600">{vxLaunch.toFixed(2)} m/s</span>
+                          <span className="text-sm font-bold text-blue-600">{launchV0.toFixed(2)} m/s</span>
                         </div>
                         <Slider
-                          value={[vxLaunch]}
-                          onValueChange={(value) => setVxLaunch(value[0])}
+                        value={[launchV0]}
+                        onValueChange={(value) => setLaunchV0(value[0])}
                           min={1}
                           max={10}
                           step={0.5}
@@ -487,14 +511,14 @@ export default function DynamicsSimulator() {
                       <div>
                         <div className="flex items-center justify-between mb-2">
                           <label className="text-sm font-semibold text-slate-700">Altura Inicial (h)</label>
-                          <span className="text-sm font-bold text-blue-600">{hLaunch.toFixed(0)} m</span>
+                          <span className="text-sm font-bold text-blue-600">{launchH0.toFixed(0)} m</span>
                         </div>
                         <Slider
-                          value={[hLaunch]}
-                          onValueChange={(value) => setHLaunch(value[0])}
-                          min={100}
-                          max={400}
-                          step={10}
+                          value={[launchH0]}
+                          onValueChange={(value) => setLaunchH0(value[0])}
+                          min={5}
+                          max={100}
+                          step={5}
                           className="w-full"
                         />
                       </div>
@@ -503,13 +527,13 @@ export default function DynamicsSimulator() {
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <label className="text-sm font-semibold text-slate-700">Velocidade Inicial (v_0)</label>
-                        <span className="text-sm font-bold text-green-600">{vyLaunch.toFixed(2)} m/s</span>
+                        <span className="text-sm font-bold text-green-600">{launchV0.toFixed(2)} m/s</span>
                       </div>
                       <Slider
-                        value={[vyLaunch]}
-                        onValueChange={(value) => setVyLaunch(value[0])}
+                        value={[launchV0]}
+                        onValueChange={(value) => setLaunchV0(value[0])}
                         min={1}
-                        max={20}
+                        max={30}
                         step={0.5}
                         className="w-full"
                       />
