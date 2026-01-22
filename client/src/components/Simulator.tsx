@@ -578,29 +578,48 @@ function drawCollision(ctx: CanvasRenderingContext2D, frameCount: number, width:
   const v1Initial = parameters.v1 || 3;
   const v2Initial = parameters.v2 || 0;
 
-  const collisionFrame = 150;
-  let x1, x2;
+  const collisionFrame = 100;
+  let x1, x2, v1Current, v2Current;
+  
+  const v1After = ((m1 - m2) * v1Initial + 2 * m2 * v2Initial) / (m1 + m2);
+  const v2After = ((m2 - m1) * v2Initial + 2 * m1 * v1Initial) / (m1 + m2);
+  const pInitial = m1 * v1Initial + m2 * v2Initial;
+  const pFinal = m1 * v1After + m2 * v2After;
   
   if (frameCount < collisionFrame) {
-    x1 = 100 + v1Initial * frameCount * 1.5;
-    x2 = width - 100 - v2Initial * frameCount * 1.5;
+    x1 = 80 + v1Initial * frameCount * 2;
+    x2 = width - 80 - v2Initial * frameCount * 2;
+    v1Current = v1Initial;
+    v2Current = v2Initial;
   } else {
-    const v1After = ((m1 - m2) * v1Initial + 2 * m2 * v2Initial) / (m1 + m2);
-    const v2After = ((m2 - m1) * v2Initial + 2 * m1 * v1Initial) / (m1 + m2);
     const t = frameCount - collisionFrame;
-    x1 = width / 2 - 40 + v1After * t * 1.5;
-    x2 = width / 2 + 40 + v2After * t * 1.5;
+    x1 = width / 2 - 60 + v1After * t * 2;
+    x2 = width / 2 + 60 + v2After * t * 2;
+    v1Current = v1After;
+    v2Current = v2After;
   }
 
   ctx.fillStyle = "#3b82f6";
   ctx.beginPath();
-  ctx.arc(Math.max(50, Math.min(x1, width - 80)), height / 2, 20, 0, Math.PI * 2);
+  ctx.arc(Math.max(50, Math.min(x1, width - 50)), height / 2, 15, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = "#ef4444";
   ctx.beginPath();
-  ctx.arc(Math.max(50, Math.min(x2, width - 80)), height / 2, 20, 0, Math.PI * 2);
+  ctx.arc(Math.max(50, Math.min(x2, width - 50)), height / 2, 15, 0, Math.PI * 2);
   ctx.fill();
+
+  ctx.fillStyle = "#1e293b";
+  ctx.font = "bold 11px Arial";
+  if (frameCount < collisionFrame) {
+    ctx.fillText(`Antes da colisao`, 10, 20);
+  } else {
+    ctx.fillText(`Apos colisao`, 10, 20);
+  }
+  ctx.fillText(`p_inicial = ${pInitial.toFixed(2)} kg.m/s`, 10, 35);
+  ctx.fillText(`p_final = ${pFinal.toFixed(2)} kg.m/s`, 10, 50);
+  ctx.fillText(`v1 = ${v1Current.toFixed(2)} m/s`, 10, 65);
+  ctx.fillText(`v2 = ${v2Current.toFixed(2)} m/s`, 10, 80);
 }
 
 function drawHorizontalLaunch(ctx: CanvasRenderingContext2D, frameCount: number, width: number, height: number, parameters: Record<string, number>) {

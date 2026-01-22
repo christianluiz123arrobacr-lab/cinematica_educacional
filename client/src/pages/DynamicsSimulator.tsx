@@ -447,8 +447,10 @@ export default function DynamicsSimulator() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="horizontal">Lançamento Horizontal</SelectItem>
-                      <SelectItem value="vertical">Lançamento Vertical</SelectItem>
+                      <SelectItem value="verticalGround">Vertical do Solo</SelectItem>
+                      <SelectItem value="verticalBuilding">Vertical de Prédio</SelectItem>
+                      <SelectItem value="obliqueGround">Oblíquo do Solo</SelectItem>
+                      <SelectItem value="obliqueBuilding">Oblíquo de Prédio</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
