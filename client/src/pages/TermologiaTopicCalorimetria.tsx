@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MathFormula } from "@/components/MathFormula";
 
 export default function TermologiaTopicCalorimetria() {
   return (
@@ -50,7 +51,7 @@ export default function TermologiaTopicCalorimetria() {
           </p>
 
           <div className="bg-gradient-to-r from-blue-100 to-cyan-100 border-2 border-blue-400 rounded-lg p-6 mb-6">
-            <div className="text-center font-mono text-lg text-slate-800 mb-2">Q_cedido + Q_recebido = 0</div>
+            <MathFormula formula={String.raw`$$Q_{\text{cedido}} + Q_{\text{recebido}} = 0$$`} className="text-center text-lg mb-2" />
             <div className="text-center text-sm text-slate-700">
               <p>O calor cedido por um corpo é igual ao calor recebido pelo outro.</p>
             </div>
@@ -58,7 +59,7 @@ export default function TermologiaTopicCalorimetria() {
 
           <div className="bg-slate-50 p-6 rounded-lg">
             <h4 className="font-bold text-slate-900 mb-3">Ou equivalentemente:</h4>
-            <div className="font-mono text-slate-800 text-center">Q_cedido = -Q_recebido</div>
+            <MathFormula formula={String.raw`$$Q_{\text{cedido}} = -Q_{\text{recebido}}$$`} className="text-center" />
             <p className="text-slate-700 mt-3 text-center">
               (O sinal negativo indica que um corpo perde calor enquanto o outro ganha)
             </p>
@@ -74,7 +75,7 @@ export default function TermologiaTopicCalorimetria() {
           </p>
 
           <div className="bg-gradient-to-r from-purple-100 to-pink-100 border-2 border-purple-400 rounded-lg p-6 mb-6">
-            <div className="text-center font-mono text-lg text-slate-800 mb-2">Q = m · L</div>
+            <MathFormula formula={String.raw`$$Q = m \cdot L$$`} className="text-center text-lg mb-2" />
             <div className="text-center text-sm text-slate-700">
               <p><strong>Q:</strong> Calor latente (em J)</p>
               <p><strong>m:</strong> Massa do corpo (em kg)</p>
@@ -118,11 +119,11 @@ export default function TermologiaTopicCalorimetria() {
               </p>
               <div className="bg-white p-4 rounded">
                 <p className="text-slate-700 mb-2"><strong>Solução:</strong></p>
-                <p className="text-slate-600 mb-1">Usando conservação de energia: Q_cedido = Q_recebido</p>
-                <p className="text-slate-600 mb-1">m₁ · c · (T_final - T₁) = m₂ · c · (T₂ - T_final)</p>
-                <p className="text-slate-600 mb-1">1 · (T_f - 80) = 2 · (20 - T_f)</p>
-                <p className="text-slate-600 mb-1">T_f - 80 = 40 - 2T_f</p>
-                <p className="text-slate-600">3T_f = 120 → <strong>T_f = 40°C</strong></p>
+                <p className="text-slate-600 mb-1">Usando conservação de energia: <MathFormula formula={String.raw`$Q_{\text{cedido}} = Q_{\text{recebido}}$`} /></p>
+                <p className="text-slate-600 mb-1"><MathFormula formula={String.raw`$m_1 \cdot c \cdot (T_f - T_1) = m_2 \cdot c \cdot (T_2 - T_f)$`} /></p>
+                <p className="text-slate-600 mb-1"><MathFormula formula={String.raw`$1 \cdot (T_f - 80) = 2 \cdot (20 - T_f)$`} /></p>
+                <p className="text-slate-600 mb-1"><MathFormula formula={String.raw`$T_f - 80 = 40 - 2T_f$`} /></p>
+                <p className="text-slate-600"><MathFormula formula={String.raw`$3T_f = 120 \Rightarrow T_f = 40^\circ\text{C}$`} /></p>
               </div>
             </div>
 
@@ -134,10 +135,10 @@ export default function TermologiaTopicCalorimetria() {
               </p>
               <div className="bg-white p-4 rounded">
                 <p className="text-slate-700 mb-2"><strong>Solução:</strong></p>
-                <p className="text-slate-600 mb-1">Etapa 1 (Fusão): Q₁ = m · L_fusão = 0,5 × 334.000 = 167.000 J</p>
-                <p className="text-slate-600 mb-1">Etapa 2 (Aquecimento): Q₂ = m · c · ΔT = 0,5 × 4.186 × 100 = 209.300 J</p>
-                <p className="text-slate-600 mb-1">Etapa 3 (Vaporização): Q₃ = m · L_vap = 0,5 × 2.260.000 = 1.130.000 J</p>
-                <p className="text-slate-600"><strong>Total: Q = 167.000 + 209.300 + 1.130.000 = 1.506.300 J</strong></p>
+                <p className="text-slate-600 mb-1">Etapa 1 (Fusão): <MathFormula formula={String.raw`$Q_1 = m \cdot L_{\text{fusão}} = 0,5 \cdot 334.000 = 167.000 \text{ J}$`} /></p>
+                <p className="text-slate-600 mb-1">Etapa 2 (Aquecimento): <MathFormula formula={String.raw`$Q_2 = m \cdot c \cdot \Delta T = 0,5 \cdot 4.186 \cdot 100 = 209.300 \text{ J}$`} /></p>
+                <p className="text-slate-600 mb-1">Etapa 3 (Vaporização): <MathFormula formula={String.raw`$Q_3 = m \cdot L_{\text{vap}} = 0,5 \cdot 2.260.000 = 1.130.000 \text{ J}$`} /></p>
+                <p className="text-slate-600"><strong>Total: <MathFormula formula={String.raw`$Q = 167.000 + 209.300 + 1.130.000 = 1.506.300 \text{ J}$`} /></strong></p>
               </div>
             </div>
           </div>

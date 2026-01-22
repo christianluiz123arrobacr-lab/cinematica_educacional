@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
+import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 
 interface LaunchObliqueBuildingSimulatorNewProps {
@@ -170,7 +171,7 @@ export const LaunchObliqueBuildingSimulatorNew: React.FC<LaunchObliqueBuildingSi
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <div className="flex justify-between mb-2">
-              <label className="text-sm font-semibold text-slate-700">Velocidade (v₀)</label>
+              <label className="text-sm font-semibold text-slate-700">Velocidade (<MathFormula formula={String.raw`$v_0$`} />)</label>
               <span className="text-sm font-bold text-blue-600">{v0.toFixed(2)} m/s</span>
             </div>
             <Slider
@@ -185,7 +186,7 @@ export const LaunchObliqueBuildingSimulatorNew: React.FC<LaunchObliqueBuildingSi
 
           <div>
             <div className="flex justify-between mb-2">
-              <label className="text-sm font-semibold text-slate-700">Ângulo (θ)</label>
+              <label className="text-sm font-semibold text-slate-700">Ângulo (<MathFormula formula={String.raw`$\theta$`} />)</label>
               <span className="text-sm font-bold text-green-600">{angle.toFixed(1)}°</span>
             </div>
             <Slider
@@ -200,7 +201,7 @@ export const LaunchObliqueBuildingSimulatorNew: React.FC<LaunchObliqueBuildingSi
 
           <div>
             <div className="flex justify-between mb-2">
-              <label className="text-sm font-semibold text-slate-700">Altura (h₀)</label>
+              <label className="text-sm font-semibold text-slate-700">Altura (<MathFormula formula={String.raw`$h_0$`} />)</label>
               <span className="text-sm font-bold text-purple-600">{h0.toFixed(2)} m</span>
             </div>
             <Slider
@@ -219,27 +220,27 @@ export const LaunchObliqueBuildingSimulatorNew: React.FC<LaunchObliqueBuildingSi
           <h4 className="font-bold text-slate-900">Cálculos</h4>
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-slate-600">v₀ₓ = v₀cosθ:</span>
+              <span className="text-slate-600"><MathFormula formula={String.raw`$v_{0x} = v_0\cos\theta$`} />:</span>
               <span className="font-bold text-slate-900">{v0x.toFixed(3)} m/s</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600">v₀ᵧ = v₀senθ:</span>
+              <span className="text-slate-600"><MathFormula formula={String.raw`$v_{0y} = v_0\sin\theta$`} />:</span>
               <span className="font-bold text-slate-900">{v0y.toFixed(3)} m/s</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600">h_max = h₀ + v₀ᵧ²/2g:</span>
+              <span className="text-slate-600"><MathFormula formula={String.raw`$h_{max} = h_0 + \frac{v_{0y}^2}{2g}$`} />:</span>
               <span className="font-bold text-slate-900">{hMax.toFixed(3)} m</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600">t_subida = v₀ᵧ/g:</span>
+              <span className="text-slate-600"><MathFormula formula={String.raw`$t_s = \frac{v_{0y}}{g}$`} />:</span>
               <span className="font-bold text-slate-900">{tSubida.toFixed(3)} s</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600">t_total (h₀ + v₀ᵧt - ½gt² = 0):</span>
+              <span className="text-slate-600">Tempo total (<MathFormula formula={String.raw`$h_0 + v_{0y}t - \frac{1}{2}gt^2 = 0$`} />):</span>
               <span className="font-bold text-slate-900">{tTotal.toFixed(3)} s</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600">alcance = v₀ₓ × t_total:</span>
+              <span className="text-slate-600">Alcance (<MathFormula formula={String.raw`$A = v_{0x} \cdot t_t$`} />):</span>
               <span className="font-bold text-slate-900">{alcance.toFixed(3)} m</span>
             </div>
           </div>

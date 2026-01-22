@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
+import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 
 interface CollisionSimulatorProps {
@@ -226,27 +227,27 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
           <h4 className="font-bold text-slate-900">Resultados da Colisão</h4>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-slate-600">Velocidade 1 após:</p>
+              <p className="text-slate-600">Velocidade 1 após (<MathFormula formula={String.raw`$v'_1$`} />):</p>
               <p className="font-bold text-blue-600">{v1After.toFixed(3)} m/s</p>
             </div>
             <div>
-              <p className="text-slate-600">Velocidade 2 após:</p>
+              <p className="text-slate-600">Velocidade 2 após (<MathFormula formula={String.raw`$v'_2$`} />):</p>
               <p className="font-bold text-red-600">{v2After.toFixed(3)} m/s</p>
             </div>
             <div>
-              <p className="text-slate-600">Momento inicial:</p>
+              <p className="text-slate-600">Momento inicial (<MathFormula formula={String.raw`$p_i$`} />):</p>
               <p className="font-bold text-slate-900">{pInitial.toFixed(3)} kg·m/s</p>
             </div>
             <div>
-              <p className="text-slate-600">Momento final:</p>
+              <p className="text-slate-600">Momento final (<MathFormula formula={String.raw`$p_f$`} />):</p>
               <p className="font-bold text-slate-900">{pFinal.toFixed(3)} kg·m/s</p>
             </div>
             <div>
-              <p className="text-slate-600">Energia cinética inicial:</p>
+              <p className="text-slate-600">Energia cinética inicial (<MathFormula formula={String.raw`$E_{ci}$`} />):</p>
               <p className="font-bold text-slate-900">{ecInitial.toFixed(3)} J</p>
             </div>
             <div>
-              <p className="text-slate-600">Energia cinética final:</p>
+              <p className="text-slate-600">Energia cinética final (<MathFormula formula={String.raw`$E_{cf}$`} />):</p>
               <p className="font-bold text-slate-900">{ecFinal.toFixed(3)} J</p>
             </div>
           </div>

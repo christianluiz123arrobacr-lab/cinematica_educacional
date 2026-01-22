@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MathFormula } from "@/components/MathFormula";
 
 export default function TermologiaTopicDilatacao() {
   return (
@@ -53,7 +54,7 @@ export default function TermologiaTopicDilatacao() {
                 Ocorre quando consideramos apenas uma dimensão (comprimento). É usada para fios, barras e trilhos.
               </p>
               <div className="bg-gradient-to-r from-red-100 to-orange-100 border-2 border-red-400 rounded-lg p-6 mb-4">
-                <div className="text-center font-mono text-lg text-slate-800 mb-2">ΔL = L₀ · α · ΔT</div>
+                <MathFormula formula={String.raw`$$\Delta L = L_0 \cdot \alpha \cdot \Delta T$$`} className="text-center text-lg mb-2" />
                 <div className="text-center text-sm text-slate-700">
                   <p><strong>ΔL:</strong> Variação de comprimento (em m)</p>
                   <p><strong>L₀:</strong> Comprimento inicial (em m)</p>
@@ -70,9 +71,9 @@ export default function TermologiaTopicDilatacao() {
                 Ocorre quando consideramos duas dimensões (área). É usada para placas e superfícies.
               </p>
               <div className="bg-gradient-to-r from-blue-100 to-cyan-100 border-2 border-blue-400 rounded-lg p-6 mb-4">
-                <div className="text-center font-mono text-lg text-slate-800 mb-2">ΔA = A₀ · β · ΔT</div>
+                <MathFormula formula={String.raw`$$\Delta A = A_0 \cdot \beta \cdot \Delta T$$`} className="text-center text-lg mb-2" />
                 <div className="text-center text-sm text-slate-700">
-                  <p><strong>β = 2α</strong> (coeficiente de dilatação superficial)</p>
+                  <p><strong><MathFormula formula={String.raw`$\beta = 2\alpha$`} /></strong> (coeficiente de dilatação superficial)</p>
                 </div>
               </div>
             </div>
@@ -84,9 +85,9 @@ export default function TermologiaTopicDilatacao() {
                 Ocorre quando consideramos três dimensões (volume). É usada para sólidos e líquidos.
               </p>
               <div className="bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-400 rounded-lg p-6 mb-4">
-                <div className="text-center font-mono text-lg text-slate-800 mb-2">ΔV = V₀ · γ · ΔT</div>
+                <MathFormula formula={String.raw`$$\Delta V = V_0 \cdot \gamma \cdot \Delta T$$`} className="text-center text-lg mb-2" />
                 <div className="text-center text-sm text-slate-700">
-                  <p><strong>γ = 3α</strong> (coeficiente de dilatação volumétrica)</p>
+                  <p><strong><MathFormula formula={String.raw`$\gamma = 3\alpha$`} /></strong> (coeficiente de dilatação volumétrica)</p>
                 </div>
               </div>
             </div>
@@ -154,12 +155,12 @@ export default function TermologiaTopicDilatacao() {
               </p>
               <div className="bg-white p-4 rounded">
                 <p className="text-slate-700 mb-2"><strong>Dados:</strong></p>
-                <p className="text-slate-600">L₀ = 100 m</p>
-                <p className="text-slate-600">α = 12 × 10⁻⁶ K⁻¹</p>
-                <p className="text-slate-600">ΔT = 40 - 20 = 20 K</p>
+                <p className="text-slate-600"><MathFormula formula={String.raw`$L_0 = 100 \text{ m}$`} /></p>
+                <p className="text-slate-600"><MathFormula formula={String.raw`$\alpha = 12 \times 10^{-6} \text{ K}^{-1}$`} /></p>
+                <p className="text-slate-600"><MathFormula formula={String.raw`$\Delta T = 40 - 20 = 20 \text{ K}$`} /></p>
                 <p className="text-slate-700 mt-3 mb-2"><strong>Cálculo:</strong></p>
-                <p className="text-slate-600">ΔL = 100 × 12 × 10⁻⁶ × 20 = 0,024 m = 2,4 cm</p>
-                <p className="text-slate-600 mt-2"><strong>Comprimento final:</strong> L = 100 + 0,024 = <strong>100,024 m</strong></p>
+                <p className="text-slate-600"><MathFormula formula={String.raw`$\Delta L = 100 \cdot 12 \cdot 10^{-6} \cdot 20 = 0,024 \text{ m} = 2,4 \text{ cm}$`} /></p>
+                <p className="text-slate-600 mt-2"><strong>Comprimento final:</strong> <MathFormula formula={String.raw`$L = 100 + 0,024 = 100,024 \text{ m}$`} /></p>
               </div>
             </div>
 
@@ -171,12 +172,12 @@ export default function TermologiaTopicDilatacao() {
               </p>
               <div className="bg-white p-4 rounded">
                 <p className="text-slate-700 mb-2"><strong>Dados:</strong></p>
-                <p className="text-slate-600">V₀ = 1 m³</p>
-                <p className="text-slate-600">α = 23 × 10⁻⁶ K⁻¹ → γ = 3α = 69 × 10⁻⁶ K⁻¹</p>
-                <p className="text-slate-600">ΔT = 100 - 25 = 75 K</p>
+                <p className="text-slate-600"><MathFormula formula={String.raw`$V_0 = 1 \text{ m}^3$`} /></p>
+                <p className="text-slate-600"><MathFormula formula={String.raw`$\alpha = 23 \times 10^{-6} \text{ K}^{-1} \Rightarrow \gamma = 3\alpha = 69 \times 10^{-6} \text{ K}^{-1}$`} /></p>
+                <p className="text-slate-600"><MathFormula formula={String.raw`$\Delta T = 100 - 25 = 75 \text{ K}$`} /></p>
                 <p className="text-slate-700 mt-3 mb-2"><strong>Cálculo:</strong></p>
-                <p className="text-slate-600">ΔV = 1 × 69 × 10⁻⁶ × 75 = 0,005175 m³</p>
-                <p className="text-slate-600 mt-2"><strong>Volume final:</strong> V = 1 + 0,005175 = <strong>1,005175 m³</strong></p>
+                <p className="text-slate-600"><MathFormula formula={String.raw`$\Delta V = 1 \cdot 69 \cdot 10^{-6} \cdot 75 = 0,005175 \text{ m}^3$`} /></p>
+                <p className="text-slate-600 mt-2"><strong>Volume final:</strong> <MathFormula formula={String.raw`$V = 1 + 0,005175 = 1,005175 \text{ m}^3$`} /></p>
               </div>
             </div>
           </div>

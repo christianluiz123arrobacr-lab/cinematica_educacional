@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from "react";
+import { MathFormula } from "@/components/MathFormula";
 
 interface InclinedPlaneSimulatorProps {
   angle: number;

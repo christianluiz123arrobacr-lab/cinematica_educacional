@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
+import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 
 interface LaunchVerticalBuildingSimulatorNewProps {
@@ -152,7 +153,7 @@ export const LaunchVerticalBuildingSimulatorNew: React.FC<LaunchVerticalBuilding
 
           <div>
             <div className="flex justify-between mb-2">
-              <label className="text-sm font-semibold text-slate-700">Velocidade Inicial (v₀)</label>
+              <label className="text-sm font-semibold text-slate-700">Velocidade Inicial (<MathFormula formula={String.raw`$v_0$`} />)</label>
               <span className="text-sm font-bold text-blue-600">{v0.toFixed(2)} m/s</span>
             </div>
             <Slider
@@ -167,7 +168,7 @@ export const LaunchVerticalBuildingSimulatorNew: React.FC<LaunchVerticalBuilding
 
           <div>
             <div className="flex justify-between mb-2">
-              <label className="text-sm font-semibold text-slate-700">Altura do Prédio (h₀)</label>
+              <label className="text-sm font-semibold text-slate-700">Altura do Prédio (<MathFormula formula={String.raw`$h_0$`} />)</label>
               <span className="text-sm font-bold text-green-600">{h0.toFixed(2)} m ({getStructureType()})</span>
             </div>
             <Slider
@@ -186,15 +187,15 @@ export const LaunchVerticalBuildingSimulatorNew: React.FC<LaunchVerticalBuilding
           <h4 className="font-bold text-slate-900">Cálculos</h4>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-slate-600">Altura máxima (h_max = h₀ + v₀²/2g):</span>
+              <span className="text-slate-600">Altura máxima (<MathFormula formula={String.raw`$h_{max} = h_0 + \frac{v_0^2}{2g}$`} />):</span>
               <span className="font-bold text-slate-900">{hMax.toFixed(3)} m</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600">Tempo de subida (t_s = v₀/g):</span>
+              <span className="text-slate-600">Tempo de subida (<MathFormula formula={String.raw`$t_s = \frac{v_0}{g}$`} />):</span>
               <span className="font-bold text-slate-900">{tSubida.toFixed(3)} s</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600">Tempo total (h₀ + v₀t - ½gt² = 0):</span>
+              <span className="text-slate-600">Tempo total (<MathFormula formula={String.raw`$h_0 + v_0t - \frac{1}{2}gt^2 = 0$`} />):</span>
               <span className="font-bold text-slate-900">{tTotal.toFixed(3)} s</span>
             </div>
             <div className="flex justify-between">
