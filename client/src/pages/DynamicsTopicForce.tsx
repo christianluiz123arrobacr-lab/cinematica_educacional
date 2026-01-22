@@ -44,7 +44,7 @@ export default function DynamicsTopicForce() {
             <h3 className="text-lg font-bold text-slate-900">1. Peso (Força da Gravidade)</h3>
             <p>É a força com a qual a Terra puxa você para baixo. Quanto mais pesado você é, maior é seu peso.</p>
             <div className="bg-red-50 p-3 md:p-6 rounded-lg border border-red-200 overflow-x-auto mb-3">
-              <MathFormula formula="$$$$P = m \\cdot g$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$P = m \\cdot g$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center"><strong>Peso = Massa × Gravidade</strong></p>
             </div>
             <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-500 my-4">
@@ -83,7 +83,7 @@ export default function DynamicsTopicForce() {
             <h3 className="text-lg font-bold text-slate-900 mt-6">Atrito Estático (Quando Nada Se Move)</h3>
             <p>É o atrito que impede um objeto de começar a se mover. É mais forte que o atrito cinético!</p>
             <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto mb-3">
-              <MathFormula formula="$$$$f_s \\leq \\mu_s \\cdot N$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$f_s \\leq \\mu_s \\cdot N$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Atrito estático ≤ Coeficiente × Força Normal</p>
             </div>
             <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500 my-4">
@@ -93,7 +93,7 @@ export default function DynamicsTopicForce() {
             <h3 className="text-lg font-bold text-slate-900 mt-6">Atrito Cinético (Quando Algo Está Se Movendo)</h3>
             <p>É o atrito que age quando um objeto já está deslizando sobre uma superfície. É mais fraco que o atrito estático.</p>
             <div className="bg-orange-50 p-3 md:p-6 rounded-lg border border-orange-200 overflow-x-auto mb-3">
-              <MathFormula formula="$$$$f_c = \\mu_c \\cdot N$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$f_c = \\mu_c \\cdot N$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Atrito cinético = Coeficiente × Força Normal</p>
             </div>
 

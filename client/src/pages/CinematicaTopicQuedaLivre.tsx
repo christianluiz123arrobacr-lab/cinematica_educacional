@@ -105,7 +105,7 @@ export default function CinematicaTopicQuedaLivre() {
             <p>Qual será a velocidade após cair por um certo tempo?</p>
             
             <div className="bg-red-50 p-3 md:p-6 rounded-lg border border-red-200 overflow-x-auto my-4">
-              <MathFormula formula="$$$$v = v_0 + g \\cdot t$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$v = v_0 + g \\cdot t$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Se soltar do repouso (v₀ = 0): v = g·t</p>
             </div>
 
@@ -113,7 +113,7 @@ export default function CinematicaTopicQuedaLivre() {
             <p>Qual será a altura após cair por um certo tempo?</p>
             
             <div className="bg-blue-50 p-3 md:p-6 rounded-lg border border-blue-200 overflow-x-auto my-4">
-              <MathFormula formula="$$$$h = h_0 + v_0 \\cdot t + \\frac{g \\cdot t^2}{2}$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$h = h_0 + v_0 \\cdot t + \\frac{g \\cdot t^2}{2}$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Se soltar do repouso (v₀ = 0): h = h₀ + (g·t²)/2</p>
             </div>
 
@@ -121,7 +121,7 @@ export default function CinematicaTopicQuedaLivre() {
             <p>Qual será a velocidade após cair uma certa altura?</p>
             
             <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto my-4">
-              <MathFormula formula="$$$$v^2 = v_0^2 + 2 \\cdot g \\cdot \\Delta h$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$v^2 = v_0^2 + 2 \\cdot g \\cdot \\Delta h$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Se soltar do repouso (v₀ = 0): v² = 2·g·Δh</p>
             </div>
 
@@ -129,7 +129,7 @@ export default function CinematicaTopicQuedaLivre() {
             <p>Quanto tempo leva para cair de uma altura h?</p>
             
             <div className="bg-purple-50 p-3 md:p-6 rounded-lg border border-purple-200 overflow-x-auto my-4">
-              <MathFormula formula="$$$$t = \\sqrt{\\frac{2h}{g}}$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$t = \\sqrt{\\frac{2h}{g}}$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Tempo = raiz quadrada de (2 × altura / g)</p>
             </div>
           </div>

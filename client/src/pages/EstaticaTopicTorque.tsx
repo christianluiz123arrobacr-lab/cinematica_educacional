@@ -47,7 +47,7 @@ export default function EstaticaTopicTorque() {
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">A Fórmula do Torque</h3>
             <div className="bg-orange-50 p-3 md:p-6 rounded-lg border border-orange-200 overflow-x-auto my-4">
-              <MathFormula formula="$$$$\\tau = r \\times F \\times \\sin(\\theta)$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\tau = r \\times F \\times \\sin(\\theta)$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Torque = Distância × Força × Seno do ângulo</p>
             </div>
 
@@ -74,7 +74,7 @@ export default function EstaticaTopicTorque() {
             <h3 className="text-lg font-bold text-slate-900 mt-6">Caso Especial: Força Perpendicular</h3>
             <p>Quando a força é perpendicular ao braço de alavanca (ângulo = 90°), sin(θ) = 1, então:</p>
             <div className="bg-orange-50 p-3 md:p-6 rounded-lg border border-orange-200 overflow-x-auto my-4">
-              <MathFormula formula="$$$$\\tau = r \\times F$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\tau = r \\times F$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Caso mais comum e mais fácil!</p>
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function EstaticaTopicTorque() {
             <p>Para um corpo estar completamente em equilíbrio (sem girar), a soma de todos os torques deve ser zero:</p>
             
             <div className="bg-orange-50 p-3 md:p-6 rounded-lg border border-orange-200 overflow-x-auto my-4">
-              <MathFormula formula="$$$$\\sum \\tau = 0$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\sum \\tau = 0$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">A soma de todos os torques é zero</p>
             </div>
 

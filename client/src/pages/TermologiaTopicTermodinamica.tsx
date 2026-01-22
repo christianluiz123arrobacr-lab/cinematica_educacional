@@ -72,7 +72,7 @@ export default function TermologiaTopicTermodinamica() {
               <h3 className="text-2xl font-bold text-slate-900 mb-4">A Fórmula</h3>
               
               <div className="bg-white border border-blue-300 rounded p-4 mb-4">
-                <MathFormula formula="$$$$\\Delta U = Q - W$$$$" display={true} />
+                <MathFormula formula={String.raw`$$$$\\Delta U = Q - W$$$$`} display={true} />
               </div>
 
               <div className="space-y-3 text-slate-700 mb-4">
@@ -94,7 +94,7 @@ export default function TermologiaTopicTermodinamica() {
               <p className="text-slate-700 text-sm mb-3">Um gás absorve 1.000 J de calor e realiza 600 J de trabalho. Qual é a variação de energia interna?</p>
               
               <div className="bg-white p-3 rounded mt-2">
-                <MathFormula formula="$$$$\\Delta U = Q - W = 1.000 - 600 = 400 \\text{ J}$$$$" display={true} />
+                <MathFormula formula={String.raw`$$$$\\Delta U = Q - W = 1.000 - 600 = 400 \\text{ J}$$$$`} display={true} />
                 <p className="text-slate-700 text-sm mt-2">Resposta: A energia interna aumentou em 400 J.</p>
               </div>
             </div>
@@ -114,7 +114,7 @@ export default function TermologiaTopicTermodinamica() {
               <h3 className="text-2xl font-bold text-slate-900 mb-4">A Fórmula</h3>
               
               <div className="bg-white border border-red-300 rounded p-4 mb-4">
-                <MathFormula formula="$$$$\\Delta S \\geq 0$$$$" display={true} />
+                <MathFormula formula={String.raw`$$$$\\Delta S \\geq 0$$$$`} display={true} />
               </div>
 
               <div className="space-y-3 text-slate-700 mb-4">
@@ -155,7 +155,7 @@ export default function TermologiaTopicTermodinamica() {
               <h3 className="text-2xl font-bold text-slate-900 mb-4">1️⃣ Processo Isotérmico (T = constante)</h3>
               <p className="text-slate-700 mb-3">Temperatura constante. Pressão e volume variam inversamente.</p>
               <div className="bg-white border border-blue-300 rounded p-3 mb-3">
-                <MathFormula formula="$$$$P \\cdot V = \\text{constante}$$$$" display={true} />
+                <MathFormula formula={String.raw`$$$$P \\cdot V = \\text{constante}$$$$`} display={true} />
               </div>
               <p className="text-slate-700 text-sm">Exemplo: Comprimir um gás muito lentamente, deixando ele resfriar.</p>
             </div>
@@ -165,7 +165,7 @@ export default function TermologiaTopicTermodinamica() {
               <h3 className="text-2xl font-bold text-slate-900 mb-4">2️⃣ Processo Adiabático (Q = 0)</h3>
               <p className="text-slate-700 mb-3">Sem troca de calor com o ambiente. Pressão, volume e temperatura variam.</p>
               <div className="bg-white border border-red-300 rounded p-3 mb-3">
-                <MathFormula formula="$$$$P \\cdot V^\\gamma = \\text{constante}$$$$" display={true} />
+                <MathFormula formula={String.raw`$$$$P \\cdot V^\\gamma = \\text{constante}$$$$`} display={true} />
               </div>
               <p className="text-slate-700 text-sm">Exemplo: Bomba de ar - quando você comprime rápido, esquenta.</p>
             </div>
@@ -175,7 +175,7 @@ export default function TermologiaTopicTermodinamica() {
               <h3 className="text-2xl font-bold text-slate-900 mb-4">3️⃣ Processo Isobárico (P = constante)</h3>
               <p className="text-slate-700 mb-3">Pressão constante. Volume e temperatura variam proporcionalmente.</p>
               <div className="bg-white border border-green-300 rounded p-3 mb-3">
-                <MathFormula formula="$$$$\\frac{V}{T} = \\text{constante}$$$$" display={true} />
+                <MathFormula formula={String.raw`$$$$\\frac{V}{T} = \\text{constante}$$$$`} display={true} />
               </div>
               <p className="text-slate-700 text-sm">Exemplo: Aquecedor de água aberto - pressão atmosférica constante.</p>
             </div>
@@ -185,7 +185,7 @@ export default function TermologiaTopicTermodinamica() {
               <h3 className="text-2xl font-bold text-slate-900 mb-4">4️⃣ Processo Isocórico (V = constante)</h3>
               <p className="text-slate-700 mb-3">Volume constante. Pressão e temperatura variam proporcionalmente.</p>
               <div className="bg-white border border-orange-300 rounded p-3 mb-3">
-                <MathFormula formula="$$$$\\frac{P}{T} = \\text{constante}$$$$" display={true} />
+                <MathFormula formula={String.raw`$$$$\\frac{P}{T} = \\text{constante}$$$$`} display={true} />
               </div>
               <p className="text-slate-700 text-sm">Exemplo: Panela de pressão - volume fixo, pressão aumenta com temperatura.</p>
             </div>
@@ -208,7 +208,7 @@ export default function TermologiaTopicTermodinamica() {
               <h3 className="text-2xl font-bold text-slate-900 mb-4">Eficiência de uma Máquina Térmica</h3>
               
               <div className="bg-white border border-blue-300 rounded p-4 mb-4">
-                <MathFormula formula="$$$$\\eta = \\frac{W}{Q_h} = \\frac{Q_h - Q_c}{Q_h} = 1 - \\frac{Q_c}{Q_h}$$$$" display={true} />
+                <MathFormula formula={String.raw`$$$$\\eta = \\frac{W}{Q_h} = \\frac{Q_h - Q_c}{Q_h} = 1 - \\frac{Q_c}{Q_h}$$$$`} display={true} />
               </div>
 
               <div className="space-y-3 text-slate-700 mb-4">
@@ -231,7 +231,7 @@ export default function TermologiaTopicTermodinamica() {
               <p className="text-slate-700 text-sm mb-3">Um motor absorve 1.000 J de calor e realiza 300 J de trabalho. Qual é a eficiência?</p>
               
               <div className="bg-white p-3 rounded mt-2">
-                <MathFormula formula="$$$$\\eta = \\frac{W}{Q_h} = \\frac{300}{1.000} = 0,3 = 30\\%$$$$" display={true} />
+                <MathFormula formula={String.raw`$$$$\\eta = \\frac{W}{Q_h} = \\frac{300}{1.000} = 0,3 = 30\\%$$$$`} display={true} />
                 <p className="text-slate-700 text-sm mt-2">Resposta: O motor tem 30% de eficiência. 700 J são desperdiçados como calor.</p>
               </div>
             </div>
@@ -251,7 +251,7 @@ export default function TermologiaTopicTermodinamica() {
               <h3 className="text-2xl font-bold text-slate-900 mb-4">Eficiência Máxima de Carnot</h3>
               
               <div className="bg-white border border-purple-300 rounded p-4 mb-4">
-                <MathFormula formula="$$$$\\eta_{Carnot} = 1 - \\frac{T_c}{T_h}$$$$" display={true} />
+                <MathFormula formula={String.raw`$$$$\\eta_{Carnot} = 1 - \\frac{T_c}{T_h}$$$$`} display={true} />
               </div>
 
               <div className="space-y-3 text-slate-700 mb-4">
@@ -272,7 +272,7 @@ export default function TermologiaTopicTermodinamica() {
               <p className="text-slate-700 text-sm mb-3">Uma máquina de Carnot opera entre 600 K (quente) e 300 K (frio). Qual é a eficiência máxima?</p>
               
               <div className="bg-white p-3 rounded mt-2">
-                <MathFormula formula="$$$$\\eta_{Carnot} = 1 - \\frac{300}{600} = 1 - 0,5 = 0,5 = 50\\%$$$$" display={true} />
+                <MathFormula formula={String.raw`$$$$\\eta_{Carnot} = 1 - \\frac{300}{600} = 1 - 0,5 = 0,5 = 50\\%$$$$`} display={true} />
                 <p className="text-slate-700 text-sm mt-2">Resposta: A eficiência máxima é 50%. Nenhuma máquina real pode fazer melhor.</p>
               </div>
             </div>

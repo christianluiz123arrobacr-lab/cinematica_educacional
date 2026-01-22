@@ -49,7 +49,7 @@ export default function EstaticaTopicEquilibrio() {
             <p>Para um corpo estar em equilíbrio, a soma de todas as forças deve ser zero:</p>
             
             <div className="bg-amber-50 p-3 md:p-6 rounded-lg border border-amber-200 overflow-x-auto my-4">
-              <MathFormula formula="$$$$\\sum \\vec{F} = 0$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\sum \\vec{F} = 0$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">A soma vetorial de todas as forças é zero</p>
             </div>
 
@@ -110,7 +110,7 @@ export default function EstaticaTopicEquilibrio() {
             <h3 className="text-lg font-bold text-slate-900 mt-6">Passo 3: Aplique a Condição de Equilíbrio</h3>
             <p>Para cada direção, a soma das forças deve ser zero:</p>
             <div className="bg-amber-50 p-3 md:p-6 rounded-lg border border-amber-200 overflow-x-auto my-4">
-              <MathFormula formula="$$$$\\sum F_x = 0 \\quad \\text{e} \\quad \\sum F_y = 0$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\sum F_x = 0 \\quad \\text{e} \\quad \\sum F_y = 0$$$$`} className="text-center text-lg md:text-2xl mb-4" />
             </div>
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">Exemplo Prático</h3>

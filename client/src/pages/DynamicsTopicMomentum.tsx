@@ -43,14 +43,14 @@ export default function DynamicsTopicMomentum() {
           <div className="space-y-4 text-slate-700 leading-relaxed">
             <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto mb-3">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula Principal:</p>
-              <MathFormula formula="$$$$\\vec{p} = m \\cdot \\vec{v}$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\vec{p} = m \\cdot \\vec{v}$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">Onde: p = momentum (kg·m/s), m = massa (kg), v = velocidade (m/s)</p>
             </div>
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">Relação com a Segunda Lei de Newton</h3>
             <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto mb-3">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Forma Alternativa:</p>
-              <MathFormula formula="$$$$\\vec{F} = \\frac{d\\vec{p}}{dt}$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\vec{F} = \\frac{d\\vec{p}}{dt}$$$$`} className="text-center text-lg md:text-2xl mb-4" />
             </div>
 
             <p>A Segunda Lei de Newton pode ser reescrita em termos de momentum: a força resultante é a taxa de variação do momentum em relação ao tempo. Isto é, uma força causa mudança no momentum. Essa forma é particularmente útil quando a massa está mudando (como em um foguete que está queimando combustível).</p>
@@ -58,10 +58,10 @@ export default function DynamicsTopicMomentum() {
             <h3 className="text-lg font-bold text-slate-900 mt-6">Impulso</h3>
             <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto mb-3">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula de Impulso:</p>
-              <MathFormula formula="$$$$\\vec{I} = \\vec{F} \\cdot \\Delta t$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\vec{I} = \\vec{F} \\cdot \\Delta t$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               
               <p className="text-center text-sm md:text-lg font-semibold mb-3 mt-6">Teorema do Impulso:</p>
-              <MathFormula formula="$$$$\\vec{I} = \\Delta \\vec{p} = \\vec{p}_f - \\vec{p}_i$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\vec{I} = \\Delta \\vec{p} = \\vec{p}_f - \\vec{p}_i$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">Onde: I = impulso (N·s), F = força (N), Δt = intervalo de tempo (s)</p>
             </div>
 
@@ -77,10 +77,10 @@ export default function DynamicsTopicMomentum() {
 
             <div className="bg-emerald-50 p-3 md:p-6 rounded-lg border border-emerald-200 overflow-x-auto mb-3">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Princípio de Conservação:</p>
-              <MathFormula formula="$$$$\\vec{p}_{\\text{inicial}} = \\vec{p}_{\\text{final}}$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\vec{p}_{\\text{inicial}} = \\vec{p}_{\\text{final}}$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               
               <p className="text-center text-sm md:text-lg font-semibold mb-3 mt-6">Para Dois Corpos em Colisão:</p>
-              <MathFormula formula="$$$$m_1 \\vec{v}_{1i} + m_2 \\vec{v}_{2i} = m_1 \\vec{v}_{1f} + m_2 \\vec{v}_{2f}$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$m_1 \\vec{v}_{1i} + m_2 \\vec{v}_{2i} = m_1 \\vec{v}_{1f} + m_2 \\vec{v}_{2f}$$$$`} className="text-center text-lg md:text-2xl mb-4" />
             </div>
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">Importante: Momentum vs. Energia</h3>
@@ -97,8 +97,8 @@ export default function DynamicsTopicMomentum() {
               <p>Em uma colisão elástica, tanto o momentum quanto a energia cinética são conservados. Os objetos não se deformam permanentemente e não há perda de energia. Colisões elásticas são raras na natureza, mas ocorrem aproximadamente entre bolas de bilhar ou entre partículas subatômicas.</p>
               <div className="bg-blue-50 p-3 md:p-6 rounded-lg border border-blue-200 overflow-x-auto mt-3">
                 <p className="text-center text-sm md:text-lg font-semibold mb-3">Conservação em Colisão Elástica:</p>
-                <MathFormula formula="$$$$m_1 v_{1i} + m_2 v_{2i} = m_1 v_{1f} + m_2 v_{2f}$$$$" className="text-center text-lg md:text-2xl mb-4" />
-                <MathFormula formula="$$$$\\frac{1}{2}m_1 v_{1i}^2 + \\frac{1}{2}m_2 v_{2i}^2 = \\frac{1}{2}m_1 v_{1f}^2 + \\frac{1}{2}m_2 v_{2f}^2$$$$" className="text-center text-lg md:text-2xl mb-4" />
+                <MathFormula formula={String.raw`$$$$m_1 v_{1i} + m_2 v_{2i} = m_1 v_{1f} + m_2 v_{2f}$$$$`} className="text-center text-lg md:text-2xl mb-4" />
+                <MathFormula formula={String.raw`$$$$\\frac{1}{2}m_1 v_{1i}^2 + \\frac{1}{2}m_2 v_{2i}^2 = \\frac{1}{2}m_1 v_{1f}^2 + \\frac{1}{2}m_2 v_{2f}^2$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               </div>
             </div>
 
@@ -107,7 +107,7 @@ export default function DynamicsTopicMomentum() {
               <p>Em uma colisão inelástica, o momentum é conservado, mas a energia cinética não é. Parte da energia cinética é convertida em calor, som, deformação, etc. A maioria das colisões no mundo real são inelásticas. Um caso especial é a colisão perfeitamente inelástica, onde os objetos ficam juntos após a colisão.</p>
               <div className="bg-orange-50 p-3 md:p-6 rounded-lg border border-orange-200 overflow-x-auto mt-3">
                 <p className="text-center text-sm md:text-lg font-semibold mb-3">Colisão Perfeitamente Inelástica:</p>
-                <MathFormula formula="$$$$m_1 v_{1i} + m_2 v_{2i} = (m_1 + m_2) v_f$$$$" className="text-center text-lg md:text-2xl mb-4" />
+                <MathFormula formula={String.raw`$$$$m_1 v_{1i} + m_2 v_{2i} = (m_1 + m_2) v_f$$$$`} className="text-center text-lg md:text-2xl mb-4" />
                 <p className="text-sm text-slate-600">Os objetos se movem juntos com a mesma velocidade final.</p>
               </div>
             </div>

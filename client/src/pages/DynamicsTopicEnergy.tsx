@@ -45,15 +45,15 @@ export default function DynamicsTopicEnergy() {
 
             <div className="bg-yellow-50 p-3 md:p-6 rounded-lg border border-yellow-200 overflow-x-auto mb-3">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula Principal:</p>
-              <MathFormula formula="$$$$W = F \\cdot d \\cdot \\cos(\\theta)$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$W = F \\cdot d \\cdot \\cos(\\theta)$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">Onde: W = trabalho (J), F = força (N), d = deslocamento (m), θ = ângulo entre F e d</p>
             </div>
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">Casos Especiais</h3>
             <div className="bg-yellow-50 p-3 md:p-6 rounded-lg border border-yellow-200 overflow-x-auto mb-3">
-              <MathFormula formula="$$$$\\theta = 0° \\Rightarrow W = F \\cdot d \\quad (\\text{máximo trabalho positivo})$$$$" className="text-center text-lg md:text-2xl mb-4" />
-              <MathFormula formula="$$$$\\theta = 90° \\Rightarrow W = 0 \\quad (\\text{nenhum trabalho})$$$$" className="text-center text-lg md:text-2xl mb-4" />
-              <MathFormula formula="$$$$\\theta = 180° \\Rightarrow W = -F \\cdot d \\quad (\\text{máximo trabalho negativo})$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\theta = 0° \\Rightarrow W = F \\cdot d \\quad (\\text{máximo trabalho positivo})$$$$`} className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\theta = 90° \\Rightarrow W = 0 \\quad (\\text{nenhum trabalho})$$$$`} className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\theta = 180° \\Rightarrow W = -F \\cdot d \\quad (\\text{máximo trabalho negativo})$$$$`} className="text-center text-lg md:text-2xl mb-4" />
             </div>
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">Interpretação Física</h3>
@@ -85,14 +85,14 @@ export default function DynamicsTopicEnergy() {
 
             <div className="bg-orange-50 p-3 md:p-6 rounded-lg border border-orange-200 overflow-x-auto mb-3">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula Principal:</p>
-              <MathFormula formula="$$$$E_c = \\frac{1}{2} \\cdot m \\cdot v^2$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$E_c = \\frac{1}{2} \\cdot m \\cdot v^2$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">Onde: E_c = energia cinética (J), m = massa (kg), v = velocidade (m/s)</p>
             </div>
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">Teorema do Trabalho-Energia</h3>
             <div className="bg-orange-50 p-3 md:p-6 rounded-lg border border-orange-200 overflow-x-auto mb-3">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Relação Fundamental:</p>
-              <MathFormula formula="$$$$W = \\Delta E_c = E_{c,f} - E_{c,i}$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$W = \\Delta E_c = E_{c,f} - E_{c,i}$$$$`} className="text-center text-lg md:text-2xl mb-4" />
             </div>
 
             <p>O Teorema do Trabalho-Energia estabelece que o trabalho realizado sobre um corpo é igual à variação de sua energia cinética. Se o trabalho é positivo, a energia cinética aumenta e o objeto acelera. Se é negativo, a energia cinética diminui e o objeto desacelera.</p>
@@ -110,7 +110,7 @@ export default function DynamicsTopicEnergy() {
 
             <div className="bg-red-50 p-3 md:p-6 rounded-lg border border-red-200 overflow-x-auto mb-3">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula Principal:</p>
-              <MathFormula formula="$$$$E_p = m \\cdot g \\cdot h$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$E_p = m \\cdot g \\cdot h$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600">Onde: E_p = energia potencial (J), m = massa (kg), g = gravidade (m/s²), h = altura (m)</p>
             </div>
 
@@ -119,7 +119,7 @@ export default function DynamicsTopicEnergy() {
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">Variação de Energia Potencial</h3>
             <div className="bg-red-50 p-3 md:p-6 rounded-lg border border-red-200 overflow-x-auto mb-3">
-              <MathFormula formula="$$$$\\Delta E_p = m \\cdot g \\cdot \\Delta h$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\Delta E_p = m \\cdot g \\cdot \\Delta h$$$$`} className="text-center text-lg md:text-2xl mb-4" />
             </div>
           </div>
         </Card>
@@ -132,10 +132,10 @@ export default function DynamicsTopicEnergy() {
 
             <div className="bg-indigo-50 p-3 md:p-6 rounded-lg border border-indigo-200 overflow-x-auto mb-3">
               <p className="text-center text-sm md:text-lg font-semibold mb-3">Princípio Fundamental:</p>
-              <MathFormula formula="$$$$E_{\\text{mecânica}} = E_c + E_p = \\text{constante}$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$E_{\\text{mecânica}} = E_c + E_p = \\text{constante}$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               
               <p className="text-center text-sm md:text-lg font-semibold mb-3 mt-6">Em um Sistema Isolado:</p>
-              <MathFormula formula="$$$$E_{c,i} + E_{p,i} = E_{c,f} + E_{p,f}$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$E_{c,i} + E_{p,i} = E_{c,f} + E_{p,f}$$$$`} className="text-center text-lg md:text-2xl mb-4" />
             </div>
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">Exemplo: Bola Lançada para Cima</h3>

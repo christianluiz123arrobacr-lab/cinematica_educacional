@@ -54,7 +54,7 @@ export default function DynamicsTopicNewton() {
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">A Fórmula da Primeira Lei</h3>
             <div className="bg-blue-50 p-3 md:p-6 rounded-lg border border-blue-200 overflow-x-auto my-4">
-              <MathFormula formula="$$$$\\sum \\vec{F} = 0 \\Rightarrow \\vec{a} = 0$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\sum \\vec{F} = 0 \\Rightarrow \\vec{a} = 0$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Se a força resultante é zero, não há aceleração (repouso ou movimento uniforme)</p>
             </div>
 
@@ -90,7 +90,7 @@ export default function DynamicsTopicNewton() {
 
             <h3 className="text-lg font-bold text-slate-900 mt-6">A Fórmula Mais Importante da Física</h3>
             <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto my-4">
-              <MathFormula formula="$$$$F = m \\cdot a$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$F = m \\cdot a$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center"><strong>Força = Massa × Aceleração</strong></p>
             </div>
 
@@ -169,7 +169,7 @@ export default function DynamicsTopicNewton() {
             <p>Quando você empurra algo, esse algo também o empurra de volta com a mesma força! Essas forças são iguais em magnitude, mas apontam em direções opostas.</p>
 
             <div className="bg-orange-50 p-3 md:p-6 rounded-lg border border-orange-200 overflow-x-auto my-4">
-              <MathFormula formula="$$$$\\vec{F}_{A \\to B} = -\\vec{F}_{B \\to A}$$$$" className="text-center text-lg md:text-2xl mb-4" />
+              <MathFormula formula={String.raw`$$$$\\vec{F}_{A \\to B} = -\\vec{F}_{B \\to A}$$$$`} className="text-center text-lg md:text-2xl mb-4" />
               <p className="text-sm text-slate-600 text-center">Força de A em B = - Força de B em A</p>
             </div>
 

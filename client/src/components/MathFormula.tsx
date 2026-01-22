@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { useMathJax } from '@/hooks/useMathJax';
 
 interface MathFormulaProps {
   formula: string;
@@ -9,37 +8,53 @@ interface MathFormulaProps {
 
 export function MathFormula({ formula, display = true, className = '' }: MathFormulaProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const { renderMath } = useMathJax();
 
   useEffect(() => {
-    if (ref.current) {
-      // Renderizar MathJax no elemento específico após um pequeno delay
-      const timer = setTimeout(() => {
-        renderMath(ref.current);
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [formula, renderMath]);
+    if (!ref.current) return;
 
-  // Usar delimitadores corretos: $ $ para inline, $$ $$ para display
+    // Função para renderizar MathJax
+    const renderMath = async () => {
+      if (typeof window !== 'undefined' && (window as any).MathJax) {
+        try {
+          // Limpar renderizações anteriores
+          (window as any).MathJax.typesetClear?.([ref.current]);
+          
+          // Renderizar o elemento específico
+          await (window as any).MathJax.typesetPromise?.([ref.current]);
+        } catch (error) {
+          console.log('MathJax render error:', error);
+        }
+      }
+    };
+
+    // Renderizar imediatamente
+    renderMath();
+
+    // Também renderizar após um pequeno delay para garantir
+    const timer = setTimeout(renderMath, 100);
+    return () => clearTimeout(timer);
+  }, [formula]);
+
+  // Delimitadores corretos: $$ para display, $ para inline
   const delimiter = display ? '$$' : '$';
-  const htmlContent = `${delimiter}${formula}${delimiter}`;
+  const content = `${delimiter}${formula}${delimiter}`;
 
   return (
-    <div 
-      ref={ref} 
+    <div
+      ref={ref}
       className={className}
-      style={{ 
+      style={{
         display: display ? 'block' : 'inline-block',
         textAlign: display ? 'center' : 'inherit',
         padding: display ? '1rem 0' : '0',
         margin: display ? '0.5rem 0' : '0',
         overflow: 'visible',
-        minHeight: display ? '2rem' : 'auto',
+        minHeight: display ? '2.5rem' : 'auto',
         border: 'none',
-        background: 'transparent'
+        background: 'transparent',
+        lineHeight: display ? '1.5' : 'inherit'
       }}
-      dangerouslySetInnerHTML={{ __html: htmlContent }}
+      dangerouslySetInnerHTML={{ __html: content }}
     />
   );
 }

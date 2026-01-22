@@ -362,7 +362,7 @@ export default function Calculator() {
                 <div>
                   <h2 className="text-3xl font-bold text-slate-900">MRU</h2>
                   <div className="mt-2">
-                    <MathFormula formula="$$$$s = s_0 + v \\cdot t$$$$" className="text-sm" />
+                    <MathFormula formula={String.raw`$$$$s = s_0 + v \\cdot t$$$$`} className="text-sm" />
                   </div>
                 </div>
                 <Button variant="outline" size="sm" onClick={resetMRU}>
@@ -532,7 +532,7 @@ export default function Calculator() {
                 <div>
                   <h2 className="text-3xl font-bold text-slate-900">Torricelli</h2>
                   <div className="mt-2">
-                    <MathFormula formula="$$$$V^2 = V_0^2 + 2 \\cdot a \\cdot \\Delta S$$$$" className="text-sm" />
+                    <MathFormula formula={String.raw`$$$$V^2 = V_0^2 + 2 \\cdot a \\cdot \\Delta S$$$$`} className="text-sm" />
                   </div>
                 </div>
                 <Button variant="outline" size="sm" onClick={resetTorricelli}>
@@ -611,7 +611,7 @@ export default function Calculator() {
                 <div>
                   <h2 className="text-3xl font-bold text-slate-900">Queda Livre</h2>
                   <div className="mt-2">
-                    <MathFormula formula="$$$$V = V_0 + g \\cdot t$$$$" className="text-sm" />
+                    <MathFormula formula={String.raw`$$$$V = V_0 + g \\cdot t$$$$`} className="text-sm" />
                   </div>
                 </div>
                 <Button variant="outline" size="sm" onClick={resetFreeFall}>
@@ -690,7 +690,7 @@ export default function Calculator() {
                 <div>
                   <h2 className="text-3xl font-bold text-slate-900">MCU</h2>
                   <div className="mt-2">
-                    <MathFormula formula="$$$$v = \\frac{2\\pi r}{T}$$$$" className="text-sm" />
+                    <MathFormula formula={String.raw`$$$$v = \\frac{2\\pi r}{T}$$$$`} className="text-sm" />
                   </div>
                 </div>
                 <Button variant="outline" size="sm" onClick={resetMCU}>
