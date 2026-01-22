@@ -78,7 +78,7 @@ export default function FisicaIIHome() {
           </Link>
 
           {/* Ondulatória */}
-          <Link href="/ondulatoria/topic/conceitos">
+          <Link href="/ondulatoria">
             <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-cyan-400 cursor-pointer">
               <div className="bg-gradient-to-br from-cyan-500 to-blue-600 p-8 text-white">
                 <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
