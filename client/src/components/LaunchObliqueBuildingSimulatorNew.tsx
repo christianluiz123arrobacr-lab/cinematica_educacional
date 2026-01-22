@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
 import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
+import { formatNumber, formatUnit } from "@/lib/utils";
 
 interface LaunchObliqueBuildingSimulatorNewProps {
   isRunning: boolean;
@@ -31,6 +32,9 @@ export const LaunchObliqueBuildingSimulatorNew: React.FC<LaunchObliqueBuildingSi
   const discriminant = v0y * v0y + 2 * g * h0;
   const tTotal = (v0y + Math.sqrt(discriminant)) / g;
   const alcance = v0x * tTotal;
+
+  // Fator de velocidade da animação
+  const speedFactor = 0.5;
 
   const getStructureType = () => {
     if (h0 < 0.15) return "mesa";
@@ -104,7 +108,7 @@ export const LaunchObliqueBuildingSimulatorNew: React.FC<LaunchObliqueBuildingSi
       ctx.setLineDash([]);
 
       // Tempo atual
-      const t = (frameCountRef.current / 60) * tTotal;
+      const t = (frameCountRef.current / 60) * speedFactor;
 
       if (t <= tTotal) {
         // Posição
@@ -127,21 +131,21 @@ export const LaunchObliqueBuildingSimulatorNew: React.FC<LaunchObliqueBuildingSi
         const arrowScale = 15;
         drawArrow(ctx, x, y, x + vx * arrowScale, y - vy * arrowScale, "#ef4444", 2);
 
-        // Textos
+        // Textos no Canvas
         ctx.fillStyle = "#1e293b";
         ctx.font = "bold 12px Arial";
-        ctx.fillText(`t = ${t.toFixed(2)}s`, 10, 25);
-        ctx.fillText(`v = ${vMag.toFixed(2)} m/s`, 10, 40);
-        ctx.fillText(`x = ${(v0x * t).toFixed(2)} m`, 10, 55);
-        ctx.fillText(`y = ${((h0 + v0y * t - 0.5 * g * t * t) || 0).toFixed(2)} m`, 10, 70);
-        ctx.fillText(`h_max = ${hMax.toFixed(2)} m`, width - 150, 25);
-        ctx.fillText(`t_subida = ${tSubida.toFixed(2)}s`, width - 150, 40);
-        ctx.fillText(`t_total = ${tTotal.toFixed(2)}s`, width - 150, 55);
-        ctx.fillText(`alcance = ${alcance.toFixed(2)} m`, width - 150, 70);
+        ctx.fillText(`t = ${formatUnit(t, "s")}`, 10, 25);
+        ctx.fillText(`v = ${formatUnit(vMag, "m/s")}`, 10, 40);
+        ctx.fillText(`x = ${formatUnit(v0x * t, "m")}`, 10, 55);
+        ctx.fillText(`y = ${formatUnit((h0 + v0y * t - 0.5 * g * t * t) || 0, "m")}`, 10, 70);
+        ctx.fillText(`h_max = ${formatUnit(hMax, "m")}`, width - 150, 25);
+        ctx.fillText(`t_subida = ${formatUnit(tSubida, "s")}`, width - 150, 40);
+        ctx.fillText(`t_total = ${formatUnit(tTotal, "s")}`, width - 150, 55);
+        ctx.fillText(`alcance = ${formatUnit(alcance, "m")}`, width - 150, 70);
       }
 
       if (isRunning) {
-        if (frameCountRef.current > 60 * tTotal) {
+        if ((frameCountRef.current / 60) * speedFactor > tTotal) {
           frameCountRef.current = 0;
         } else {
           frameCountRef.current += 1;
@@ -176,7 +180,7 @@ export const LaunchObliqueBuildingSimulatorNew: React.FC<LaunchObliqueBuildingSi
           <div>
             <div className="flex justify-between mb-2">
               <label className="text-sm font-semibold text-slate-700">Velocidade (<MathFormula formula={String.raw`$v_0$`} />)</label>
-              <span className="text-sm font-bold text-blue-600">{v0.toFixed(2)} m/s</span>
+              <span className="text-sm font-bold text-blue-600">{formatUnit(v0, "m/s")}</span>
             </div>
             <Slider
               value={[v0]}
@@ -191,7 +195,7 @@ export const LaunchObliqueBuildingSimulatorNew: React.FC<LaunchObliqueBuildingSi
           <div>
             <div className="flex justify-between mb-2">
               <label className="text-sm font-semibold text-slate-700">Ângulo (<MathFormula formula={String.raw`$\theta$`} />)</label>
-              <span className="text-sm font-bold text-green-600">{angle.toFixed(1)}°</span>
+              <span className="text-sm font-bold text-green-600">{formatNumber(angle, 1)}°</span>
             </div>
             <Slider
               value={[angle]}
@@ -206,7 +210,7 @@ export const LaunchObliqueBuildingSimulatorNew: React.FC<LaunchObliqueBuildingSi
           <div>
             <div className="flex justify-between mb-2">
               <label className="text-sm font-semibold text-slate-700">Altura (<MathFormula formula={String.raw`$h_0$`} />)</label>
-              <span className="text-sm font-bold text-purple-600">{h0.toFixed(2)} m</span>
+              <span className="text-sm font-bold text-purple-600">{formatUnit(h0, "m")}</span>
             </div>
             <Slider
               value={[h0]}
@@ -221,31 +225,69 @@ export const LaunchObliqueBuildingSimulatorNew: React.FC<LaunchObliqueBuildingSi
 
         {/* Resultados */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
-          <h4 className="font-bold text-slate-900">Cálculos</h4>
+          <h4 className="font-bold text-slate-900">Resultados</h4>
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-slate-600"><MathFormula formula={String.raw`$v_{0x} = v_0\cos\theta$`} />:</span>
-              <span className="font-bold text-slate-900">{v0x.toFixed(3)} m/s</span>
+              <span className="text-slate-600"><MathFormula formula={String.raw`$v_{0x}$`} />:</span>
+              <span className="font-bold text-slate-900">{formatUnit(v0x, "m/s")}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600"><MathFormula formula={String.raw`$v_{0y} = v_0\sin\theta$`} />:</span>
-              <span className="font-bold text-slate-900">{v0y.toFixed(3)} m/s</span>
+              <span className="text-slate-600"><MathFormula formula={String.raw`$v_{0y}$`} />:</span>
+              <span className="font-bold text-slate-900">{formatUnit(v0y, "m/s")}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600"><MathFormula formula={String.raw`$h_{max} = h_0 + \frac{v_{0y}^2}{2g}$`} />:</span>
-              <span className="font-bold text-slate-900">{hMax.toFixed(3)} m</span>
+              <span className="text-slate-600"><MathFormula formula={String.raw`$h_{max}$`} />:</span>
+              <span className="font-bold text-slate-900">{formatUnit(hMax, "m")}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600"><MathFormula formula={String.raw`$t_s = \frac{v_{0y}}{g}$`} />:</span>
-              <span className="font-bold text-slate-900">{tSubida.toFixed(3)} s</span>
+              <span className="text-slate-600"><MathFormula formula={String.raw`$t_s$`} />:</span>
+              <span className="font-bold text-slate-900">{formatUnit(tSubida, "s")}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600">Tempo total (<MathFormula formula={String.raw`$h_0 + v_{0y}t - \frac{1}{2}gt^2 = 0$`} />):</span>
-              <span className="font-bold text-slate-900">{tTotal.toFixed(3)} s</span>
+              <span className="text-slate-600">Tempo total (<MathFormula formula={String.raw`$t_t$`} />):</span>
+              <span className="font-bold text-slate-900">{formatUnit(tTotal, "s")}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600">Alcance (<MathFormula formula={String.raw`$A = v_{0x} \cdot t_t$`} />):</span>
-              <span className="font-bold text-slate-900">{alcance.toFixed(3)} m</span>
+              <span className="text-slate-600">Alcance (<MathFormula formula={String.raw`$A$`} />):</span>
+              <span className="font-bold text-slate-900">{formatUnit(alcance, "m")}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Cálculos Detalhados */}
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-4">
+          <h4 className="font-bold text-slate-900">Cálculos Detalhados</h4>
+          
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-slate-700 mb-1">Decomposição da Velocidade</p>
+              <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
+                <MathFormula formula={String.raw`$$ v_{0x} = v_0 \cdot \cos\theta = ${formatNumber(v0)} \cdot \cos(${formatNumber(angle, 1)}^\circ) = ${formatUnit(v0x, "m/s")} $$`} />
+                <div className="mt-2"></div>
+                <MathFormula formula={String.raw`$$ v_{0y} = v_0 \cdot \sin\theta = ${formatNumber(v0)} \cdot \sin(${formatNumber(angle, 1)}^\circ) = ${formatUnit(v0y, "m/s")} $$`} />
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm font-semibold text-slate-700 mb-1">Altura Máxima</p>
+              <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
+                <MathFormula formula={String.raw`$$ h_{max} = h_0 + \frac{v_{0y}^2}{2g} = ${formatNumber(h0)} + \frac{${formatNumber(v0y)}^2}{2 \cdot ${formatNumber(g)}} = ${formatUnit(hMax, "m")} $$`} />
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm font-semibold text-slate-700 mb-1">Tempo Total (Equação do 2º Grau)</p>
+              <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
+                <p className="text-xs text-slate-500 mb-2">Resolvemos: <MathFormula formula={String.raw`$h_0 + v_{0y}t - \frac{1}{2}gt^2 = 0$`} /></p>
+                <MathFormula formula={String.raw`$$ t_t = \frac{v_{0y} + \sqrt{v_{0y}^2 + 2gh_0}}{g} = \frac{${formatNumber(v0y)} + \sqrt{${formatNumber(v0y)}^2 + 2 \cdot ${formatNumber(g)} \cdot ${formatNumber(h0)}}}{${formatNumber(g)}} = ${formatUnit(tTotal, "s")} $$`} />
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm font-semibold text-slate-700 mb-1">Alcance Horizontal</p>
+              <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
+                <MathFormula formula={String.raw`$$ A = v_{0x} \cdot t_t = ${formatNumber(v0x)} \cdot ${formatNumber(tTotal)} = ${formatUnit(alcance, "m")} $$`} />
+              </div>
             </div>
           </div>
         </div>
@@ -256,17 +298,20 @@ export const LaunchObliqueBuildingSimulatorNew: React.FC<LaunchObliqueBuildingSi
 
 function drawStructure(ctx: CanvasRenderingContext2D, x: number, y: number, height: number, type: string) {
   if (type === "mesa") {
+    // Mesa
     ctx.fillStyle = "#8b7355";
     ctx.fillRect(x - 40, y, 80, 8);
     ctx.fillStyle = "#a0826d";
     ctx.fillRect(x - 5, y + 8, 10, height);
   } else if (type === "casa") {
+    // Casa
     ctx.fillStyle = "#d97706";
     ctx.fillRect(x - 40, y, 80, height);
     ctx.fillStyle = "#92400e";
     ctx.fillRect(x - 35, y + 10, 15, 15);
     ctx.fillRect(x + 20, y + 10, 15, 15);
   } else {
+    // Prédio
     ctx.fillStyle = "#64748b";
     ctx.fillRect(x - 40, y, 80, height);
     ctx.strokeStyle = "#475569";

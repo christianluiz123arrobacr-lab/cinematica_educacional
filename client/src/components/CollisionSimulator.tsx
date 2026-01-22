@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
-import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
+import { formatNumber, formatUnit } from "@/lib/utils";
 
 interface CollisionSimulatorProps {
   isRunning: boolean;
@@ -21,13 +21,16 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
   const frameCountRef = useRef(0);
   const animationIdRef = useRef<number | null>(null);
 
-  // Cálculos de colisão
+  // Cálculos de colisão elástica unidimensional
   const v1After = ((m1 - m2) * v1Initial + 2 * m2 * v2Initial) / (m1 + m2);
   const v2After = ((m2 - m1) * v2Initial + 2 * m1 * v1Initial) / (m1 + m2);
   const pInitial = m1 * v1Initial + m2 * v2Initial;
   const pFinal = m1 * v1After + m2 * v2After;
   const ecInitial = 0.5 * m1 * v1Initial * v1Initial + 0.5 * m2 * v2Initial * v2Initial;
   const ecFinal = 0.5 * m1 * v1After * v1After + 0.5 * m2 * v2After * v2After;
+
+  // Fator de velocidade da animação
+  const speedFactor = 0.5;
 
   useEffect(() => {
     frameCountRef.current = 0;
@@ -61,15 +64,18 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
 
       let x1, x2, v1Current, v2Current;
 
-      if (frameCountRef.current < collisionFrame) {
+      // Ajuste de velocidade da animação
+      const currentFrame = frameCountRef.current * speedFactor;
+
+      if (currentFrame < collisionFrame) {
         // Antes da colisão
-        x1 = 80 + v1Initial * frameCountRef.current * 2.5;
-        x2 = width - 80 - v2Initial * frameCountRef.current * 2.5;
+        x1 = 80 + v1Initial * currentFrame * 2.5;
+        x2 = width - 80 - v2Initial * currentFrame * 2.5;
         v1Current = v1Initial;
         v2Current = v2Initial;
       } else {
         // Depois da colisão
-        const t = frameCountRef.current - collisionFrame;
+        const t = currentFrame - collisionFrame;
         x1 = width / 2 - 60 + v1After * t * 2.5;
         x2 = width / 2 + 60 + v2After * t * 2.5;
         v1Current = v1After;
@@ -98,17 +104,17 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
       drawArrow(ctx, x1, height / 2 - 40, x1 + v1Current * 20, height / 2 - 40, "#3b82f6", 3);
       drawArrow(ctx, x2, height / 2 - 40, x2 + v2Current * 20, height / 2 - 40, "#ef4444", 3);
 
-      // Textos
+      // Textos no Canvas
       ctx.fillStyle = "#1e293b";
       ctx.font = "bold 12px Arial";
-      ctx.fillText(`m₁ = ${m1.toFixed(1)} kg`, x1 - 30, height / 2 + 45);
-      ctx.fillText(`m₂ = ${m2.toFixed(1)} kg`, x2 - 30, height / 2 + 45);
-      ctx.fillText(`v₁ = ${v1Current.toFixed(2)} m/s`, x1 - 40, height / 2 - 55);
-      ctx.fillText(`v₂ = ${v2Current.toFixed(2)} m/s`, x2 - 40, height / 2 - 55);
+      ctx.fillText(`m₁ = ${formatUnit(m1, "kg")}`, x1 - 30, height / 2 + 45);
+      ctx.fillText(`m₂ = ${formatUnit(m2, "kg")}`, x2 - 30, height / 2 + 45);
+      ctx.fillText(`v₁ = ${formatUnit(v1Current, "m/s")}`, x1 - 40, height / 2 - 55);
+      ctx.fillText(`v₂ = ${formatUnit(v2Current, "m/s")}`, x2 - 40, height / 2 - 55);
 
       // Status
       ctx.font = "bold 13px Arial";
-      if (frameCountRef.current < collisionFrame) {
+      if (currentFrame < collisionFrame) {
         ctx.fillText("ANTES DA COLISÃO", 10, 25);
       } else {
         ctx.fillText("APÓS COLISÃO", 10, 25);
@@ -116,14 +122,14 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
 
       // Informações de conservação
       ctx.font = "11px Arial";
-      ctx.fillText(`p_inicial = ${pInitial.toFixed(2)} kg·m/s`, 10, 45);
-      ctx.fillText(`p_final = ${pFinal.toFixed(2)} kg·m/s`, 10, 60);
-      ctx.fillText(`Δp = ${Math.abs(pInitial - pFinal).toFixed(3)} kg·m/s`, 10, 75);
-      ctx.fillText(`EC_inicial = ${ecInitial.toFixed(2)} J`, 10, 90);
-      ctx.fillText(`EC_final = ${ecFinal.toFixed(2)} J`, 10, 105);
+      ctx.fillText(`p_inicial = ${formatUnit(pInitial, "kg·m/s")}`, 10, 45);
+      ctx.fillText(`p_final = ${formatUnit(pFinal, "kg·m/s")}`, 10, 60);
+      ctx.fillText(`Δp = ${formatUnit(Math.abs(pInitial - pFinal), "kg·m/s")}`, 10, 75);
+      ctx.fillText(`EC_inicial = ${formatUnit(ecInitial, "J")}`, 10, 90);
+      ctx.fillText(`EC_final = ${formatUnit(ecFinal, "J")}`, 10, 105);
 
       if (isRunning) {
-        if (frameCountRef.current > 200) {
+        if (currentFrame > 200) {
           frameCountRef.current = 0;
         } else {
           frameCountRef.current += 1;
@@ -162,7 +168,7 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
             <div>
               <div className="flex justify-between mb-2">
                 <label className="text-sm font-semibold text-slate-700">Massa (m₁)</label>
-                <span className="text-sm font-bold text-blue-600">{m1.toFixed(2)} kg</span>
+                <span className="text-sm font-bold text-blue-600">{formatUnit(m1, "kg")}</span>
               </div>
               <Slider
                 value={[m1]}
@@ -177,7 +183,7 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
             <div>
               <div className="flex justify-between mb-2">
                 <label className="text-sm font-semibold text-slate-700">Velocidade Inicial (v₁)</label>
-                <span className="text-sm font-bold text-blue-600">{v1Initial.toFixed(2)} m/s</span>
+                <span className="text-sm font-bold text-blue-600">{formatUnit(v1Initial, "m/s")}</span>
               </div>
               <Slider
                 value={[v1Initial]}
@@ -197,7 +203,7 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
             <div>
               <div className="flex justify-between mb-2">
                 <label className="text-sm font-semibold text-slate-700">Massa (m₂)</label>
-                <span className="text-sm font-bold text-red-600">{m2.toFixed(2)} kg</span>
+                <span className="text-sm font-bold text-red-600">{formatUnit(m2, "kg")}</span>
               </div>
               <Slider
                 value={[m2]}
@@ -212,7 +218,7 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
             <div>
               <div className="flex justify-between mb-2">
                 <label className="text-sm font-semibold text-slate-700">Velocidade Inicial (v₂)</label>
-                <span className="text-sm font-bold text-red-600">{v2Initial.toFixed(2)} m/s</span>
+                <span className="text-sm font-bold text-red-600">{formatUnit(v2Initial, "m/s")}</span>
               </div>
               <Slider
                 value={[v2Initial]}
@@ -232,27 +238,52 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-slate-600">Velocidade 1 após (<MathFormula formula={String.raw`$v'_1$`} />):</p>
-              <p className="font-bold text-blue-600">{v1After.toFixed(3)} m/s</p>
+              <p className="font-bold text-blue-600">{formatUnit(v1After, "m/s")}</p>
             </div>
             <div>
               <p className="text-slate-600">Velocidade 2 após (<MathFormula formula={String.raw`$v'_2$`} />):</p>
-              <p className="font-bold text-red-600">{v2After.toFixed(3)} m/s</p>
+              <p className="font-bold text-red-600">{formatUnit(v2After, "m/s")}</p>
             </div>
             <div>
               <p className="text-slate-600">Momento inicial (<MathFormula formula={String.raw`$p_i$`} />):</p>
-              <p className="font-bold text-slate-900">{pInitial.toFixed(3)} kg·m/s</p>
+              <p className="font-bold text-slate-900">{formatUnit(pInitial, "kg·m/s")}</p>
             </div>
             <div>
               <p className="text-slate-600">Momento final (<MathFormula formula={String.raw`$p_f$`} />):</p>
-              <p className="font-bold text-slate-900">{pFinal.toFixed(3)} kg·m/s</p>
+              <p className="font-bold text-slate-900">{formatUnit(pFinal, "kg·m/s")}</p>
             </div>
             <div>
               <p className="text-slate-600">Energia cinética inicial (<MathFormula formula={String.raw`$E_{ci}$`} />):</p>
-              <p className="font-bold text-slate-900">{ecInitial.toFixed(3)} J</p>
+              <p className="font-bold text-slate-900">{formatUnit(ecInitial, "J")}</p>
             </div>
             <div>
               <p className="text-slate-600">Energia cinética final (<MathFormula formula={String.raw`$E_{cf}$`} />):</p>
-              <p className="font-bold text-slate-900">{ecFinal.toFixed(3)} J</p>
+              <p className="font-bold text-slate-900">{formatUnit(ecFinal, "J")}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Cálculos Detalhados */}
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-4">
+          <h4 className="font-bold text-slate-900">Cálculos Detalhados</h4>
+          
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-slate-700 mb-1">Conservação do Momento Linear</p>
+              <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
+                <MathFormula formula={String.raw`$$ m_1 v_1 + m_2 v_2 = m_1 v'_1 + m_2 v'_2 $$`} />
+                <div className="mt-2"></div>
+                <MathFormula formula={String.raw`$$ ${formatNumber(m1)} \cdot ${formatNumber(v1Initial)} + ${formatNumber(m2)} \cdot ${formatNumber(v2Initial)} = ${formatNumber(pInitial)} \text{ kg·m/s} $$`} />
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm font-semibold text-slate-700 mb-1">Velocidades Finais (Colisão Elástica)</p>
+              <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
+                <MathFormula formula={String.raw`$$ v'_1 = \frac{(m_1 - m_2)v_1 + 2m_2v_2}{m_1 + m_2} = \frac{(${formatNumber(m1)} - ${formatNumber(m2)}) \cdot ${formatNumber(v1Initial)} + 2 \cdot ${formatNumber(m2)} \cdot ${formatNumber(v2Initial)}}{${formatNumber(m1)} + ${formatNumber(m2)}} = ${formatUnit(v1After, "m/s")} $$`} />
+                <div className="mt-4"></div>
+                <MathFormula formula={String.raw`$$ v'_2 = \frac{(m_2 - m_1)v_2 + 2m_1v_1}{m_1 + m_2} = \frac{(${formatNumber(m2)} - ${formatNumber(m1)}) \cdot ${formatNumber(v2Initial)} + 2 \cdot ${formatNumber(m1)} \cdot ${formatNumber(v1Initial)}}{${formatNumber(m1)} + ${formatNumber(m2)}} = ${formatUnit(v2After, "m/s")} $$`} />
+              </div>
             </div>
           </div>
         </div>

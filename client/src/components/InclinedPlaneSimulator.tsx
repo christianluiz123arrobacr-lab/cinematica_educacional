@@ -1,5 +1,8 @@
 import { useRef, useEffect, useState } from "react";
 import { MathFormula } from "@/components/MathFormula";
+import { Slider } from "@/components/ui/slider";
+import { Card } from "@/components/ui/card";
+import { formatNumber, formatUnit } from "@/lib/utils";
 
 interface InclinedPlaneSimulatorProps {
   angle: number;
@@ -10,8 +13,8 @@ interface InclinedPlaneSimulatorProps {
 }
 
 export function InclinedPlaneSimulator({
-  angle,
-  mu,
+  angle: initialAngle,
+  mu: initialMu,
   mode,
   isRunning,
   resetTrigger,
@@ -20,9 +23,30 @@ export function InclinedPlaneSimulator({
   const frameCountRef = useRef(0);
   const animationIdRef = useRef<number | null>(null);
 
+  // Estados locais para permitir edição
+  const [angle, setAngle] = useState(initialAngle);
+  const [mu, setMu] = useState(initialMu);
+  const [mass, setMass] = useState(1); // Massa editável
+
+  // Atualizar estados se props mudarem (opcional, mas bom para reset)
+  useEffect(() => {
+    setAngle(initialAngle);
+    setMu(initialMu);
+  }, [initialAngle, initialMu, resetTrigger]);
+
+  const g = 9.8;
+  const angleRad = (angle * Math.PI) / 180;
+  const P = mass * g;
+  const N = mass * g * Math.cos(angleRad);
+  const Pparallel = mass * g * Math.sin(angleRad);
+  const f = mu * N;
+
+  // Fator de velocidade da animação
+  const speedFactor = 0.5;
+
   useEffect(() => {
     frameCountRef.current = 0;
-  }, [resetTrigger]);
+  }, [resetTrigger, angle, mu, mass, mode]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -55,9 +79,6 @@ export function InclinedPlaneSimulator({
         ctx.stroke();
       }
 
-      const angleRad = (angle * Math.PI) / 180;
-      const g = 9.8;
-
       // Triângulo retângulo (plano inclinado)
       const baseX = 80;
       const baseY = height - 60;
@@ -77,7 +98,7 @@ export function InclinedPlaneSimulator({
       // Desenhar ângulo
       ctx.fillStyle = "#1f2937";
       ctx.font = "bold 14px Arial";
-      ctx.fillText(`θ = ${angle.toFixed(0)}°`, baseX + triBase - 60, baseY - 10);
+      ctx.fillText(`θ = ${formatNumber(angle, 0)}°`, baseX + triBase - 60, baseY - 10);
 
       // Posição do objeto no plano
       const objDist = 120;
@@ -89,13 +110,6 @@ export function InclinedPlaneSimulator({
       ctx.beginPath();
       ctx.arc(objX, objY, 15, 0, Math.PI * 2);
       ctx.fill();
-
-      // Cálculos de forças
-      const m = 1; // massa em kg
-      const P = m * g; // peso
-      const N = m * g * Math.cos(angleRad); // normal
-      const Pparallel = m * g * Math.sin(angleRad); // componente paralela
-      const f = mu * N; // atrito cinético
 
       // Desenhar peso (vertical para baixo)
       drawArrow(
@@ -109,8 +123,8 @@ export function InclinedPlaneSimulator({
       );
 
       // Desenhar normal (perpendicular ao plano)
-      const normalX = objX - N * Math.sin(angleRad) / 20;
-      const normalY = objY - N * Math.cos(angleRad) / 20;
+      const normalX = objX - N * Math.sin(angleRad) / (mass * 2); // Escala visual ajustada
+      const normalY = objY - N * Math.cos(angleRad) / (mass * 2);
       drawArrow(ctx, objX, objY, normalX, normalY, "#10b981", "N");
 
       // Desenhar componentes do peso
@@ -119,16 +133,16 @@ export function InclinedPlaneSimulator({
       ctx.setLineDash([3, 3]);
 
       // P paralelo (ao longo do plano)
-      const pParallelX = objX + (Pparallel * Math.cos(angleRad)) / 20;
-      const pParallelY = objY + (Pparallel * Math.sin(angleRad)) / 20;
+      const pParallelX = objX + (Pparallel * Math.cos(angleRad)) / (mass * 2);
+      const pParallelY = objY + (Pparallel * Math.sin(angleRad)) / (mass * 2);
       ctx.beginPath();
       ctx.moveTo(objX, objY);
       ctx.lineTo(pParallelX, pParallelY);
       ctx.stroke();
 
       // P perpendicular
-      const pPerpX = objX - (Pparallel * Math.sin(angleRad)) / 20;
-      const pPerpY = objY + (Pparallel * Math.cos(angleRad)) / 20;
+      const pPerpX = objX - (Pparallel * Math.sin(angleRad)) / (mass * 2);
+      const pPerpY = objY + (Pparallel * Math.cos(angleRad)) / (mass * 2);
       ctx.beginPath();
       ctx.moveTo(objX, objY);
       ctx.lineTo(pPerpX, pPerpY);
@@ -139,8 +153,8 @@ export function InclinedPlaneSimulator({
       // Modo específico
       if (mode === 0) {
         // Descendo - atrito para cima (contra o movimento)
-        const frictionX = objX - (f * Math.cos(angleRad)) / 20;
-        const frictionY = objY + (f * Math.sin(angleRad)) / 20;
+        const frictionX = objX - (f * Math.cos(angleRad)) / (mass * 2);
+        const frictionY = objY + (f * Math.sin(angleRad)) / (mass * 2);
         drawArrow(ctx, objX, objY, frictionX, frictionY, "#8b5cf6", "f");
 
         const a = g * (Math.sin(angleRad) - mu * Math.cos(angleRad));
@@ -148,15 +162,15 @@ export function InclinedPlaneSimulator({
         ctx.font = "bold 13px Arial";
         ctx.fillText("Modo: DESCENDO", 10, 25);
         ctx.fillText(
-          `a = g(sinθ - μcosθ) = ${a.toFixed(2)} m/s²`,
+          `a = ${formatUnit(a, "m/s²")}`,
           10,
           45
         );
-        ctx.fillText(`f = μN = ${f.toFixed(2)} N (para cima)`, 10, 65);
+        ctx.fillText(`f = ${formatUnit(f, "N")} (para cima)`, 10, 65);
       } else if (mode === 1) {
         // Subindo - atrito para baixo (contra o movimento)
-        const frictionX = objX + (f * Math.cos(angleRad)) / 20;
-        const frictionY = objY - (f * Math.sin(angleRad)) / 20;
+        const frictionX = objX + (f * Math.cos(angleRad)) / (mass * 2);
+        const frictionY = objY - (f * Math.sin(angleRad)) / (mass * 2);
         drawArrow(ctx, objX, objY, frictionX, frictionY, "#8b5cf6", "f");
 
         const a = -g * (Math.sin(angleRad) + mu * Math.cos(angleRad));
@@ -164,24 +178,24 @@ export function InclinedPlaneSimulator({
         ctx.font = "bold 13px Arial";
         ctx.fillText("Modo: SUBINDO", 10, 25);
         ctx.fillText(
-          `a = -g(sinθ + μcosθ) = ${a.toFixed(2)} m/s²`,
+          `a = ${formatUnit(a, "m/s²")}`,
           10,
           45
         );
-        ctx.fillText(`f = μN = ${f.toFixed(2)} N (para baixo)`, 10, 65);
+        ctx.fillText(`f = ${formatUnit(f, "N")} (para baixo)`, 10, 65);
       } else {
         // Repouso - atrito estático
         const fStatic = Pparallel;
-        const frictionX = objX - (fStatic * Math.cos(angleRad)) / 20;
-        const frictionY = objY + (fStatic * Math.sin(angleRad)) / 20;
+        const frictionX = objX - (fStatic * Math.cos(angleRad)) / (mass * 2);
+        const frictionY = objY + (fStatic * Math.sin(angleRad)) / (mass * 2);
         drawArrow(ctx, objX, objY, frictionX, frictionY, "#8b5cf6", "f_s");
 
         ctx.fillStyle = "#1e293b";
         ctx.font = "bold 13px Arial";
         ctx.fillText("Modo: REPOUSO", 10, 25);
-        ctx.fillText(`f_s = mg·sinθ = ${fStatic.toFixed(2)} N`, 10, 45);
+        ctx.fillText(`f_s = ${formatUnit(fStatic, "N")}`, 10, 45);
         ctx.fillText(
-          `f_s,máx = μ_s·N = ${(mu * N).toFixed(2)} N (necessária para equilíbrio)`,
+          `f_s,máx = ${formatUnit(mu * N, "N")} (necessária)`,
           10,
           65
         );
@@ -190,9 +204,9 @@ export function InclinedPlaneSimulator({
       // Fórmulas e dados
       ctx.fillStyle = "#1e293b";
       ctx.font = "bold 12px Arial";
-      ctx.fillText(`μ = ${mu.toFixed(2)}`, 10, 85);
-      ctx.fillText(`N = mg·cosθ = ${N.toFixed(2)} N`, 10, 105);
-      ctx.fillText(`P∥ = mg·sinθ = ${Pparallel.toFixed(2)} N`, 10, 125);
+      ctx.fillText(`μ = ${formatNumber(mu)}`, 10, 85);
+      ctx.fillText(`N = ${formatUnit(N, "N")}`, 10, 105);
+      ctx.fillText(`P∥ = ${formatUnit(Pparallel, "N")}`, 10, 125);
 
       if (isRunning) {
         frameCountRef.current += 1;
@@ -208,15 +222,129 @@ export function InclinedPlaneSimulator({
         cancelAnimationFrame(animationIdRef.current);
       }
     };
-  }, [angle, mu, mode, isRunning]);
+  }, [angle, mu, mass, mode, isRunning, P, N, Pparallel, f, angleRad]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={800}
-      height={400}
-      className="border-2 border-slate-300 rounded-lg bg-slate-50 shadow-md w-full"
-    />
+    <div className="w-full space-y-6">
+      <div className="flex justify-center bg-slate-50 p-4 rounded-lg overflow-x-auto">
+        <canvas
+          ref={canvasRef}
+          width={800}
+          height={400}
+          className="w-full max-w-full border border-slate-300 rounded"
+        />
+      </div>
+
+      <Card className="p-6 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="text-sm font-semibold text-slate-700">Ângulo (<MathFormula formula={String.raw`$\theta$`} />)</label>
+              <span className="text-sm font-bold text-blue-600">{formatNumber(angle, 0)}°</span>
+            </div>
+            <Slider
+              value={[angle]}
+              onValueChange={(value) => setAngle(value[0])}
+              min={5}
+              max={85}
+              step={1}
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="text-sm font-semibold text-slate-700">Coef. Atrito (<MathFormula formula={String.raw`$\mu$`} />)</label>
+              <span className="text-sm font-bold text-green-600">{formatNumber(mu, 2)}</span>
+            </div>
+            <Slider
+              value={[mu]}
+              onValueChange={(value) => setMu(value[0])}
+              min={0}
+              max={1}
+              step={0.05}
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="text-sm font-semibold text-slate-700">Massa (<MathFormula formula={String.raw`$m$`} />)</label>
+              <span className="text-sm font-bold text-purple-600">{formatUnit(mass, "kg")}</span>
+            </div>
+            <Slider
+              value={[mass]}
+              onValueChange={(value) => setMass(value[0])}
+              min={0.5}
+              max={10}
+              step={0.5}
+              className="w-full"
+            />
+          </div>
+        </div>
+
+        {/* Resultados */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
+          <h4 className="font-bold text-slate-900">Forças Calculadas</h4>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="flex justify-between">
+              <span className="text-slate-600">Peso (<MathFormula formula={String.raw`$P = mg$`} />):</span>
+              <span className="font-bold text-slate-900">{formatUnit(P, "N")}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-600">Normal (<MathFormula formula={String.raw`$N = P\cos\theta$`} />):</span>
+              <span className="font-bold text-slate-900">{formatUnit(N, "N")}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-600">Peso Paralelo (<MathFormula formula={String.raw`$P_{\parallel} = P\sin\theta$`} />):</span>
+              <span className="font-bold text-slate-900">{formatUnit(Pparallel, "N")}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-600">Força de Atrito (<MathFormula formula={String.raw`$f = \mu N$`} />):</span>
+              <span className="font-bold text-slate-900">{formatUnit(f, "N")}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Cálculos Detalhados */}
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-4">
+          <h4 className="font-bold text-slate-900">Cálculos Detalhados</h4>
+          
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-slate-700 mb-1">Decomposição do Peso</p>
+              <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
+                <MathFormula formula={String.raw`$$ P = m \cdot g = ${formatNumber(mass)} \cdot ${formatNumber(g)} = ${formatUnit(P, "N")} $$`} />
+                <div className="mt-2"></div>
+                <MathFormula formula={String.raw`$$ P_{\parallel} = P \cdot \sin\theta = ${formatNumber(P)} \cdot \sin(${formatNumber(angle)}^\circ) = ${formatUnit(Pparallel, "N")} $$`} />
+                <div className="mt-2"></div>
+                <MathFormula formula={String.raw`$$ N = P \cdot \cos\theta = ${formatNumber(P)} \cdot \cos(${formatNumber(angle)}^\circ) = ${formatUnit(N, "N")} $$`} />
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm font-semibold text-slate-700 mb-1">Força de Atrito</p>
+              <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
+                <MathFormula formula={String.raw`$$ f = \mu \cdot N = ${formatNumber(mu)} \cdot ${formatNumber(N)} = ${formatUnit(f, "N")} $$`} />
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm font-semibold text-slate-700 mb-1">Aceleração Resultante</p>
+              <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
+                {mode === 0 ? (
+                  <MathFormula formula={String.raw`$$ a = g(\sin\theta - \mu\cos\theta) = ${formatNumber(g)}(\sin${formatNumber(angle)}^\circ - ${formatNumber(mu)}\cos${formatNumber(angle)}^\circ) = ${formatUnit(g * (Math.sin(angleRad) - mu * Math.cos(angleRad)), "m/s²")} $$`} />
+                ) : mode === 1 ? (
+                  <MathFormula formula={String.raw`$$ a = -g(\sin\theta + \mu\cos\theta) = -${formatNumber(g)}(\sin${formatNumber(angle)}^\circ + ${formatNumber(mu)}\cos${formatNumber(angle)}^\circ) = ${formatUnit(-g * (Math.sin(angleRad) + mu * Math.cos(angleRad)), "m/s²")} $$`} />
+                ) : (
+                  <p className="text-sm text-slate-600">Em repouso, a aceleração é zero.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
+    </div>
   );
 }
 

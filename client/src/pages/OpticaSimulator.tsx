@@ -1,6 +1,10 @@
 import { Link } from "wouter";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RefractionSimulator } from "@/components/RefractionSimulator";
+import { MirrorsSimulator } from "@/components/MirrorsSimulator";
+import { LensesSimulator } from "@/components/LensesSimulator";
 
 export default function OpticaSimulator() {
   return (
@@ -13,24 +17,50 @@ export default function OpticaSimulator() {
               Voltar
             </Button>
           </Link>
-          <h1 className="text-xl font-bold text-slate-900">Simulador de Óptica</h1>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <Eye className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900">Simuladores de Óptica</h1>
+              <p className="text-xs text-slate-600">Explore a luz e seus fenômenos</p>
+            </div>
+          </div>
         </div>
       </header>
 
-      <section className="container mx-auto px-4 py-12 max-w-5xl">
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200 text-center">
-          <h2 className="text-3xl font-bold text-slate-900 mb-4">⚙️ Simulador em Desenvolvimento</h2>
-          <p className="text-slate-700 mb-6">O simulador interativo de Óptica será lançado em breve com visualizações de:</p>
-          <ul className="text-left max-w-md mx-auto space-y-2 text-slate-700 mb-8">
-            <li>✓ Refração de luz em diferentes meios</li>
-            <li>✓ Formação de imagens em lentes</li>
-            <li>✓ Reflexão em espelhos</li>
-            <li>✓ Dispersão e interferência</li>
-          </ul>
-          <Link href="/optica">
-            <Button>Voltar para Óptica</Button>
-          </Link>
-        </div>
+      <section className="container mx-auto px-4 py-12 max-w-6xl">
+        <Tabs defaultValue="refracao" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-8">
+            <TabsTrigger value="refracao">Refração (Snell)</TabsTrigger>
+            <TabsTrigger value="espelhos">Espelhos</TabsTrigger>
+            <TabsTrigger value="lentes">Lentes</TabsTrigger>
+          </TabsList>
+
+          {/* Simulador 1: Refração */}
+          <TabsContent value="refracao" className="space-y-6">
+            <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+              <h2 className="text-2xl font-bold text-slate-900 mb-6">Lei de Snell-Descartes</h2>
+              <RefractionSimulator />
+            </div>
+          </TabsContent>
+
+          {/* Simulador 2: Espelhos */}
+          <TabsContent value="espelhos" className="space-y-6">
+            <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+              <h2 className="text-2xl font-bold text-slate-900 mb-6">Espelhos Esféricos (Gauss)</h2>
+              <MirrorsSimulator />
+            </div>
+          </TabsContent>
+
+          {/* Simulador 3: Lentes */}
+          <TabsContent value="lentes" className="space-y-6">
+            <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+              <h2 className="text-2xl font-bold text-slate-900 mb-6">Lentes Esféricas (Gauss)</h2>
+              <LensesSimulator />
+            </div>
+          </TabsContent>
+        </Tabs>
       </section>
     </div>
   );
