@@ -62,6 +62,11 @@ import OndulatóriaTopicEquacao from "./pages/OndulatóriaTopicEquacao";
 import OndulatóriaTopicFenomenos from "./pages/OndulatóriaTopicFenomenos";
 import OndulatóriaTopicSom from "./pages/OndulatóriaTopicSom";
 import OndulatóriaTopicLuz from "./pages/OndulatóriaTopicLuz";
+import OpticaHome from "./pages/OpticaHome";
+import OpticaTopicConceitos from "./pages/OpticaTopicConceitos";
+import OpticaTopicLentes from "./pages/OpticaTopicLentes";
+import OpticaTopicFenomenos from "./pages/OpticaTopicFenomenos";
+import OpticaSimulator from "./pages/OpticaSimulator";
 
 
 
@@ -132,6 +137,12 @@ function Router() {
       <Route path="/ondulatoria/simulator" component={() => <div className="p-8">Simulador em desenvolvimento</div>} />
       <Route path="/ondulatoria/quiz" component={() => <div className="p-8">Quiz em desenvolvimento</div>} />
       <Route path="/ondulatoria/graphs" component={() => <div className="p-8">Gráficos em desenvolvimento</div>} />
+
+      <Route path="/optica" component={OpticaHome} />
+      <Route path="/optica/topic/conceitos" component={OpticaTopicConceitos} />
+      <Route path="/optica/topic/lentes" component={OpticaTopicLentes} />
+      <Route path="/optica/topic/fenomenos" component={OpticaTopicFenomenos} />
+      <Route path="/optica/simulator" component={OpticaSimulator} />
 
       <Route path="/progress" component={Progress} />
       <Route path="/404" component={NotFound} />
