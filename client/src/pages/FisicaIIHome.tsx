@@ -31,10 +31,10 @@ export default function FisicaIIHome() {
       {/* Main Content */}
       <section className="container mx-auto px-4 py-20">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Bem-vindo à Física II
           </h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+          <p className="text-lg text-white/90 max-w-2xl mx-auto">
             Explore Termologia, Ondulatória e Óptica com explicações didáticas, simuladores interativos e ferramentas de aprendizado.
           </p>
         </div>
