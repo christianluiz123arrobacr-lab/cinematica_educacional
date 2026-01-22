@@ -7,7 +7,7 @@ import { MathFormula } from "@/components/MathFormula";
 
 export default function DinamicaHome() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
         <div className="container py-4 flex items-center justify-between">
@@ -16,7 +16,7 @@ export default function DinamicaHome() {
             Voltar
           </Link>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 to-pink-400 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 to-purple-700 flex items-center justify-center">
               <Zap className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -43,13 +43,13 @@ export default function DinamicaHome() {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-pink-600/5 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-purple-600/5 to-transparent" />
         <div className="container py-16 md:py-24 relative">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <div className="space-y-4">
                 <h2 className="text-5xl md:text-6xl font-bold text-slate-900 leading-tight">
-                  Entenda as <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Causas</span>
+                  Entenda as <span className="bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">Causas</span>
                 </h2>
                 <p className="text-xl text-slate-600">
                   Explore a dinâmica: como as forças causam movimento, as leis que governam o universo e as aplicações práticas no mundo real.
@@ -57,7 +57,7 @@ export default function DinamicaHome() {
               </div>
               <div className="flex gap-4 flex-wrap">
                 <Link href="/dinamica/learn">
-                  <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600">
+                  <Button size="lg" className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800">
                     Começar a Aprender
                   </Button>
                 </Link>
