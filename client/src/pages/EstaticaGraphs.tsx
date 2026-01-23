@@ -1,218 +1,203 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "wouter";
+import { ArrowLeft, TrendingUp, Scale, Anchor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
-import { Link } from "wouter";
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter } from "recharts";
+import { Slider } from "@/components/ui/slider";
+import { MathFormula } from "@/components/MathFormula";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
+import { formatNumber } from "@/lib/utils";
 
 export default function EstaticaGraphs() {
-  const [activeTab, setActiveTab] = useState("torque");
+  const [forca, setForca] = useState(50);
+  const [distancia, setDistancia] = useState(2);
+  
+  // Dados para o gráfico de Torque x Distância
+  const [dataTorque, setDataTorque] = useState<any[]>([]);
+  
+  // Dados para o gráfico de Torque x Força
+  const [dataTorqueForca, setDataTorqueForca] = useState<any[]>([]);
 
-  // Dados para Gráfico de Torque vs Distância
-  const torqueData = [
-    { distance: 0.5, torque: 50 },
-    { distance: 1, torque: 100 },
-    { distance: 1.5, torque: 150 },
-    { distance: 2, torque: 200 },
-    { distance: 2.5, torque: 250 },
-    { distance: 3, torque: 300 },
-  ];
+  useEffect(() => {
+    // Gráfico 1: Torque em função da Distância (Força constante)
+    // T = F * d
+    const newDataTorque = [];
+    for (let d = 0; d <= 5; d += 0.5) {
+      newDataTorque.push({
+        d: d,
+        t: forca * d
+      });
+    }
+    setDataTorque(newDataTorque);
 
-  // Dados para Gráfico de Vantagem Mecânica
-  const vmData = [
-    { name: "Alavanca 1ª", vm: 4 },
-    { name: "Alavanca 2ª", vm: 6 },
-    { name: "Alavanca 3ª", vm: 2 },
-    { name: "Polia Móvel", vm: 2 },
-    { name: "Plano Inclinado", vm: 5 },
-    { name: "Parafuso", vm: 10 },
-  ];
+    // Gráfico 2: Torque em função da Força (Distância constante)
+    // T = F * d
+    const newDataTorqueForca = [];
+    for (let f = 0; f <= 100; f += 5) {
+      newDataTorqueForca.push({
+        f: f,
+        t: f * distancia
+      });
+    }
+    setDataTorqueForca(newDataTorqueForca);
 
-  // Dados para Gráfico de Força vs Deslocamento
-  const forceData = [
-    { displacement: 0, force: 100 },
-    { displacement: 1, force: 100 },
-    { displacement: 2, force: 100 },
-    { displacement: 3, force: 100 },
-    { displacement: 4, force: 100 },
-    { displacement: 5, force: 100 },
-  ];
+  }, [forca, distancia]);
 
-  // Dados para Gráfico de Equilíbrio de Forças
-  const equilibriumData = [
-    { angle: 0, forceX: 100, forceY: 0 },
-    { angle: 30, forceX: 86.6, forceY: 50 },
-    { angle: 45, forceX: 70.7, forceY: 70.7 },
-    { angle: 60, forceX: 50, forceY: 86.6 },
-    { angle: 90, forceX: 0, forceY: 100 },
-  ];
-
-  // Dados para Gráfico de Centro de Massa
-  const centerOfMassData = [
-    { position: -2, mass: 10 },
-    { position: -1, mass: 20 },
-    { position: 0, mass: 50 },
-    { position: 1, mass: 20 },
-    { position: 2, mass: 10 },
-  ];
+  // Valores atuais
+  const torqueAtual = forca * distancia;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50 to-slate-50">
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
-        <div className="container py-4 flex items-center gap-4">
-          <Link href="/estatica">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar
-            </Button>
-          </Link>
-          <h1 className="text-2xl font-bold text-slate-900">Gráficos de Estática</h1>
+        <div className="container py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/estatica">
+              <Button variant="ghost" size="sm">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Voltar
+              </Button>
+            </Link>
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-amber-100 rounded-lg">
+                <TrendingUp className="w-5 h-5 text-amber-600" />
+              </div>
+              <h1 className="text-xl font-bold text-slate-900">Gráficos de Estática</h1>
+            </div>
+          </div>
         </div>
       </header>
 
-      <section className="container py-6 md:py-12">
-        <div className="space-y-6">
-          {/* Abas de Navegação */}
-          <div className="flex gap-2 flex-wrap">
-            <Button
-              variant={activeTab === "torque" ? "default" : "outline"}
-              onClick={() => setActiveTab("torque")}
-              className={activeTab === "torque" ? "bg-amber-600 hover:bg-amber-700" : ""}
-            >
-              Torque vs Distância
-            </Button>
-            <Button
-              variant={activeTab === "vm" ? "default" : "outline"}
-              onClick={() => setActiveTab("vm")}
-              className={activeTab === "vm" ? "bg-amber-600 hover:bg-amber-700" : ""}
-            >
-              Vantagem Mecânica
-            </Button>
-            <Button
-              variant={activeTab === "force" ? "default" : "outline"}
-              onClick={() => setActiveTab("force")}
-              className={activeTab === "force" ? "bg-amber-600 hover:bg-amber-700" : ""}
-            >
-              Força Constante
-            </Button>
-            <Button
-              variant={activeTab === "equilibrium" ? "default" : "outline"}
-              onClick={() => setActiveTab("equilibrium")}
-              className={activeTab === "equilibrium" ? "bg-amber-600 hover:bg-amber-700" : ""}
-            >
-              Equilíbrio de Forças
-            </Button>
-            <Button
-              variant={activeTab === "center" ? "default" : "outline"}
-              onClick={() => setActiveTab("center")}
-              className={activeTab === "center" ? "bg-amber-600 hover:bg-amber-700" : ""}
-            >
-              Centro de Massa
-            </Button>
-          </div>
+      <main className="container py-8 space-y-8">
+        <div className="grid md:grid-cols-3 gap-8">
+          {/* Controles */}
+          <Card className="p-6 space-y-6 h-fit">
+            <h3 className="font-bold text-slate-900">Parâmetros do Sistema</h3>
 
-          {/* Gráfico de Torque */}
-          {activeTab === "torque" && (
-            <Card className="p-6 shadow-lg">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Torque vs Distância do Fulcro</h2>
-              <p className="text-slate-600 mb-4">Com força constante de 100 N, o torque aumenta linearmente com a distância.</p>
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={torqueData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="distance" label={{ value: "Distância (m)", position: "insideBottomRight", offset: -5 }} />
-                  <YAxis label={{ value: "Torque (N·m)", angle: -90, position: "insideLeft" }} />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="torque" stroke="#d97706" strokeWidth={2} name="Torque (N·m)" />
-                </LineChart>
-              </ResponsiveContainer>
-            </Card>
-          )}
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between mb-2">
+                  <label className="text-sm font-medium text-slate-700">Força Aplicada (F)</label>
+                  <span className="text-sm font-bold text-amber-600">{forca} N</span>
+                </div>
+                <Slider
+                  value={[forca]}
+                  onValueChange={(v) => setForca(v[0])}
+                  min={0}
+                  max={100}
+                  step={1}
+                />
+              </div>
 
-          {/* Gráfico de Vantagem Mecânica */}
-          {activeTab === "vm" && (
-            <Card className="p-6 shadow-lg">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Vantagem Mecânica de Máquinas Simples</h2>
-              <p className="text-slate-600 mb-4">Comparação da vantagem mecânica entre diferentes máquinas simples.</p>
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={vmData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis label={{ value: "Vantagem Mecânica", angle: -90, position: "insideLeft" }} />
-                  <Tooltip />
-                  <Bar dataKey="vm" fill="#d97706" name="VM" />
-                </BarChart>
-              </ResponsiveContainer>
-            </Card>
-          )}
+              <div>
+                <div className="flex justify-between mb-2">
+                  <label className="text-sm font-medium text-slate-700">Braço de Alavanca (d)</label>
+                  <span className="text-sm font-bold text-blue-600">{distancia} m</span>
+                </div>
+                <Slider
+                  value={[distancia]}
+                  onValueChange={(v) => setDistancia(v[0])}
+                  min={0}
+                  max={5}
+                  step={0.1}
+                />
+              </div>
+            </div>
 
-          {/* Gráfico de Força Constante */}
-          {activeTab === "force" && (
-            <Card className="p-6 shadow-lg">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Força Aplicada vs Deslocamento</h2>
-              <p className="text-slate-600 mb-4">Com uma máquina simples, a força permanece constante enquanto você se desloca.</p>
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={forceData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="displacement" label={{ value: "Deslocamento (m)", position: "insideBottomRight", offset: -5 }} />
-                  <YAxis label={{ value: "Força (N)", angle: -90, position: "insideLeft" }} />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="force" stroke="#d97706" strokeWidth={2} name="Força (N)" />
-                </LineChart>
-              </ResponsiveContainer>
-            </Card>
-          )}
-
-          {/* Gráfico de Equilíbrio */}
-          {activeTab === "equilibrium" && (
-            <Card className="p-6 shadow-lg">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Componentes de Força vs Ângulo</h2>
-              <p className="text-slate-600 mb-4">Como os componentes X e Y de uma força mudam com o ângulo.</p>
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={equilibriumData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="angle" label={{ value: "Ângulo (°)", position: "insideBottomRight", offset: -5 }} />
-                  <YAxis label={{ value: "Força (N)", angle: -90, position: "insideLeft" }} />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="forceX" stroke="#d97706" strokeWidth={2} name="Componente X (N)" />
-                  <Line type="monotone" dataKey="forceY" stroke="#f59e0b" strokeWidth={2} name="Componente Y (N)" />
-                </LineChart>
-              </ResponsiveContainer>
-            </Card>
-          )}
-
-          {/* Gráfico de Centro de Massa */}
-          {activeTab === "center" && (
-            <Card className="p-6 shadow-lg">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Distribuição de Massa e Centro de Massa</h2>
-              <p className="text-slate-600 mb-4">O centro de massa é onde toda a massa pode ser considerada concentrada.</p>
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={centerOfMassData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="position" label={{ value: "Posição (m)", position: "insideBottomRight", offset: -5 }} />
-                  <YAxis label={{ value: "Massa (kg)", angle: -90, position: "insideLeft" }} />
-                  <Tooltip />
-                  <Bar dataKey="mass" fill="#d97706" name="Massa (kg)" />
-                </BarChart>
-              </ResponsiveContainer>
-            </Card>
-          )}
-
-          {/* Explicações */}
-          <Card className="p-6 shadow-lg bg-amber-50">
-            <h3 className="text-lg font-bold text-slate-900 mb-4">📊 O Que Esses Gráficos Mostram?</h3>
-            <div className="space-y-3 text-slate-700">
-              <p><strong>Torque vs Distância:</strong> Mostra como o torque aumenta linearmente com a distância do fulcro (para força constante).</p>
-              <p><strong>Vantagem Mecânica:</strong> Compara a eficiência de diferentes máquinas simples.</p>
-              <p><strong>Força Constante:</strong> Ilustra que com uma máquina simples, você aplica menos força em maior distância.</p>
-              <p><strong>Equilíbrio de Forças:</strong> Mostra como uma força é decomposta em componentes X e Y.</p>
-              <p><strong>Centro de Massa:</strong> Visualiza como a massa é distribuída e onde está o centro de gravidade.</p>
+            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm space-y-2">
+              <p className="font-semibold text-slate-900">Momento de uma Força (Torque):</p>
+              <MathFormula formula={String.raw`$$ \tau = F \cdot d \cdot \sin(\theta) $$`} />
+              <p className="text-xs text-slate-500 italic">(Considerando força perpendicular, sen(90°) = 1)</p>
+              <div className="pt-2 text-xs text-slate-500 space-y-1">
+                <p>Para F = {forca}N e d = {distancia}m:</p>
+                <p>• Torque Resultante: <span className="font-bold text-slate-900">{formatNumber(torqueAtual, 2)} N·m</span></p>
+              </div>
             </div>
           </Card>
+
+          {/* Gráficos */}
+          <div className="md:col-span-2 space-y-6">
+            {/* Gráfico de Torque x Distância */}
+            <Card className="p-6">
+              <div className="mb-4">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Scale className="w-5 h-5 text-amber-600" />
+                  Torque x Distância (Linear)
+                </h3>
+                <p className="text-sm text-slate-500">Quanto maior o braço de alavanca, maior o torque gerado pela mesma força.</p>
+              </div>
+              <div className="h-[250px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={dataTorque}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis 
+                      dataKey="d" 
+                      label={{ value: 'Distância d (m)', position: 'bottom', offset: 0 }} 
+                      type="number"
+                      domain={[0, 5]}
+                    />
+                    <YAxis 
+                      label={{ value: "Torque τ (N·m)", angle: -90, position: 'insideLeft' }}
+                    />
+                    <Tooltip 
+                      formatter={(value: number) => [value.toFixed(2), "N·m"]}
+                      labelFormatter={(label: number) => `d: ${label}m`}
+                    />
+                    <ReferenceLine x={distancia} stroke="#d97706" strokeDasharray="3 3" label="Atual" />
+                    <Line 
+                      type="monotone" 
+                      dataKey="t" 
+                      stroke="#d97706" 
+                      strokeWidth={3} 
+                      dot={false} 
+                      isAnimationActive={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </Card>
+
+            {/* Gráfico de Torque x Força */}
+            <Card className="p-6">
+              <div className="mb-4">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Anchor className="w-5 h-5 text-blue-600" />
+                  Torque x Força (Linear)
+                </h3>
+                <p className="text-sm text-slate-500">Para uma distância fixa, o torque aumenta proporcionalmente à força aplicada.</p>
+              </div>
+              <div className="h-[250px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={dataTorqueForca}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis 
+                      dataKey="f" 
+                      label={{ value: 'Força F (N)', position: 'bottom', offset: 0 }} 
+                      type="number"
+                      domain={[0, 100]}
+                    />
+                    <YAxis 
+                      label={{ value: 'Torque τ (N·m)', angle: -90, position: 'insideLeft' }}
+                    />
+                    <Tooltip 
+                      formatter={(value: number) => [value.toFixed(2), 'N·m']}
+                      labelFormatter={(label: number) => `F: ${label}N`}
+                    />
+                    <ReferenceLine x={forca} stroke="#3b82f6" strokeDasharray="3 3" label="Atual" />
+                    <Line 
+                      type="monotone" 
+                      dataKey="t" 
+                      stroke="#3b82f6" 
+                      strokeWidth={3} 
+                      dot={false} 
+                      isAnimationActive={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </Card>
+          </div>
         </div>
-      </section>
+      </main>
     </div>
   );
 }

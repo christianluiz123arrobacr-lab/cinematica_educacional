@@ -1,306 +1,227 @@
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, BookOpen } from "lucide-react";
+import { ArrowLeft, TrendingUp, Thermometer, Flame, Droplets } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
+import { MathFormula } from "@/components/MathFormula";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
+import { formatNumber } from "@/lib/utils";
 
 export default function TermologiaGraphs() {
+  const [massa, setMassa] = useState(1);
+  const [calorEspecifico, setCalorEspecifico] = useState(4186); // Água
+  const [coefDilatacao, setCoefDilatacao] = useState(23); // Alumínio (x10^-6)
+  
+  // Dados para o gráfico de Calor x Temperatura
+  const [dataCalor, setDataCalor] = useState<any[]>([]);
+  
+  // Dados para o gráfico de Dilatação x Temperatura
+  const [dataDilatacao, setDataDilatacao] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Gráfico 1: Calor Sensível (Q = mcΔT)
+    const newDataCalor = [];
+    for (let dt = 0; dt <= 100; dt += 5) {
+      newDataCalor.push({
+        dt: dt,
+        q: massa * calorEspecifico * dt
+      });
+    }
+    setDataCalor(newDataCalor);
+
+    // Gráfico 2: Dilatação Linear (ΔL = L0 * α * ΔT)
+    // Assumindo L0 = 1m
+    const l0 = 1;
+    const alpha = coefDilatacao * 1e-6;
+    const newDataDilatacao = [];
+    for (let dt = 0; dt <= 100; dt += 5) {
+      newDataDilatacao.push({
+        dt: dt,
+        dl: l0 * alpha * dt * 1000 // em mm
+      });
+    }
+    setDataDilatacao(newDataDilatacao);
+
+  }, [massa, calorEspecifico, coefDilatacao]);
+
+  // Valores atuais para exemplo (ΔT = 50°C)
+  const dtExemplo = 50;
+  const qExemplo = massa * calorEspecifico * dtExemplo;
+  const dlExemplo = 1 * (coefDilatacao * 1e-6) * dtExemplo * 1000;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-slate-50 to-orange-50">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-red-50">
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/termologia">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Voltar
-            </Button>
-          </Link>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-orange-600 rounded-lg flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-white" />
-            </div>
-            <div>
+        <div className="container py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/termologia">
+              <Button variant="ghost" size="sm">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Voltar
+              </Button>
+            </Link>
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-red-100 rounded-lg">
+                <TrendingUp className="w-5 h-5 text-red-600" />
+              </div>
               <h1 className="text-xl font-bold text-slate-900">Gráficos de Termologia</h1>
-              <p className="text-xs text-slate-600">Visualize dados térmicos</p>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <section className="container mx-auto px-4 py-12 max-w-6xl">
-        <Tabs defaultValue="temperatura" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-8">
-            <TabsTrigger value="temperatura">Temperatura</TabsTrigger>
-            <TabsTrigger value="calor">Calor</TabsTrigger>
-            <TabsTrigger value="dilatacao">Dilatação</TabsTrigger>
-            <TabsTrigger value="transicao">Transição</TabsTrigger>
-            <TabsTrigger value="comparacao">Comparação</TabsTrigger>
-          </TabsList>
+      <main className="container py-8 space-y-8">
+        <div className="grid md:grid-cols-3 gap-8">
+          {/* Controles */}
+          <Card className="p-6 space-y-6 h-fit">
+            <h3 className="font-bold text-slate-900">Parâmetros do Sistema</h3>
 
-          {/* Gráfico 1: Conversão de Temperatura */}
-          <TabsContent value="temperatura" className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">Conversão de Escalas de Temperatura</h2>
-              <div className="bg-slate-50 rounded-lg p-6 h-96 flex items-center justify-center">
-                <div className="text-center">
-                  <p className="text-slate-600 font-semibold mb-4">Gráfico: Relação entre Celsius, Fahrenheit e Kelvin</p>
-                  <svg viewBox="0 0 600 300" className="w-full h-full max-w-2xl mx-auto">
-                    {/* Eixos */}
-                    <line x1="50" y1="250" x2="550" y2="250" stroke="#333" strokeWidth="2"/>
-                    <line x1="50" y1="250" x2="50" y2="50" stroke="#333" strokeWidth="2"/>
-                    
-                    {/* Labels dos eixos */}
-                    <text x="560" y="255" fontSize="14" fill="#333">Celsius (°C)</text>
-                    <text x="20" y="40" fontSize="14" fill="#333">Temperatura</text>
-                    
-                    {/* Linhas de grade */}
-                    {[0, 1, 2, 3, 4, 5].map((i) => (
-                      <line key={`grid-${i}`} x1="50" y1={250 - i * 40} x2="550" y2={250 - i * 40} stroke="#e0e0e0" strokeWidth="1" strokeDasharray="5,5"/>
-                    ))}
-                    
-                    {/* Linha Celsius (referência) */}
-                    <line x1="50" y1="250" x2="550" y2="50" stroke="#ef4444" strokeWidth="3" opacity="0.7"/>
-                    <text x="520" y="60" fontSize="12" fill="#ef4444" fontWeight="bold">Celsius</text>
-                    
-                    {/* Linha Fahrenheit */}
-                    <line x1="50" y1="220" x2="550" y2="80" stroke="#3b82f6" strokeWidth="3" opacity="0.7"/>
-                    <text x="520" y="90" fontSize="12" fill="#3b82f6" fontWeight="bold">Fahrenheit</text>
-                    
-                    {/* Linha Kelvin */}
-                    <line x1="50" y1="240" x2="550" y2="60" stroke="#10b981" strokeWidth="3" opacity="0.7"/>
-                    <text x="520" y="70" fontSize="12" fill="#10b981" fontWeight="bold">Kelvin</text>
-                    
-                    {/* Pontos de referência */}
-                    <circle cx="50" cy="250" r="4" fill="#ef4444"/>
-                    <circle cx="50" cy="220" r="4" fill="#3b82f6"/>
-                    <circle cx="50" cy="240" r="4" fill="#10b981"/>
-                  </svg>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between mb-2">
+                  <label className="text-sm font-medium text-slate-700">Massa (m)</label>
+                  <span className="text-sm font-bold text-red-600">{massa} kg</span>
                 </div>
+                <Slider
+                  value={[massa]}
+                  onValueChange={(v) => setMassa(v[0])}
+                  min={0.1}
+                  max={5}
+                  step={0.1}
+                />
               </div>
-              <div className="mt-6 grid md:grid-cols-3 gap-4">
-                <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-                  <p className="font-bold text-slate-900">Ponto de Congelamento da Água</p>
-                  <p className="text-slate-700 mt-2">0°C = 32°F = 273,15 K</p>
+
+              <div>
+                <div className="flex justify-between mb-2">
+                  <label className="text-sm font-medium text-slate-700">Calor Específico (c)</label>
+                  <span className="text-sm font-bold text-blue-600">{calorEspecifico} J/kg·K</span>
                 </div>
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                  <p className="font-bold text-slate-900">Temperatura Ambiente</p>
-                  <p className="text-slate-700 mt-2">20°C = 68°F = 293,15 K</p>
+                <select 
+                  className="w-full p-2 border rounded-md text-sm"
+                  value={calorEspecifico}
+                  onChange={(e) => setCalorEspecifico(Number(e.target.value))}
+                >
+                  <option value={4186}>Água (4186)</option>
+                  <option value={2400}>Álcool (2400)</option>
+                  <option value={900}>Alumínio (900)</option>
+                  <option value={450}>Ferro (450)</option>
+                  <option value={128}>Chumbo (128)</option>
+                </select>
+              </div>
+
+              <div>
+                <div className="flex justify-between mb-2">
+                  <label className="text-sm font-medium text-slate-700">Coef. Dilatação (α)</label>
+                  <span className="text-sm font-bold text-orange-600">{coefDilatacao} x10⁻⁶ °C⁻¹</span>
                 </div>
-                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                  <p className="font-bold text-slate-900">Ponto de Ebulição da Água</p>
-                  <p className="text-slate-700 mt-2">100°C = 212°F = 373,15 K</p>
-                </div>
+                <select 
+                  className="w-full p-2 border rounded-md text-sm"
+                  value={coefDilatacao}
+                  onChange={(e) => setCoefDilatacao(Number(e.target.value))}
+                >
+                  <option value={23}>Alumínio (23)</option>
+                  <option value={17}>Cobre (17)</option>
+                  <option value={12}>Ferro (12)</option>
+                  <option value={9}>Vidro (9)</option>
+                </select>
               </div>
             </div>
-          </TabsContent>
 
-          {/* Gráfico 2: Calor vs Temperatura */}
-          <TabsContent value="calor" className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">Calor Sensível: Q = m·c·ΔT</h2>
-              <div className="bg-slate-50 rounded-lg p-6 h-96 flex items-center justify-center">
-                <div className="text-center">
-                  <p className="text-slate-600 font-semibold mb-4">Gráfico: Relação entre Calor e Variação de Temperatura</p>
-                  <svg viewBox="0 0 600 300" className="w-full h-full max-w-2xl mx-auto">
-                    {/* Eixos */}
-                    <line x1="50" y1="250" x2="550" y2="250" stroke="#333" strokeWidth="2"/>
-                    <line x1="50" y1="250" x2="50" y2="50" stroke="#333" strokeWidth="2"/>
-                    
-                    {/* Labels */}
-                    <text x="560" y="255" fontSize="14" fill="#333">ΔT (K)</text>
-                    <text x="15" y="40" fontSize="14" fill="#333">Q (J)</text>
-                    
-                    {/* Linhas de grade */}
-                    {[0, 1, 2, 3, 4, 5].map((i) => (
-                      <line key={`grid-${i}`} x1="50" y1={250 - i * 40} x2="550" y2={250 - i * 40} stroke="#e0e0e0" strokeWidth="1" strokeDasharray="5,5"/>
-                    ))}
-                    
-                    {/* Linha água (c = 4186 J/kg·K) */}
-                    <line x1="50" y1="250" x2="550" y2="70" stroke="#3b82f6" strokeWidth="3"/>
-                    <text x="520" y="80" fontSize="12" fill="#3b82f6" fontWeight="bold">Água</text>
-                    
-                    {/* Linha ferro (c = 448 J/kg·K) */}
-                    <line x1="50" y1="250" x2="550" y2="150" stroke="#ef4444" strokeWidth="3"/>
-                    <text x="520" y="160" fontSize="12" fill="#ef4444" fontWeight="bold">Ferro</text>
-                    
-                    {/* Pontos */}
-                    <circle cx="50" cy="250" r="4" fill="#333"/>
-                    <circle cx="300" cy="160" r="5" fill="#ef4444"/>
-                    <circle cx="300" cy="110" r="5" fill="#3b82f6"/>
-                  </svg>
-                </div>
-              </div>
-              <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <p className="text-slate-700">
-                  <strong>Interpretação:</strong> A água tem maior calor específico que o ferro. Para a mesma variação de temperatura, a água absorve mais calor. Por isso, a água é usada como refrigerante em radiadores de carros!
-                </p>
+            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm space-y-2">
+              <p className="font-semibold text-slate-900">Fórmulas:</p>
+              <MathFormula formula={String.raw`$$ Q = m \cdot c \cdot \Delta T $$`} />
+              <MathFormula formula={String.raw`$$ \Delta L = L_0 \cdot \alpha \cdot \Delta T $$`} />
+              <div className="pt-2 text-xs text-slate-500 space-y-1">
+                <p>Para ΔT = 50°C:</p>
+                <p>• Calor Necessário: <span className="font-bold text-slate-900">{formatNumber(qExemplo, 0)} J</span></p>
+                <p>• Dilatação (L0=1m): <span className="font-bold text-slate-900">{formatNumber(dlExemplo, 3)} mm</span></p>
               </div>
             </div>
-          </TabsContent>
+          </Card>
 
-          {/* Gráfico 3: Dilatação Térmica */}
-          <TabsContent value="dilatacao" className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">Dilatação Linear: ΔL = L₀·α·ΔT</h2>
-              <div className="bg-slate-50 rounded-lg p-6 h-96 flex items-center justify-center">
-                <div className="text-center">
-                  <p className="text-slate-600 font-semibold mb-4">Gráfico: Dilatação de Diferentes Materiais</p>
-                  <svg viewBox="0 0 600 300" className="w-full h-full max-w-2xl mx-auto">
-                    {/* Eixos */}
-                    <line x1="50" y1="250" x2="550" y2="250" stroke="#333" strokeWidth="2"/>
-                    <line x1="50" y1="250" x2="50" y2="50" stroke="#333" strokeWidth="2"/>
-                    
-                    {/* Labels */}
-                    <text x="560" y="255" fontSize="14" fill="#333">ΔT (K)</text>
-                    <text x="10" y="40" fontSize="14" fill="#333">ΔL/L₀ (%)</text>
-                    
-                    {/* Linhas de grade */}
-                    {[0, 1, 2, 3, 4, 5].map((i) => (
-                      <line key={`grid-${i}`} x1="50" y1={250 - i * 40} x2="550" y2={250 - i * 40} stroke="#e0e0e0" strokeWidth="1" strokeDasharray="5,5"/>
-                    ))}
-                    
-                    {/* Alumínio (α = 23) */}
-                    <line x1="50" y1="250" x2="550" y2="80" stroke="#f59e0b" strokeWidth="3"/>
-                    <text x="520" y="90" fontSize="12" fill="#f59e0b" fontWeight="bold">Alumínio</text>
-                    
-                    {/* Cobre (α = 17) */}
-                    <line x1="50" y1="250" x2="550" y2="120" stroke="#ef4444" strokeWidth="3"/>
-                    <text x="520" y="130" fontSize="12" fill="#ef4444" fontWeight="bold">Cobre</text>
-                    
-                    {/* Ferro (α = 12) */}
-                    <line x1="50" y1="250" x2="550" y2="150" stroke="#6366f1" strokeWidth="3"/>
-                    <text x="520" y="160" fontSize="12" fill="#6366f1" fontWeight="bold">Ferro</text>
-                    
-                    {/* Vidro (α = 8) */}
-                    <line x1="50" y1="250" x2="550" y2="180" stroke="#10b981" strokeWidth="3"/>
-                    <text x="520" y="190" fontSize="12" fill="#10b981" fontWeight="bold">Vidro</text>
-                  </svg>
-                </div>
+          {/* Gráficos */}
+          <div className="md:col-span-2 space-y-6">
+            {/* Gráfico de Calor x Temperatura */}
+            <Card className="p-6">
+              <div className="mb-4">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Flame className="w-5 h-5 text-red-600" />
+                  Calor Sensível (Q x ΔT)
+                </h3>
+                <p className="text-sm text-slate-500">Quanto maior o calor específico, mais energia é necessária para aquecer o material.</p>
               </div>
-              <div className="mt-6 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                <p className="text-slate-700">
-                  <strong>Curiosidade:</strong> O alumínio dilata mais que o ferro! Por isso, os trilhos de trem usam ferro, que dilata menos. Vidro dilata ainda menos, sendo ideal para instrumentos de precisão.
-                </p>
+              <div className="h-[250px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={dataCalor}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis 
+                      dataKey="dt" 
+                      label={{ value: 'Variação Temp ΔT (°C)', position: 'bottom', offset: 0 }} 
+                      type="number"
+                      domain={[0, 100]}
+                    />
+                    <YAxis 
+                      label={{ value: "Calor Q (J)", angle: -90, position: 'insideLeft' }}
+                    />
+                    <Tooltip 
+                      formatter={(value: number) => [formatNumber(value, 0), "J"]}
+                      labelFormatter={(label: number) => `ΔT: ${label}°C`}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="q" 
+                      stroke="#ef4444" 
+                      strokeWidth={3} 
+                      dot={false} 
+                      isAnimationActive={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
-            </div>
-          </TabsContent>
+            </Card>
 
-          {/* Gráfico 4: Transição de Fase */}
-          <TabsContent value="transicao" className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">Mudança de Estado: Temperatura vs Calor</h2>
-              <div className="bg-slate-50 rounded-lg p-6 h-96 flex items-center justify-center">
-                <div className="text-center">
-                  <p className="text-slate-600 font-semibold mb-4">Gráfico: Aquecimento de Gelo até Vapor</p>
-                  <svg viewBox="0 0 600 300" className="w-full h-full max-w-2xl mx-auto">
-                    {/* Eixos */}
-                    <line x1="50" y1="250" x2="550" y2="250" stroke="#333" strokeWidth="2"/>
-                    <line x1="50" y1="250" x2="50" y2="50" stroke="#333" strokeWidth="2"/>
-                    
-                    {/* Labels */}
-                    <text x="560" y="255" fontSize="14" fill="#333">Calor (J)</text>
-                    <text x="15" y="40" fontSize="14" fill="#333">T (°C)</text>
-                    
-                    {/* Etapa 1: Aquecimento do gelo */}
-                    <line x1="50" y1="200" x2="150" y2="100" stroke="#3b82f6" strokeWidth="3"/>
-                    <text x="100" y="120" fontSize="11" fill="#3b82f6" fontWeight="bold">Gelo</text>
-                    
-                    {/* Etapa 2: Fusão */}
-                    <line x1="150" y1="100" x2="250" y2="100" stroke="#10b981" strokeWidth="3"/>
-                    <text x="200" y="90" fontSize="11" fill="#10b981" fontWeight="bold">Fusão</text>
-                    
-                    {/* Etapa 3: Aquecimento da água */}
-                    <line x1="250" y1="100" x2="400" y2="50" stroke="#ef4444" strokeWidth="3"/>
-                    <text x="320" y="70" fontSize="11" fill="#ef4444" fontWeight="bold">Água</text>
-                    
-                    {/* Etapa 4: Vaporização */}
-                    <line x1="400" y1="50" x2="550" y2="50" stroke="#f59e0b" strokeWidth="3"/>
-                    <text x="475" y="40" fontSize="11" fill="#f59e0b" fontWeight="bold">Vapor</text>
-                    
-                    {/* Pontos de transição */}
-                    <circle cx="150" cy="100" r="5" fill="#10b981"/>
-                    <circle cx="400" cy="50" r="5" fill="#f59e0b"/>
-                  </svg>
-                </div>
+            {/* Gráfico de Dilatação */}
+            <Card className="p-6">
+              <div className="mb-4">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Thermometer className="w-5 h-5 text-orange-600" />
+                  Dilatação Linear (ΔL x ΔT)
+                </h3>
+                <p className="text-sm text-slate-500">A dilatação é proporcional à variação de temperatura e ao coeficiente do material.</p>
               </div>
-              <div className="mt-6 grid md:grid-cols-4 gap-4">
-                <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                  <p className="font-bold text-sm text-slate-900">Etapa 1</p>
-                  <p className="text-xs text-slate-700 mt-1">Aquecimento do gelo (T aumenta)</p>
-                </div>
-                <div className="bg-green-50 p-3 rounded-lg border border-green-200">
-                  <p className="font-bold text-sm text-slate-900">Etapa 2</p>
-                  <p className="text-xs text-slate-700 mt-1">Fusão (T constante = 0°C)</p>
-                </div>
-                <div className="bg-red-50 p-3 rounded-lg border border-red-200">
-                  <p className="font-bold text-sm text-slate-900">Etapa 3</p>
-                  <p className="text-xs text-slate-700 mt-1">Aquecimento da água (T aumenta)</p>
-                </div>
-                <div className="bg-amber-50 p-3 rounded-lg border border-amber-200">
-                  <p className="font-bold text-sm text-slate-900">Etapa 4</p>
-                  <p className="text-xs text-slate-700 mt-1">Vaporização (T constante = 100°C)</p>
-                </div>
+              <div className="h-[250px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={dataDilatacao}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis 
+                      dataKey="dt" 
+                      label={{ value: 'Variação Temp ΔT (°C)', position: 'bottom', offset: 0 }} 
+                      type="number"
+                      domain={[0, 100]}
+                    />
+                    <YAxis 
+                      label={{ value: 'Dilatação ΔL (mm)', angle: -90, position: 'insideLeft' }}
+                    />
+                    <Tooltip 
+                      formatter={(value: number) => [value.toFixed(3), 'mm']}
+                      labelFormatter={(label: number) => `ΔT: ${label}°C`}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="dl" 
+                      stroke="#f97316" 
+                      strokeWidth={3} 
+                      dot={false} 
+                      isAnimationActive={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
-            </div>
-          </TabsContent>
-
-          {/* Gráfico 5: Comparação */}
-          <TabsContent value="comparacao" className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">Comparação: Calor Sensível vs Latente</h2>
-              <div className="bg-slate-50 rounded-lg p-6 h-96 flex items-center justify-center">
-                <div className="text-center">
-                  <p className="text-slate-600 font-semibold mb-4">Gráfico: Quantidade de Calor Necessária</p>
-                  <svg viewBox="0 0 600 300" className="w-full h-full max-w-2xl mx-auto">
-                    {/* Eixos */}
-                    <line x1="50" y1="250" x2="550" y2="250" stroke="#333" strokeWidth="2"/>
-                    <line x1="50" y1="250" x2="50" y2="50" stroke="#333" strokeWidth="2"/>
-                    
-                    {/* Labels */}
-                    <text x="560" y="255" fontSize="14" fill="#333">Processo</text>
-                    <text x="15" y="40" fontSize="14" fill="#333">Calor (J)</text>
-                    
-                    {/* Barras */}
-                    {/* Aquecimento gelo */}
-                    <rect x="70" y="200" width="40" height="50" fill="#3b82f6" opacity="0.7"/>
-                    <text x="90" y="270" fontSize="11" textAnchor="middle" fill="#333">Aq. Gelo</text>
-                    
-                    {/* Fusão */}
-                    <rect x="130" y="80" width="40" height="170" fill="#10b981" opacity="0.7"/>
-                    <text x="150" y="270" fontSize="11" textAnchor="middle" fill="#333">Fusão</text>
-                    
-                    {/* Aquecimento água */}
-                    <rect x="190" y="180" width="40" height="70" fill="#ef4444" opacity="0.7"/>
-                    <text x="210" y="270" fontSize="11" textAnchor="middle" fill="#333">Aq. Água</text>
-                    
-                    {/* Vaporização */}
-                    <rect x="250" y="30" width="40" height="220" fill="#f59e0b" opacity="0.7"/>
-                    <text x="270" y="270" fontSize="11" textAnchor="middle" fill="#333">Vapor.</text>
-                    
-                    {/* Linhas de referência */}
-                    <line x1="45" y1="100" x2="550" y2="100" stroke="#e0e0e0" strokeWidth="1" strokeDasharray="5,5"/>
-                    <line x1="45" y1="150" x2="550" y2="150" stroke="#e0e0e0" strokeWidth="1" strokeDasharray="5,5"/>
-                    <line x1="45" y1="200" x2="550" y2="200" stroke="#e0e0e0" strokeWidth="1" strokeDasharray="5,5"/>
-                  </svg>
-                </div>
-              </div>
-              <div className="mt-6 bg-purple-50 p-4 rounded-lg border border-purple-200">
-                <p className="text-slate-700">
-                  <strong>Interpretação:</strong> A vaporização requer muito mais calor que a fusão! Por isso, é muito mais fácil derreter gelo do que fazer água ferver. O calor latente de vaporização é muito maior que o de fusão.
-                </p>
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-slate-900 text-slate-400 py-8 border-t border-slate-800 mt-20">
-        <div className="container mx-auto px-4 text-center">
-          <p>© 2026 Projeto ITA - Do Zero a Aprovação. Todos os direitos reservados.</p>
+            </Card>
+          </div>
         </div>
-      </footer>
+      </main>
     </div>
   );
 }

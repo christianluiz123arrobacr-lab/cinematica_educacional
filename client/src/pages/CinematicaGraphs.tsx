@@ -1,202 +1,206 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "wouter";
+import { ArrowLeft, TrendingUp, Activity, Move } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft } from "lucide-react";
-import { Link } from "wouter";
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart } from "recharts";
+import { Slider } from "@/components/ui/slider";
+import { MathFormula } from "@/components/MathFormula";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
+import { formatNumber } from "@/lib/utils";
 
 export default function CinematicaGraphs() {
-  const [velocityData] = useState([
-    { time: 0, velocity: 0, position: 0 },
-    { time: 1, velocity: 2, position: 1 },
-    { time: 2, velocity: 4, position: 4 },
-    { time: 3, velocity: 6, position: 9 },
-    { time: 4, velocity: 8, position: 16 },
-    { time: 5, velocity: 10, position: 25 },
-  ]);
+  const [velocidadeInicial, setVelocidadeInicial] = useState(0);
+  const [aceleracao, setAceleracao] = useState(2);
+  
+  // Dados para o gráfico de Posição x Tempo (MRUV)
+  const [dataPosicao, setDataPosicao] = useState<any[]>([]);
+  
+  // Dados para o gráfico de Velocidade x Tempo (MRUV)
+  const [dataVelocidade, setDataVelocidade] = useState<any[]>([]);
 
-  const [accelerationData] = useState([
-    { time: 0, acceleration: 2, velocity: 0 },
-    { time: 1, acceleration: 2, velocity: 2 },
-    { time: 2, acceleration: 2, velocity: 4 },
-    { time: 3, acceleration: 2, velocity: 6 },
-    { time: 4, acceleration: 2, velocity: 8 },
-    { time: 5, acceleration: 2, velocity: 10 },
-  ]);
+  useEffect(() => {
+    // Gerar curvas para t = 0 a 10s
+    const newDataPosicao = [];
+    const newDataVelocidade = [];
+    
+    for (let t = 0; t <= 10; t += 0.5) {
+      // S = S0 + v0t + 1/2at^2 (S0 = 0)
+      const posicao = velocidadeInicial * t + 0.5 * aceleracao * t * t;
+      // v = v0 + at
+      const velocidade = velocidadeInicial + aceleracao * t;
 
-  const [freeFallData] = useState([
-    { time: 0, height: 500, velocity: 0 },
-    { time: 1, height: 495, velocity: 10 },
-    { time: 2, height: 480, velocity: 20 },
-    { time: 3, height: 455, velocity: 30 },
-    { time: 4, height: 420, velocity: 40 },
-    { time: 5, height: 375, velocity: 50 },
-  ]);
+      newDataPosicao.push({
+        t: t,
+        S: posicao
+      });
 
-  const [circularData] = useState([
-    { angle: 0, velocity: 5, acceleration: 0.5 },
-    { angle: 45, velocity: 5, acceleration: 0.5 },
-    { angle: 90, velocity: 5, acceleration: 0.5 },
-    { angle: 135, velocity: 5, acceleration: 0.5 },
-    { angle: 180, velocity: 5, acceleration: 0.5 },
-    { angle: 225, velocity: 5, acceleration: 0.5 },
-    { angle: 270, velocity: 5, acceleration: 0.5 },
-    { angle: 315, velocity: 5, acceleration: 0.5 },
-  ]);
+      newDataVelocidade.push({
+        t: t,
+        v: velocidade
+      });
+    }
+    setDataPosicao(newDataPosicao);
+    setDataVelocidade(newDataVelocidade);
 
-  const [projectileData] = useState([
-    { distance: 0, height: 0 },
-    { distance: 2, height: 3.6 },
-    { distance: 4, height: 6.4 },
-    { distance: 6, height: 8.4 },
-    { distance: 8, height: 9.6 },
-    { distance: 10, height: 10 },
-    { distance: 12, height: 9.6 },
-    { distance: 14, height: 8.4 },
-  ]);
+  }, [velocidadeInicial, aceleracao]);
+
+  // Valores finais para t=10s
+  const tFinal = 10;
+  const sFinal = velocidadeInicial * tFinal + 0.5 * aceleracao * tFinal * tFinal;
+  const vFinal = velocidadeInicial + aceleracao * tFinal;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
-      {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
-        <div className="container py-4 flex items-center gap-4">
-          <Link href="/">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar
-            </Button>
-          </Link>
-          <h1 className="text-2xl font-bold text-slate-900">Gráficos de Cinemática</h1>
+        <div className="container py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/cinematica">
+              <Button variant="ghost" size="sm">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Voltar
+              </Button>
+            </Link>
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <TrendingUp className="w-5 h-5 text-blue-600" />
+              </div>
+              <h1 className="text-xl font-bold text-slate-900">Gráficos de Cinemática</h1>
+            </div>
+          </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <section className="container py-6 md:py-12">
-        <Tabs defaultValue="velocity" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-8">
-            <TabsTrigger value="velocity">Velocidade</TabsTrigger>
-            <TabsTrigger value="acceleration">Aceleração</TabsTrigger>
-            <TabsTrigger value="freefall">Queda Livre</TabsTrigger>
-            <TabsTrigger value="circular">Circular</TabsTrigger>
-            <TabsTrigger value="projectile">Lançamento</TabsTrigger>
-          </TabsList>
+      <main className="container py-8 space-y-8">
+        <div className="grid md:grid-cols-3 gap-8">
+          {/* Controles */}
+          <Card className="p-6 space-y-6 h-fit">
+            <h3 className="font-bold text-slate-900">Parâmetros do Movimento (MRUV)</h3>
 
-          {/* Velocity Tab */}
-          <TabsContent value="velocity">
-            <Card className="p-6 md:p-8">
-              <h3 className="text-xl font-bold text-slate-900 mb-6">Velocidade e Posição em Função do Tempo (v = v₀ + at)</h3>
-              <div className="w-full h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={velocityData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" label={{ value: "Tempo (s)", position: "insideBottomRight", offset: -5 }} />
-                    <YAxis label={{ value: "Velocidade (m/s) / Posição (m)", angle: -90, position: "insideLeft" }} />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="velocity" stroke="#3b82f6" name="Velocidade (m/s)" strokeWidth={2} />
-                    <Bar dataKey="position" fill="#93c5fd" name="Posição (m)" opacity={0.6} />
-                  </ComposedChart>
-                </ResponsiveContainer>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between mb-2">
+                  <label className="text-sm font-medium text-slate-700">Velocidade Inicial (v₀)</label>
+                  <span className="text-sm font-bold text-blue-600">{velocidadeInicial} m/s</span>
+                </div>
+                <Slider
+                  value={[velocidadeInicial]}
+                  onValueChange={(v) => setVelocidadeInicial(v[0])}
+                  min={-20}
+                  max={20}
+                  step={1}
+                />
               </div>
-              <p className="text-sm text-slate-600 mt-4">
-                O gráfico mostra como a velocidade aumenta linearmente com o tempo em movimento uniformemente acelerado, enquanto a posição aumenta quadraticamente.
-              </p>
-            </Card>
-          </TabsContent>
 
-          {/* Acceleration Tab */}
-          <TabsContent value="acceleration">
-            <Card className="p-6 md:p-8">
-              <h3 className="text-xl font-bold text-slate-900 mb-6">Aceleração Constante (a = Δv/Δt)</h3>
-              <div className="w-full h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={accelerationData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" label={{ value: "Tempo (s)", position: "insideBottomRight", offset: -5 }} />
-                    <YAxis label={{ value: "Aceleração (m/s²) / Velocidade (m/s)", angle: -90, position: "insideLeft" }} />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="acceleration" fill="#0ea5e9" name="Aceleração (m/s²)" />
-                    <Line type="monotone" dataKey="velocity" stroke="#06b6d4" name="Velocidade (m/s)" strokeWidth={2} strokeDasharray="5 5" />
-                  </ComposedChart>
-                </ResponsiveContainer>
+              <div>
+                <div className="flex justify-between mb-2">
+                  <label className="text-sm font-medium text-slate-700">Aceleração (a)</label>
+                  <span className="text-sm font-bold text-orange-600">{aceleracao} m/s²</span>
+                </div>
+                <Slider
+                  value={[aceleracao]}
+                  onValueChange={(v) => setAceleracao(v[0])}
+                  min={-10}
+                  max={10}
+                  step={0.5}
+                />
               </div>
-              <p className="text-sm text-slate-600 mt-4">
-                Com aceleração constante, a velocidade aumenta linearmente. A aceleração permanece constante durante todo o movimento.
-              </p>
-            </Card>
-          </TabsContent>
+            </div>
 
-          {/* Free Fall Tab */}
-          <TabsContent value="freefall">
-            <Card className="p-6 md:p-8">
-              <h3 className="text-xl font-bold text-slate-900 mb-6">Queda Livre (h = h₀ - ½gt²)</h3>
-              <div className="w-full h-80">
+            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm space-y-2">
+              <p className="font-semibold text-slate-900">Equações Horárias:</p>
+              <MathFormula formula={String.raw`$$ S(t) = S_0 + v_0t + \frac{1}{2}at^2 $$`} />
+              <MathFormula formula={String.raw`$$ v(t) = v_0 + at $$`} />
+              <div className="pt-2 text-xs text-slate-500 space-y-1">
+                <p>Para t = 10s:</p>
+                <p>• Posição Final (S): <span className="font-bold text-slate-900">{formatNumber(sFinal, 2)} m</span></p>
+                <p>• Velocidade Final (v): <span className="font-bold text-slate-900">{formatNumber(vFinal, 2)} m/s</span></p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Gráficos */}
+          <div className="md:col-span-2 space-y-6">
+            {/* Gráfico de Posição */}
+            <Card className="p-6">
+              <div className="mb-4">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Move className="w-5 h-5 text-blue-600" />
+                  Posição x Tempo (Parábola)
+                </h3>
+                <p className="text-sm text-slate-500">A posição varia quadraticamente com o tempo no MRUV.</p>
+              </div>
+              <div className="h-[250px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={freeFallData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" label={{ value: "Tempo (s)", position: "insideBottomRight", offset: -5 }} />
-                    <YAxis label={{ value: "Altura (m) / Velocidade (m/s)", angle: -90, position: "insideLeft" }} />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="height" stroke="#8b5cf6" name="Altura (m)" strokeWidth={2} />
-                    <Line type="monotone" dataKey="velocity" stroke="#ec4899" name="Velocidade (m/s)" strokeWidth={2} strokeDasharray="5 5" />
+                  <LineChart data={dataPosicao}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis 
+                      dataKey="t" 
+                      label={{ value: 'Tempo t (s)', position: 'bottom', offset: 0 }} 
+                      type="number"
+                      domain={[0, 10]}
+                    />
+                    <YAxis 
+                      label={{ value: "Posição S (m)", angle: -90, position: 'insideLeft' }}
+                    />
+                    <Tooltip 
+                      formatter={(value: number) => [value.toFixed(2), "m"]}
+                      labelFormatter={(label: number) => `t: ${label.toFixed(1)}s`}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="S" 
+                      stroke="#3b82f6" 
+                      strokeWidth={3} 
+                      dot={false} 
+                      isAnimationActive={false}
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              <p className="text-sm text-slate-600 mt-4">
-                Na queda livre, a altura diminui quadraticamente enquanto a velocidade aumenta linearmente com o tempo (g = 10 m/s²).
-              </p>
             </Card>
-          </TabsContent>
 
-          {/* Circular Tab */}
-          <TabsContent value="circular">
-            <Card className="p-6 md:p-8">
-              <h3 className="text-xl font-bold text-slate-900 mb-6">Movimento Circular Uniforme (v = ωr)</h3>
-              <div className="w-full h-80">
+            {/* Gráfico de Velocidade */}
+            <Card className="p-6">
+              <div className="mb-4">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-orange-600" />
+                  Velocidade x Tempo (Reta)
+                </h3>
+                <p className="text-sm text-slate-500">A velocidade varia linearmente com o tempo. A inclinação é a aceleração.</p>
+              </div>
+              <div className="h-[250px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={circularData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="angle" label={{ value: "Ângulo (°)", position: "insideBottomRight", offset: -5 }} />
-                    <YAxis label={{ value: "Velocidade (m/s) / Aceleração (m/s²)", angle: -90, position: "insideLeft" }} />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="velocity" stroke="#10b981" name="Velocidade (m/s)" strokeWidth={2} />
-                    <Line type="monotone" dataKey="acceleration" stroke="#f59e0b" name="Aceleração Centrípeta (m/s²)" strokeWidth={2} strokeDasharray="5 5" />
+                  <LineChart data={dataVelocidade}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis 
+                      dataKey="t" 
+                      label={{ value: 'Tempo t (s)', position: 'bottom', offset: 0 }} 
+                      type="number"
+                      domain={[0, 10]}
+                    />
+                    <YAxis 
+                      label={{ value: 'Velocidade v (m/s)', angle: -90, position: 'insideLeft' }}
+                    />
+                    <Tooltip 
+                      formatter={(value: number) => [value.toFixed(2), 'm/s']}
+                      labelFormatter={(label: number) => `t: ${label.toFixed(1)}s`}
+                    />
+                    <ReferenceLine y={0} stroke="#94a3b8" />
+                    <Line 
+                      type="monotone" 
+                      dataKey="v" 
+                      stroke="#f97316" 
+                      strokeWidth={3} 
+                      dot={false} 
+                      isAnimationActive={false}
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              <p className="text-sm text-slate-600 mt-4">
-                No movimento circular uniforme, a velocidade tangencial é constante, mas há aceleração centrípeta dirigida ao centro.
-              </p>
             </Card>
-          </TabsContent>
-
-          {/* Projectile Tab */}
-          <TabsContent value="projectile">
-            <Card className="p-6 md:p-8">
-              <h3 className="text-xl font-bold text-slate-900 mb-6">Trajetória de Lançamento de Projétil</h3>
-              <div className="w-full h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={projectileData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="distance" label={{ value: "Distância Horizontal (m)", position: "insideBottomRight", offset: -5 }} />
-                    <YAxis label={{ value: "Altura (m)", angle: -90, position: "insideLeft" }} />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="height" stroke="#6366f1" name="Altura (m)" strokeWidth={3} dot={{ fill: "#6366f1", r: 4 }} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-              <p className="text-sm text-slate-600 mt-4">
-                A trajetória de um projétil forma uma parábola. A altura máxima é atingida no meio do percurso, onde a velocidade vertical é zero.
-              </p>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </section>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
