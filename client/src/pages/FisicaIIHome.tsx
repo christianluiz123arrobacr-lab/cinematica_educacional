@@ -113,7 +113,8 @@ export default function FisicaIIHome() {
           </Link>
 
           {/* Óptica */}
-          <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-yellow-400 cursor-pointer">
+          <Link href="/optica">
+            <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-yellow-400 cursor-pointer">
             <div className="bg-gradient-to-br from-yellow-500 to-orange-600 p-8 text-white">
               <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Eye className="w-8 h-8" />
@@ -140,20 +141,16 @@ export default function FisicaIIHome() {
                   Óptica Ondulatória
                 </li>
               </ul>
-              <Button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white" disabled>
-                Em Breve
+              <Button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white">
+                Começar Agora
               </Button>
             </div>
           </div>
+          </Link>
         </div>
 
         {/* Info Box */}
-        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-8 max-w-4xl mx-auto mt-16">
-          <h3 className="text-xl font-bold text-blue-900 mb-3">🚀 Em Desenvolvimento</h3>
-          <p className="text-blue-800">
-            Os conteúdos de Física II (Termologia, Ondulatória e Óptica) estão sendo desenvolvidos com a mesma qualidade didática de Física I. Em breve, você terá acesso a explicações detalhadas, simuladores interativos, gráficos e quizzes para cada disciplina.
-          </p>
-        </div>
+        
       </section>
 
       {/* Footer */}
