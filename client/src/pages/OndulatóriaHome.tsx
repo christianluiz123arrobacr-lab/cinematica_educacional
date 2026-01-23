@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { BookOpen, MessageCircle, ArrowLeft, Play, BarChart3, Calculator, HelpCircle, TrendingUp } from "lucide-react";
+import { BookOpen, MessageCircle, ArrowLeft, Play, BarChart3, Calculator, HelpCircle, TrendingUp, Waves } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 
@@ -15,7 +15,7 @@ export default function OndulatóriaHome() {
           </Link>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-600 to-blue-400 flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-white" />
+              <Waves className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-900">Ondulatória</h1>
@@ -55,25 +55,24 @@ export default function OndulatóriaHome() {
               </div>
               <div className="flex gap-4 flex-wrap">
                 <Link href="/ondulatoria/topic/conceitos">
-                  <Button size="lg" className="bg-gradient-to-r from-cyan-600 to-blue-500 hover:from-cyan-700 hover:to-blue-600">
+                  <Button size="lg" className="bg-gradient-to-r from-cyan-600 to-blue-500 hover:from-cyan-700 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all">
                     Começar a Aprender
                   </Button>
                 </Link>
                 <Link href="/ondulatoria/simulator">
-                  <Button size="lg" variant="outline" className="border-cyan-300 hover:bg-cyan-50">
+                  <Button size="lg" variant="outline" className="border-cyan-300 hover:bg-cyan-50 text-cyan-700">
                     <Play className="w-4 h-4 mr-2" />
                     Simulador Visual
                   </Button>
                 </Link>
               </div>
             </div>
-            <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl">
-              <img 
-                src="/images/ondulatoria-banner.png" 
-                alt="Ondulatória" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent" />
+            <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-white">
+              <div className="absolute inset-0 flex items-center justify-center bg-slate-50">
+                 <Waves className="w-32 h-32 text-cyan-200" />
+                 <p className="absolute mt-40 text-slate-400 font-medium">Visualização Interativa</p>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/10 to-transparent" />
             </div>
           </div>
         </div>
@@ -87,7 +86,7 @@ export default function OndulatóriaHome() {
           <div className="grid md:grid-cols-6 gap-4">
             <div className="group">
               <Link href="/ondulatoria/topic/conceitos">
-                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-cyan-400">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-cyan-400 bg-white">
                   <BookOpen className="w-8 h-8 text-cyan-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
                   <h3 className="font-bold text-slate-900">Guia Completo</h3>
                   <p className="text-xs text-slate-600 mt-1">Explicações detalhadas</p>
@@ -96,7 +95,7 @@ export default function OndulatóriaHome() {
             </div>
             <div className="group">
               <Link href="/ondulatoria/simulator">
-                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-cyan-400">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-cyan-400 bg-white">
                   <Calculator className="w-8 h-8 text-cyan-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
                   <h3 className="font-bold text-slate-900">Calculadora</h3>
                   <p className="text-xs text-slate-600 mt-1">Calcule qualquer variável</p>
@@ -105,7 +104,7 @@ export default function OndulatóriaHome() {
             </div>
             <div className="group">
               <Link href="/ondulatoria/topic/conceitos">
-                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-cyan-400">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-cyan-400 bg-white">
                   <BarChart3 className="w-8 h-8 text-cyan-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
                   <h3 className="font-bold text-slate-900">Fórmulas</h3>
                   <p className="text-xs text-slate-600 mt-1">Derivações completas</p>
@@ -114,7 +113,7 @@ export default function OndulatóriaHome() {
             </div>
             <div className="group">
               <Link href="/ondulatoria/quiz">
-                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-cyan-400">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-cyan-400 bg-white">
                   <HelpCircle className="w-8 h-8 text-cyan-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
                   <h3 className="font-bold text-slate-900">Quiz</h3>
                   <p className="text-xs text-slate-600 mt-1">Teste seu conhecimento</p>
@@ -123,7 +122,7 @@ export default function OndulatóriaHome() {
             </div>
             <div className="group">
               <Link href="/ondulatoria/graphs">
-                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-cyan-400">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-cyan-400 bg-white">
                   <TrendingUp className="w-8 h-8 text-cyan-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
                   <h3 className="font-bold text-slate-900">Gráficos</h3>
                   <p className="text-xs text-slate-600 mt-1">Visualizações dinâmicas</p>
@@ -132,7 +131,7 @@ export default function OndulatóriaHome() {
             </div>
             <div className="group">
               <Link href="/ondulatoria/simulator">
-                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-cyan-400">
+                <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-cyan-400 bg-white">
                   <Play className="w-8 h-8 text-cyan-600 mx-auto mb-3 group-hover:scale-110 transition-transform" />
                   <h3 className="font-bold text-slate-900">Simulador</h3>
                   <p className="text-xs text-slate-600 mt-1">Animações interativas</p>
@@ -147,7 +146,7 @@ export default function OndulatóriaHome() {
           <h3 className="text-3xl font-bold text-slate-900 mb-8">Tópicos Principais</h3>
           <div className="grid md:grid-cols-2 gap-6">
             <Link href="/ondulatoria/topic/conceitos">
-              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-cyan-500 cursor-pointer hover:border-cyan-700">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-cyan-500 cursor-pointer hover:border-cyan-700 bg-white">
                 <div className="flex items-start gap-4">
                   <div className="text-4xl">🌊</div>
                   <div className="flex-1">
@@ -173,7 +172,7 @@ export default function OndulatóriaHome() {
             </Link>
 
             <Link href="/ondulatoria/topic/mhs">
-              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-cyan-500 cursor-pointer hover:border-cyan-700">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-cyan-500 cursor-pointer hover:border-cyan-700 bg-white">
                 <div className="flex items-start gap-4">
                   <div className="text-4xl">🔄</div>
                   <div className="flex-1">
@@ -199,7 +198,7 @@ export default function OndulatóriaHome() {
             </Link>
 
             <Link href="/ondulatoria/topic/equacao">
-              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-cyan-500 cursor-pointer hover:border-cyan-700">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-cyan-500 cursor-pointer hover:border-cyan-700 bg-white">
                 <div className="flex items-start gap-4">
                   <div className="text-4xl">📐</div>
                   <div className="flex-1">
@@ -216,7 +215,7 @@ export default function OndulatóriaHome() {
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-cyan-600 rounded-full"></span>
-                        Refração e Mudança de Meio
+                        Reflexão e Refração de Ondas
                       </li>
                     </ul>
                   </div>
@@ -225,46 +224,20 @@ export default function OndulatóriaHome() {
             </Link>
 
             <Link href="/ondulatoria/topic/fenomenos">
-              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-cyan-500 cursor-pointer hover:border-cyan-700">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-cyan-500 cursor-pointer hover:border-cyan-700 bg-white">
                 <div className="flex items-start gap-4">
-                  <div className="text-4xl">✨</div>
+                  <div className="text-4xl">🌈</div>
                   <div className="flex-1">
                     <h4 className="text-xl font-bold text-slate-900 mb-2">Fenômenos Ondulatórios</h4>
-                    <p className="text-slate-600 mb-4">Reflexão, refração, interferência e difração de ondas.</p>
+                    <p className="text-slate-600 mb-4">Interferência, difração, polarização e ressonância.</p>
                     <ul className="space-y-2 text-sm text-slate-700">
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-cyan-600 rounded-full"></span>
-                        Reflexão e Refração
+                        Princípio da Superposição
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-cyan-600 rounded-full"></span>
-                        Interferência Construtiva e Destrutiva
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-cyan-600 rounded-full"></span>
-                        Difração e Ressonância
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </Card>
-            </Link>
-
-            <Link href="/ondulatoria/topic/som">
-              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-cyan-500 cursor-pointer hover:border-cyan-700">
-                <div className="flex items-start gap-4">
-                  <div className="text-4xl">🔊</div>
-                  <div className="flex-1">
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">Ondas Sonoras</h4>
-                    <p className="text-slate-600 mb-4">Som, acústica e efeito Doppler.</p>
-                    <ul className="space-y-2 text-sm text-slate-700">
-                      <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-cyan-600 rounded-full"></span>
-                        Velocidade do Som em Diferentes Meios
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-cyan-600 rounded-full"></span>
-                        Intensidade e Nível Sonoro
+                        Ondas Estacionárias
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-cyan-600 rounded-full"></span>
@@ -275,50 +248,9 @@ export default function OndulatóriaHome() {
                 </div>
               </Card>
             </Link>
-
-            <Link href="/ondulatoria/topic/luz">
-              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-cyan-500 cursor-pointer hover:border-cyan-700">
-                <div className="flex items-start gap-4">
-                  <div className="text-4xl">💡</div>
-                  <div className="flex-1">
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">Ondas Eletromagnéticas</h4>
-                    <p className="text-slate-600 mb-4">Luz e espectro eletromagnético.</p>
-                    <ul className="space-y-2 text-sm text-slate-700">
-                      <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-cyan-600 rounded-full"></span>
-                        Natureza da Luz
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-cyan-600 rounded-full"></span>
-                        Espectro Eletromagnético
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-cyan-600 rounded-full"></span>
-                        Polarização de Ondas
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </Card>
-            </Link>
           </div>
         </div>
-
-        {/* Info Box */}
-        <div className="bg-cyan-50 border border-cyan-200 rounded-2xl p-8 max-w-4xl mx-auto">
-          <h3 className="text-xl font-bold text-cyan-900 mb-3">🚀 Conteúdo em Nível ITA/IME</h3>
-          <p className="text-cyan-800">
-            Todos os tópicos de Ondulatória são apresentados com rigor matemático, explicações super detalhadas, derivações completas em LaTeX e exemplos de questões militares (ESPCEX, EFOMM, EEAR, AFA). Ideal para preparação de concursos de alto nível.
-          </p>
-        </div>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-slate-900 text-slate-400 py-8 border-t border-slate-800 mt-20">
-        <div className="container text-center">
-          <p>© 2026 Projeto ITA - Do Zero a Aprovação. Todos os direitos reservados.</p>
-        </div>
-      </footer>
     </div>
   );
 }
