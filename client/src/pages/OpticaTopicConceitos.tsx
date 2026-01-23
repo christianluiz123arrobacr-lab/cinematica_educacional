@@ -3,6 +3,7 @@ import { ArrowLeft, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AdvancedTheory } from "@/components/AdvancedTheory";
 import { ITAOpticsTheory } from "@/content/optics/ita_optics_theory";
+import { MathFormula } from "@/components/MathFormula";
 
 export default function OpticaTopicConceitos() {
   return (
@@ -30,14 +31,52 @@ export default function OpticaTopicConceitos() {
 
       {/* Main Content */}
       <section className="container mx-auto px-4 py-12 max-w-5xl">
+        
+        {/* ===== INTRODUÇÃO ===== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">💡 Óptica: A Natureza da Luz</h2>
+          
+          <div className="space-y-6">
+            <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded p-6">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Definição Rigorosa</h3>
+              <p className="text-slate-700 leading-relaxed">
+                <strong>Óptica é o ramo da Física que estuda a luz e os fenômenos associados à sua propagação e interação com a matéria.</strong>
+              </p>
+              <p className="text-slate-700 leading-relaxed mt-3">
+                No nível ITA/IME, abordamos a Óptica Geométrica (raios de luz) e a Óptica Física (natureza ondulatória), utilizando ferramentas matemáticas avançadas como cálculo e matrizes.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Conteúdo Avançado */}
         <AdvancedTheory 
           title={ITAOpticsTheory.title}
           introduction={ITAOpticsTheory.introduction}
           sections={ITAOpticsTheory.sections}
         />
 
+        {/* ===== RESUMO ===== */}
+        <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8 mt-8">
+          <h3 className="text-xl font-bold text-green-900 mb-4">📋 Resumo de Fórmulas Essenciais</h3>
+          <div className="space-y-3 text-green-900 text-sm">
+            <div className="bg-white p-2 rounded">
+              <MathFormula formula={String.raw`$$\text{Índice de Refração: } n = \frac{c}{v}$$`} display={true} />
+            </div>
+            <div className="bg-white p-2 rounded">
+              <MathFormula formula={String.raw`$$\text{Lei de Snell: } n_1 \sin\theta_1 = n_2 \sin\theta_2$$`} display={true} />
+            </div>
+            <div className="bg-white p-2 rounded">
+              <MathFormula formula={String.raw`$$\text{Equação de Gauss: } \frac{1}{f} = \frac{1}{p} + \frac{1}{p'}$$`} display={true} />
+            </div>
+            <div className="bg-white p-2 rounded">
+              <MathFormula formula={String.raw`$$\text{Ampliação: } A = \frac{i}{o} = -\frac{p'}{p}$$`} display={true} />
+            </div>
+          </div>
+        </div>
+
         {/* ===== PRÓXIMOS PASSOS ===== */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-8">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
           <h3 className="text-xl font-bold text-blue-900 mb-4">🚀 Próximos Passos</h3>
           <p className="text-blue-900 mb-4">Agora que domina os fundamentos da Óptica, avance para:</p>
           <div className="flex flex-wrap gap-3">
