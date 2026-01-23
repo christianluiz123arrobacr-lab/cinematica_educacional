@@ -3,6 +3,8 @@ import { Slider } from "@/components/ui/slider";
 import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { formatNumber, formatUnit } from "@/lib/utils";
+import { AdvancedTheory } from "@/components/AdvancedTheory";
+import { ITADynamicsTheory } from "@/content/dynamics/ita_dynamics_theory";
 
 interface LaunchObliqueBuildingSimulatorNewProps {
   isRunning: boolean;
@@ -292,6 +294,13 @@ export const LaunchObliqueBuildingSimulatorNew: React.FC<LaunchObliqueBuildingSi
           </div>
         </div>
       </Card>
+
+      {/* Teoria Avançada */}
+      <AdvancedTheory
+        title={ITADynamicsTheory.title}
+        introduction={ITADynamicsTheory.introduction}
+        sections={ITADynamicsTheory.sections}
+      />
     </div>
   );
 };

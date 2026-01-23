@@ -4,7 +4,7 @@ import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { formatNumber, formatUnit } from "@/lib/utils";
 import { AdvancedTheory } from "@/components/AdvancedTheory";
-import { EquilibriumTheory } from "@/content/statics/equilibrium_theory";
+import { ITAStaticsTheory } from "@/content/statics/ita_statics_theory";
 
 export const TorqueSimulator: React.FC = () => {
   const [forceLeft, setForceLeft] = useState(50);
@@ -225,9 +225,9 @@ export const TorqueSimulator: React.FC = () => {
 
       {/* Teoria Avançada */}
       <AdvancedTheory
-        title={EquilibriumTheory.title}
-        introduction={EquilibriumTheory.introduction}
-        sections={EquilibriumTheory.sections}
+        title={ITAStaticsTheory.title}
+        introduction={ITAStaticsTheory.introduction}
+        sections={ITAStaticsTheory.sections}
       />
     </div>
   );

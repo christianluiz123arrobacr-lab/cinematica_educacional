@@ -4,7 +4,7 @@ import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { formatNumber, formatUnit } from "@/lib/utils";
 import { AdvancedTheory } from "@/components/AdvancedTheory";
-import { MRUTheory } from "@/content/kinematics/mru_theory";
+import { ITAKinematicsTheory } from "@/content/kinematics/ita_kinematics_theory";
 
 interface MRUSimulatorProps {
   isRunning: boolean;
@@ -220,9 +220,9 @@ export const MRUSimulator: React.FC<MRUSimulatorProps> = ({
 
       {/* Teoria Avançada */}
       <AdvancedTheory
-        title={MRUTheory.title}
-        introduction={MRUTheory.introduction}
-        sections={MRUTheory.sections}
+        title={ITAKinematicsTheory.title}
+        introduction={ITAKinematicsTheory.introduction}
+        sections={ITAKinematicsTheory.sections}
       />
     </div>
   );

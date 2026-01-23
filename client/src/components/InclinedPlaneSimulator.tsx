@@ -4,20 +4,20 @@ import { Slider } from "@/components/ui/slider";
 import { Card } from "@/components/ui/card";
 import { formatNumber, formatUnit } from "@/lib/utils";
 import { AdvancedTheory } from "@/components/AdvancedTheory";
-import { NewtonLawsTheory } from "@/content/dynamics/newton_laws_theory";
+import { ITADynamicsTheory } from "@/content/dynamics/ita_dynamics_theory";
 
 interface InclinedPlaneSimulatorProps {
-  angle: number;
-  mu: number;
-  mode: number; // 0: descendo, 1: subindo, 2: repouso
+  angle?: number;
+  mu?: number;
+  mode?: number; // 0: descendo, 1: subindo, 2: repouso
   isRunning: boolean;
   resetTrigger: number;
 }
 
 export function InclinedPlaneSimulator({
-  angle: initialAngle,
-  mu: initialMu,
-  mode,
+  angle: initialAngle = 30,
+  mu: initialMu = 0.2,
+  mode: initialMode = 0,
   isRunning,
   resetTrigger,
 }: InclinedPlaneSimulatorProps) {
@@ -29,12 +29,14 @@ export function InclinedPlaneSimulator({
   const [angle, setAngle] = useState(initialAngle);
   const [mu, setMu] = useState(initialMu);
   const [mass, setMass] = useState(1); // Massa editável
+  const [mode, setMode] = useState(initialMode);
 
   // Atualizar estados se props mudarem (opcional, mas bom para reset)
   useEffect(() => {
     setAngle(initialAngle);
     setMu(initialMu);
-  }, [initialAngle, initialMu, resetTrigger]);
+    setMode(initialMode);
+  }, [initialAngle, initialMu, initialMode, resetTrigger]);
 
   const g = 9.8;
   const angleRad = (angle * Math.PI) / 180;
@@ -334,9 +336,9 @@ export function InclinedPlaneSimulator({
 
       {/* Teoria Avançada */}
       <AdvancedTheory
-        title={NewtonLawsTheory.title}
-        introduction={NewtonLawsTheory.introduction}
-        sections={NewtonLawsTheory.sections}
+        title={ITADynamicsTheory.title}
+        introduction={ITADynamicsTheory.introduction}
+        sections={ITADynamicsTheory.sections}
       />
     </div>
   );

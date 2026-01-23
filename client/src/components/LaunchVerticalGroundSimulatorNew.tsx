@@ -4,7 +4,7 @@ import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { formatNumber, formatUnit } from "@/lib/utils";
 import { AdvancedTheory } from "@/components/AdvancedTheory";
-import { FreeFallTheory } from "@/content/kinematics/freefall_theory";
+import { ITADynamicsTheory } from "@/content/dynamics/ita_dynamics_theory";
 
 interface LaunchVerticalGroundSimulatorNewProps {
   isRunning: boolean;
@@ -215,9 +215,9 @@ export const LaunchVerticalGroundSimulatorNew: React.FC<LaunchVerticalGroundSimu
 
       {/* Teoria Avançada */}
       <AdvancedTheory
-        title={FreeFallTheory.title}
-        introduction={FreeFallTheory.introduction}
-        sections={FreeFallTheory.sections}
+        title={ITADynamicsTheory.title}
+        introduction={ITADynamicsTheory.introduction}
+        sections={ITADynamicsTheory.sections}
       />
     </div>
   );

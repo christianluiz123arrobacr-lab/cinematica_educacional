@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatNumber, formatUnit } from "@/lib/utils";
 import { AdvancedTheory } from "@/components/AdvancedTheory";
-import { HydrostaticsTheory } from "@/content/statics/hydrostatics_theory";
+import { ITAStaticsTheory } from "@/content/statics/ita_statics_theory";
 
 export const HydrostaticsSimulator: React.FC = () => {
   const [profundidade, setProfundidade] = useState(5);
@@ -180,7 +180,7 @@ export const HydrostaticsSimulator: React.FC = () => {
               max={200000}
               step={1000}
               className="w-full"
-            />
+              />
           </div>
         </div>
 
@@ -220,9 +220,9 @@ export const HydrostaticsSimulator: React.FC = () => {
 
       {/* Teoria Avançada */}
       <AdvancedTheory
-        title={HydrostaticsTheory.title}
-        introduction={HydrostaticsTheory.introduction}
-        sections={HydrostaticsTheory.sections}
+        title={ITAStaticsTheory.title}
+        introduction={ITAStaticsTheory.introduction}
+        sections={ITAStaticsTheory.sections}
       />
     </div>
   );

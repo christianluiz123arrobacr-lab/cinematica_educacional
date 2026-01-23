@@ -4,7 +4,7 @@ import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { formatNumber, formatUnit } from "@/lib/utils";
 import { AdvancedTheory } from "@/components/AdvancedTheory";
-import { ProjectileTheory } from "@/content/kinematics/projectile_theory";
+import { ITADynamicsTheory } from "@/content/dynamics/ita_dynamics_theory";
 
 interface LaunchObliqueGroundSimulatorNewProps {
   isRunning: boolean;
@@ -266,9 +266,9 @@ export const LaunchObliqueGroundSimulatorNew: React.FC<LaunchObliqueGroundSimula
 
       {/* Teoria Avançada */}
       <AdvancedTheory
-        title={ProjectileTheory.title}
-        introduction={ProjectileTheory.introduction}
-        sections={ProjectileTheory.sections}
+        title={ITADynamicsTheory.title}
+        introduction={ITADynamicsTheory.introduction}
+        sections={ITADynamicsTheory.sections}
       />
     </div>
   );

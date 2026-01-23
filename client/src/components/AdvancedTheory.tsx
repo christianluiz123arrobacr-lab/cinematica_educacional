@@ -4,7 +4,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { MathFormula } from "@/components/MathFormula";
 import { BookOpen, GraduationCap, Calculator } from "lucide-react";
 
-interface TheorySection {
+// Exportando a interface para uso externo
+export interface Section {
   title: string;
   content: React.ReactNode;
 }
@@ -12,7 +13,7 @@ interface TheorySection {
 interface AdvancedTheoryProps {
   title: string;
   introduction: React.ReactNode;
-  sections: TheorySection[];
+  sections: Section[];
 }
 
 export const AdvancedTheory: React.FC<AdvancedTheoryProps> = ({
@@ -49,7 +50,15 @@ export const AdvancedTheory: React.FC<AdvancedTheoryProps> = ({
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-6">
               <div className="prose prose-slate max-w-none prose-headings:text-indigo-900 prose-a:text-indigo-600">
-                {section.content}
+                {/* Renderizar conteúdo que pode conter MathFormula */}
+                {typeof section.content === 'string' ? (
+                   // Se for string crua com LaTeX, processar via MathFormula se necessário ou renderizar direto
+                   // Aqui assumimos que o conteúdo pode ser misto. 
+                   // Para simplificar, vamos renderizar como MathFormula se for string, pois nosso conteúdo usa Markdown + LaTeX
+                   <MathFormula formula={section.content} />
+                ) : (
+                  section.content
+                )}
               </div>
             </AccordionContent>
           </AccordionItem>

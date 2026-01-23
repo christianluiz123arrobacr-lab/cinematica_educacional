@@ -4,7 +4,7 @@ import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { formatNumber, formatUnit } from "@/lib/utils";
 import { AdvancedTheory } from "@/components/AdvancedTheory";
-import { CircularTheory } from "@/content/kinematics/circular_theory";
+import { ITAKinematicsTheory } from "@/content/kinematics/ita_kinematics_theory";
 
 interface CircularMotionSimulatorProps {
   isRunning: boolean;
@@ -267,9 +267,9 @@ export const CircularMotionSimulator: React.FC<CircularMotionSimulatorProps> = (
 
       {/* Teoria Avançada */}
       <AdvancedTheory
-        title={CircularTheory.title}
-        introduction={CircularTheory.introduction}
-        sections={CircularTheory.sections}
+        title={ITAKinematicsTheory.title}
+        introduction={ITAKinematicsTheory.introduction}
+        sections={ITAKinematicsTheory.sections}
       />
     </div>
   );

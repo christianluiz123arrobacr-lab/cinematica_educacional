@@ -4,6 +4,8 @@ import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatNumber, formatUnit } from "@/lib/utils";
+import { AdvancedTheory } from "@/components/AdvancedTheory";
+import { ITAStaticsTheory } from "@/content/statics/ita_statics_theory";
 
 export const SimpleMachinesSimulator: React.FC = () => {
   const [tipoMaquina, setTipoMaquina] = useState("alavanca");
@@ -260,6 +262,13 @@ export const SimpleMachinesSimulator: React.FC = () => {
           </div>
         </div>
       </Card>
+
+      {/* Teoria Avançada */}
+      <AdvancedTheory
+        title={ITAStaticsTheory.title}
+        introduction={ITAStaticsTheory.introduction}
+        sections={ITAStaticsTheory.sections}
+      />
     </div>
   );
 };

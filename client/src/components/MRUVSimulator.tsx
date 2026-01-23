@@ -4,7 +4,7 @@ import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { formatNumber, formatUnit } from "@/lib/utils";
 import { AdvancedTheory } from "@/components/AdvancedTheory";
-import { MRUVTheory } from "@/content/kinematics/mruv_theory";
+import { ITAKinematicsTheory } from "@/content/kinematics/ita_kinematics_theory";
 
 interface MRUVSimulatorProps {
   isRunning: boolean;
@@ -276,9 +276,9 @@ export const MRUVSimulator: React.FC<MRUVSimulatorProps> = ({
 
       {/* Teoria Avançada */}
       <AdvancedTheory
-        title={MRUVTheory.title}
-        introduction={MRUVTheory.introduction}
-        sections={MRUVTheory.sections}
+        title={ITAKinematicsTheory.title}
+        introduction={ITAKinematicsTheory.introduction}
+        sections={ITAKinematicsTheory.sections}
       />
     </div>
   );
