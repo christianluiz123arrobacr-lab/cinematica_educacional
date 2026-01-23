@@ -41,7 +41,7 @@ export default function OpticaTopicConceitos() {
                 A Óptica Geométrica ignora a natureza ondulatória da luz e a trata como <strong>raios de luz</strong>: linhas orientadas que representam a direção de propagação da energia luminosa.
               </p>
               <p className="text-slate-700 leading-relaxed">
-                Este modelo é válido sempre que as dimensões dos obstáculos e aberturas forem muito maiores que o comprimento de onda da luz (λ ≈ 400-700 nm).
+                Este modelo é válido sempre que as dimensões dos obstáculos e aberturas forem muito maiores que o comprimento de onda da luz ($\lambda \approx 400-700$ nm).
               </p>
             </div>
 
