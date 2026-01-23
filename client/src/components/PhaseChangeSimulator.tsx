@@ -4,6 +4,8 @@ import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatNumber, formatUnit } from "@/lib/utils";
+import { AdvancedTheory } from "@/components/AdvancedTheory";
+import { ITAThermologyTheory } from "@/content/thermology/ita_thermology_theory";
 
 export const PhaseChangeSimulator: React.FC = () => {
   const [mass, setMass] = useState(1);
@@ -72,6 +74,12 @@ export const PhaseChangeSimulator: React.FC = () => {
           </div>
         </div>
       </Card>
+
+      <AdvancedTheory 
+        title={ITAThermologyTheory.title}
+        introduction={ITAThermologyTheory.introduction}
+        sections={ITAThermologyTheory.sections}
+      />
     </div>
   );
 };

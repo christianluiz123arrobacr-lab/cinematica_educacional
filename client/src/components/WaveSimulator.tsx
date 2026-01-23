@@ -4,6 +4,8 @@ import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatNumber, formatUnit } from "@/lib/utils";
+import { AdvancedTheory } from "@/components/AdvancedTheory";
+import { ITAWavesTheory } from "@/content/waves/ita_waves_theory";
 
 export const WaveSimulator: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -217,6 +219,12 @@ export const WaveSimulator: React.FC = () => {
           </div>
         </div>
       </Card>
+
+      <AdvancedTheory 
+        title={ITAWavesTheory.title}
+        introduction={ITAWavesTheory.introduction}
+        sections={ITAWavesTheory.sections}
+      />
     </div>
   );
 };

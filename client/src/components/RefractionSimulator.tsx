@@ -4,6 +4,8 @@ import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatNumber } from "@/lib/utils";
+import { AdvancedTheory } from "@/components/AdvancedTheory";
+import { ITAOpticsTheory } from "@/content/optics/ita_optics_theory";
 
 export const RefractionSimulator: React.FC = () => {
   const [n1, setN1] = useState(1.0); // Ar
@@ -175,6 +177,12 @@ export const RefractionSimulator: React.FC = () => {
           </div>
         </div>
       </Card>
+
+      <AdvancedTheory 
+        title={ITAOpticsTheory.title}
+        introduction={ITAOpticsTheory.introduction}
+        sections={ITAOpticsTheory.sections}
+      />
     </div>
   );
 };

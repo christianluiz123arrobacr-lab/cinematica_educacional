@@ -4,6 +4,8 @@ import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatNumber, formatUnit } from "@/lib/utils";
+import { AdvancedTheory } from "@/components/AdvancedTheory";
+import { ITAOpticsTheory } from "@/content/optics/ita_optics_theory";
 
 export const MirrorsSimulator: React.FC = () => {
   const [tipoEspelho, setTipoEspelho] = useState("concavo");
@@ -220,6 +222,12 @@ export const MirrorsSimulator: React.FC = () => {
           </div>
         </div>
       </Card>
+
+      <AdvancedTheory 
+        title={ITAOpticsTheory.title}
+        introduction={ITAOpticsTheory.introduction}
+        sections={ITAOpticsTheory.sections}
+      />
     </div>
   );
 };

@@ -4,6 +4,8 @@ import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatNumber, formatUnit } from "@/lib/utils";
+import { AdvancedTheory } from "@/components/AdvancedTheory";
+import { ITAThermologyTheory } from "@/content/thermology/ita_thermology_theory";
 
 export const ThermalExpansionSimulator: React.FC = () => {
   const [l0, setL0] = useState(10);
@@ -150,6 +152,12 @@ export const ThermalExpansionSimulator: React.FC = () => {
           </div>
         </div>
       </Card>
+
+      <AdvancedTheory 
+        title={ITAThermologyTheory.title}
+        introduction={ITAThermologyTheory.introduction}
+        sections={ITAThermologyTheory.sections}
+      />
     </div>
   );
 };

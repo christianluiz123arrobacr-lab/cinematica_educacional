@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { MathFormula } from "./MathFormula";
+import { AdvancedTheory } from "@/components/AdvancedTheory";
+import { ITAThermologyTheory } from "@/content/thermology/ita_thermology_theory";
 
 type ProcessType = "isothermal" | "adiabatic" | "isobaric" | "isochoric";
 
@@ -99,129 +101,137 @@ export function PVDiagramSimulator() {
   }).join(" ");
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-      <h3 className="text-2xl font-bold text-slate-900 mb-6">📈 Simulador de Diagrama P-V</h3>
-      
-      {/* SELEÇÃO DE PROCESSO */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        {(Object.keys(processes) as ProcessType[]).map((type) => (
-          <button
-            key={type}
-            onClick={() => setSelectedProcess(type)}
-            className={`p-4 rounded-lg border-2 font-bold transition-all ${
-              selectedProcess === type
-                ? `bg-gradient-to-r ${processes[type].color} text-white border-current`
-                : "bg-slate-100 text-slate-900 border-slate-300 hover:border-slate-400"
-            }`}
-          >
-            {processes[type].name}
-          </button>
-        ))}
-      </div>
-
-      {/* DESCRIÇÃO */}
-      <div className="bg-gradient-to-r from-slate-50 to-slate-100 p-6 rounded-lg border border-slate-300 mb-8">
-        <h4 className="font-bold text-slate-900 mb-2">📖 O que é?</h4>
-        <p className="text-slate-700 mb-4">{current.description}</p>
+    <div className="space-y-8">
+      <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+        <h3 className="text-2xl font-bold text-slate-900 mb-6">📈 Simulador de Diagrama P-V</h3>
         
-        <h4 className="font-bold text-slate-900 mb-2">📐 Equação Característica:</h4>
-        <MathFormula formula={current.formula} display={true} />
-      </div>
-
-      {/* GRÁFICO P-V */}
-      <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-lg border-2 border-slate-300 mb-8">
-        <h4 className="font-bold text-slate-900 mb-4">📊 Diagrama P-V Interativo:</h4>
-        
-        <svg width="100%" height="500" viewBox="0 0 500 500" className="bg-white rounded border border-slate-300">
-          {/* Eixos */}
-          <line x1="50" y1="450" x2="450" y2="450" stroke="#000" strokeWidth="2" />
-          <line x1="50" y1="450" x2="50" y2="50" stroke="#000" strokeWidth="2" />
-          
-          {/* Rótulos dos eixos */}
-          <text x="460" y="460" fontSize="14" fontWeight="bold">V</text>
-          <text x="30" y="40" fontSize="14" fontWeight="bold">P</text>
-          
-          {/* Grid */}
-          {[...Array(5)].map((_, i) => (
-            <g key={`grid-${i}`}>
-              <line x1="50" y1={450 - (i * 100)} x2="450" y2={450 - (i * 100)} stroke="#e0e0e0" strokeWidth="1" strokeDasharray="5,5" />
-              <line x1={50 + (i * 100)} y1="450" x2={50 + (i * 100)} y2="50" stroke="#e0e0e0" strokeWidth="1" strokeDasharray="5,5" />
-            </g>
+        {/* SELEÇÃO DE PROCESSO */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          {(Object.keys(processes) as ProcessType[]).map((type) => (
+            <button
+              key={type}
+              onClick={() => setSelectedProcess(type)}
+              className={`p-4 rounded-lg border-2 font-bold transition-all ${
+                selectedProcess === type
+                  ? `bg-gradient-to-r ${processes[type].color} text-white border-current`
+                  : "bg-slate-100 text-slate-900 border-slate-300 hover:border-slate-400"
+              }`}
+            >
+              {processes[type].name}
+            </button>
           ))}
+        </div>
+
+        {/* DESCRIÇÃO */}
+        <div className="bg-gradient-to-r from-slate-50 to-slate-100 p-6 rounded-lg border border-slate-300 mb-8">
+          <h4 className="font-bold text-slate-900 mb-2">📖 O que é?</h4>
+          <p className="text-slate-700 mb-4">{current.description}</p>
           
-          {/* Curva do processo */}
-          <path
-            d={pathData}
-            fill="none"
-            stroke={`url(#gradient-${selectedProcess})`}
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+          <h4 className="font-bold text-slate-900 mb-2">📐 Equação Característica:</h4>
+          <MathFormula formula={current.formula} display={true} />
+        </div>
+
+        {/* GRÁFICO P-V */}
+        <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-lg border-2 border-slate-300 mb-8">
+          <h4 className="font-bold text-slate-900 mb-4">📊 Diagrama P-V Interativo:</h4>
+          
+          <svg width="100%" height="500" viewBox="0 0 500 500" className="bg-white rounded border border-slate-300">
+            {/* Eixos */}
+            <line x1="50" y1="450" x2="450" y2="450" stroke="#000" strokeWidth="2" />
+            <line x1="50" y1="450" x2="50" y2="50" stroke="#000" strokeWidth="2" />
+            
+            {/* Rótulos dos eixos */}
+            <text x="460" y="460" fontSize="14" fontWeight="bold">V</text>
+            <text x="30" y="40" fontSize="14" fontWeight="bold">P</text>
+            
+            {/* Grid */}
+            {[...Array(5)].map((_, i) => (
+              <g key={`grid-${i}`}>
+                <line x1="50" y1={450 - (i * 100)} x2="450" y2={450 - (i * 100)} stroke="#e0e0e0" strokeWidth="1" strokeDasharray="5,5" />
+                <line x1={50 + (i * 100)} y1="450" x2={50 + (i * 100)} y2="50" stroke="#e0e0e0" strokeWidth="1" strokeDasharray="5,5" />
+              </g>
+            ))}
+            
+            {/* Curva do processo */}
+            <path
+              d={pathData}
+              fill="none"
+              stroke={`url(#gradient-${selectedProcess})`}
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            
+            {/* Gradiente */}
+            <defs>
+              <linearGradient id={`gradient-${selectedProcess}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor={current.color.split(" ")[1]} />
+                <stop offset="100%" stopColor={current.color.split(" ")[3]} />
+              </linearGradient>
+            </defs>
+            
+            {/* Pontos */}
+            {points.map((p, i) => {
+              const { x, y } = toSVG(p.v, p.p);
+              return (
+                <circle key={i} cx={x} cy={y} r="3" fill={current.color.split(" ")[1]} opacity="0.6" />
+              );
+            })}
+            
+            {/* Ponto inicial */}
+            {points.length > 0 && (
+              <circle
+                cx={toSVG(points[0].v, points[0].p).x}
+                cy={toSVG(points[0].v, points[0].p).y}
+                r="6"
+                fill="green"
+                stroke="darkgreen"
+                strokeWidth="2"
+              />
+            )}
+            
+            {/* Ponto final */}
+            {points.length > 0 && (
+              <circle
+                cx={toSVG(points[points.length - 1].v, points[points.length - 1].p).x}
+                cy={toSVG(points[points.length - 1].v, points[points.length - 1].p).y}
+                r="6"
+                fill="red"
+                stroke="darkred"
+                strokeWidth="2"
+              />
+            )}
+          </svg>
+          
+          <p className="text-xs text-slate-600 mt-2">🟢 Início do processo | 🔴 Fim do processo</p>
+        </div>
+
+        {/* CONTROLE INTERATIVO */}
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-8">
+          <h4 className="font-bold text-slate-900 mb-4">🎮 Parâmetro de Controle</h4>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={parameter}
+            onChange={(e) => setParameter(parseFloat(e.target.value))}
+            className="w-full mb-4"
           />
-          
-          {/* Gradiente */}
-          <defs>
-            <linearGradient id={`gradient-${selectedProcess}`} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={current.color.split(" ")[1]} />
-              <stop offset="100%" stopColor={current.color.split(" ")[3]} />
-            </linearGradient>
-          </defs>
-          
-          {/* Pontos */}
-          {points.map((p, i) => {
-            const { x, y } = toSVG(p.v, p.p);
-            return (
-              <circle key={i} cx={x} cy={y} r="3" fill={current.color.split(" ")[1]} opacity="0.6" />
-            );
-          })}
-          
-          {/* Ponto inicial */}
-          {points.length > 0 && (
-            <circle
-              cx={toSVG(points[0].v, points[0].p).x}
-              cy={toSVG(points[0].v, points[0].p).y}
-              r="6"
-              fill="green"
-              stroke="darkgreen"
-              strokeWidth="2"
-            />
-          )}
-          
-          {/* Ponto final */}
-          {points.length > 0 && (
-            <circle
-              cx={toSVG(points[points.length - 1].v, points[points.length - 1].p).x}
-              cy={toSVG(points[points.length - 1].v, points[points.length - 1].p).y}
-              r="6"
-              fill="red"
-              stroke="darkred"
-              strokeWidth="2"
-            />
-          )}
-        </svg>
-        
-        <p className="text-xs text-slate-600 mt-2">🟢 Início do processo | 🔴 Fim do processo</p>
+          <p className="text-sm text-slate-700">Valor: {parameter.toFixed(0)}</p>
+        </div>
+
+        {/* EQUAÇÃO */}
+        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-lg border border-blue-300">
+          <h4 className="font-bold text-slate-900 mb-3">🔤 Equação Geral:</h4>
+          <MathFormula formula={current.equation} display={true} />
+        </div>
       </div>
 
-      {/* CONTROLE INTERATIVO */}
-      <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-8">
-        <h4 className="font-bold text-slate-900 mb-4">🎮 Parâmetro de Controle</h4>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={parameter}
-          onChange={(e) => setParameter(parseFloat(e.target.value))}
-          className="w-full mb-4"
-        />
-        <p className="text-sm text-slate-700">Valor: {parameter.toFixed(0)}</p>
-      </div>
-
-      {/* EQUAÇÃO */}
-      <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-lg border border-blue-300">
-        <h4 className="font-bold text-slate-900 mb-3">🔤 Equação Geral:</h4>
-        <MathFormula formula={current.equation} display={true} />
-      </div>
+      <AdvancedTheory 
+        title={ITAThermologyTheory.title}
+        introduction={ITAThermologyTheory.introduction}
+        sections={ITAThermologyTheory.sections}
+      />
     </div>
   );
 }
