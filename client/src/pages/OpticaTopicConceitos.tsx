@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AdvancedTheory } from "@/components/AdvancedTheory";
 import { ITAOpticsTheory } from "@/content/optics/ita_optics_theory";
@@ -7,6 +7,7 @@ import { ITAOpticsTheory } from "@/content/optics/ita_optics_theory";
 export default function OpticaTopicConceitos() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-50 to-slate-100">
+      {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/optica">
@@ -15,17 +16,47 @@ export default function OpticaTopicConceitos() {
               Voltar
             </Button>
           </Link>
-          <h1 className="text-xl font-bold text-slate-900">Óptica Avançada (ITA/IME)</h1>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center">
+              <Eye className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900">Óptica Avançada - Nível ITA/IME</h1>
+              <p className="text-xs text-slate-600">Física II</p>
+            </div>
+          </div>
         </div>
       </header>
 
+      {/* Main Content */}
       <section className="container mx-auto px-4 py-12 max-w-5xl">
         <AdvancedTheory 
           title={ITAOpticsTheory.title}
           introduction={ITAOpticsTheory.introduction}
           sections={ITAOpticsTheory.sections}
         />
+
+        {/* ===== PRÓXIMOS PASSOS ===== */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-8">
+          <h3 className="text-xl font-bold text-blue-900 mb-4">🚀 Próximos Passos</h3>
+          <p className="text-blue-900 mb-4">Agora que domina os fundamentos da Óptica, avance para:</p>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/optica/topic/lentes">
+              <Button className="bg-blue-600 hover:bg-blue-700">Lentes e Espelhos</Button>
+            </Link>
+            <Link href="/optica">
+              <Button variant="outline">Voltar para Óptica</Button>
+            </Link>
+          </div>
+        </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-slate-900 text-slate-400 py-8 border-t border-slate-800 mt-20">
+        <div className="container mx-auto px-4 text-center">
+          <p>© 2026 Projeto ITA - Do Zero a Aprovação. Todos os direitos reservados.</p>
+        </div>
+      </footer>
     </div>
   );
 }
