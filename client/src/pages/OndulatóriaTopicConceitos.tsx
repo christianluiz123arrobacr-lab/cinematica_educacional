@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowLeft, Waves, Activity, Radio, Zap } from "lucide-react";
+import { ArrowLeft, Waves, Activity, Radio, Zap, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/components/MathFormula";
 
@@ -102,6 +102,67 @@ export default function OndulatoriaTopicConceitos() {
                   <p className="font-bold text-slate-900 mb-1">Comp. de Onda ($\lambda$)</p>
                   <p className="text-xs text-slate-500">Distância entre dois picos consecutivos.</p>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===== FÓRMULAS PRINCIPAIS ===== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-indigo-100 rounded-lg">
+              <Calculator className="w-6 h-6 text-indigo-600" />
+            </div>
+            <h2 className="text-3xl font-bold text-slate-900">Fórmulas Principais</h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-slate-50 border-l-4 border-indigo-500 rounded-r-lg p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Equação Fundamental da Ondulatória</h3>
+              <p className="text-sm text-slate-600 mb-4">Relaciona velocidade, comprimento de onda e frequência.</p>
+              <div className="bg-white p-4 rounded border border-slate-200 mb-3 flex justify-center">
+                <MathFormula formula="v = \lambda \cdot f" display={true} />
+              </div>
+              <div className="text-xs text-slate-500 grid grid-cols-2 gap-2">
+                <span>$v$: Velocidade (m/s)</span>
+                <span>$\lambda$: Comprimento de onda (m)</span>
+                <span>$f$: Frequência (Hz)</span>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border-l-4 border-purple-500 rounded-r-lg p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Período e Frequência</h3>
+              <p className="text-sm text-slate-600 mb-4">Relação inversa entre o tempo de um ciclo e a frequência.</p>
+              <div className="bg-white p-4 rounded border border-slate-200 mb-3 flex justify-center">
+                <MathFormula formula="T = \frac{1}{f}" display={true} />
+              </div>
+              <div className="text-xs text-slate-500 grid grid-cols-2 gap-2">
+                <span>$T$: Período (s)</span>
+                <span>$f$: Frequência (Hz)</span>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border-l-4 border-blue-500 rounded-r-lg p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Função de Onda Harmônica</h3>
+              <p className="text-sm text-slate-600 mb-4">Descreve a posição de qualquer ponto da onda no tempo e espaço.</p>
+              <div className="bg-white p-4 rounded border border-slate-200 mb-3 flex justify-center">
+                <MathFormula formula="y(x,t) = A \cos(kx - \omega t + \phi_0)" display={true} />
+              </div>
+              <div className="text-xs text-slate-500 grid grid-cols-2 gap-2">
+                <span>$k$: Número de onda ($2\pi/\lambda$)</span>
+                <span>$\omega$: Frequência angular ($2\pi f$)</span>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border-l-4 border-green-500 rounded-r-lg p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Velocidade em Corda Tensa (Taylor)</h3>
+              <p className="text-sm text-slate-600 mb-4">Velocidade da onda em função da tensão e densidade linear.</p>
+              <div className="bg-white p-4 rounded border border-slate-200 mb-3 flex justify-center">
+                <MathFormula formula="v = \sqrt{\frac{T}{\mu}}" display={true} />
+              </div>
+              <div className="text-xs text-slate-500 grid grid-cols-2 gap-2">
+                <span>$T$: Tração na corda (N)</span>
+                <span>$\mu$: Densidade linear (kg/m)</span>
               </div>
             </div>
           </div>

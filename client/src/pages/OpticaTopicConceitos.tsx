@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowLeft, Eye, Lightbulb, MousePointer2 } from "lucide-react";
+import { ArrowLeft, Eye, Lightbulb, MousePointer2, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/components/MathFormula";
 
@@ -182,6 +182,68 @@ export default function OpticaTopicConceitos() {
                     </tr>
                   </tbody>
                 </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===== FÓRMULAS PRINCIPAIS ===== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-orange-100 rounded-lg">
+              <Calculator className="w-6 h-6 text-orange-600" />
+            </div>
+            <h2 className="text-3xl font-bold text-slate-900">Fórmulas Principais</h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-slate-50 border-l-4 border-orange-500 rounded-r-lg p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Equação de Gauss</h3>
+              <p className="text-sm text-slate-600 mb-4">Relaciona a distância focal com as posições do objeto e da imagem.</p>
+              <div className="bg-white p-4 rounded border border-slate-200 mb-3 flex justify-center">
+                <MathFormula formula="\frac{1}{f} = \frac{1}{p} + \frac{1}{p'}" display={true} />
+              </div>
+              <div className="text-xs text-slate-500 grid grid-cols-2 gap-2">
+                <span>$f$: Distância focal (m)</span>
+                <span>$p$: Posição do objeto (m)</span>
+                <span>$p'$: Posição da imagem (m)</span>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border-l-4 border-blue-500 rounded-r-lg p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Aumento Linear Transversal</h3>
+              <p className="text-sm text-slate-600 mb-4">Determina o quanto a imagem é maior ou menor que o objeto.</p>
+              <div className="bg-white p-4 rounded border border-slate-200 mb-3 flex justify-center">
+                <MathFormula formula="A = \frac{i}{o} = -\frac{p'}{p}" display={true} />
+              </div>
+              <div className="text-xs text-slate-500 grid grid-cols-2 gap-2">
+                <span>$A$: Aumento linear (adimensional)</span>
+                <span>$i$: Tamanho da imagem (m)</span>
+                <span>$o$: Tamanho do objeto (m)</span>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border-l-4 border-green-500 rounded-r-lg p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Associação de Espelhos Planos</h3>
+              <p className="text-sm text-slate-600 mb-4">Número de imagens formadas por dois espelhos planos com ângulo $\alpha$.</p>
+              <div className="bg-white p-4 rounded border border-slate-200 mb-3 flex justify-center">
+                <MathFormula formula="N = \frac{360^\circ}{\alpha} - 1" display={true} />
+              </div>
+              <div className="text-xs text-slate-500 grid grid-cols-2 gap-2">
+                <span>$N$: Número de imagens</span>
+                <span>$\alpha$: Ângulo entre espelhos (graus)</span>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border-l-4 border-purple-500 rounded-r-lg p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Rotação de Espelho Plano</h3>
+              <p className="text-sm text-slate-600 mb-4">Desvio angular do raio refletido ao girar o espelho.</p>
+              <div className="bg-white p-4 rounded border border-slate-200 mb-3 flex justify-center">
+                <MathFormula formula="\Delta \theta_{ref} = 2 \cdot \Delta \theta_{esp}" display={true} />
+              </div>
+              <div className="text-xs text-slate-500 grid grid-cols-2 gap-2">
+                <span>$\Delta \theta_{"{ref}"}$: Giro do raio refletido</span>
+                <span>$\Delta \theta_{"{esp}"}$: Giro do espelho</span>
               </div>
             </div>
           </div>

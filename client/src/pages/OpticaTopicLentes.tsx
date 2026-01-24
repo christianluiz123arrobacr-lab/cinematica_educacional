@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowLeft, Eye, Microscope, Glasses, ScanEye } from "lucide-react";
+import { ArrowLeft, Eye, Microscope, Glasses, ScanEye, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/components/MathFormula";
 
@@ -125,6 +125,66 @@ export default function OpticaTopicLentes() {
           </div>
         </div>
 
+        {/* ===== FÓRMULAS PRINCIPAIS ===== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-orange-100 rounded-lg">
+              <Calculator className="w-6 h-6 text-orange-600" />
+            </div>
+            <h2 className="text-3xl font-bold text-slate-900">Fórmulas Principais</h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-slate-50 border-l-4 border-orange-500 rounded-r-lg p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Equação de Halley</h3>
+              <p className="text-sm text-slate-600 mb-4">Calcula a distância focal com base na geometria da lente.</p>
+              <div className="bg-white p-4 rounded border border-slate-200 mb-3 flex justify-center">
+                <MathFormula formula="\frac{1}{f} = (n_{rel} - 1) \left( \frac{1}{R_1} + \frac{1}{R_2} \right)" display={true} />
+              </div>
+              <div className="text-xs text-slate-500 grid grid-cols-2 gap-2">
+                <span>$n_{"{rel}"}$: Índice relativo</span>
+                <span>$R_1, R_2$: Raios de curvatura</span>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border-l-4 border-blue-500 rounded-r-lg p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Vergência</h3>
+              <p className="text-sm text-slate-600 mb-4">Poder de convergência ou divergência da lente.</p>
+              <div className="bg-white p-4 rounded border border-slate-200 mb-3 flex justify-center">
+                <MathFormula formula="V = \frac{1}{f}" display={true} />
+              </div>
+              <div className="text-xs text-slate-500 grid grid-cols-2 gap-2">
+                <span>$V$: Vergência (di)</span>
+                <span>$f$: Distância focal (m)</span>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border-l-4 border-green-500 rounded-r-lg p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Associação de Lentes</h3>
+              <p className="text-sm text-slate-600 mb-4">Vergência equivalente de lentes justapostas.</p>
+              <div className="bg-white p-4 rounded border border-slate-200 mb-3 flex justify-center">
+                <MathFormula formula="V_{eq} = V_1 + V_2 + \dots" display={true} />
+              </div>
+              <div className="text-xs text-slate-500 grid grid-cols-2 gap-2">
+                <span>$V_{"{eq}"}$: Vergência total</span>
+                <span>$V_i$: Vergência individual</span>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border-l-4 border-purple-500 rounded-r-lg p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Lei de Snell-Descartes</h3>
+              <p className="text-sm text-slate-600 mb-4">Refração da luz na interface entre dois meios.</p>
+              <div className="bg-white p-4 rounded border border-slate-200 mb-3 flex justify-center">
+                <MathFormula formula="n_1 \cdot \sin(i) = n_2 \cdot \sin(r)" display={true} />
+              </div>
+              <div className="text-xs text-slate-500 grid grid-cols-2 gap-2">
+                <span>$n$: Índice de refração</span>
+                <span>$i, r$: Ângulos com a normal</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* ===== TÓPICOS AVANÇADOS (ITA/IME) ===== */}
         <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-lg p-8 mb-8 text-white">
           <div className="flex items-center gap-3 mb-6">
@@ -139,7 +199,7 @@ export default function OpticaTopicLentes() {
                 Para sistemas complexos, representamos cada elemento óptico como uma matriz $2 \times 2$ que transforma o vetor raio (altura $y$ e ângulo $\alpha$).
               </p>
               <div className="bg-black/30 p-3 rounded border border-white/10 mb-3">
-                <MathFormula formula="\\begin{pmatrix} y_2 \\ \alpha_2 \\end{pmatrix} = \\begin{pmatrix} A & B \\ C & D \\end{pmatrix} \\begin{pmatrix} y_1 \\ \alpha_1 \\end{pmatrix}" display={true} />
+                <MathFormula formula="\\begin{pmatrix} y_2 \\\\ \alpha_2 \\end{pmatrix} = \\begin{pmatrix} A & B \\\\ C & D \\end{pmatrix} \\begin{pmatrix} y_1 \\\\ \alpha_1 \\end{pmatrix}" display={true} />
               </div>
               <p className="text-xs text-slate-400">
                 A matriz de uma lente delgada é <MathFormula formula="M_L = \\begin{pmatrix} 1 & 0 \\\\ -1/f & 1 \\end{pmatrix}" display={false} />.
