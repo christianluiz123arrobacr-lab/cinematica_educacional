@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { BookOpen, Flame, Waves, Eye, ArrowRight } from "lucide-react";
+import { BookOpen, Flame, Waves, Eye, ArrowRight, Zap, Magnet, Atom } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function FisicaSelector() {
@@ -27,25 +27,25 @@ export default function FisicaSelector() {
             Escolha seu <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Caminho</span>
           </h2>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-8">
-            Selecione entre Física I (Mecânica) ou Física II (Termologia, Ondulatória e Óptica) para começar seus estudos.
+            Selecione entre Física I, II ou III para começar seus estudos.
           </p>
         </div>
 
         {/* Main Cards Section */}
-        <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto mb-20">
+        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto mb-20">
           {/* Física I - Mecânica */}
           <div className="group">
             <Link href="/fisica-i">
-              <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-blue-400 cursor-pointer h-full">
-                <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 p-12 text-white">
-                  <div className="w-20 h-20 bg-white/20 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <BookOpen className="w-10 h-10" />
+              <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-blue-400 cursor-pointer h-full flex flex-col">
+                <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 p-10 text-white">
+                  <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <BookOpen className="w-8 h-8" />
                   </div>
-                  <h3 className="text-4xl font-bold mb-3">Física I</h3>
-                  <p className="text-blue-100 mb-8 text-lg">Mecânica - O Movimento e as Forças</p>
+                  <h3 className="text-3xl font-bold mb-2">Física I</h3>
+                  <p className="text-blue-100 mb-4 text-base">Mecânica - O Movimento e as Forças</p>
                 </div>
-                <div className="p-8">
-                  <div className="space-y-4 mb-8">
+                <div className="p-6 flex-1 flex flex-col">
+                  <div className="space-y-4 mb-8 flex-1">
                     <div className="flex items-start gap-3">
                       <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                         <span className="text-blue-600 font-bold">1</span>
@@ -74,7 +74,7 @@ export default function FisicaSelector() {
                       </div>
                     </div>
                   </div>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white group-hover:gap-2">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white group-hover:gap-2 mt-auto">
                     Explorar Física I
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
@@ -86,16 +86,16 @@ export default function FisicaSelector() {
           {/* Física II - Termologia, Ondulatória, Óptica */}
           <div className="group">
             <Link href="/fisica-ii">
-              <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-purple-400 cursor-pointer h-full">
-                <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-12 text-white">
-                  <div className="w-20 h-20 bg-white/20 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <Flame className="w-10 h-10" />
+              <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-purple-400 cursor-pointer h-full flex flex-col">
+                <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-10 text-white">
+                  <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <Flame className="w-8 h-8" />
                   </div>
-                  <h3 className="text-4xl font-bold mb-3">Física II</h3>
-                  <p className="text-purple-100 mb-8 text-lg">Termologia, Ondulatória e Óptica</p>
+                  <h3 className="text-3xl font-bold mb-2">Física II</h3>
+                  <p className="text-purple-100 mb-4 text-base">Termologia, Ondulatória e Óptica</p>
                 </div>
-                <div className="p-8">
-                  <div className="space-y-4 mb-8">
+                <div className="p-6 flex-1 flex flex-col">
+                  <div className="space-y-4 mb-8 flex-1">
                     <div className="flex items-start gap-3">
                       <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                         <Flame className="w-5 h-5 text-purple-600" />
@@ -124,8 +124,58 @@ export default function FisicaSelector() {
                       </div>
                     </div>
                   </div>
-                  <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white group-hover:gap-2">
+                  <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white group-hover:gap-2 mt-auto">
                     Explorar Física II
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </div>
+              </div>
+            </Link>
+          </div>
+
+          {/* Física III - Eletromagnetismo */}
+          <div className="group">
+            <Link href="/fisica-iii">
+              <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-yellow-400 cursor-pointer h-full flex flex-col">
+                <div className="bg-gradient-to-br from-yellow-500 to-orange-600 p-10 text-white">
+                  <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <Zap className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-3xl font-bold mb-2">Física III</h3>
+                  <p className="text-yellow-100 mb-4 text-base">Eletricidade, Magnetismo e Moderna</p>
+                </div>
+                <div className="p-6 flex-1 flex flex-col">
+                  <div className="space-y-4 mb-8 flex-1">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                        <Zap className="w-5 h-5 text-yellow-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900">Eletricidade</h4>
+                        <p className="text-slate-600 text-sm">Cargas, campos e circuitos elétricos</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                        <Magnet className="w-5 h-5 text-yellow-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900">Magnetismo</h4>
+                        <p className="text-slate-600 text-sm">Campos magnéticos e indução</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                        <Atom className="w-5 h-5 text-yellow-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900">Física Moderna</h4>
+                        <p className="text-slate-600 text-sm">Relatividade e física quântica</p>
+                      </div>
+                    </div>
+                  </div>
+                  <Button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white group-hover:gap-2 mt-auto">
+                    Explorar Física III
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
@@ -143,7 +193,7 @@ export default function FisicaSelector() {
                 <span className="text-blue-600 font-bold text-lg">1</span>
               </div>
               <h4 className="font-bold text-slate-900 mb-2">Escolha sua Disciplina</h4>
-              <p className="text-slate-600 text-sm">Selecione entre Física I ou Física II para começar</p>
+              <p className="text-slate-600 text-sm">Selecione entre Física I, II ou III para começar</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">

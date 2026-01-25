@@ -43,6 +43,7 @@ import EstaticaTopicHidrostatica from "./pages/EstaticaTopicHidrostatica";
 import FisicaSelector from "./pages/FisicaSelector";
 import FisicaIHome from "./pages/FisicaIHome";
 import FisicaIIHome from "./pages/FisicaIIHome";
+import FisicaIIIHome from "./pages/FisicaIIIHome";
 import TermologiaHome from "./pages/TermologiaHome";
 import TermologiaGraphs from "./pages/TermologiaGraphs";
 import TermologiaQuiz from "./pages/TermologiaQuiz";
@@ -83,6 +84,7 @@ function Router() {
       <Route path="/landing" component={Landing} />
       <Route path="/fisica-i" component={FisicaIHome} />
       <Route path="/fisica-ii" component={FisicaIIHome} />
+      <Route path="/fisica-iii" component={FisicaIIIHome} />
       <Route path="/cinematica" component={Home} />
       <Route path="/cinematica/learn" component={Learn} />
       <Route path="/cinematica/quiz" component={Quiz} />
