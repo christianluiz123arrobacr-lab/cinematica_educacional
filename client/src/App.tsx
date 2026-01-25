@@ -44,6 +44,8 @@ import FisicaSelector from "./pages/FisicaSelector";
 import FisicaIHome from "./pages/FisicaIHome";
 import FisicaIIHome from "./pages/FisicaIIHome";
 import FisicaIIIHome from "./pages/FisicaIIIHome";
+import EletricidadeHome from "./pages/EletricidadeHome";
+import EletricidadeTopicEletrostatica from "./pages/EletricidadeTopicEletrostatica";
 import TermologiaHome from "./pages/TermologiaHome";
 import TermologiaGraphs from "./pages/TermologiaGraphs";
 import TermologiaQuiz from "./pages/TermologiaQuiz";
@@ -152,6 +154,9 @@ function Router() {
       <Route path="/optica/simulator" component={OpticaSimulator} />
       <Route path="/optica/graphs" component={OpticaGraphs} />
       <Route path="/optica/quiz" component={OpticaQuiz} />
+
+      <Route path="/eletricidade" component={EletricidadeHome} />
+      <Route path="/eletricidade/topic/eletrostatica" component={EletricidadeTopicEletrostatica} />
 
       <Route path="/progress" component={Progress} />
       <Route path="/404" component={NotFound} />
