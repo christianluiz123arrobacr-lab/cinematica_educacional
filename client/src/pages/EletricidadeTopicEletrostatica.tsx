@@ -158,24 +158,19 @@ export default function EletricidadeTopicEletrostatica() {
                 Princípio da Superposição
               </h3>
               <p className="text-slate-700 mb-4 leading-relaxed">
-                A força elétrica resultante sobre uma carga de prova <MathFormula formula="q_0" display={false} /> devido a um sistema de <MathFormula formula="N" display={false} /> cargas discretas <MathFormula formula="q_1, q_2, ..., q_N" display={false} /> é a soma vetorial das forças individuais que cada carga exerce sobre <MathFormula formula="q_0" display={false} />.
+                A força elétrica resultante sobre uma carga <MathFormula formula="q_0" display={false} /> devido a um sistema de <MathFormula formula="N" display={false} /> cargas pontuais <MathFormula formula="q_1, q_2, ..., q_N" display={false} /> é a soma vetorial das forças individuais que cada carga exerce sobre <MathFormula formula="q_0" display={false} />:
               </p>
-              
-              <div className="bg-white border border-slate-200 rounded-xl p-6 mb-6 shadow-sm">
-                <MathFormula formula="\vec{F}_R = \vec{F}_1 + \vec{F}_2 + ... + \vec{F}_N = \sum_{i=1}^{N} \vec{F}_i" display={true} />
-                <div className="mt-4">
-                  <MathFormula formula="\vec{F}_R = q_0 \sum_{i=1}^{N} k \frac{q_i}{|\vec{r}_i - \vec{r}_0|^3} (\vec{r}_0 - \vec{r}_i)" display={true} />
+              <MathFormula formula="\vec{F}_R = \vec{F}_{10} + \vec{F}_{20} + ... + \vec{F}_{N0} = \sum_{i=1}^{N} \vec{F}_{i0}" display={true} />
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mt-4">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5" />
+                  <div>
+                    <h4 className="font-bold text-orange-800 text-sm">Atenção: Soma Vetorial!</h4>
+                    <p className="text-sm text-orange-700">
+                      Jamais some apenas os módulos das forças, a menos que elas tenham a mesma direção e sentido. Em geral, você deve decompor os vetores em componentes <MathFormula formula="x" display={false} /> e <MathFormula formula="y" display={false} /> para somá-los.
+                    </p>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
-                <h4 className="font-bold text-red-800 flex items-center gap-2 mb-2">
-                  <AlertTriangle className="w-4 h-4" />
-                  Atenção: Soma Vetorial!
-                </h4>
-                <p className="text-slate-700 text-sm">
-                  Jamais some apenas os módulos das forças, a menos que elas estejam na mesma direção. Você deve decompor as forças em componentes (<MathFormula formula="F_x, F_y" display={false} />) ou usar a notação vetorial completa para encontrar a resultante correta.
-                </p>
               </div>
             </div>
 
@@ -186,81 +181,80 @@ export default function EletricidadeTopicEletrostatica() {
                 Análise Gráfica
               </h3>
               <div className="grid md:grid-cols-2 gap-6">
-                <Card className="p-6">
-                  <h4 className="font-bold text-slate-900 mb-4 text-center">Força vs. Distância (<MathFormula formula="F \times d" display={false} />)</h4>
-                  <div className="h-48 bg-slate-50 rounded border border-slate-100 flex items-center justify-center mb-4 relative overflow-hidden">
-                    {/* Simplified SVG representation of 1/x^2 curve */}
-                    <svg viewBox="0 0 100 100" className="w-full h-full p-4">
-                      <path d="M 10 5 L 10 95 L 95 95" fill="none" stroke="#94a3b8" strokeWidth="2" />
-                      <path d="M 15 5 C 15 80, 20 90, 90 92" fill="none" stroke="#eab308" strokeWidth="3" />
-                      <text x="50" y="90" className="text-[8px] fill-slate-500">d (distância)</text>
-                      <text x="15" y="50" className="text-[8px] fill-slate-500" transform="rotate(-90 15 50)">F (Força)</text>
-                    </svg>
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <h4 className="font-bold text-slate-700 mb-2 text-center">Força x Distância (<MathFormula formula="F \times d" display={false} />)</h4>
+                  <div className="h-48 flex items-center justify-center bg-white rounded border border-slate-100 mb-2">
+                    {/* Placeholder for graph */}
+                    <div className="relative w-full h-full p-4">
+                      <div className="absolute left-8 bottom-8 w-[calc(100%-4rem)] h-[1px] bg-slate-400"></div>
+                      <div className="absolute left-8 bottom-8 w-[1px] h-[calc(100%-4rem)] bg-slate-400"></div>
+                      <svg className="absolute left-8 bottom-8 w-[calc(100%-4rem)] h-[calc(100%-4rem)] overflow-visible">
+                        <path d="M 0,0 Q 20,100 150,10" fill="none" stroke="#ea580c" strokeWidth="2" transform="scale(1, -1) translate(0, -120)" />
+                      </svg>
+                      <span className="absolute bottom-2 right-4 text-xs font-bold">d</span>
+                      <span className="absolute top-4 left-2 text-xs font-bold">F</span>
+                    </div>
                   </div>
-                  <p className="text-sm text-slate-600 text-center">
-                    A força decai com o quadrado da distância (<MathFormula formula="F \propto 1/d^2" display={false} />). Se a distância dobra, a força cai para <MathFormula formula="1/4" display={false} />. Se triplica, cai para <MathFormula formula="1/9" display={false} />.
+                  <p className="text-xs text-slate-600 text-center">
+                    Hipérbole cúbica (<MathFormula formula="F \propto 1/d^2" display={false} />). A força cai rapidamente com a distância. Se <MathFormula formula="d" display={false} /> dobra, <MathFormula formula="F" display={false} /> cai para <MathFormula formula="1/4" display={false} />.
                   </p>
-                </Card>
-                <Card className="p-6">
-                  <h4 className="font-bold text-slate-900 mb-4 text-center">Força vs. Carga (<MathFormula formula="F \times q" display={false} />)</h4>
-                  <div className="h-48 bg-slate-50 rounded border border-slate-100 flex items-center justify-center mb-4 relative overflow-hidden">
-                    {/* Simplified SVG representation of linear curve */}
-                    <svg viewBox="0 0 100 100" className="w-full h-full p-4">
-                      <path d="M 10 5 L 10 95 L 95 95" fill="none" stroke="#94a3b8" strokeWidth="2" />
-                      <path d="M 10 95 L 90 15" fill="none" stroke="#eab308" strokeWidth="3" />
-                      <text x="50" y="90" className="text-[8px] fill-slate-500">q (carga)</text>
-                      <text x="15" y="50" className="text-[8px] fill-slate-500" transform="rotate(-90 15 50)">F (Força)</text>
-                    </svg>
+                </div>
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <h4 className="font-bold text-slate-700 mb-2 text-center">Força x Carga (<MathFormula formula="F \times q" display={false} />)</h4>
+                  <div className="h-48 flex items-center justify-center bg-white rounded border border-slate-100 mb-2">
+                    {/* Placeholder for graph */}
+                    <div className="relative w-full h-full p-4">
+                      <div className="absolute left-8 bottom-8 w-[calc(100%-4rem)] h-[1px] bg-slate-400"></div>
+                      <div className="absolute left-8 bottom-8 w-[1px] h-[calc(100%-4rem)] bg-slate-400"></div>
+                      <svg className="absolute left-8 bottom-8 w-[calc(100%-4rem)] h-[calc(100%-4rem)] overflow-visible">
+                        <line x1="0" y1="120" x2="150" y2="20" stroke="#ea580c" strokeWidth="2" />
+                      </svg>
+                      <span className="absolute bottom-2 right-4 text-xs font-bold">q</span>
+                      <span className="absolute top-4 left-2 text-xs font-bold">F</span>
+                    </div>
                   </div>
-                  <p className="text-sm text-slate-600 text-center">
-                    A força é linearmente proporcional ao produto das cargas (<MathFormula formula="F \propto q_1 \cdot q_2" display={false} />). Se uma carga dobra, a força dobra.
+                  <p className="text-xs text-slate-600 text-center">
+                    Reta linear (<MathFormula formula="F \propto q" display={false} />). A força é diretamente proporcional ao produto das cargas.
                   </p>
-                </Card>
+                </div>
               </div>
             </div>
 
             {/* Exemplo Resolvido */}
             <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
               <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-600" />
+                <CheckCircle2 className="w-6 h-6 text-green-600" />
                 Exemplo Resolvido (Nível ITA)
               </h3>
               <div className="space-y-4">
-                <p className="text-slate-700 font-medium">
-                  <strong>Problema:</strong> Três cargas pontuais <MathFormula formula="q_1 = +2\mu C" display={false} />, <MathFormula formula="q_2 = -4\mu C" display={false} /> e <MathFormula formula="q_3 = +5\mu C" display={false} /> estão fixas nos vértices de um triângulo equilátero de lado <MathFormula formula="L = 30 \text{ cm}" display={false} />. Determine o módulo da força elétrica resultante sobre a carga <MathFormula formula="q_3" display={false} />. (Considere <MathFormula formula="k_0 = 9 \cdot 10^9 N \cdot m^2/C^2" display={false} />).
+                <p className="text-slate-700 text-sm">
+                  <strong>Enunciado:</strong> Três cargas pontuais idênticas <MathFormula formula="q > 0" display={false} /> são fixadas nos vértices de um triângulo equilátero de lado <MathFormula formula="L" display={false} />. Determine o módulo da força elétrica resultante sobre uma quarta carga <MathFormula formula="Q > 0" display={false} /> colocada no centroide do triângulo.
                 </p>
-                
                 <div className="bg-white p-4 rounded border border-slate-200">
-                  <p className="text-slate-700 mb-2 font-bold text-sm text-blue-600">SOLUÇÃO:</p>
-                  <ol className="list-decimal list-inside space-y-3 text-sm text-slate-700">
+                  <p className="text-slate-700 text-sm mb-2"><strong>Resolução:</strong></p>
+                  <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600">
                     <li>
-                      <strong>Análise das Forças:</strong>
-                      <ul className="list-disc list-inside ml-4 mt-1 text-slate-600">
-                        <li><MathFormula formula="F_{13}" display={false} />: Repulsão (cargas positivas). Aponta para fora do triângulo, alinhado com o lado <MathFormula formula="q_1-q_3" display={false} />.</li>
-                        <li><MathFormula formula="F_{23}" display={false} />: Atração (sinais opostos). Aponta para <MathFormula formula="q_2" display={false} />, alinhado com o lado <MathFormula formula="q_3-q_2" display={false} />.</li>
-                      </ul>
+                      <strong>Simetria:</strong> O centroide é equidistante dos três vértices. A distância <MathFormula formula="d" display={false} /> de cada vértice ao centro é <MathFormula formula="d = \frac{L}{\sqrt{3}}" display={false} />.
                     </li>
                     <li>
-                      <strong>Cálculo dos Módulos:</strong>
-                      <div className="my-2 pl-4 border-l-2 border-slate-200">
-                        <MathFormula formula="F_{13} = \frac{k|q_1 q_3|}{L^2} = \frac{9\cdot 10^9 \cdot 2\cdot 10^{-6} \cdot 5\cdot 10^{-6}}{(0,3)^2} = \frac{90 \cdot 10^{-3}}{0,09} = 1,0 \, N" display={true} />
-                        <MathFormula formula="F_{23} = \frac{k|q_2 q_3|}{L^2} = \frac{9\cdot 10^9 \cdot 4\cdot 10^{-6} \cdot 5\cdot 10^{-6}}{(0,3)^2} = \frac{180 \cdot 10^{-3}}{0,09} = 2,0 \, N" display={true} />
+                      <strong>Forças Individuais:</strong> Cada carga <MathFormula formula="q" display={false} /> exerce uma força repulsiva <MathFormula formula="F = k \frac{qQ}{d^2}" display={false} /> sobre <MathFormula formula="Q" display={false} />. Os módulos são iguais: <MathFormula formula="|\vec{F}_1| = |\vec{F}_2| = |\vec{F}_3| = F" display={false} />.
+                    </li>
+                    <li>
+                      <strong>Direções:</strong> As forças apontam do vértice para o centro, formando ângulos de <MathFormula formula="120^\circ" display={false} /> entre si.
+                    </li>
+                    <li>
+                      <strong>Soma Vetorial:</strong> A soma de três vetores de mesmo módulo com ângulos de <MathFormula formula="120^\circ" display={false} /> entre si é nula.
+                      <div className="my-2 pl-4 border-l-2 border-slate-300">
+                        Decompondo: <MathFormula formula="\vec{F}_R = \vec{F}_1 + \vec{F}_2 + \vec{F}_3 = \vec{0}" display={false} />.
                       </div>
                     </li>
                     <li>
-                      <strong>Cálculo da Resultante (Lei dos Cossenos):</strong>
-                      <p className="mt-1">O ângulo interno do triângulo equilátero é <MathFormula formula="60^\circ" display={false} />. O ângulo entre os vetores <MathFormula formula="\vec{F}_{13}" display={false} /> e <MathFormula formula="\vec{F}_{23}" display={false} /> é <MathFormula formula="120^\circ" display={false} /> (suplementar de 60, pois um atrai e outro repele).</p>
-                      <div className="my-2 pl-4 border-l-2 border-slate-200">
-                        <MathFormula formula="F_R^2 = F_{13}^2 + F_{23}^2 + 2 F_{13} F_{23} \cos(120^\circ)" display={true} />
-                        <MathFormula formula="F_R^2 = 1^2 + 2^2 + 2(1)(2)(-0,5)" display={true} />
-                        <MathFormula formula="F_R^2 = 1 + 4 - 2 = 3 \implies F_R = \sqrt{3} \approx 1,73 \, N" display={true} />
-                      </div>
+                      <strong>Resposta:</strong> A força resultante é nula (<MathFormula formula="0 \, N" display={false} />).
                     </li>
                   </ol>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
 
@@ -275,24 +269,26 @@ export default function EletricidadeTopicEletrostatica() {
                 Definição Vetorial Rigorosa
               </h3>
               <p className="text-slate-700 mb-4 leading-relaxed">
-                O campo elétrico <MathFormula formula="\vec{E}" display={false} /> em um ponto do espaço é definido como a força elétrica <MathFormula formula="\vec{F}" display={false} /> que atua sobre uma carga de prova positiva <MathFormula formula="q_0" display={false} /> colocada nesse ponto, dividida pelo valor da carga, no limite em que <MathFormula formula="q_0 \to 0" display={false} /> (para não perturbar o campo original).
+                O campo elétrico <MathFormula formula="\vec{E}" display={false} /> em um ponto do espaço é definido como a força elétrica por unidade de carga que atuaria sobre uma carga de prova positiva <MathFormula formula="q_0" display={false} /> colocada nesse ponto, no limite em que <MathFormula formula="q_0 \to 0" display={false} /> (para não perturbar o sistema original).
               </p>
               
               <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
                 <MathFormula formula="\vec{E} = \lim_{q_0 \to 0} \frac{\vec{F}}{q_0}" display={true} className="text-xl" />
-                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300">
-                  <p className="mb-2">Para uma carga pontual <MathFormula formula="Q" display={false} /> na origem, o campo em um ponto <MathFormula formula="P" display={false} /> (vetor posição <MathFormula formula="\vec{r}" display={false} />) é:</p>
-                  <MathFormula formula="\vec{E} = k \frac{Q}{|\vec{r}|^2} \hat{r} = k \frac{Q}{|\vec{r}|^3} \vec{r}" display={true} />
-                </div>
+                <p className="text-center text-sm text-slate-400 mt-2">Unidade no SI: Newton por Coulomb (N/C) ou Volt por metro (V/m)</p>
               </div>
+
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Para uma única carga pontual <MathFormula formula="Q" display={false} />, o campo elétrico a uma distância <MathFormula formula="r" display={false} /> é dado por:
+              </p>
+              <MathFormula formula="\vec{E} = k \frac{Q}{r^2} \hat{r}" display={true} />
               
               <div className="grid md:grid-cols-2 gap-4 mb-6">
                 <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
-                  <h4 className="font-bold text-blue-800 mb-2">Carga Positiva ($Q &gt; 0$)</h4>
+                  <h4 className="font-bold text-blue-800 mb-2">Carga Positiva (<MathFormula formula="Q > 0" display={false} />)</h4>
                   <p className="text-sm text-slate-700">O campo é <strong>divergente</strong> (aponta para fora da carga). As linhas de força "nascem" na carga positiva.</p>
                 </div>
                 <div className="bg-red-50 p-4 rounded-lg border border-red-100">
-                  <h4 className="font-bold text-red-800 mb-2">Carga Negativa ($Q &lt; 0$)</h4>
+                  <h4 className="font-bold text-red-800 mb-2">Carga Negativa (<MathFormula formula="Q < 0" display={false} />)</h4>
                   <p className="text-sm text-slate-700">O campo é <strong>convergente</strong> (aponta para a carga). As linhas de força "morrem" na carga negativa.</p>
                 </div>
               </div>
@@ -302,47 +298,32 @@ export default function EletricidadeTopicEletrostatica() {
             <div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">2</span>
-                Distribuições Contínuas de Carga
+                Campo de Distribuições Contínuas
               </h3>
               <p className="text-slate-700 mb-4 leading-relaxed">
-                Para corpos macroscópicos, tratamos a carga como uma distribuição contínua. O campo total é a integral vetorial dos campos infinitesimais <MathFormula formula="d\vec{E}" display={false} /> gerados por cada elemento de carga <MathFormula formula="dq" display={false} />.
+                Para corpos extensos (fios, placas, esferas), não podemos usar a fórmula da carga pontual diretamente. Devemos dividir o corpo em elementos infinitesimais de carga <MathFormula formula="dq" display={false} /> e integrar sobre todo o corpo:
               </p>
               
-              <div className="bg-white border border-slate-200 rounded-xl p-6 mb-6 shadow-sm">
-                <MathFormula formula="\vec{E} = \int d\vec{E} = k \int \frac{dq}{r^2} \hat{r}" display={true} />
-                
-                <div className="mt-6 grid md:grid-cols-3 gap-4 text-sm">
-                  <div className="p-3 bg-slate-50 rounded border border-slate-100">
-                    <p className="font-bold text-slate-800 mb-1">Linear ($\lambda$)</p>
-                    <MathFormula formula="dq = \lambda dl" display={true} />
-                    <p className="text-xs text-slate-500 mt-1">Fios, anéis</p>
-                  </div>
-                  <div className="p-3 bg-slate-50 rounded border border-slate-100">
-                    <p className="font-bold text-slate-800 mb-1">Superficial ($\sigma$)</p>
-                    <MathFormula formula="dq = \sigma dA" display={true} />
-                    <p className="text-xs text-slate-500 mt-1">Placas, discos, esferas ocas</p>
-                  </div>
-                  <div className="p-3 bg-slate-50 rounded border border-slate-100">
-                    <p className="font-bold text-slate-800 mb-1">Volumétrica ($\rho$)</p>
-                    <MathFormula formula="dq = \rho dV" display={true} />
-                    <p className="text-xs text-slate-500 mt-1">Esferas maciças, cilindros</p>
-                  </div>
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                <MathFormula formula="\vec{E} = \int d\vec{E} = \int k \frac{dq}{r^2} \hat{r}" display={true} />
+                <div className="mt-4 text-sm text-slate-600">
+                  <p className="mb-2"><strong>Densidades de Carga:</strong></p>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li>Linear (<MathFormula formula="\lambda" display={false} />): <MathFormula formula="dq = \lambda dl" display={false} /> (C/m)</li>
+                    <li>Superficial (<MathFormula formula="\sigma" display={false} />): <MathFormula formula="dq = \sigma dA" display={false} /> (C/m²)</li>
+                    <li>Volumétrica (<MathFormula formula="\rho" display={false} />): <MathFormula formula="dq = \rho dV" display={false} /> (C/m³)</li>
+                  </ul>
                 </div>
               </div>
 
-              <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg mb-6">
-                <h4 className="font-bold text-yellow-800 flex items-center gap-2 mb-2">
-                  <Sigma className="w-4 h-4" />
-                  Caso Clássico: Anel Carregado
-                </h4>
-                <p className="text-slate-700 text-sm mb-2">
-                  Campo no eixo de um anel de raio <MathFormula formula="R" display={false} /> e carga total <MathFormula formula="Q" display={false} />, a uma distância <MathFormula formula="x" display={false} /> do centro:
+              <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+                <h4 className="font-bold text-slate-800 mb-2">Exemplo Clássico: Anel Carregado</h4>
+                <p className="text-sm text-slate-700 mb-2">
+                  Campo no eixo axial de um anel de raio <MathFormula formula="R" display={false} /> e carga total <MathFormula formula="Q" display={false} />, a uma distância <MathFormula formula="z" display={false} /> do centro:
                 </p>
-                <MathFormula formula="E_x = \frac{k Q x}{(R^2 + x^2)^{3/2}}" display={true} />
-                <p className="text-slate-700 text-sm mt-2">
-                  <strong>Análise de Limites:</strong>
-                  <br/>• Se <MathFormula formula="x=0" display={false} /> (centro), <MathFormula formula="E=0" display={false} /> (simetria).
-                  <br/>• Se <MathFormula formula="x \gg R" display={false} /> (muito longe), <MathFormula formula="E \approx kQ/x^2" display={false} /> (comporta-se como carga pontual).
+                <MathFormula formula="E_z = \frac{k Q z}{(R^2 + z^2)^{3/2}}" display={true} />
+                <p className="text-xs text-slate-500 mt-2">
+                  Nota: Se <MathFormula formula="z \gg R" display={false} />, o anel se comporta como uma carga pontual (<MathFormula formula="E \approx kQ/z^2" display={false} />).
                 </p>
               </div>
             </div>
@@ -353,127 +334,207 @@ export default function EletricidadeTopicEletrostatica() {
                 <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">3</span>
                 Linhas de Força
               </h3>
-              <div className="grid md:grid-cols-2 gap-6 mb-6">
-                <div className="space-y-4">
-                  <p className="text-slate-700 leading-relaxed">
-                    As linhas de força são representações geométricas que nos ajudam a visualizar o campo elétrico.
-                  </p>
-                  <ul className="space-y-2 text-sm text-slate-700">
-                    <li className="flex items-start gap-2">
-                      <span className="text-orange-500 font-bold">•</span>
-                      <span>O vetor campo elétrico <MathFormula formula="\vec{E}" display={false} /> é tangente à linha de força em cada ponto.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-orange-500 font-bold">•</span>
-                      <span>A densidade de linhas é proporcional à intensidade do campo (mais linhas = campo mais forte).</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-orange-500 font-bold">•</span>
-                      <span>As linhas nunca se cruzam (o campo tem direção única em cada ponto).</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-orange-500 font-bold">•</span>
-                      <span>Saem de cargas positivas e entram em cargas negativas.</span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="bg-slate-900 rounded-lg p-4 flex items-center justify-center relative overflow-hidden">
-                  {/* Abstract representation of dipole field lines */}
-                  <div className="absolute inset-0 opacity-20">
-                    <svg width="100%" height="100%">
-                      <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" strokeWidth="0.5"/>
-                      </pattern>
-                      <rect width="100%" height="100%" fill="url(#grid)" />
-                    </svg>
-                  </div>
-                  <div className="relative z-10 flex gap-12 items-center">
-                    <div className="w-8 h-8 rounded-full bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.6)] flex items-center justify-center text-white font-bold">+</div>
-                    <div className="w-8 h-8 rounded-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)] flex items-center justify-center text-white font-bold">-</div>
-                  </div>
-                  {/* Curved lines suggestive of dipole */}
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                    <path d="M 130 100 Q 180 50 230 100" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" />
-                    <path d="M 130 100 Q 180 150 230 100" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" />
-                    <path d="M 130 100 Q 180 20 230 100" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
-                    <path d="M 130 100 Q 180 180 230 100" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
-                  </svg>
-                </div>
-              </div>
+              <ul className="space-y-3 text-slate-700">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5" />
+                  <span>O vetor campo elétrico <MathFormula formula="\vec{E}" display={false} /> é tangente à linha de força em cada ponto.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5" />
+                  <span>A densidade das linhas (número de linhas por unidade de área) é proporcional à intensidade do campo.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5" />
+                  <span>Linhas de força nunca se cruzam (o campo é único em cada ponto).</span>
+                </li>
+              </ul>
             </div>
 
-            {/* Exemplo Resolvido */}
+            {/* Exemplo Resolvido Dipolo */}
             <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
               <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-600" />
-                Exemplo Resolvido (Nível ITA)
+                <CheckCircle2 className="w-6 h-6 text-green-600" />
+                Exemplo Resolvido: Dipolo Elétrico
               </h3>
               <div className="space-y-4">
-                <p className="text-slate-700 font-medium">
-                  <strong>Problema:</strong> Duas cargas pontuais <MathFormula formula="+q" display={false} /> e <MathFormula formula="-q" display={false} /> (um dipolo elétrico) estão separadas por uma distância <MathFormula formula="2a" display={false} />. Determine o campo elétrico resultante em um ponto <MathFormula formula="P" display={false} /> localizado sobre a mediatriz do segmento que une as cargas, a uma distância <MathFormula formula="y" display={false} /> do centro do dipolo.
+                <p className="text-slate-700 text-sm">
+                  <strong>Problema:</strong> Calcule o campo elétrico no ponto <MathFormula formula="P" display={false} /> localizado no eixo perpendicular que passa pelo ponto médio de um dipolo elétrico (duas cargas <MathFormula formula="+q" display={false} /> e <MathFormula formula="-q" display={false} /> separadas por uma distância <MathFormula formula="2a" display={false} />). O ponto <MathFormula formula="P" display={false} /> está a uma distância <MathFormula formula="y" display={false} /> do centro.
                 </p>
-                
                 <div className="bg-white p-4 rounded border border-slate-200">
-                  <p className="text-slate-700 mb-2 font-bold text-sm text-blue-600">SOLUÇÃO:</p>
-                  <ol className="list-decimal list-inside space-y-3 text-sm text-slate-700">
+                  <p className="text-slate-700 text-sm mb-2"><strong>Resolução:</strong></p>
+                  <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600">
                     <li>
-                      <strong>Geometria:</strong>
-                      <p className="ml-4 mt-1 text-slate-600">
-                        A distância de cada carga até o ponto <MathFormula formula="P" display={false} /> é <MathFormula formula="r = \sqrt{a^2 + y^2}" display={false} />.
-                      </p>
+                      <strong>Geometria:</strong> A distância de cada carga ao ponto <MathFormula formula="P" display={false} /> é <MathFormula formula="r = \sqrt{a^2 + y^2}" display={false} />.
                     </li>
                     <li>
-                      <strong>Módulos dos Campos:</strong>
-                      <div className="my-2 pl-4 border-l-2 border-slate-200">
-                        <MathFormula formula="E_+ = E_- = \frac{kq}{r^2} = \frac{kq}{a^2 + y^2}" display={true} />
-                      </div>
+                      <strong>Campos Individuais:</strong> Os módulos são iguais: <MathFormula formula="E_+ = E_- = k \frac{q}{r^2} = k \frac{q}{a^2 + y^2}" display={false} />.
                     </li>
                     <li>
-                      <strong>Decomposição Vetorial:</strong>
-                      <p className="ml-4 mt-1 text-slate-600">
-                        Por simetria, as componentes verticais (eixo y) se cancelam. As componentes horizontais (eixo x) se somam.
-                        Seja <MathFormula formula="\theta" display={false} /> o ângulo entre o campo e a horizontal: <MathFormula formula="\cos\theta = \frac{a}{r} = \frac{a}{\sqrt{a^2+y^2}}" display={false} />.
-                      </p>
-                      <div className="my-2 pl-4 border-l-2 border-slate-200">
-                        <MathFormula formula="E_R = 2 E_+ \cos\theta = 2 \left( \frac{kq}{a^2+y^2} \right) \left( \frac{a}{\sqrt{a^2+y^2}} \right)" display={true} />
-                        <MathFormula formula="E_R = \frac{k (2qa)}{(a^2+y^2)^{3/2}}" display={true} />
-                      </div>
+                      <strong>Decomposição:</strong> As componentes verticais (<MathFormula formula="y" display={false} />) se cancelam devido à simetria. As componentes horizontais (<MathFormula formula="x" display={false} />) se somam.
+                      <br/>
+                      <MathFormula formula="E_x = E_+ \cos\theta + E_- \cos\theta = 2 E_+ \cos\theta" display={false} />
                     </li>
                     <li>
-                      <strong>Conclusão:</strong>
-                      <p className="ml-4 mt-1 text-slate-600">
-                        O campo resultante é horizontal, apontando da carga positiva para a negativa (paralelo ao eixo do dipolo). O termo <MathFormula formula="p = 2qa" display={false} /> é o momento de dipolo elétrico.
-                      </p>
+                      <strong>Cosseno:</strong> Do triângulo retângulo, <MathFormula formula="\cos\theta = \frac{a}{r} = \frac{a}{\sqrt{a^2 + y^2}}" display={false} />.
+                    </li>
+                    <li>
+                      <strong>Resultado Final:</strong> Substituindo:
+                      <MathFormula formula="E_{resultante} = 2 \left( k \frac{q}{a^2 + y^2} \right) \left( \frac{a}{(a^2 + y^2)^{1/2}} \right) = \frac{k (2qa)}{(a^2 + y^2)^{3/2}}" display={true} />
+                      Onde <MathFormula formula="p = 2qa" display={false} /> é o momento de dipolo elétrico.
                     </li>
                   </ol>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
 
-        {/* Placeholder for Interactive Tools */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200 flex flex-col items-center justify-center text-center hover:bg-slate-100 transition-colors cursor-pointer group">
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
-              <MousePointerClick className="w-8 h-8 text-orange-500" />
-            </div>
-            <h3 className="text-xl font-bold text-slate-700 mb-2">Simulador de Linhas de Campo</h3>
-            <p className="text-slate-500 text-sm">Interaja com cargas positivas e negativas e veja como o campo se comporta em tempo real.</p>
-            <Button className="mt-4 bg-orange-500 hover:bg-orange-600 text-white" disabled>Em Breve</Button>
-          </div>
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🔋 Potencial Elétrico e Trabalho (Aprofundado)</h2>
           
-          <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200 flex flex-col items-center justify-center text-center hover:bg-slate-100 transition-colors cursor-pointer group">
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
-              <Zap className="w-8 h-8 text-yellow-500" />
+          <div className="space-y-8">
+            {/* Trabalho da Força Elétrica */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">1</span>
+                Trabalho da Força Elétrica
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                A força eletrostática é uma <strong>força conservativa</strong>. Isso significa que o trabalho realizado por ela para mover uma carga de um ponto A para um ponto B independe da trajetória escolhida, dependendo apenas das posições inicial e final.
+              </p>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                <MathFormula formula="W_{AB} = \int_A^B \vec{F}_{el} \cdot d\vec{l} = q \int_A^B \vec{E} \cdot d\vec{l}" display={true} />
+                <p className="text-sm text-slate-600 mt-2">
+                  Como a força é conservativa, o trabalho em um caminho fechado é nulo: <MathFormula formula="\oint \vec{E} \cdot d\vec{l} = 0" display={false} />.
+                </p>
+              </div>
             </div>
-            <h3 className="text-xl font-bold text-slate-700 mb-2">Calculadora de Campo</h3>
-            <p className="text-slate-500 text-sm">Calcule o campo elétrico resultante de múltiplas cargas pontuais automaticamente.</p>
-            <Button className="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white" disabled>Em Breve</Button>
+
+            {/* Potencial Elétrico */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">2</span>
+                Potencial Elétrico (V)
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                O potencial elétrico em um ponto é definido como a energia potencial elétrica por unidade de carga. É uma grandeza escalar.
+              </p>
+              
+              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
+                <MathFormula formula="V_P = \frac{U_P}{q}" display={true} className="text-xl" />
+                <p className="text-center text-sm text-slate-400 mt-2">Unidade no SI: Joule por Coulomb (J/C) = Volt (V)</p>
+              </div>
+
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Para uma carga pontual <MathFormula formula="Q" display={false} />, adotando o referencial no infinito (<MathFormula formula="V_{\infty} = 0" display={false} />), o potencial a uma distância <MathFormula formula="d" display={false} /> é:
+              </p>
+              <MathFormula formula="V = k \frac{Q}{d}" display={true} />
+              
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg mb-6">
+                <h4 className="font-bold text-yellow-800 flex items-center gap-2 mb-2">
+                  <Info className="w-4 h-4" />
+                  Diferença de Potencial (ddp)
+                </h4>
+                <p className="text-slate-700 text-sm mb-2">
+                  O trabalho realizado pela força elétrica para levar uma carga <MathFormula formula="q" display={false} /> de A para B está relacionado à diferença de potencial:
+                </p>
+                <MathFormula formula="W_{AB} = q(V_A - V_B) = -q\Delta V" display={true} />
+                <p className="text-slate-700 text-sm mt-2">
+                  Cargas positivas tendem a se mover espontaneamente para regiões de <strong>menor potencial</strong>, enquanto cargas negativas movem-se para regiões de <strong>maior potencial</strong>.
+                </p>
+              </div>
+            </div>
+
+            {/* Relação Campo-Potencial */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">3</span>
+                Relação Campo-Potencial (Gradiente)
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                O campo elétrico é o gradiente negativo do potencial elétrico. Matematicamente:
+              </p>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                <MathFormula formula="\vec{E} = -\nabla V" display={true} />
+                <p className="text-sm text-slate-600 mt-2">
+                  Em uma dimensão (ex: eixo x): <MathFormula formula="E_x = -\frac{dV}{dx}" display={false} />.
+                </p>
+              </div>
+              
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Isso significa que o campo elétrico aponta sempre na direção de maior decrescimento do potencial.
+              </p>
+            </div>
+
+            {/* Superfícies Equipotenciais */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">4</span>
+                Superfícies Equipotenciais
+              </h3>
+              <ul className="space-y-3 text-slate-700">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5" />
+                  <span>São superfícies onde o potencial elétrico é constante em todos os pontos.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5" />
+                  <span>As linhas de campo elétrico são sempre <strong>perpendiculares</strong> às superfícies equipotenciais.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5" />
+                  <span>O trabalho para mover uma carga sobre uma superfície equipotencial é nulo.</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Energia Potencial Eletrostática */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">5</span>
+                Energia Potencial de um Sistema
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                A energia potencial eletrostática de um sistema de cargas é o trabalho externo necessário para montar esse sistema, trazendo as cargas do infinito até suas posições finais. Para um par de cargas:
+              </p>
+              <MathFormula formula="U = k \frac{q_1 q_2}{d}" display={true} />
+              
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 mt-6">
+                <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                  <CheckCircle2 className="w-6 h-6 text-green-600" />
+                  Exemplo Resolvido: Energia de um Quadrado
+                </h4>
+                <div className="space-y-4">
+                  <p className="text-slate-700 text-sm">
+                    <strong>Problema:</strong> Qual a energia potencial total armazenada em um sistema de quatro cargas idênticas <MathFormula formula="q" display={false} /> colocadas nos vértices de um quadrado de lado <MathFormula formula="L" display={false} />?
+                  </p>
+                  <div className="bg-white p-4 rounded border border-slate-200">
+                    <p className="text-slate-700 text-sm mb-2"><strong>Resolução:</strong></p>
+                    <p className="text-slate-600 text-sm mb-2">Devemos somar as energias de interação de todos os pares possíveis (combinação de 4 tomados 2 a 2 = 6 pares).</p>
+                    <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600">
+                      <li>
+                        <strong>Pares nos lados (4 pares):</strong> Distância <MathFormula formula="L" display={false} />.
+                        <br/>
+                        <MathFormula formula="U_{lados} = 4 \cdot \left( k \frac{q^2}{L} \right)" display={false} />
+                      </li>
+                      <li>
+                        <strong>Pares nas diagonais (2 pares):</strong> Distância <MathFormula formula="L\sqrt{2}" display={false} />.
+                        <br/>
+                        <MathFormula formula="U_{diag} = 2 \cdot \left( k \frac{q^2}{L\sqrt{2}} \right)" display={false} />
+                      </li>
+                      <li>
+                        <strong>Energia Total:</strong>
+                        <MathFormula formula="U_{total} = \frac{kq^2}{L} \left( 4 + \frac{2}{\sqrt{2}} \right) = \frac{kq^2}{L} (4 + \sqrt{2})" display={true} />
+                      </li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
       </section>
     </div>
   );
