@@ -7,7 +7,8 @@ interface MathFormulaProps {
 }
 
 export function MathFormula({ formula, display = true, className = '' }: MathFormulaProps) {
-  const ref = useRef<HTMLDivElement>(null);
+  // Use a generic ref that can handle both div and span
+  const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -42,22 +43,35 @@ export function MathFormula({ formula, display = true, className = '' }: MathFor
   
   const content = `${delimiter}${cleanFormula}${delimiter}`;
 
+  const style = {
+    display: display ? 'block' : 'inline-block',
+    textAlign: display ? 'center' : ('inherit' as any),
+    padding: display ? '1rem 0' : '0',
+    margin: display ? '0.5rem 0' : '0',
+    overflow: 'visible',
+    minHeight: display ? '2.5rem' : 'auto',
+    border: 'none',
+    background: 'transparent',
+    lineHeight: display ? '1.5' : 'inherit',
+    fontFamily: 'inherit'
+  };
+
+  if (display) {
+    return (
+      <div
+        ref={ref as any}
+        className={className}
+        style={style}
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+    );
+  }
+
   return (
-    <div
-      ref={ref}
+    <span
+      ref={ref as any}
       className={className}
-      style={{
-        display: display ? 'block' : 'inline-block',
-        textAlign: display ? 'center' : 'inherit',
-        padding: display ? '1rem 0' : '0',
-        margin: display ? '0.5rem 0' : '0',
-        overflow: 'visible',
-        minHeight: display ? '2.5rem' : 'auto',
-        border: 'none',
-        background: 'transparent',
-        lineHeight: display ? '1.5' : 'inherit',
-        fontFamily: 'inherit'
-      }}
+      style={style}
       dangerouslySetInnerHTML={{ __html: content }}
     />
   );
