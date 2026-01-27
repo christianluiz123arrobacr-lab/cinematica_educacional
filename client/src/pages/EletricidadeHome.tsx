@@ -169,32 +169,31 @@ export default function EletricidadeHome() {
               </Card>
             </Link>
             
-            {/* Placeholder for future topics */}
-            <div className="opacity-60 cursor-not-allowed">
-              <Card className="p-8 border-l-4 border-slate-300">
+            <Link href="/eletricidade/topic/eletrodinamica">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-yellow-500 cursor-pointer hover:border-yellow-700">
                 <div className="flex items-start gap-4">
                   <div className="text-4xl">🔋</div>
                   <div className="flex-1">
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">Eletrodinâmica (Em Breve)</h4>
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Eletrodinâmica</h4>
                     <p className="text-slate-600 mb-4">Corrente elétrica, resistência, leis de Ohm e circuitos elétricos.</p>
                     <ul className="space-y-2 text-sm text-slate-700">
                       <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
+                        <span className="w-1.5 h-1.5 bg-yellow-600 rounded-full"></span>
                         Corrente e Resistência
                       </li>
                       <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
+                        <span className="w-1.5 h-1.5 bg-yellow-600 rounded-full"></span>
                         Leis de Kirchhoff
                       </li>
                       <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
+                        <span className="w-1.5 h-1.5 bg-yellow-600 rounded-full"></span>
                         Capacitores e Indutores
                       </li>
                     </ul>
                   </div>
                 </div>
               </Card>
-            </div>
+            </Link>
           </div>
         </div>
       </main>

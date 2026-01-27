@@ -46,6 +46,7 @@ import FisicaIIHome from "./pages/FisicaIIHome";
 import FisicaIIIHome from "./pages/FisicaIIIHome";
 import EletricidadeHome from "./pages/EletricidadeHome";
 import EletricidadeTopicEletrostatica from "./pages/EletricidadeTopicEletrostatica";
+import EletricidadeTopicEletrodinamica from "./pages/EletricidadeTopicEletrodinamica";
 import TermologiaHome from "./pages/TermologiaHome";
 import TermologiaGraphs from "./pages/TermologiaGraphs";
 import TermologiaQuiz from "./pages/TermologiaQuiz";
@@ -157,6 +158,7 @@ function Router() {
 
       <Route path="/eletricidade" component={EletricidadeHome} />
       <Route path="/eletricidade/topic/eletrostatica" component={EletricidadeTopicEletrostatica} />
+      <Route path="/eletricidade/topic/eletrodinamica" component={EletricidadeTopicEletrodinamica} />
 
       <Route path="/progress" component={Progress} />
       <Route path="/404" component={NotFound} />
