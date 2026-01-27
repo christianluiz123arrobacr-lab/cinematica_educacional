@@ -79,34 +79,34 @@ export default function FisicaIIIHome() {
 
           {/* Magnetismo */}
           <Link href="/magnetismo">
-            <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-indigo-400 cursor-pointer">
-              <div className="bg-gradient-to-br from-indigo-500 to-blue-600 p-8 text-white">
+            <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-red-400 cursor-pointer">
+              <div className="bg-gradient-to-br from-red-500 to-rose-600 p-8 text-white">
                 <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Magnet className="w-8 h-8" />
                 </div>
                 <h3 className="text-3xl font-bold mb-2">Magnetismo</h3>
-                <p className="text-indigo-100">Campos e Indução</p>
+                <p className="text-red-100">Campos e Indução</p>
               </div>
               <div className="p-8">
                 <ul className="space-y-3 mb-8 text-slate-700">
                   <li className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-indigo-600 rounded-full"></span>
+                    <span className="w-2 h-2 bg-red-600 rounded-full"></span>
                     Campo Magnético
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-indigo-600 rounded-full"></span>
+                    <span className="w-2 h-2 bg-red-600 rounded-full"></span>
                     Força Magnética
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-indigo-600 rounded-full"></span>
+                    <span className="w-2 h-2 bg-red-600 rounded-full"></span>
                     Indução Eletromagnética
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-indigo-600 rounded-full"></span>
+                    <span className="w-2 h-2 bg-red-600 rounded-full"></span>
                     Equações de Maxwell
                   </li>
                 </ul>
-                <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+                <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
                   Começar Agora
                 </Button>
               </div>
