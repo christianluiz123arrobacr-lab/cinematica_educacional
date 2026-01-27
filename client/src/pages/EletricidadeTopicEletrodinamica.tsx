@@ -225,6 +225,144 @@ export default function EletricidadeTopicEletrodinamica() {
             </div>
           </div>
         </div>
+
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🕸️ Leis de Kirchhoff (Análise de Circuitos)</h2>
+          
+          <div className="space-y-8">
+            {/* Introdução */}
+            <div>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Para circuitos complexos que não podem ser reduzidos a simples associações série-paralelo, utilizamos as Leis de Kirchhoff, que são generalizações das leis de conservação da carga e da energia.
+              </p>
+            </div>
+
+            {/* 1ª Lei: Lei dos Nós */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">1</span>
+                1ª Lei de Kirchhoff: Lei dos Nós (LKC)
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Baseada na <strong>conservação da carga elétrica</strong>. Em qualquer nó (junção de 3 ou mais fios), a soma das correntes que entram é igual à soma das correntes que saem.
+              </p>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                <MathFormula formula="\sum i_{\text{entrada}} = \sum i_{\text{saída}} \quad \text{ou} \quad \sum_{k=1}^{n} i_k = 0" display={true} className="text-xl" />
+                <p className="text-sm text-slate-600 mt-2 text-center">
+                  (Considerando correntes que entram como positivas e que saem como negativas, ou vice-versa)
+                </p>
+              </div>
+            </div>
+
+            {/* 2ª Lei: Lei das Malhas */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">2</span>
+                2ª Lei de Kirchhoff: Lei das Malhas (LKT)
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Baseada na <strong>conservação da energia</strong>. A soma algébrica das variações de potencial elétrico ao longo de qualquer percurso fechado (malha) é nula.
+              </p>
+              
+              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
+                <MathFormula formula="\sum_{k=1}^{n} V_k = 0" display={true} className="text-xl" />
+              </div>
+
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mb-6">
+                <h4 className="font-bold text-blue-800 flex items-center gap-2 mb-2">
+                  <Info className="w-4 h-4" />
+                  Convenção de Sinais (Fundamental!)
+                </h4>
+                <p className="text-slate-700 text-sm mb-2">
+                  Ao percorrer uma malha em um sentido arbitrário (horário ou anti-horário):
+                </p>
+                <ul className="space-y-2 text-sm text-slate-700">
+                  <li className="flex items-start gap-2">
+                    <span className="font-bold text-blue-600">•</span>
+                    <span><strong>Resistores:</strong> Se percorridos no sentido da corrente, <MathFormula formula="\Delta V = -R \cdot i" display={false} /> (queda). Se contra, <MathFormula formula="\Delta V = +R \cdot i" display={false} /> (ganho).</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="font-bold text-blue-600">•</span>
+                    <span><strong>Fontes (Baterias):</strong> Se percorrida do polo negativo (-) para o positivo (+), <MathFormula formula="\Delta V = +\varepsilon" display={false} /> (ganho). Se do (+) para o (-), <MathFormula formula="\Delta V = -\varepsilon" display={false} /> (queda).</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Ponte de Wheatstone */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">3</span>
+                Ponte de Wheatstone
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Um circuito especial usado para medir resistências desconhecidas. A ponte está em <strong>equilíbrio</strong> quando não passa corrente pelo galvanômetro central (<MathFormula formula="i_G = 0" display={false} />), o que implica que os potenciais nos nós centrais são iguais.
+              </p>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                <p className="text-center font-bold text-slate-800 mb-2">Condição de Equilíbrio:</p>
+                <MathFormula formula="R_1 \cdot R_x = R_2 \cdot R_3" display={true} />
+                <p className="text-sm text-slate-600 mt-2 text-center">
+                  (Produto das resistências opostas é igual)
+                </p>
+              </div>
+            </div>
+
+            {/* Exemplo Resolvido Complexo */}
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <CheckCircle2 className="w-6 h-6 text-green-600" />
+                Exemplo Resolvido: Circuito de Duas Malhas
+              </h3>
+              <div className="space-y-4">
+                <p className="text-slate-700 text-sm">
+                  <strong>Problema:</strong> Considere um circuito com duas malhas. Malha 1 (esquerda): Fonte <MathFormula formula="\varepsilon_1 = 10V" display={false} />, resistor <MathFormula formula="R_1 = 2\Omega" display={false} /> em série. Malha 2 (direita): Fonte <MathFormula formula="\varepsilon_2 = 5V" display={false} />, resistor <MathFormula formula="R_2 = 3\Omega" display={false} /> em série. Ramo central (comum às duas malhas): Resistor <MathFormula formula="R_3 = 4\Omega" display={false} />. Determine as correntes em cada ramo.
+                </p>
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <p className="text-slate-700 text-sm mb-2"><strong>Resolução:</strong></p>
+                  <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600">
+                    <li>
+                      <strong>Definir Correntes:</strong> <MathFormula formula="i_1" display={false} /> na malha 1 (horário), <MathFormula formula="i_2" display={false} /> na malha 2 (horário). No ramo central, a corrente será <MathFormula formula="i_3 = i_1 - i_2" display={false} /> (descendo).
+                    </li>
+                    <li>
+                      <strong>Aplicar LKT na Malha 1:</strong>
+                      <br/>
+                      <MathFormula formula="10 - 2i_1 - 4(i_1 - i_2) = 0 \Rightarrow 10 - 6i_1 + 4i_2 = 0 \quad (Eq. 1)" display={false} />
+                    </li>
+                    <li>
+                      <strong>Aplicar LKT na Malha 2:</strong>
+                      <br/>
+                      <MathFormula formula="-5 - 3i_2 - 4(i_2 - i_1) = 0 \Rightarrow -5 - 7i_2 + 4i_1 = 0 \quad (Eq. 2)" display={false} />
+                      <br/>
+                      <span className="text-xs text-slate-500">(Nota: A fonte de 5V está oposta ao sentido horário)</span>
+                    </li>
+                    <li>
+                      <strong>Resolver o Sistema:</strong>
+                      <br/>
+                      De (1): <MathFormula formula="3i_1 - 2i_2 = 5" display={false} />
+                      <br/>
+                      De (2): <MathFormula formula="4i_1 - 7i_2 = 5" display={false} />
+                      <br/>
+                      Multiplicando (1) por 7 e (2) por 2:
+                      <br/>
+                      <MathFormula formula="21i_1 - 14i_2 = 35" display={false} />
+                      <br/>
+                      <MathFormula formula="8i_1 - 14i_2 = 10" display={false} />
+                      <br/>
+                      Subtraindo: <MathFormula formula="13i_1 = 25 \Rightarrow i_1 \approx 1,92 A" display={false} />
+                      <br/>
+                      Substituindo: <MathFormula formula="i_2 \approx 0,38 A" display={false} />
+                    </li>
+                    <li>
+                      <strong>Corrente Central:</strong> <MathFormula formula="i_3 = 1,92 - 0,38 = 1,54 A" display={false} />.
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   );
