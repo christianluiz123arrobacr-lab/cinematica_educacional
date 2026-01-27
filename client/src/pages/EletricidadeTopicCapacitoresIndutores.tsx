@@ -9,10 +9,10 @@ export default function EletricidadeTopicCapacitoresIndutores() {
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/eletricidade">
-            <Button variant="ghost" size="sm" className="gap-2">
+            <a className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 gap-2">
               <ArrowLeft className="w-4 h-4" />
               Voltar
-            </Button>
+            </a>
           </Link>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center">
