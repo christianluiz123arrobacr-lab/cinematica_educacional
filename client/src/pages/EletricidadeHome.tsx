@@ -185,10 +185,12 @@ export default function EletricidadeHome() {
                         <span className="w-1.5 h-1.5 bg-yellow-600 rounded-full"></span>
                         Leis de Kirchhoff
                       </li>
-                      <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-yellow-600 rounded-full"></span>
-                        Capacitores e Indutores
-                      </li>
+                      <Link href="/eletricidade/topic/capacitores-indutores">
+                        <li className="flex items-center gap-2 hover:text-yellow-700 cursor-pointer transition-colors">
+                          <span className="w-1.5 h-1.5 bg-yellow-600 rounded-full"></span>
+                          Capacitores e Indutores
+                        </li>
+                      </Link>
                     </ul>
                   </div>
                 </div>
