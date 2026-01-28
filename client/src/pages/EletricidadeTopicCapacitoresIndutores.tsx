@@ -48,6 +48,19 @@ export default function EletricidadeTopicCapacitoresIndutores() {
                 </p>
               </div>
 
+              <div className="my-6 flex justify-center">
+                <div className="relative rounded-xl overflow-hidden shadow-lg border border-slate-200 max-w-md w-full">
+                  <img 
+                    src="/images/capacitor-diagram.jpg" 
+                    alt="Diagrama de Capacitor de Placas Paralelas" 
+                    className="w-full h-auto object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2 text-xs text-center backdrop-blur-sm">
+                    Campo elétrico uniforme entre placas paralelas carregadas
+                  </div>
+                </div>
+              </div>
+
               <div className="grid md:grid-cols-2 gap-6 mb-6">
                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
                   <h4 className="font-bold text-slate-800 mb-2">Capacitor de Placas Paralelas</h4>
@@ -84,6 +97,19 @@ export default function EletricidadeTopicCapacitoresIndutores() {
                 A solução para a carga <MathFormula formula="q(t)" display={false} /> e corrente <MathFormula formula="i(t)" display={false} /> é exponencial:
               </p>
 
+              <div className="my-6 flex justify-center">
+                <div className="relative rounded-xl overflow-hidden shadow-lg border border-slate-200 max-w-2xl w-full">
+                  <img 
+                    src="/images/rc-circuit-graphs.jpg" 
+                    alt="Gráficos de Carga e Corrente no Circuito RC" 
+                    className="w-full h-auto object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2 text-xs text-center backdrop-blur-sm">
+                    Comportamento exponencial da tensão e corrente durante a carga do capacitor
+                  </div>
+                </div>
+              </div>
+
               <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg mb-6">
                 <MathFormula formula="q(t) = C\varepsilon (1 - e^{-t/\tau})" display={true} />
                 <MathFormula formula="i(t) = \frac{\varepsilon}{R} e^{-t/\tau}" display={true} />
@@ -114,6 +140,19 @@ export default function EletricidadeTopicCapacitoresIndutores() {
                 <p className="text-sm text-slate-600 mt-2 text-center">
                   Unidade no SI: Henry (H) = Volt-segundo por Ampère (V·s/A)
                 </p>
+              </div>
+
+              <div className="my-6 flex justify-center">
+                <div className="relative rounded-xl overflow-hidden shadow-lg border border-slate-200 max-w-md w-full">
+                  <img 
+                    src="/images/inductor-field.jpg" 
+                    alt="Campo Magnético em um Solenóide" 
+                    className="w-full h-auto object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2 text-xs text-center backdrop-blur-sm">
+                    Linhas de campo magnético geradas pela corrente em um solenóide
+                  </div>
+                </div>
               </div>
 
               <div className="grid md:grid-cols-2 gap-6 mb-6">

@@ -264,6 +264,19 @@ export default function EletricidadeTopicEletrodinamica() {
               <p className="text-slate-700 mb-4 leading-relaxed">
                 Baseada na <strong>conservação da energia</strong>. A soma algébrica das variações de potencial elétrico ao longo de qualquer percurso fechado (malha) é nula.
               </p>
+
+              <div className="my-6 flex justify-center">
+                <div className="relative rounded-xl overflow-hidden shadow-lg border border-slate-200 max-w-2xl w-full">
+                  <img 
+                    src="/images/kirchhoff-circuit.jpg" 
+                    alt="Diagrama de Circuito para Leis de Kirchhoff" 
+                    className="w-full h-auto object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2 text-xs text-center backdrop-blur-sm">
+                    Circuito complexo com múltiplas malhas para aplicação das Leis de Kirchhoff
+                  </div>
+                </div>
+              </div>
               
               <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
                 <MathFormula formula="\sum_{k=1}^{n} V_k = 0" display={true} className="text-xl" />
@@ -299,6 +312,19 @@ export default function EletricidadeTopicEletrodinamica() {
               <p className="text-slate-700 mb-4 leading-relaxed">
                 Um circuito especial usado para medir resistências desconhecidas. A ponte está em <strong>equilíbrio</strong> quando não passa corrente pelo galvanômetro central (<MathFormula formula="i_G = 0" display={false} />), o que implica que os potenciais nos nós centrais são iguais.
               </p>
+
+              <div className="my-6 flex justify-center">
+                <div className="relative rounded-xl overflow-hidden shadow-lg border border-slate-200 max-w-md w-full">
+                  <img 
+                    src="/images/wheatstone-bridge.jpg" 
+                    alt="Diagrama da Ponte de Wheatstone" 
+                    className="w-full h-auto object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2 text-xs text-center backdrop-blur-sm">
+                    Configuração clássica da Ponte de Wheatstone em equilíbrio
+                  </div>
+                </div>
+              </div>
               
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
                 <p className="text-center font-bold text-slate-800 mb-2">Condição de Equilíbrio:</p>
