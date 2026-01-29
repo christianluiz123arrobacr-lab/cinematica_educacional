@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { BookOpen, Flame, Waves, Eye, ArrowRight, Zap, Magnet, Atom } from "lucide-react";
+import { BookOpen, Flame, Waves, Eye, ArrowRight, Zap, Magnet, Atom, Sparkles, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function FisicaSelector() {
@@ -17,6 +17,12 @@ export default function FisicaSelector() {
               <p className="text-xs text-slate-600">Projeto ITA - Do Zero a Aprovação</p>
             </div>
           </div>
+          <Link href="/ia-resolver">
+            <Button className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold gap-2 shadow-lg">
+              <Sparkles className="w-4 h-4" />
+              IA Resolutora
+            </Button>
+          </Link>
         </div>
       </header>
 
@@ -182,6 +188,38 @@ export default function FisicaSelector() {
               </div>
             </Link>
           </div>
+        </div>
+
+        {/* AI Resolver Featured Section */}
+        <div className="max-w-7xl mx-auto mb-20">
+          <Link href="/ia-resolver">
+            <div className="bg-gradient-to-r from-indigo-600 via-blue-600 to-purple-600 rounded-2xl shadow-2xl overflow-hidden border border-indigo-400 cursor-pointer hover:shadow-3xl transition-all duration-300 hover:scale-105">
+              <div className="p-12 text-white flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-white/20 rounded-lg">
+                      <Brain className="w-6 h-6" />
+                    </div>
+                    <span className="px-3 py-1 bg-white/20 rounded-full text-sm font-semibold">NOVO</span>
+                  </div>
+                  <h3 className="text-4xl font-bold mb-3">IA Resolutora Premium</h3>
+                  <p className="text-lg text-indigo-100 mb-6 max-w-2xl">
+                    Envie suas questoes de Fisica (texto ou foto) e receba resolucoes didaticas completas com LaTeX automatico. Aprenda o raciocinio por tras de cada problema.
+                  </p>
+                  <Button className="bg-white text-indigo-600 hover:bg-indigo-50 font-bold gap-2">
+                    <Sparkles className="w-4 h-4" />
+                    Comecar Agora
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="hidden md:flex items-center justify-center">
+                  <div className="w-32 h-32 bg-white/10 rounded-full flex items-center justify-center">
+                    <Brain className="w-16 h-16 text-white/50" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Link>
         </div>
 
         {/* Info Section */}
