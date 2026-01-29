@@ -1,3 +1,4 @@
+import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { BookOpen, Zap, Target, Droplet, MessageCircle, ArrowLeft, Play, BarChart3, Calculator, HelpCircle, TrendingUp } from "lucide-react";
@@ -5,6 +6,10 @@ import { Link } from "wouter";
 import { MathFormula } from "@/components/MathFormula";
 
 export default function Home() {
+  // The userAuth hooks provides authentication state
+  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
+  let { user, loading, error, isAuthenticated, logout } = useAuth();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Header */}

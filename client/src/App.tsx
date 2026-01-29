@@ -79,11 +79,12 @@ import OpticaTopicFenomenos from "./pages/OpticaTopicFenomenos";
 import OpticaSimulator from "./pages/OpticaSimulator";
 import OpticaGraphs from "./pages/OpticaGraphs";
 import OpticaQuiz from "./pages/OpticaQuiz";
-
+import IAResolver from "./pages/IAResolver";
 
 
 
 function Router() {
+  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path="/" component={FisicaSelector} />
@@ -168,6 +169,7 @@ function Router() {
       <Route path="/magnetismo/topic/forca-magnetica" component={MagnetismoTopicForcaMagnetica} />
 
       <Route path="/progress" component={Progress} />
+      <Route path="/ia-resolver" component={IAResolver} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
