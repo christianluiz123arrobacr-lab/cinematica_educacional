@@ -253,14 +253,26 @@ export default function IAResolver() {
                   </div>
                 </CardHeader>
                 <CardContent className="p-8 bg-white">
-                  <div className="prose prose-slate max-w-none prose-headings:text-slate-900 prose-p:text-slate-700 prose-strong:text-slate-900 prose-code:text-indigo-600 prose-pre:bg-slate-900">
+                  <div className="space-y-6 text-slate-700">
+                  <div className="prose prose-slate max-w-none">
                     <ReactMarkdown
                       remarkPlugins={[remarkMath]}
                       rehypePlugins={[rehypeKatex]}
+                      components={{
+                        h1: ({node, ...props}) => <h1 className="text-3xl font-bold text-slate-900 mt-8 mb-4 border-b-2 border-indigo-200 pb-2" {...props} />,
+                        h2: ({node, ...props}) => <h2 className="text-2xl font-bold text-slate-900 mt-6 mb-3" {...props} />,
+                        h3: ({node, ...props}) => <h3 className="text-xl font-bold text-slate-900 mt-5 mb-2" {...props} />,
+                        p: ({node, ...props}) => <p className="text-slate-700 leading-relaxed my-3" {...props} />,
+                        ul: ({node, ...props}) => <ul className="list-disc list-inside space-y-2 my-3 text-slate-700" {...props} />,
+                        ol: ({node, ...props}) => <ol className="list-decimal list-inside space-y-2 my-3 text-slate-700" {...props} />,
+                        li: ({node, ...props}) => <li className="ml-2" {...props} />,
+                        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-indigo-500 pl-4 italic text-slate-600 my-3 bg-indigo-50 py-3 rounded" {...props} />,
+                      }}
                     >
                       {result}
                     </ReactMarkdown>
                   </div>
+                </div>
                   <div ref={resultEndRef} />
                 </CardContent>
               </Card>
