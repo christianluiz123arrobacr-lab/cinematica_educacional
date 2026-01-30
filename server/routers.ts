@@ -27,20 +27,22 @@ export const appRouter = router({
           text: z.string().optional(),
           imageBase64: z.string().optional(),
           imageMimeType: z.string().optional(),
+          systemPrompt: z.string().optional(),
         })
       )
       .mutation(async ({ input }) => {
-        const { text, imageBase64, imageMimeType } = input;
+        const { text, imageBase64, imageMimeType, systemPrompt } = input;
 
         if (!text && !imageBase64) {
           throw new Error("Forneça um texto ou uma imagem da questão.");
         }
 
+        const defaultSystemPrompt = "Você é um professor de elite e especialista em competições científicas (ITA, IME, IMO, IPhO). Sua missão é resolver problemas complexos de forma EXTREMAMENTE EXPLICATIVA e DIDÁTICA. Para cada passo da resolução, explique o 'porquê' físico ou matemático, os conceitos fundamentais envolvidos e a estratégia adotada. Não apenas mostre o cálculo, mas ensine o raciocínio. OBRIGATORIAMENTE, use '$$' para equações em bloco e '$' para matemática inline. Toda variável, unidade ou fórmula deve estar em LaTeX. A resolução deve ser profunda, clara e chegar ao resultado final com uma conclusão pedagógica.";
+
         const messages: any[] = [
           {
             role: "system",
-            content:
-              "Você é um professor de elite e especialista em competições científicas (ITA, IME, IMO, IPhO). Sua missão é resolver problemas complexos de forma EXTREMAMENTE EXPLICATIVA e DIDÁTICA. Para cada passo da resolução, explique o 'porquê' físico ou matemático, os conceitos fundamentais envolvidos e a estratégia adotada. Não apenas mostre o cálculo, mas ensine o raciocínio. OBRIGATORIAMENTE, use '$$' para equações em bloco e '$' para matemática inline. Toda variável, unidade ou fórmula deve estar em LaTeX. A resolução deve ser profunda, clara e chegar ao resultado final com uma conclusão pedagógica.",
+            content: systemPrompt || defaultSystemPrompt,
           },
         ];
 
