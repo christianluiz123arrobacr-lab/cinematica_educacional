@@ -199,7 +199,155 @@ export default function EletricidadeTopicEletrodinamica() {
               </div>
             </div>
 
-            <div className="bg-slate-900 text-slate-100 rounded-xl p-8 border border-slate-700">
+            {/* Capacitors and Inductors Section */}
+            <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border-l-4 border-indigo-500 rounded-xl p-8 mt-12">
+              <h2 className="text-3xl font-bold text-slate-900 mb-8">⚡ Capacitores e Indutores na Eletrodinâmica</h2>
+
+              {/* Capacitors Subsection */}
+              <div className="space-y-8 mb-12">
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-4">Capacitores: Armazenamento de Energia Elétrica</h3>
+                  <p className="text-slate-700 leading-relaxed mb-6">
+                    Um capacitor é um dispositivo que armazena energia em um campo elétrico. O capacitor mais simples é o <strong>capacitor de placas paralelas</strong>, composto por duas placas condutoras paralelas separadas por um dielétrico (isolante).
+                  </p>
+                  
+                  <div className="bg-white rounded-lg p-6 mb-6 border border-slate-200">
+                    <img src="/images/capacitor-parallel-plates-pt.jpg" alt="Capacitor de Placas Paralelas" className="w-full rounded-lg mb-4 border border-slate-300" />
+                    <p className="text-sm text-slate-600 text-center italic">Figura: Capacitor de placas paralelas com campo elétrico uniforme entre as placas</p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-lg font-bold text-slate-900 mb-2">Dedução da Capacitância</h4>
+                      <p className="text-slate-700 mb-3">
+                        Quando uma carga Q é armazenada no capacitor, uma placa adquire carga +Q e a outra -Q. O campo elétrico entre as placas é uniforme:
+                      </p>
+                      <MathFormula formula="E = \\frac{\\sigma}{\\epsilon_0} = \\frac{Q}{\\epsilon_0 A}" display={true} />
+                      <p className="text-slate-700 mt-3 mb-3">
+                        onde σ = Q/A é a densidade superficial de carga e ε₀ = 8.854 × 10⁻¹² F/m é a permissividade do vácuo.
+                      </p>
+                      <p className="text-slate-700 mb-3">
+                        A diferença de potencial entre as placas é:
+                      </p>
+                      <MathFormula formula="V = E \\cdot d = \\frac{Q}{\\epsilon_0 A} \\cdot d" display={true} />
+                      <p className="text-slate-700 mt-3 mb-3">
+                        A capacitância é definida como a razão entre a carga armazenada e a tensão:
+                      </p>
+                      <MathFormula formula="C = \\frac{Q}{V} = \\frac{\\epsilon_0 A}{d}" display={true} />
+                      <p className="text-slate-700 mt-3">
+                        <strong>Conclusão:</strong> A capacitância depende apenas da geometria (área A e separação d) e do material dielétrico (ε₀).
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded p-6">
+                  <h4 className="text-lg font-bold text-slate-900 mb-3">Energia Armazenada em um Capacitor</h4>
+                  <p className="text-slate-700 mb-3">
+                    A energia armazenada no campo elétrico é:
+                  </p>
+                  <MathFormula formula="U_C = \\frac{1}{2}CV^2 = \\frac{1}{2}\\frac{Q^2}{C} = \\frac{1}{2}QV" display={true} />
+                  <p className="text-slate-700 mt-3">
+                    Essa energia é proporcional ao quadrado da tensão, o que explica por que capacitores de alta tensão podem armazenar quantidades enormes de energia.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-lg font-bold text-slate-900 mb-4">Carregamento de um Capacitor: Circuito RC</h4>
+                  <p className="text-slate-700 mb-4">
+                    Quando um capacitor é conectado a uma fonte de tensão através de um resistor, a carga não é instantânea. A tensão no capacitor evolui segundo:
+                  </p>
+                  <MathFormula formula="V_C(t) = V_0(1 - e^{-t/\\tau})" display={true} />
+                  <p className="text-slate-700 mt-4 mb-4">
+                    onde τ = RC é a <strong>constante de tempo</strong>. Após um tempo τ, a tensão atinge 63% do valor final.
+                  </p>
+                  <div className="bg-white rounded-lg p-6 border border-slate-200">
+                    <img src="/images/capacitor-charging-curve-pt.jpg" alt="Curva de Carregamento do Capacitor" className="w-full rounded-lg mb-4 border border-slate-300" />
+                    <p className="text-sm text-slate-600 text-center italic">Figura: Resposta temporal de um circuito RC durante o carregamento</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Inductors Subsection */}
+              <div className="space-y-8 border-t-2 border-slate-300 pt-8">
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-4">Indutores: Armazenamento de Energia Magnética</h3>
+                  <p className="text-slate-700 leading-relaxed mb-6">
+                    Um indutor é um dispositivo que armazena energia em um campo magnético. O indutor mais comum é o <strong>solenóide</strong>, uma bobina de fio condutor enrolada em forma de hélice.
+                  </p>
+                  
+                  <div className="bg-white rounded-lg p-6 mb-6 border border-slate-200">
+                    <img src="/images/indutor-solenide-pt.jpg" alt="Solenóide Indutor" className="w-full rounded-lg mb-4 border border-slate-300" />
+                    <p className="text-sm text-slate-600 text-center italic">Figura: Solenóide mostrando o campo magnético uniforme no interior</p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-lg font-bold text-slate-900 mb-2">Dedução da Indutância</h4>
+                      <p className="text-slate-700 mb-3">
+                        Para um solenóide com N espiras, comprimento L e área de seção transversal A, o campo magnético no interior é uniforme:
+                      </p>
+                      <MathFormula formula="B = \\mu_0 \\frac{N}{L} I" display={true} />
+                      <p className="text-slate-700 mt-3 mb-3">
+                        onde μ₀ = 4π × 10⁻⁷ H/m é a permeabilidade do vácuo.
+                      </p>
+                      <p className="text-slate-700 mb-3">
+                        O fluxo magnético através de uma espira é:
+                      </p>
+                      <MathFormula formula="\\Phi = B \\cdot A = \\mu_0 \\frac{N}{L} I \\cdot A" display={true} />
+                      <p className="text-slate-700 mt-3 mb-3">
+                        O fluxo total através de todas as N espiras é:
+                      </p>
+                      <MathFormula formula="\\Psi = N\\Phi = \\mu_0 \\frac{N^2 A}{L} I" display={true} />
+                      <p className="text-slate-700 mt-3 mb-3">
+                        A indutância é definida como a razão entre o fluxo total e a corrente:
+                      </p>
+                      <MathFormula formula="L = \\frac{\\Psi}{I} = \\mu_0 \\frac{N^2 A}{L}" display={true} />
+                      <p className="text-slate-700 mt-3">
+                        <strong>Conclusão:</strong> A indutância é proporcional ao quadrado do número de espiras e inversamente proporcional ao comprimento.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-purple-50 border-l-4 border-purple-500 rounded p-6">
+                  <h4 className="text-lg font-bold text-slate-900 mb-3">Energia Armazenada em um Indutor</h4>
+                  <p className="text-slate-700 mb-3">
+                    A energia armazenada no campo magnético é:
+                  </p>
+                  <MathFormula formula="U_L = \\frac{1}{2}LI^2" display={true} />
+                  <p className="text-slate-700 mt-3">
+                    Essa energia é proporcional ao quadrado da corrente. Um indutor resiste a mudanças na corrente, tentando manter o fluxo magnético constante.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-lg font-bold text-slate-900 mb-4">Resposta Transiente: Circuito RL</h4>
+                  <p className="text-slate-700 mb-4">
+                    Quando um indutor é conectado a uma fonte de tensão através de um resistor, a corrente não cresce instantaneamente. A corrente evolui segundo:
+                  </p>
+                  <MathFormula formula="i(t) = \\frac{V}{R}\\left(1 - e^{-Rt/L}\\right)" display={true} />
+                  <p className="text-slate-700 mt-4 mb-4">
+                    onde τ = L/R é a <strong>constante de tempo</strong> do circuito RL.
+                  </p>
+                  <div className="bg-white rounded-lg p-6 border border-slate-200">
+                    <img src="/images/rl-circuit-transient-pt.jpg" alt="Resposta Transiente RL" className="w-full rounded-lg mb-4 border border-slate-300" />
+                    <p className="text-sm text-slate-600 text-center italic">Figura: Resposta temporal de um circuito RL durante o fechamento da chave</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Comparison Section */}
+              <div className="border-t-2 border-slate-300 pt-8 mt-8">
+                <h3 className="text-2xl font-bold text-slate-900 mb-6">Comparação: Capacitores vs. Indutores</h3>
+                <div className="bg-white rounded-lg p-6 border border-slate-200 mb-6">
+                  <img src="/images/energy-storage-pt.jpg" alt="Comparação de Energia" className="w-full rounded-lg border border-slate-300" />
+                  <p className="text-sm text-slate-600 text-center italic mt-4">Figura: Comparação entre armazenamento de energia em capacitores e indutores</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-900 text-slate-100 rounded-xl p-8 border border-slate-700 mt-12">
               <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                 <CheckCircle2 className="w-6 h-6 text-green-400" />
                 Desafio ITA: Simetria em Circuitos
