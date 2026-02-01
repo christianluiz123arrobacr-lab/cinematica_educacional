@@ -1,572 +1,541 @@
-import React, { useState } from "react";
-import { ArrowLeft, ChevronDown } from "lucide-react";
+import { ArrowLeft, Zap, Info, AlertTriangle, CheckCircle2, Sigma, MousePointerClick } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/components/MathFormula";
+import { Card } from "@/components/ui/card";
 
 export default function EletricidadeTopicMagnetismo() {
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
-
-  const toggleSection = (section: string) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-yellow-50 to-orange-50">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-slate-50 to-red-50">
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/fisica-iii">
+          <Link href="/eletricidade">
             <Button variant="ghost" size="sm" className="gap-2">
               <ArrowLeft className="w-4 h-4" />
-              Voltar ao Início
+              Voltar
             </Button>
           </Link>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-yellow-600 to-orange-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">🧲</span>
+            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
+              <Zap className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900">Magnetismo</h1>
-              <p className="text-xs text-slate-600">Campos magnéticos e indução eletromagnética</p>
+              <h1 className="text-xl font-bold text-slate-900">Eletricidade</h1>
+              <p className="text-xs text-slate-600">Magnetismo</p>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-12 max-w-4xl">
-        {/* Introdução */}
-        <section className="mb-12">
-          <h2 className="text-4xl font-bold text-slate-900 mb-6">Magnetismo: A Força Invisível que Governa o Universo</h2>
-          <div className="prose prose-lg max-w-none text-slate-700 space-y-4">
-            <p>
-              O magnetismo é um dos fenômenos mais fundamentais da natureza, intimamente relacionado à eletricidade através do eletromagnetismo. Enquanto a eletrostática estuda cargas em repouso e a eletrodinâmica estuda cargas em movimento, o magnetismo estuda os campos gerados por essas cargas em movimento e as forças que atuam sobre elas.
-            </p>
-            <p>
-              Diferentemente do campo elétrico, que pode ser gerado por cargas isoladas, o campo magnético é sempre gerado por correntes elétricas (cargas em movimento). Essa é uma das razões pelas quais o magnetismo é mais complexo que a eletrostática: não existem "monopolos magnéticos" isolados na natureza.
-            </p>
+      <section className="container mx-auto px-4 py-12 max-w-5xl">
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🧲 Introdução ao Magnetismo</h2>
+          
+          <div className="space-y-6">
+            <div className="bg-orange-50 border-l-4 border-orange-500 rounded p-6">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">O que é Magnetismo?</h3>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                <strong>Magnetismo</strong> é o ramo da física que estuda os fenômenos relacionados aos campos magnéticos, suas fontes (cargas em movimento e materiais magnéticos) e suas interações com cargas elétricas e correntes. Diferentemente da eletrostática, que estuda cargas em repouso, o magnetismo está intimamente ligado ao movimento de cargas.
+              </p>
+              <p className="text-slate-700 leading-relaxed">
+                Todo imã possui dois polos: norte e sul. Polos de mesmo tipo se repelem, enquanto polos opostos se atraem. Além disso, qualquer corrente elétrica (movimento de cargas) gera um campo magnético ao seu redor. Essa relação entre eletricidade e magnetismo é tão profunda que os dois fenômenos são frequentemente descritos como aspectos diferentes de uma única força: a força eletromagnética.
+              </p>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded p-6">
+              <h4 className="font-bold text-slate-900 mb-3">💡 Princípios Fundamentais</h4>
+              <ul className="space-y-2 text-slate-700">
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 font-bold mt-1">•</span>
+                  <span><strong>Monopólos Magnéticos Não Existem:</strong> Diferentemente das cargas elétricas, não é possível isolar um polo magnético. Se você quebrar um imã, obterá dois imãs menores, cada um com seus próprios polos norte e sul.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 font-bold mt-1">•</span>
+                  <div className="flex flex-wrap items-center gap-1">
+                    <strong>Campo Magnético é Produzido por Correntes:</strong> Uma corrente elétrica <MathFormula formula="I" display={false} /> gera um campo magnético <MathFormula formula="\vec{B}" display={false} /> ao seu redor. Quanto maior a corrente, mais intenso o campo.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 font-bold mt-1">•</span>
+                  <div className="flex flex-wrap items-center gap-1">
+                    <strong>Força Magnética sobre Cargas em Movimento:</strong> Uma carga <MathFormula formula="q" display={false} /> movendo-se com velocidade <MathFormula formula="\vec{v}" display={false} /> em um campo magnético <MathFormula formula="\vec{B}" display={false} /> experimenta uma força perpendicular tanto a <MathFormula formula="\vec{v}" display={false} /> quanto a <MathFormula formula="\vec{B}" display={false} />.
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
-        </section>
+        </div>
 
-        {/* Lei de Ampère */}
-        <section className="mb-12 bg-white rounded-2xl shadow-lg p-8 border-l-4 border-yellow-600">
-          <button
-            onClick={() => toggleSection("ampere")}
-            className="w-full flex items-center justify-between mb-6 hover:opacity-80 transition-opacity"
-          >
-            <h3 className="text-3xl font-bold text-slate-900">Lei de Ampère</h3>
-            <ChevronDown
-              className={`w-6 h-6 transition-transform ${expandedSections["ampere"] ? "rotate-180" : ""}`}
-            />
-          </button>
-
-          {expandedSections["ampere"] && (
-            <div className="space-y-6">
-              <div className="prose prose-lg max-w-none text-slate-700">
-                <p>
-                  A Lei de Ampère é um dos pilares do eletromagnetismo clássico. Ela estabelece a relação entre um campo magnético e a corrente elétrica que o gera. Diferentemente da Lei de Coulomb, que relaciona campos elétricos a cargas pontuais, a Lei de Ampère relaciona campos magnéticos a correntes contínuas.
-                </p>
-              </div>
-
-              <div className="bg-yellow-50 p-6 rounded-lg border-2 border-yellow-200">
-                <h4 className="font-bold text-lg mb-4 text-slate-900">Forma Integral da Lei de Ampère</h4>
-                <MathFormula formula="\\oint \\vec{B} \\cdot d\\vec{l} = \\mu_0 I_{\\text{enc}}" />
-                <div className="mt-4 space-y-2 text-sm text-slate-700">
-                  <p><strong>Onde:</strong></p>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li><strong>∮ B⃗ · dl⃗</strong> = integral de linha do campo magnético ao longo de um caminho fechado (Amperian loop)</li>
-                    <li><strong>μ₀</strong> = permeabilidade magnética do vácuo = 4π × 10⁻⁷ T·m/A</li>
-                    <li><strong>I_enc</strong> = corrente elétrica envolvida pelo caminho fechado</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="prose prose-lg max-w-none text-slate-700 space-y-4">
-                <p>
-                  <strong>Interpretação Física:</strong> A integral de linha do campo magnético ao redor de um caminho fechado é proporcional à corrente que passa através da superfície delimitada por esse caminho. Isso significa que correntes elétricas criam campos magnéticos que circundam a corrente.
-                </p>
-              </div>
-
-              {/* Imagem da Lei de Ampère */}
-              <div className="my-8">
-                <img
-                  src="/images/lei-ampere-pt.jpg"
-                  alt="Lei de Ampère - Fio condutor com campo magnético circular"
-                  className="w-full rounded-lg shadow-lg border-2 border-yellow-200"
-                />
-              </div>
-
-              <div className="bg-blue-50 p-6 rounded-lg border-2 border-blue-200">
-                <h4 className="font-bold text-lg mb-4 text-slate-900">Aplicação: Campo Magnético de um Fio Reto Infinito</h4>
-                <div className="space-y-4">
-                  <p className="text-slate-700">
-                    Considere um fio condutor reto e infinito percorrido por uma corrente I. Queremos encontrar o campo magnético a uma distância r do fio.
-                  </p>
-                  <p className="text-slate-700">
-                    <strong>Passo 1:</strong> Escolhemos um caminho Amperiano circular de raio r, concêntrico ao fio.
-                  </p>
-                  <p className="text-slate-700">
-                    <strong>Passo 2:</strong> Por simetria, o campo magnético é tangencial ao círculo e tem magnitude constante em todos os pontos do caminho.
-                  </p>
-                  <MathFormula formula="\\oint \\vec{B} \\cdot d\\vec{l} = B \\oint dl = B(2\\pi r)" />
-                  <p className="text-slate-700">
-                    <strong>Passo 3:</strong> Aplicamos a Lei de Ampère:
-                  </p>
-                  <MathFormula formula="B(2\\pi r) = \\mu_0 I" />
-                  <p className="text-slate-700">
-                    <strong>Resultado Final:</strong>
-                  </p>
-                  <MathFormula formula="B = \\frac{\\mu_0 I}{2\\pi r}" />
-                  <p className="text-slate-700">
-                    O campo magnético diminui inversamente com a distância do fio e forma linhas circulares ao redor dele, conforme mostrado no diagrama acima.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* Força de Lorentz */}
-        <section className="mb-12 bg-white rounded-2xl shadow-lg p-8 border-l-4 border-orange-600">
-          <button
-            onClick={() => toggleSection("lorentz")}
-            className="w-full flex items-center justify-between mb-6 hover:opacity-80 transition-opacity"
-          >
-            <h3 className="text-3xl font-bold text-slate-900">Força de Lorentz</h3>
-            <ChevronDown
-              className={`w-6 h-6 transition-transform ${expandedSections["lorentz"] ? "rotate-180" : ""}`}
-            />
-          </button>
-
-          {expandedSections["lorentz"] && (
-            <div className="space-y-6">
-              <div className="prose prose-lg max-w-none text-slate-700">
-                <p>
-                  A Força de Lorentz descreve a força exercida por campos elétricos e magnéticos sobre uma partícula carregada. É uma das equações mais importantes da física clássica e forma a base da dinâmica de partículas carregadas.
-                </p>
-              </div>
-
-              <div className="bg-orange-50 p-6 rounded-lg border-2 border-orange-200">
-                <h4 className="font-bold text-lg mb-4 text-slate-900">Forma Completa da Força de Lorentz</h4>
-                <MathFormula formula="\\vec{F} = q(\\vec{E} + \\vec{v} \\times \\vec{B})" />
-                <div className="mt-4 space-y-2 text-sm text-slate-700">
-                  <p><strong>Onde:</strong></p>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li><strong>F⃗</strong> = força total sobre a partícula</li>
-                    <li><strong>q</strong> = carga elétrica da partícula</li>
-                    <li><strong>E⃗</strong> = campo elétrico</li>
-                    <li><strong>v⃗</strong> = velocidade da partícula</li>
-                    <li><strong>B⃗</strong> = campo magnético</li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Imagem da Força de Lorentz */}
-              <div className="my-8">
-                <img
-                  src="/images/forca-lorentz-pt.jpg"
-                  alt="Força de Lorentz - Partícula carregada em campo magnético"
-                  className="w-full rounded-lg shadow-lg border-2 border-orange-200"
-                />
-              </div>
-
-              <div className="bg-purple-50 p-6 rounded-lg border-2 border-purple-200">
-                <h4 className="font-bold text-lg mb-4 text-slate-900">Análise da Componente Magnética</h4>
-                <div className="space-y-4">
-                  <p className="text-slate-700">
-                    Considerando apenas a força magnética (quando E⃗ = 0):
-                  </p>
-                  <MathFormula formula="\\vec{F}_B = q(\\vec{v} \\times \\vec{B})" />
-                  <p className="text-slate-700">
-                    A magnitude dessa força é:
-                  </p>
-                  <MathFormula formula="F_B = qvB\\sin(\\theta)" />
-                  <p className="text-slate-700">
-                    <strong>Onde θ é o ângulo entre v⃗ e B⃗.</strong>
-                  </p>
-                  <p className="text-slate-700">
-                    <strong>Características importantes:</strong>
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 text-slate-700">
-                    <li>A força é sempre perpendicular à velocidade (não realiza trabalho)</li>
-                    <li>A força é máxima quando v⃗ ⊥ B⃗ (θ = 90°)</li>
-                    <li>A força é nula quando v⃗ ∥ B⃗ (θ = 0° ou 180°)</li>
-                    <li>A direção é dada pela regra da mão direita: v⃗ × B⃗</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="bg-green-50 p-6 rounded-lg border-2 border-green-200">
-                <h4 className="font-bold text-lg mb-4 text-slate-900">Movimento Circular em Campo Magnético Uniforme</h4>
-                <div className="space-y-4">
-                  <p className="text-slate-700">
-                    Quando uma partícula carregada se move perpendicularmente a um campo magnético uniforme, a força magnética fornece a aceleração centrípeta necessária para o movimento circular.
-                  </p>
-                  <p className="text-slate-700">
-                    <strong>Equação do movimento:</strong>
-                  </p>
-                  <MathFormula formula="qvB = \\frac{mv^2}{r}" />
-                  <p className="text-slate-700">
-                    Resolvendo para o raio da trajetória:
-                  </p>
-                  <MathFormula formula="r = \\frac{mv}{qB}" />
-                  <p className="text-slate-700">
-                    A frequência angular (ciclotron) é:
-                  </p>
-                  <MathFormula formula="\\omega_c = \\frac{qB}{m}" />
-                  <p className="text-slate-700">
-                    E o período de revolução é:
-                  </p>
-                  <MathFormula formula="T = \\frac{2\\pi m}{qB}" />
-                  <p className="text-slate-700 font-semibold">
-                    Nota importante: O período é independente da velocidade! Isso é o princípio dos ciclotrons e espectrômetros de massa.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* Lei de Indução de Faraday */}
-        <section className="mb-12 bg-white rounded-2xl shadow-lg p-8 border-l-4 border-red-600">
-          <button
-            onClick={() => toggleSection("faraday")}
-            className="w-full flex items-center justify-between mb-6 hover:opacity-80 transition-opacity"
-          >
-            <h3 className="text-3xl font-bold text-slate-900">Lei de Indução de Faraday</h3>
-            <ChevronDown
-              className={`w-6 h-6 transition-transform ${expandedSections["faraday"] ? "rotate-180" : ""}`}
-            />
-          </button>
-
-          {expandedSections["faraday"] && (
-            <div className="space-y-6">
-              <div className="prose prose-lg max-w-none text-slate-700">
-                <p>
-                  A Lei de Indução de Faraday é um dos resultados mais importantes do eletromagnetismo. Ela estabelece que uma variação no fluxo magnético através de uma superfície induz uma força eletromotriz (tensão) no circuito que delimita essa superfície.
-                </p>
-              </div>
-
-              <div className="bg-red-50 p-6 rounded-lg border-2 border-red-200">
-                <h4 className="font-bold text-lg mb-4 text-slate-900">Lei de Faraday</h4>
-                <MathFormula formula="\\varepsilon = -\\frac{d\\Phi_B}{dt}" />
-                <div className="mt-4 space-y-2 text-sm text-slate-700">
-                  <p><strong>Onde:</strong></p>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li><strong>ε</strong> = força eletromotriz induzida (em Volts)</li>
-                    <li><strong>Φ_B</strong> = fluxo magnético através da superfície (em Weber = T·m²)</li>
-                    <li><strong>dΦ_B/dt</strong> = taxa de variação do fluxo magnético</li>
-                    <li><strong>Sinal negativo</strong> = Lei de Lenz (oposição à mudança)</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="prose prose-lg max-w-none text-slate-700 space-y-4">
-                <p>
-                  <strong>Definição do Fluxo Magnético:</strong> O fluxo magnético através de uma superfície é definido como:
-                </p>
-              </div>
-
-              <MathFormula formula="\\Phi_B = \\int \\vec{B} \\cdot d\\vec{A} = BA\\cos(\\theta)" />
-
-              <div className="prose prose-lg max-w-none text-slate-700 space-y-4">
-                <p>
-                  Para um campo uniforme perpendicular à superfície: Φ_B = BA
-                </p>
-              </div>
-
-              {/* Imagem da Lei de Faraday */}
-              <div className="my-8">
-                <img
-                  src="/images/inducao-faraday-pt.jpg"
-                  alt="Lei de Indução de Faraday - Bobina com fluxo magnético variável"
-                  className="w-full rounded-lg shadow-lg border-2 border-red-200"
-                />
-              </div>
-
-              <div className="bg-indigo-50 p-6 rounded-lg border-2 border-indigo-200">
-                <h4 className="font-bold text-lg mb-4 text-slate-900">Lei de Lenz</h4>
-                <div className="space-y-4">
-                  <p className="text-slate-700">
-                    O sinal negativo na Lei de Faraday representa a Lei de Lenz: <strong>a corrente induzida sempre flui em uma direção que se opõe à mudança no fluxo magnético que a produziu.</strong>
-                  </p>
-                  <p className="text-slate-700">
-                    Isso significa:
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 text-slate-700">
-                    <li>Se o fluxo magnético aumenta, a corrente induzida cria um campo que o reduz</li>
-                    <li>Se o fluxo magnético diminui, a corrente induzida cria um campo que o aumenta</li>
-                    <li>A Lei de Lenz é uma manifestação do princípio de conservação de energia</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="bg-cyan-50 p-6 rounded-lg border-2 border-cyan-200">
-                <h4 className="font-bold text-lg mb-4 text-slate-900">Exemplo: Bobina em Campo Magnético Variável</h4>
-                <div className="space-y-4">
-                  <p className="text-slate-700">
-                    Considere uma bobina com N espiras, cada uma com área A, em um campo magnético uniforme que varia no tempo: B(t) = B₀ sin(ωt)
-                  </p>
-                  <p className="text-slate-700">
-                    <strong>Passo 1:</strong> Calcular o fluxo magnético total:
-                  </p>
-                  <MathFormula formula="\\Phi_B = NBA = NB_0 A \\sin(\\omega t)" />
-                  <p className="text-slate-700">
-                    <strong>Passo 2:</strong> Aplicar a Lei de Faraday:
-                  </p>
-                  <MathFormula formula="\\varepsilon = -\\frac{d\\Phi_B}{dt} = -NB_0 A \\omega \\cos(\\omega t)" />
-                  <p className="text-slate-700">
-                    <strong>Amplitude da tensão induzida:</strong>
-                  </p>
-                  <MathFormula formula="\\varepsilon_0 = NB_0 A \\omega" />
-                  <p className="text-slate-700">
-                    Observações importantes:
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 text-slate-700">
-                    <li>A tensão induzida é proporcional ao número de espiras (N)</li>
-                    <li>A tensão induzida é proporcional à taxa de variação (ω)</li>
-                    <li>A tensão induzida é proporcional à área da bobina (A)</li>
-                    <li>A tensão induzida está 90° fora de fase com o fluxo</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* Campo Magnético de um Solenóide */}
-        <section className="mb-12 bg-white rounded-2xl shadow-lg p-8 border-l-4 border-blue-600">
-          <button
-            onClick={() => toggleSection("solenoid")}
-            className="w-full flex items-center justify-between mb-6 hover:opacity-80 transition-opacity"
-          >
-            <h3 className="text-3xl font-bold text-slate-900">Campo Magnético de um Solenóide</h3>
-            <ChevronDown
-              className={`w-6 h-6 transition-transform ${expandedSections["solenoid"] ? "rotate-180" : ""}`}
-            />
-          </button>
-
-          {expandedSections["solenoid"] && (
-            <div className="space-y-6">
-              <div className="prose prose-lg max-w-none text-slate-700">
-                <p>
-                  Um solenóide é uma bobina cilíndrica de fio condutor enrolado em forma de hélice. É um dos dispositivos mais importantes em eletromagnetismo, pois produz campos magnéticos intensos e uniformes no seu interior.
-                </p>
-              </div>
-
-              <div className="bg-blue-50 p-6 rounded-lg border-2 border-blue-200">
-                <h4 className="font-bold text-lg mb-4 text-slate-900">Campo Magnético Dentro de um Solenóide Ideal</h4>
-                <MathFormula formula="B = \\mu_0 n I" />
-                <div className="mt-4 space-y-2 text-sm text-slate-700">
-                  <p><strong>Onde:</strong></p>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li><strong>B</strong> = campo magnético no interior do solenóide</li>
-                    <li><strong>μ₀</strong> = permeabilidade magnética do vácuo = 4π × 10⁻⁷ T·m/A</li>
-                    <li><strong>n</strong> = número de espiras por unidade de comprimento (espiras/metro)</li>
-                    <li><strong>I</strong> = corrente elétrica no fio</li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Imagem do Solenóide */}
-              <div className="my-8">
-                <img
-                  src="/images/campo-magnetico-solenoid-pt.jpg"
-                  alt="Campo Magnético de um Solenóide"
-                  className="w-full rounded-lg shadow-lg border-2 border-blue-200"
-                />
-              </div>
-
-              <div className="bg-teal-50 p-6 rounded-lg border-2 border-teal-200">
-                <h4 className="font-bold text-lg mb-4 text-slate-900">Características do Campo Magnético em um Solenóide</h4>
-                <div className="space-y-4">
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">⚡ Força Magnética de Lorentz (Aprofundado)</h2>
+          
+          <div className="space-y-8">
+            {/* Formulação Vetorial */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">1</span>
+                Força de Lorentz
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                A força magnética que atua sobre uma carga elétrica <MathFormula formula="q" display={false} /> movendo-se com velocidade <MathFormula formula="\vec{v}" display={false} /> em um campo magnético <MathFormula formula="\vec{B}" display={false} /> é dada pela força de Lorentz. Esta é uma das equações mais fundamentais do eletromagnetismo.
+              </p>
+              
+              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
+                <MathFormula formula="\vec{F} = q \cdot \vec{v} \times \vec{B}" display={true} className="text-xl" />
+                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300 grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <p className="font-semibold text-slate-900 mb-2">Interior do Solenóide:</p>
-                    <ul className="list-disc list-inside space-y-1 text-slate-700">
-                      <li>Campo magnético uniforme e paralelo ao eixo</li>
-                      <li>Magnitude constante: B = μ₀nI</li>
-                      <li>Direção determinada pela regra da mão direita</li>
+                    <p className="font-semibold text-yellow-400 mb-1">Definições:</p>
+                    <ul className="space-y-1">
+                      <li><MathFormula formula="q" display={false} />: Carga elétrica (C)</li>
+                      <li><MathFormula formula="\vec{v}" display={false} />: Velocidade da carga (m/s)</li>
+                      <li><MathFormula formula="\vec{B}" display={false} />: Campo magnético (T - Tesla)</li>
+                      <li><MathFormula formula="\vec{F}" display={false} />: Força magnética (N)</li>
                     </ul>
                   </div>
                   <div>
-                    <p className="font-semibold text-slate-900 mb-2">Exterior do Solenóide:</p>
-                    <ul className="list-disc list-inside space-y-1 text-slate-700">
-                      <li>Campo magnético muito fraco (aproximadamente nulo para solenóide ideal)</li>
-                      <li>Linhas de campo saem do pólo norte e entram no pólo sul</li>
-                    </ul>
+                    <p className="font-semibold text-yellow-400 mb-1">Propriedades do Produto Vetorial:</p>
+                    <p>
+                      A força é <strong>perpendicular</strong> tanto a <MathFormula formula="\vec{v}" display={false} /> quanto a <MathFormula formula="\vec{B}" display={false} />. 
+                      <br/>
+                      Se <MathFormula formula="\vec{v}" display={false} /> é paralelo a <MathFormula formula="\vec{B}" display={false} />, então <MathFormula formula="\vec{F} = 0" display={false} />.
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-amber-50 p-6 rounded-lg border-2 border-amber-200">
-                <h4 className="font-bold text-lg mb-4 text-slate-900">Indutância de um Solenóide</h4>
+              <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r-lg mb-6">
+                <h4 className="font-bold text-orange-800 flex items-center gap-2 mb-2">
+                  <Info className="w-4 h-4" />
+                  Módulo da Força Magnética
+                </h4>
+                <p className="text-slate-700 text-sm mb-2">
+                  O módulo da força é dado por:
+                </p>
+                <MathFormula formula="F = q \cdot v \cdot B \cdot \sin(\theta)" display={true} />
+                <p className="text-slate-700 text-sm mt-2">
+                  onde <MathFormula formula="\theta" display={false} /> é o ângulo entre <MathFormula formula="\vec{v}" display={false} /> e <MathFormula formula="\vec{B}" display={false} />.
+                </p>
+                <ul className="list-disc list-inside text-slate-700 text-sm mt-2 space-y-1">
+                  <li>Se <MathFormula formula="\theta = 90^\circ" display={false} />, então <MathFormula formula="F_{\max} = qvB" display={false} /> (força máxima)</li>
+                  <li>Se <MathFormula formula="\theta = 0^\circ" display={false} /> ou <MathFormula formula="180^\circ" display={false} />, então <MathFormula formula="F = 0" display={false} /> (força nula)</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Movimento em Campo Uniforme */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">2</span>
+                Movimento de Carga em Campo Magnético Uniforme
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Quando uma carga entra em um campo magnético uniforme com velocidade perpendicular ao campo, a força magnética atua como uma força centrípeta, fazendo a carga descrever um movimento circular uniforme.
+              </p>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
                 <div className="space-y-4">
                   <p className="text-slate-700">
-                    A indutância é a capacidade de um dispositivo armazenar energia em um campo magnético. Para um solenóide, ela é definida como:
+                    A força centrípeta é fornecida pela força magnética:
                   </p>
-                  <MathFormula formula="L = \\mu_0 n^2 V = \\mu_0 n^2 A l" />
+                  <MathFormula formula="q \cdot v \cdot B = \frac{m \cdot v^2}{r}" display={true} />
                   <p className="text-slate-700">
-                    Ou, em termos do número total de espiras N = nl:
+                    Resolvendo para o raio da trajetória circular:
                   </p>
-                  <MathFormula formula="L = \\mu_0 \\frac{N^2 A}{l}" />
-                  <div className="mt-4 space-y-2 text-sm text-slate-700">
-                    <p><strong>Onde:</strong></p>
-                    <ul className="list-disc list-inside space-y-1">
-                      <li><strong>L</strong> = indutância (em Henry = H)</li>
-                      <li><strong>V</strong> = volume do solenóide</li>
-                      <li><strong>A</strong> = área da seção transversal</li>
-                      <li><strong>l</strong> = comprimento do solenóide</li>
-                      <li><strong>N</strong> = número total de espiras</li>
-                    </ul>
+                  <MathFormula formula="r = \frac{m \cdot v}{q \cdot B}" display={true} />
+                  <p className="text-slate-700 text-sm text-slate-600 bg-white p-3 rounded border border-slate-100">
+                    <strong>Interpretação:</strong> O raio é proporcional à massa e velocidade da carga, e inversamente proporcional à carga e ao campo magnético. Cargas mais pesadas ou mais rápidas descrevem trajetórias maiores.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-yellow-600 mt-0.5" />
+                  <div>
+                    <h4 className="font-bold text-yellow-800 text-sm">Período do Movimento Circular</h4>
+                    <p className="text-sm text-yellow-700 mt-1">
+                      O período (tempo para completar uma volta) é:
+                    </p>
+                    <MathFormula formula="T = \frac{2\pi r}{v} = \frac{2\pi m}{q \cdot B}" display={true} className="mt-2" />
+                    <p className="text-sm text-yellow-700 mt-2">
+                      Observe que <MathFormula formula="T" display={false} /> é <strong>independente da velocidade</strong>! Isso é fundamental para o funcionamento de aceleradores de partículas como o ciclotron.
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
-          )}
-        </section>
 
-        {/* Transformadores */}
-        <section className="mb-12 bg-white rounded-2xl shadow-lg p-8 border-l-4 border-green-600">
-          <button
-            onClick={() => toggleSection("transformer")}
-            className="w-full flex items-center justify-between mb-6 hover:opacity-80 transition-opacity"
-          >
-            <h3 className="text-3xl font-bold text-slate-900">Transformadores</h3>
-            <ChevronDown
-              className={`w-6 h-6 transition-transform ${expandedSections["transformer"] ? "rotate-180" : ""}`}
-            />
-          </button>
+            {/* Força em Condutores */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">3</span>
+                Força Magnética em Condutores com Corrente
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Um fio condutor transportando uma corrente elétrica em um campo magnético experimenta uma força. Isso ocorre porque a corrente é constituída por cargas em movimento, e cada uma delas sofre a força de Lorentz.
+              </p>
+              
+              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
+                <MathFormula formula="\vec{F} = I \cdot \vec{L} \times \vec{B}" display={true} className="text-xl" />
+                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="font-semibold text-yellow-400 mb-1">Definições:</p>
+                    <ul className="space-y-1">
+                      <li><MathFormula formula="I" display={false} />: Corrente elétrica (A)</li>
+                      <li><MathFormula formula="\vec{L}" display={false} />: Vetor comprimento do fio (m)</li>
+                      <li><MathFormula formula="\vec{B}" display={false} />: Campo magnético (T)</li>
+                      <li><MathFormula formula="\vec{F}" display={false} />: Força no fio (N)</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-yellow-400 mb-1">Módulo da Força:</p>
+                    <MathFormula formula="F = I \cdot L \cdot B \cdot \sin(\theta)" display={false} />
+                    <p className="mt-2">
+                      onde <MathFormula formula="\theta" display={false} /> é o ângulo entre o fio e o campo magnético.
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-          {expandedSections["transformer"] && (
-            <div className="space-y-6">
-              <div className="prose prose-lg max-w-none text-slate-700">
-                <p>
-                  Um transformador é um dispositivo que utiliza a indução eletromagnética para converter tensões alternadas. É um dos equipamentos mais importantes na transmissão e distribuição de energia elétrica.
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5" />
+                  <div>
+                    <h4 className="font-bold text-orange-800 text-sm">Direção da Força: Regra da Mão Direita</h4>
+                    <p className="text-sm text-orange-700 mt-1">
+                      Para determinar a direção de <MathFormula formula="\vec{F}" display={false} />, use a regra da mão direita: aponte os dedos na direção da corrente <MathFormula formula="I" display={false} />, dobre-os na direção de <MathFormula formula="\vec{B}" display={false} />, e o polegar apontará na direção de <MathFormula formula="\vec{F}" display={false} />.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Exemplo Resolvido */}
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <CheckCircle2 className="w-6 h-6 text-green-600" />
+                Exemplo Resolvido (Nível ITA)
+              </h3>
+              <div className="space-y-4">
+                <p className="text-slate-700 text-sm">
+                  <strong>Enunciado:</strong> Um elétron com carga <MathFormula formula="e = 1,6 \times 10^{-19} C" display={false} /> e massa <MathFormula formula="m = 9,1 \times 10^{-31} kg" display={false} /> entra em um campo magnético uniforme <MathFormula formula="B = 0,1 T" display={false} /> com velocidade <MathFormula formula="v = 2 \times 10^6 m/s" display={false} /> perpendicular ao campo. Determine o raio da trajetória circular.
                 </p>
-              </div>
-
-              {/* Imagem do Transformador */}
-              <div className="my-8">
-                <img
-                  src="/images/transformador-pt.jpg"
-                  alt="Transformador Elétrico"
-                  className="w-full rounded-lg shadow-lg border-2 border-green-200"
-                />
-              </div>
-
-              <div className="bg-green-50 p-6 rounded-lg border-2 border-green-200">
-                <h4 className="font-bold text-lg mb-4 text-slate-900">Equação do Transformador Ideal</h4>
-                <MathFormula formula="\\frac{V_1}{V_2} = \\frac{N_1}{N_2}" />
-                <div className="mt-4 space-y-2 text-sm text-slate-700">
-                  <p><strong>Onde:</strong></p>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li><strong>V₁</strong> = tensão no primário</li>
-                    <li><strong>V₂</strong> = tensão no secundário</li>
-                    <li><strong>N₁</strong> = número de espiras no primário</li>
-                    <li><strong>N₂</strong> = número de espiras no secundário</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="bg-lime-50 p-6 rounded-lg border-2 border-lime-200">
-                <h4 className="font-bold text-lg mb-4 text-slate-900">Relação de Correntes em um Transformador Ideal</h4>
-                <div className="space-y-4">
-                  <p className="text-slate-700">
-                    Para um transformador ideal (sem perdas), a potência é conservada:
-                  </p>
-                  <MathFormula formula="P_1 = P_2 \\Rightarrow V_1 I_1 = V_2 I_2" />
-                  <p className="text-slate-700">
-                    Combinando com a equação anterior:
-                  </p>
-                  <MathFormula formula="\\frac{I_1}{I_2} = \\frac{N_2}{N_1}" />
-                  <p className="text-slate-700">
-                    <strong>Interpretação:</strong> A corrente é inversamente proporcional ao número de espiras. Um transformador que aumenta a tensão (step-up) reduz a corrente, e vice-versa.
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-emerald-50 p-6 rounded-lg border-2 border-emerald-200">
-                <h4 className="font-bold text-lg mb-4 text-slate-900">Tipos de Transformadores</h4>
-                <div className="space-y-4">
-                  <div>
-                    <p className="font-semibold text-slate-900 mb-2">Transformador Step-Up (Elevador):</p>
-                    <ul className="list-disc list-inside space-y-1 text-slate-700">
-                      <li>N2 &gt; N1</li>
-                      <li>V2 &gt; V1 (tensão aumenta)</li>
-                      <li>I2 &lt; I1 (corrente diminui)</li>
-                      <li>Usado na transmissão de energia a longas distâncias</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-slate-900 mb-2">Transformador Step-Down (Abaixador):</p>
-                    <ul className="list-disc list-inside space-y-1 text-slate-700">
-                      <li>N2 &lt; N1</li>
-                      <li>V2 &lt; V1 (tensão diminui)</li>
-                      <li>I2 &gt; I1 (corrente aumenta)</li>
-                      <li>Usado para reduzir tensão para uso doméstico</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-slate-100 p-6 rounded-lg border-2 border-slate-300">
-                <h4 className="font-bold text-lg mb-4 text-slate-900">Por que Transformadores na Transmissão de Energia?</h4>
-                <div className="space-y-4">
-                  <p className="text-slate-700">
-                    A transmissão de energia elétrica a longas distâncias enfrenta um problema crítico: a perda de energia por efeito Joule na resistência dos fios.
-                  </p>
-                  <MathFormula formula="P_{\\text{perda}} = I^2 R" />
-                  <p className="text-slate-700">
-                    Como a perda é proporcional ao quadrado da corrente, reduzir a corrente é muito mais eficaz do que reduzir a resistência. Por isso:
-                  </p>
-                  <ol className="list-decimal list-inside space-y-2 text-slate-700">
-                    <li>Na usina geradora: transformador step-up aumenta a tensão e reduz a corrente</li>
-                    <li>Transmissão: corrente baixa reduz perdas por efeito Joule</li>
-                    <li>Na distribuição local: transformador step-down reduz a tensão para níveis seguros</li>
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <p className="text-slate-700 text-sm mb-2"><strong>Resolução:</strong></p>
+                  <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600">
+                    <li>
+                      <strong>Identificação:</strong> O elétron move-se perpendicular a <MathFormula formula="\vec{B}" display={false} />, então descreverá uma trajetória circular.
+                    </li>
+                    <li>
+                      <strong>Aplicação da Fórmula:</strong> Usamos <MathFormula formula="r = \frac{m \cdot v}{q \cdot B}" display={false} />.
+                    </li>
+                    <li>
+                      <strong>Substituição:</strong>
+                      <div className="my-2 pl-4 border-l-2 border-slate-300">
+                        <MathFormula formula="r = \frac{9,1 \times 10^{-31} \times 2 \times 10^6}{1,6 \times 10^{-19} \times 0,1}" display={true} />
+                      </div>
+                    </li>
+                    <li>
+                      <strong>Cálculo:</strong>
+                      <div className="my-2 pl-4 border-l-2 border-slate-300">
+                        <MathFormula formula="r = \frac{1,82 \times 10^{-24}}{1,6 \times 10^{-20}} = 1,14 \times 10^{-4} m \approx 0,114 mm" display={true} />
+                      </div>
+                    </li>
+                    <li>
+                      <strong>Resposta:</strong> O raio da trajetória é aproximadamente <MathFormula formula="0,114 mm" display={false} />, um valor muito pequeno, típico de partículas subatômicas em campos magnéticos.
+                    </li>
                   </ol>
                 </div>
               </div>
             </div>
-          )}
-        </section>
-
-        {/* Resumo e Conclusão */}
-        <section className="mb-12 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl shadow-lg p-8 border-2 border-yellow-400">
-          <h3 className="text-2xl font-bold text-slate-900 mb-6">Resumo: Os Pilares do Magnetismo</h3>
-          <div className="space-y-4 text-slate-700">
-            <p>
-              <strong>Lei de Ampère:</strong> Correntes elétricas criam campos magnéticos. A integral de linha do campo magnético ao redor de um caminho fechado é proporcional à corrente envolvida.
-            </p>
-            <p>
-              <strong>Força de Lorentz:</strong> Cargas em movimento em um campo magnético experimentam uma força perpendicular à sua velocidade. Isso leva ao movimento circular de partículas carregadas.
-            </p>
-            <p>
-              <strong>Lei de Faraday:</strong> Uma variação no fluxo magnético induz uma força eletromotriz. A Lei de Lenz garante que a corrente induzida se opõe à mudança que a produziu.
-            </p>
-            <p>
-              <strong>Solenóides e Transformadores:</strong> Aplicações práticas do eletromagnetismo que permitem gerar campos magnéticos intensos e converter tensões alternadas com alta eficiência.
-            </p>
           </div>
-        </section>
-
-        {/* Navegação */}
-        <div className="flex justify-between items-center mt-16 pt-8 border-t-2 border-slate-200">
-          <Link href="/fisica-iii">
-            <Button variant="outline" size="lg">
-              ← Voltar
-            </Button>
-          </Link>
-          <Link href="/ia-resolver">
-            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-              Resolver Questões com IA
-            </Button>
-          </Link>
         </div>
-      </main>
+
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🔄 Lei de Ampère (Aprofundado)</h2>
+          
+          <div className="space-y-8">
+            {/* Lei de Ampère */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">1</span>
+                Formulação Integral
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                A Lei de Ampère relaciona o campo magnético ao redor de um condutor com a corrente que flui através dele. Ela estabelece que a circulação do campo magnético ao longo de um caminho fechado é proporcional à corrente envolvida por esse caminho.
+              </p>
+              
+              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
+                <MathFormula formula="\oint \vec{B} \cdot d\vec{l} = \mu_0 \cdot I_{\text{envolvida}}" display={true} className="text-xl" />
+                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300">
+                  <p className="font-semibold text-yellow-400 mb-2">Definições:</p>
+                  <ul className="space-y-1">
+                    <li><MathFormula formula="\oint \vec{B} \cdot d\vec{l}" display={false} />: Circulação do campo magnético (integral de linha fechada)</li>
+                    <li><MathFormula formula="\mu_0" display={false} />: Permeabilidade magnética do vácuo (<MathFormula formula="\mu_0 = 4\pi \times 10^{-7} T \cdot m/A" display={false} />)</li>
+                    <li><MathFormula formula="I_{\text{envolvida}}" display={false} />: Corrente total que passa através da superfície delimitada pelo caminho</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r-lg mb-6">
+                <h4 className="font-bold text-orange-800 flex items-center gap-2 mb-2">
+                  <Info className="w-4 h-4" />
+                  Campo Magnético de um Fio Reto Infinito
+                </h4>
+                <p className="text-slate-700 text-sm mb-2">
+                  Para um fio reto transportando corrente <MathFormula formula="I" display={false} />, o campo magnético a uma distância <MathFormula formula="r" display={false} /> é:
+                </p>
+                <MathFormula formula="B = \frac{\mu_0 \cdot I}{2\pi r}" display={true} />
+                <p className="text-slate-700 text-sm mt-2">
+                  As linhas de campo são círculos concêntricos ao fio. A direção é dada pela regra da mão direita: aponte o polegar na direção da corrente, e os dedos indicarão a direção do campo.
+                </p>
+              </div>
+            </div>
+
+            {/* Campo em Solenóide */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">2</span>
+                Campo Magnético em Solenóide
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Um solenóide é uma bobina de fio enrolado em forma de hélice. Quando uma corrente passa por ele, gera um campo magnético uniforme no seu interior, similar ao de um imã de barra.
+              </p>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                <p className="text-slate-700 mb-3">
+                  Para um solenóide ideal (infinitamente longo ou com extremidades desprezíveis), o campo magnético no interior é:
+                </p>
+                <MathFormula formula="B = \mu_0 \cdot n \cdot I" display={true} />
+                <p className="text-slate-700 text-sm text-slate-600 bg-white p-3 rounded border border-slate-100 mt-4">
+                  onde <MathFormula formula="n" display={false} /> é o número de espiras por unidade de comprimento (<MathFormula formula="n = N/L" display={false} />, com <MathFormula formula="N" display={false} /> sendo o número total de espiras e <MathFormula formula="L" display={false} /> o comprimento).
+                </p>
+              </div>
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-yellow-600 mt-0.5" />
+                  <div>
+                    <h4 className="font-bold text-yellow-800 text-sm">Características do Campo em Solenóide</h4>
+                    <ul className="text-sm text-yellow-700 mt-2 space-y-1">
+                      <li>• <strong>Interior:</strong> Campo uniforme e paralelo ao eixo</li>
+                      <li>• <strong>Exterior:</strong> Campo praticamente nulo (ideal)</li>
+                      <li>• <strong>Intensidade:</strong> Proporcional à corrente e ao número de espiras</li>
+                      <li>• <strong>Aplicações:</strong> Eletroímãs, relés, transformadores</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">📡 Indução Eletromagnética (Lei de Faraday)</h2>
+          
+          <div className="space-y-8">
+            {/* Lei de Faraday */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">1</span>
+                Lei de Faraday da Indução
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Michael Faraday descobriu que uma variação no fluxo magnético através de um circuito induz uma força eletromotriz (FEM) nesse circuito. Esta é uma das leis mais importantes do eletromagnetismo, pois fundamenta o funcionamento de geradores, transformadores e muitos outros dispositivos.
+              </p>
+              
+              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
+                <MathFormula formula="\mathcal{E} = -\frac{d\Phi_B}{dt}" display={true} className="text-xl" />
+                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300">
+                  <p className="font-semibold text-yellow-400 mb-2">Definições:</p>
+                  <ul className="space-y-1">
+                    <li><MathFormula formula="\mathcal{E}" display={false} />: Força eletromotriz induzida (V)</li>
+                    <li><MathFormula formula="\Phi_B" display={false} />: Fluxo magnético através do circuito (Wb - Weber)</li>
+                    <li><MathFormula formula="\frac{d\Phi_B}{dt}" display={false} />: Taxa de variação do fluxo magnético</li>
+                    <li>O sinal negativo representa a Lei de Lenz (ver abaixo)</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r-lg mb-6">
+                <h4 className="font-bold text-orange-800 flex items-center gap-2 mb-2">
+                  <Info className="w-4 h-4" />
+                  Fluxo Magnético
+                </h4>
+                <p className="text-slate-700 text-sm mb-2">
+                  O fluxo magnético através de uma superfície é definido como:
+                </p>
+                <MathFormula formula="\Phi_B = \int \vec{B} \cdot d\vec{A} = B \cdot A \cdot \cos(\theta)" display={true} />
+                <p className="text-slate-700 text-sm mt-2">
+                  Para um campo uniforme perpendicular à superfície, <MathFormula formula="\Phi_B = B \cdot A" display={false} /> (em Weber, Wb).
+                </p>
+              </div>
+            </div>
+
+            {/* Lei de Lenz */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">2</span>
+                Lei de Lenz
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                A Lei de Lenz é uma consequência da Lei de Faraday e descreve a direção da corrente induzida. Ela estabelece que a corrente induzida sempre se opõe à variação de fluxo que a causou.
+              </p>
+              
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
+                  <div>
+                    <h4 className="font-bold text-red-800 text-sm">Enunciado da Lei de Lenz</h4>
+                    <p className="text-sm text-red-700 mt-1">
+                      A corrente induzida em um circuito cria um campo magnético que <strong>se opõe</strong> à variação do fluxo magnético que a induziu.
+                    </p>
+                    <p className="text-sm text-red-700 mt-2">
+                      <strong>Implicação:</strong> Se o fluxo magnético através de um circuito aumenta, a corrente induzida cria um campo que tenta diminuir esse fluxo. Se o fluxo diminui, a corrente induzida cria um campo que tenta aumentá-lo.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Transformadores */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">3</span>
+                Transformadores
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Um transformador é um dispositivo que usa indução eletromagnética para converter tensões e correntes alternadas. Ele consiste em duas bobinas (primária e secundária) enroladas em um núcleo de ferro comum.
+              </p>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                <p className="text-slate-700 mb-3">
+                  A relação entre as tensões primária e secundária é dada por:
+                </p>
+                <MathFormula formula="\frac{V_2}{V_1} = \frac{N_2}{N_1}" display={true} />
+                <p className="text-slate-700 text-sm text-slate-600 bg-white p-3 rounded border border-slate-100 mt-4">
+                  onde <MathFormula formula="V_1, V_2" display={false} /> são as tensões e <MathFormula formula="N_1, N_2" display={false} /> são os números de espiras nas bobinas primária e secundária.
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                  <h4 className="font-bold text-blue-800 mb-2">Transformador Step-Up (Elevador)</h4>
+                  <ul className="text-sm text-slate-700 space-y-1">
+                    <li><MathFormula formula="N_2 > N_1" display={false} /></li>
+                    <li><MathFormula formula="V_2 > V_1" display={false} /> (tensão aumenta)</li>
+                    <li><MathFormula formula="I_2 < I_1" display={false} /> (corrente diminui)</li>
+                    <li>Usado na transmissão de energia a longas distâncias</li>
+                  </ul>
+                </div>
+                <div className="bg-red-50 p-4 rounded-lg border border-red-100">
+                  <h4 className="font-bold text-red-800 mb-2">Transformador Step-Down (Abaixador)</h4>
+                  <ul className="text-sm text-slate-700 space-y-1">
+                    <li><MathFormula formula="N_2 < N_1" display={false} /></li>
+                    <li><MathFormula formula="V_2 < V_1" display={false} /> (tensão diminui)</li>
+                    <li><MathFormula formula="I_2 > I_1" display={false} /> (corrente aumenta)</li>
+                    <li>Usado para reduzir tensão para uso doméstico</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-6">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-yellow-600 mt-0.5" />
+                  <div>
+                    <h4 className="font-bold text-yellow-800 text-sm">Conservação de Energia em Transformadores Ideais</h4>
+                    <p className="text-sm text-yellow-700 mt-1">
+                      Em um transformador ideal (sem perdas), a potência é conservada:
+                    </p>
+                    <MathFormula formula="P_1 = P_2 \Rightarrow V_1 \cdot I_1 = V_2 \cdot I_2" display={true} className="mt-2" />
+                    <p className="text-sm text-yellow-700 mt-2">
+                      <strong>Aplicação Prática:</strong> Na transmissão de energia elétrica, transformadores step-up aumentam a tensão e reduzem a corrente, minimizando as perdas por efeito Joule (<MathFormula formula="P_{\text{perda}} = I^2 R" display={false} />) durante o transporte.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Exemplo Resolvido */}
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <CheckCircle2 className="w-6 h-6 text-green-600" />
+                Exemplo Resolvido (Nível ITA)
+              </h3>
+              <div className="space-y-4">
+                <p className="text-slate-700 text-sm">
+                  <strong>Enunciado:</strong> Um transformador tem 100 espiras na bobina primária e 500 espiras na bobina secundária. A tensão primária é <MathFormula formula="V_1 = 220 V" display={false} /> e a corrente primária é <MathFormula formula="I_1 = 10 A" display={false} />. Determine a tensão e a corrente secundárias (assumindo transformador ideal).
+                </p>
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <p className="text-slate-700 text-sm mb-2"><strong>Resolução:</strong></p>
+                  <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600">
+                    <li>
+                      <strong>Relação de Tensões:</strong> <MathFormula formula="\frac{V_2}{V_1} = \frac{N_2}{N_1} = \frac{500}{100} = 5" display={false} />
+                    </li>
+                    <li>
+                      <strong>Tensão Secundária:</strong>
+                      <div className="my-2 pl-4 border-l-2 border-slate-300">
+                        <MathFormula formula="V_2 = V_1 \times 5 = 220 \times 5 = 1100 V" display={true} />
+                      </div>
+                    </li>
+                    <li>
+                      <strong>Corrente Secundária (Conservação de Potência):</strong>
+                      <div className="my-2 pl-4 border-l-2 border-slate-300">
+                        <MathFormula formula="I_2 = \frac{V_1 \cdot I_1}{V_2} = \frac{220 \times 10}{1100} = 2 A" display={true} />
+                      </div>
+                    </li>
+                    <li>
+                      <strong>Resposta:</strong> A tensão secundária é <MathFormula formula="1100 V" display={false} /> e a corrente é <MathFormula formula="2 A" display={false} />. Este é um transformador step-up que aumenta a tensão em 5 vezes e reduz a corrente em 5 vezes.
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Imagens Educacionais */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">📊 Diagramas Educacionais</h2>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="rounded-xl overflow-hidden shadow-lg border border-slate-200">
+                <img src="/images/lei-ampere-pt.jpg" alt="Lei de Ampère" className="w-full h-auto" />
+              </div>
+              <p className="text-sm text-slate-600 text-center"><strong>Lei de Ampère:</strong> Campo magnético ao redor de um fio com corrente</p>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="rounded-xl overflow-hidden shadow-lg border border-slate-200">
+                <img src="/images/forca-lorentz-pt.jpg" alt="Força de Lorentz" className="w-full h-auto" />
+              </div>
+              <p className="text-sm text-slate-600 text-center"><strong>Força de Lorentz:</strong> Trajetória circular de carga em campo magnético</p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="rounded-xl overflow-hidden shadow-lg border border-slate-200">
+                <img src="/images/inducao-faraday-pt.jpg" alt="Indução de Faraday" className="w-full h-auto" />
+              </div>
+              <p className="text-sm text-slate-600 text-center"><strong>Indução de Faraday:</strong> Variação de fluxo induz FEM</p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="rounded-xl overflow-hidden shadow-lg border border-slate-200">
+                <img src="/images/campo-magnetico-solenoid-pt.jpg" alt="Campo em Solenóide" className="w-full h-auto" />
+              </div>
+              <p className="text-sm text-slate-600 text-center"><strong>Campo em Solenóide:</strong> Campo uniforme no interior da bobina</p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="rounded-xl overflow-hidden shadow-lg border border-slate-200">
+                <img src="/images/transformador-pt.jpg" alt="Transformador" className="w-full h-auto" />
+              </div>
+              <p className="text-sm text-slate-600 text-center"><strong>Transformador:</strong> Conversão de tensão e corrente</p>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
