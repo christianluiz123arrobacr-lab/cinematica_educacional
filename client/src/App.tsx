@@ -48,6 +48,7 @@ import EletricidadeHome from "./pages/EletricidadeHome";
 import EletricidadeTopicEletrostatica from "./pages/EletricidadeTopicEletrostatica";
 import EletricidadeTopicEletrodinamica from "./pages/EletricidadeTopicEletrodinamica";
 import EletricidadeTopicCapacitoresIndutores from "./pages/EletricidadeTopicCapacitoresIndutores";
+import EletricidadeTopicMagnetismo from "./pages/EletricidadeTopicMagnetismo";
 import MagnetismoHome from "./pages/MagnetismoHome";
 import MagnetismoTopicForcaMagnetica from "./pages/MagnetismoTopicForcaMagnetica";
 import TermologiaHome from "./pages/TermologiaHome";
@@ -164,6 +165,7 @@ function Router() {
       <Route path="/eletricidade/topic/eletrostatica" component={EletricidadeTopicEletrostatica} />
       <Route path="/eletricidade/topic/eletrodinamica" component={EletricidadeTopicEletrodinamica} />
       <Route path="/eletricidade/topic/capacitores-indutores" component={EletricidadeTopicCapacitoresIndutores} />
+      <Route path="/eletricidade/topic/magnetismo" component={EletricidadeTopicMagnetismo} />
 
       <Route path="/magnetismo" component={MagnetismoHome} />
       <Route path="/magnetismo/topic/forca-magnetica" component={MagnetismoTopicForcaMagnetica} />
