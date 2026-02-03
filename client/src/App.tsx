@@ -49,6 +49,10 @@ import EletricidadeTopicEletrostatica from "./pages/EletricidadeTopicEletrostati
 import EletricidadeTopicEletrodinamica from "./pages/EletricidadeTopicEletrodinamica";
 import EletricidadeTopicCapacitoresIndutores from "./pages/EletricidadeTopicCapacitoresIndutores";
 import EletricidadeTopicMagnetismo from "./pages/EletricidadeTopicMagnetismo";
+import EletricidadeTopicPotencialEletrico from "./pages/EletricidadeTopicPotencialEletrico";
+import EletricidadeTopicDieletricos from "./pages/EletricidadeTopicDieletricos";
+import EletricidadeTopicCircuitosAC from "./pages/EletricidadeTopicCircuitosAC";
+import EletricidadeTopicOndasEletromagneticas from "./pages/EletricidadeTopicOndasEletromagneticas";
 import MagnetismoHome from "./pages/MagnetismoHome";
 import MagnetismoTopicForcaMagnetica from "./pages/MagnetismoTopicForcaMagnetica";
 import TermologiaHome from "./pages/TermologiaHome";
@@ -166,6 +170,10 @@ function Router() {
       <Route path="/eletricidade/topic/eletrodinamica" component={EletricidadeTopicEletrodinamica} />
       <Route path="/eletricidade/topic/capacitores-indutores" component={EletricidadeTopicCapacitoresIndutores} />
       <Route path="/eletricidade/topic/magnetismo" component={EletricidadeTopicMagnetismo} />
+      <Route path="/eletricidade/topic/potencial-eletrico" component={EletricidadeTopicPotencialEletrico} />
+      <Route path="/eletricidade/topic/dieletricos" component={EletricidadeTopicDieletricos} />
+      <Route path="/eletricidade/topic/circuitos-ac" component={EletricidadeTopicCircuitosAC} />
+      <Route path="/eletricidade/topic/ondas-eletromagneticas" component={EletricidadeTopicOndasEletromagneticas} />
 
       <Route path="/magnetismo" component={MagnetismoHome} />
       <Route path="/magnetismo/topic/forca-magnetica" component={MagnetismoTopicForcaMagnetica} />

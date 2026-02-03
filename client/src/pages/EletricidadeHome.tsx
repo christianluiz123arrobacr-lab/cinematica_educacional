@@ -220,6 +220,110 @@ export default function EletricidadeHome() {
                 </div>
               </Card>
             </Link>
+
+            <Link href="/eletricidade/topic/potencial-eletrico">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-purple-500 cursor-pointer hover:border-purple-700">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">⚙️</div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Potencial Elétrico</h4>
+                    <p className="text-slate-600 mb-4">Potencial, trabalho e energia em campos elétricos.</p>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Definição de Potencial
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Trabalho e Diferença de Potencial
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
+                        Superfícies Equipotenciais
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            <Link href="/eletricidade/topic/dieletricos">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-green-500 cursor-pointer hover:border-green-700">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">🔬</div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Dielétricos</h4>
+                    <p className="text-slate-600 mb-4">Polarização e comportamento de materiais isolantes.</p>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
+                        Polarização de Dielétricos
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
+                        Constante Dielétrica
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
+                        Capacitores com Dielétricos
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            <Link href="/eletricidade/topic/circuitos-ac">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-blue-500 cursor-pointer hover:border-blue-700">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">〰️</div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Circuitos AC</h4>
+                    <p className="text-slate-600 mb-4">Corrente alternada, impedância e ressonância.</p>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Tensão e Corrente Alternada
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Impedância e Reatância
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Potência e Ressonância
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            <Link href="/eletricidade/topic/ondas-eletromagneticas">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-red-500 cursor-pointer hover:border-red-700">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">📡</div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Ondas Eletromagnéticas</h4>
+                    <p className="text-slate-600 mb-4">Propagação de campos E e B, espectro eletromagnético.</p>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-red-600 rounded-full"></span>
+                        Equações de Maxwell
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-red-600 rounded-full"></span>
+                        Propagação de Ondas
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-red-600 rounded-full"></span>
+                        Espectro Eletromagnético
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </Link>
           </div>
         </div>
       </main>
