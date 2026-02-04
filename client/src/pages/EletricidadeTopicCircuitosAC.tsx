@@ -211,50 +211,168 @@ export default function EletricidadeTopicCircuitosAC() {
             <div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">5</span>
-                Potência em Circuitos AC
+                Potência em Circuitos AC - Análise Profunda
               </h3>
-              <p className="text-slate-700 mb-4 leading-relaxed">
-                Em circuitos AC, existem três tipos de potência que devem ser considerados:
-              </p>
               
-              <div className="space-y-4 mb-6">
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                  <h4 className="font-bold text-slate-800 mb-2">Potência Real (P)</h4>
-                  <p className="text-sm text-slate-700 mb-2">
-                    Potência efetivamente consumida (dissipada como calor):
-                  </p>
-                  <MathFormula formula="P = V_{\text{RMS}} \cdot I_{\text{RMS}} \cdot \cos(\phi)" display={true} />
-                  <p className="text-xs text-slate-500 mt-2">Medida em watts (W).</p>
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6 mb-6">
+                <h4 className="text-lg font-bold text-slate-900 mb-3">Conceito Fundamental de Potência em AC</h4>
+                <p className="text-slate-700 leading-relaxed mb-4">
+                  Em circuitos de corrente alternada, a potência não é simplesmente o produto da tensão pela corrente, como em circuitos DC. Devido à presença de elementos reativos (indutores e capacitores), a tensão e a corrente podem estar defasadas, resultando em três componentes distintas de potência que devem ser analisadas separadamente.
+                </p>
+                <p className="text-slate-700 leading-relaxed">
+                  A defasagem entre tensão e corrente é caracterizada pelo ângulo <MathFormula formula="\phi" display={false} />, que determina como a energia é distribuída entre dissipação real e armazenamento reativo.
+                </p>
+              </div>
+
+              {/* Derivação da Potência Instantânea */}
+              <div className="mb-8">
+                <h4 className="text-lg font-bold text-slate-800 mb-4">Derivação da Potência Instantânea</h4>
+                <p className="text-slate-700 mb-4 leading-relaxed">
+                  A potência instantânea em um circuito AC é o produto da tensão instantânea pela corrente instantânea:
+                </p>
+                
+                <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
+                  <MathFormula formula="p(t) = v(t) \cdot i(t) = V_m \sin(\omega t) \cdot I_m \sin(\omega t + \phi)" display={true} className="text-lg" />
                 </div>
 
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                  <h4 className="font-bold text-slate-800 mb-2">Potência Reativa (Q)</h4>
-                  <p className="text-sm text-slate-700 mb-2">
-                    Potência armazenada e devolvida por indutores e capacitores:
-                  </p>
-                  <MathFormula formula="Q = V_{\text{RMS}} \cdot I_{\text{RMS}} \cdot \sin(\phi)" display={true} />
-                  <p className="text-xs text-slate-500 mt-2">Medida em volt-amperes reativos (VAR).</p>
-                </div>
+                <p className="text-slate-700 mb-4 leading-relaxed">
+                  Utilizando a identidade trigonométrica <MathFormula formula="\sin A \sin B = \frac{1}{2}[\cos(A-B) - \cos(A+B)]" display={false} />, obtemos:
+                </p>
 
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                  <h4 className="font-bold text-slate-800 mb-2">Potência Aparente (S)</h4>
-                  <p className="text-sm text-slate-700 mb-2">
-                    Potência total fornecida ao circuito:
-                  </p>
-                  <MathFormula formula="S = V_{\text{RMS}} \cdot I_{\text{RMS}} = \sqrt{P^2 + Q^2}" display={true} />
-                  <p className="text-xs text-slate-500 mt-2">Medida em volt-amperes (VA).</p>
+                <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
+                  <MathFormula formula="p(t) = \frac{V_m I_m}{2}[\cos(\phi) - \cos(2\omega t + \phi)]" display={true} className="text-lg" />
+                  <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300">
+                    <p className="font-semibold text-yellow-400 mb-2">Interpretação:</p>
+                    <ul className="space-y-1">
+                      <li>• Primeiro termo: Potência média (constante)</li>
+                      <li>• Segundo termo: Potência oscilatória (frequência 2ω)</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
-                <h4 className="font-bold text-slate-800 mb-2">Fator de Potência</h4>
-                <p className="text-sm text-slate-700 mb-2">
-                  O fator de potência mede a eficiência do circuito:
+              {/* Potência Real */}
+              <div className="mb-8">
+                <h4 className="text-lg font-bold text-slate-800 mb-4">Potência Real (P) - Potência Ativa</h4>
+                <p className="text-slate-700 mb-4 leading-relaxed">
+                  A <strong>potência real</strong> é a potência média ao longo de um ciclo completo. Ela representa a energia efetivamente consumida e convertida em calor, trabalho mecânico ou outras formas de energia:
                 </p>
-                <MathFormula formula="\text{FP} = \cos(\phi) = \frac{P}{S}" display={true} />
-                <p className="text-xs text-slate-500 mt-2">
-                  Um FP próximo a 1 indica alta eficiência. Um FP baixo indica desperdício de energia.
+                
+                <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
+                  <MathFormula formula="P = \frac{1}{T} \int_0^T p(t) \, dt = \frac{V_m I_m}{2} \cos(\phi)" display={true} className="text-lg" />
+                  <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300">
+                    <p className="font-semibold text-yellow-400 mb-2">Em Valores RMS:</p>
+                    <MathFormula formula="P = V_{\text{RMS}} \cdot I_{\text{RMS}} \cdot \cos(\phi)" display={true} className="text-lg" />
+                  </div>
+                </div>
+
+                <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded p-4 mb-4">
+                  <p className="text-slate-700 text-sm">
+                    <strong>Observação:</strong> O fator <MathFormula formula="\cos(\phi)" display={false} /> é chamado de <strong>fator de potência</strong>. Quando <MathFormula formula="\phi = 0" display={false} /> (circuito puramente resistivo), toda a potência é real. Quando <MathFormula formula="\phi \neq 0" display={false} />, parte da potência é reativa.
+                  </p>
+                </div>
+              </div>
+
+              {/* Potência Reativa */}
+              <div className="mb-8">
+                <h4 className="text-lg font-bold text-slate-800 mb-4">Potência Reativa (Q) - Potência Sem Dissipação</h4>
+                <p className="text-slate-700 mb-4 leading-relaxed">
+                  A <strong>potência reativa</strong> é a potência que oscila entre a fonte e os elementos reativos (indutores e capacitores). Ela não representa consumo real de energia, mas sim armazenamento e devolução de energia eletromagnética:
                 </p>
+                
+                <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
+                  <MathFormula formula="Q = \frac{V_m I_m}{2} \sin(\phi) = V_{\text{RMS}} \cdot I_{\text{RMS}} \cdot \sin(\phi)" display={true} className="text-lg" />
+                  <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300">
+                    <p className="font-semibold text-yellow-400 mb-2">Unidade: VAR (Volt-Ampere Reativo)</p>
+                    <ul className="space-y-1">
+                      <li>• <MathFormula formula="Q > 0" display={false} />: Circuito indutivo (carga indutiva)</li>
+                      <li>• <MathFormula formula="Q < 0" display={false} />: Circuito capacitivo (carga capacitiva)</li>
+                      <li>• <MathFormula formula="Q = 0" display={false} />: Circuito puramente resistivo</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Potência Aparente */}
+              <div className="mb-8">
+                <h4 className="text-lg font-bold text-slate-800 mb-4">Potência Aparente (S) - Potência Total</h4>
+                <p className="text-slate-700 mb-4 leading-relaxed">
+                  A <strong>potência aparente</strong> é o produto simples dos valores RMS de tensão e corrente. Ela representa a potência total que a fonte deve fornecer, incluindo tanto a potência real quanto a reativa:
+                </p>
+                
+                <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
+                  <MathFormula formula="S = V_{\text{RMS}} \cdot I_{\text{RMS}} = \sqrt{P^2 + Q^2}" display={true} className="text-lg" />
+                  <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300">
+                    <p className="font-semibold text-yellow-400 mb-2">Relação Trigonométrica (Triângulo de Potências):</p>
+                    <ul className="space-y-1">
+                      <li><MathFormula formula="P = S \cos(\phi)" display={false} /></li>
+                      <li><MathFormula formula="Q = S \sin(\phi)" display={false} /></li>
+                      <li><MathFormula formula="\tan(\phi) = \frac{Q}{P}" display={false} /></li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm mb-4">
+                  <h5 className="font-bold text-slate-800 mb-2">Triângulo de Potências</h5>
+                  <p className="text-sm text-slate-700 mb-2">
+                    As três potências formam um triângulo retângulo onde:
+                  </p>
+                  <ul className="text-sm text-slate-700 space-y-1">
+                    <li>• Cateto horizontal: P (potência real)</li>
+                    <li>• Cateto vertical: Q (potência reativa)</li>
+                    <li>• Hipotenusa: S (potência aparente)</li>
+                    <li>• Ângulo: φ (ângulo de defasagem)</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Fator de Potência */}
+              <div className="mb-8">
+                <h4 className="text-lg font-bold text-slate-800 mb-4">Fator de Potência (FP) - Eficiência do Circuito</h4>
+                <p className="text-slate-700 mb-4 leading-relaxed">
+                  O <strong>fator de potência</strong> é a razão entre a potência real e a potência aparente. Ele quantifica a eficiência com que a potência é utilizada:
+                </p>
+                
+                <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
+                  <MathFormula formula="\text{FP} = \cos(\phi) = \frac{P}{S}" display={true} className="text-lg" />
+                  <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300">
+                    <p className="font-semibold text-yellow-400 mb-2">Características:</p>
+                    <ul className="space-y-1">
+                      <li>• <MathFormula formula="\text{FP} = 1" display={false} />: Circuito puramente resistivo (ideal)</li>
+                      <li>• <MathFormula formula="\text{FP} < 1" display={false} />: Presença de elementos reativos (indutivos ou capacitivos)</li>
+                      <li>• <MathFormula formula="\text{FP} \approx 0" display={false} />: Circuito predominantemente reativo</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Correção de Fator de Potência */}
+              <div className="mb-8">
+                <h4 className="text-lg font-bold text-slate-800 mb-4">Correção de Fator de Potência</h4>
+                <p className="text-slate-700 mb-4 leading-relaxed">
+                  Em sistemas industriais, um fator de potência baixo resulta em perdas de energia e custos operacionais elevados. A correção é realizada adicionando capacitores em paralelo com a carga indutiva:
+                </p>
+                
+                <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm mb-4">
+                  <h5 className="font-bold text-slate-800 mb-2">Método de Correção</h5>
+                  <p className="text-sm text-slate-700 mb-3">
+                    Para melhorar o fator de potência de <MathFormula formula="\cos(\phi_1)" display={false} /> para <MathFormula formula="\cos(\phi_2)" display={false} />, a capacitância necessária é:
+                  </p>
+                  <MathFormula formula="C = \frac{P[\tan(\phi_1) - \tan(\phi_2)]}{\omega V_{\text{RMS}}^2}" display={true} />
+                  <p className="text-xs text-slate-500 mt-2">
+                    onde P é a potência real do circuito.
+                  </p>
+                </div>
+
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <h5 className="font-bold text-green-800 mb-2">Benefícios da Correção</h5>
+                  <ul className="text-sm text-slate-700 space-y-1">
+                    <li>✓ Redução de perdas em linhas de transmissão</li>
+                    <li>✓ Diminuição de custos de energia elétrica</li>
+                    <li>✓ Aumento da capacidade de carga do sistema</li>
+                    <li>✓ Melhoria da qualidade de energia</li>
+                  </ul>
+                </div>
               </div>
             </div>
 
