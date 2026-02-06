@@ -99,7 +99,7 @@ export default function EletricidadeTopicDieletricos() {
 
               <div className="relative h-80 rounded-lg overflow-hidden shadow-lg bg-slate-100 mb-6">
                 <img 
-                  src="/images/dieletricos-polarizacao-pt.jpg" 
+                  src="/dieletricos-polarizacao-pt.jpg" 
                   alt="Polarização de Dielétricos"
                   className="w-full h-full object-cover"
                 />

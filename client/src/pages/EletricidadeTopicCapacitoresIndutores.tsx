@@ -42,7 +42,7 @@ export default function EletricidadeTopicCapacitoresIndutores() {
               <div className="my-6 flex justify-center">
                 <div className="relative rounded-xl overflow-hidden shadow-lg border border-slate-200 max-w-md w-full bg-white">
                   <img 
-                    src="/images/capacitor-diagram.jpg" 
+                    src="/capacitor-placas-paralelas-pt.jpg" 
                     alt="Diagrama de Capacitor de Placas Paralelas" 
                     className="w-full h-auto object-cover"
                   />
@@ -112,7 +112,7 @@ export default function EletricidadeTopicCapacitoresIndutores() {
               <div className="my-6 flex justify-center">
                 <div className="relative rounded-xl overflow-hidden shadow-lg border border-slate-200 max-w-2xl w-full bg-white">
                   <img 
-                    src="/images/rc-circuit-graphs.jpg" 
+                    src="/circuito-rc-pt.jpg" 
                     alt="Gráficos de Carga e Corrente no Circuito RC" 
                     className="w-full h-auto object-cover"
                   />
@@ -141,7 +141,7 @@ export default function EletricidadeTopicCapacitoresIndutores() {
               <div className="my-6 flex justify-center">
                 <div className="relative rounded-xl overflow-hidden shadow-lg border border-slate-200 max-w-md w-full bg-white">
                   <img 
-                    src="/images/inductor-field.jpg" 
+                    src="/indutor-solenoid-pt.jpg" 
                     alt="Campo Magnético em um Solenóide" 
                     className="w-full h-auto object-cover"
                   />

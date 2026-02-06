@@ -501,35 +501,35 @@ export default function EletricidadeTopicMagnetismo() {
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="rounded-xl overflow-hidden shadow-lg border border-slate-200">
-                <img src="/images/lei-ampere-pt.jpg" alt="Lei de Ampère" className="w-full h-auto" />
+                <img src="/lei-ampere-pt.jpg" alt="Lei de Ampère" className="w-full h-auto" />
               </div>
               <p className="text-sm text-slate-600 text-center"><strong>Lei de Ampère:</strong> Campo magnético ao redor de um fio com corrente</p>
             </div>
             
             <div className="space-y-4">
               <div className="rounded-xl overflow-hidden shadow-lg border border-slate-200">
-                <img src="/images/forca-lorentz-pt.jpg" alt="Força de Lorentz" className="w-full h-auto" />
+                <img src="/forca-lorentz-pt.jpg" alt="Força de Lorentz" className="w-full h-auto" />
               </div>
               <p className="text-sm text-slate-600 text-center"><strong>Força de Lorentz:</strong> Trajetória circular de carga em campo magnético</p>
             </div>
 
             <div className="space-y-4">
               <div className="rounded-xl overflow-hidden shadow-lg border border-slate-200">
-                <img src="/images/inducao-faraday-pt.jpg" alt="Indução de Faraday" className="w-full h-auto" />
+                <img src="/inducao-faraday-pt.jpg" alt="Indução de Faraday" className="w-full h-auto" />
               </div>
               <p className="text-sm text-slate-600 text-center"><strong>Indução de Faraday:</strong> Variação de fluxo induz FEM</p>
             </div>
 
             <div className="space-y-4">
               <div className="rounded-xl overflow-hidden shadow-lg border border-slate-200">
-                <img src="/images/campo-magnetico-solenoid-pt.jpg" alt="Campo em Solenóide" className="w-full h-auto" />
+                <img src="/campo-magnetico-solenoid-pt.jpg" alt="Campo em Solenóide" className="w-full h-auto" />
               </div>
               <p className="text-sm text-slate-600 text-center"><strong>Campo em Solenóide:</strong> Campo uniforme no interior da bobina</p>
             </div>
 
             <div className="space-y-4">
               <div className="rounded-xl overflow-hidden shadow-lg border border-slate-200">
-                <img src="/images/transformador-pt.jpg" alt="Transformador" className="w-full h-auto" />
+                <img src="/transformador-pt.jpg" alt="Transformador" className="w-full h-auto" />
               </div>
               <p className="text-sm text-slate-600 text-center"><strong>Transformador:</strong> Conversão de tensão e corrente</p>
             </div>

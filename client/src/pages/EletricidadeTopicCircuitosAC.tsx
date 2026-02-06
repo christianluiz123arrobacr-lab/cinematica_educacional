@@ -91,7 +91,7 @@ export default function EletricidadeTopicCircuitosAC() {
 
               <div className="relative h-80 rounded-lg overflow-hidden shadow-lg bg-slate-100 mb-6">
                 <img 
-                  src="/images/circuito-ac-impedancia-pt.jpg" 
+                  src="/circuito-ac-impedancia-pt.jpg" 
                   alt="Circuito AC - Impedância"
                   className="w-full h-full object-cover"
                 />

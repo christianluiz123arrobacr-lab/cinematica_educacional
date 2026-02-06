@@ -156,7 +156,7 @@ export default function EletricidadeTopicPotencialEletrico() {
 
               <div className="relative h-80 rounded-lg overflow-hidden shadow-lg bg-slate-100 mb-6">
                 <img 
-                  src="/images/potencial-eletrico-pt.jpg" 
+                  src="/potencial-eletrico-pt.jpg" 
                   alt="Potencial Elétrico"
                   className="w-full h-full object-cover"
                 />
@@ -230,7 +230,7 @@ export default function EletricidadeTopicPotencialEletrico() {
 
               <div className="relative h-80 rounded-lg overflow-hidden shadow-lg bg-slate-100">
                 <img 
-                  src="/images/trabalho-potencial-energia-pt.jpg" 
+                  src="/trabalho-potencial-energia-pt.jpg" 
                   alt="Trabalho e Potencial"
                   className="w-full h-full object-cover"
                 />
