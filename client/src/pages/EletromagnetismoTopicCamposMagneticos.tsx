@@ -597,6 +597,73 @@ export default function EletromagnetismoTopicCamposMagneticos() {
           </div>
         </div>
 
+        {/* Propriedades Magneticas - APROFUNDADO */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">Propriedades Magneticas dos Materiais</h2>
+          
+          <div className="space-y-8">
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4">Contexto Historico</h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                O magnetismo dos materiais origina-se do movimento de eletrons dentro dos atomos. Cada eletron em orbita cria um pequeno campo magnetico (momento magnetico orbital), e o eletron tambem possui uma propriedade intrinseca chamada spin que contribui para o magnetismo.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4">Classificacao de Materiais Magneticos</h3>
+              
+              <div className="space-y-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                  <h4 className="font-bold text-slate-900 mb-3 text-lg">1. Materiais Diamagneticos</h4>
+                  <div className="space-y-2 text-sm text-slate-700">
+                    <p><strong>Definicao:</strong> Atomos sem momento magnetico permanente. Quando em campo magnetico, desenvolvem momento oposto (repulsao).</p>
+                    <p><strong>Propriedade:</strong> Permeabilidade relativa ur menor que 1</p>
+                    <p><strong>Exemplos:</strong> Cobre, ouro, bismuto, agua, vidro</p>
+                  </div>
+                </div>
+
+                <div className="bg-purple-50 border border-purple-200 rounded-xl p-6">
+                  <h4 className="font-bold text-slate-900 mb-3 text-lg">2. Materiais Paramagneticos</h4>
+                  <div className="space-y-2 text-sm text-slate-700">
+                    <p><strong>Definicao:</strong> Atomos com momento magnetico permanente, mas aleatoriamente orientados. Campo externo causa alinhamento parcial (atracao).</p>
+                    <p><strong>Propriedade:</strong> Permeabilidade relativa ur maior que 1 (tipicamente 1.00001 a 1.01)</p>
+                    <p><strong>Exemplos:</strong> Aluminio, magnesio, tungstenio, ar, oxigenio</p>
+                  </div>
+                </div>
+
+                <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+                  <h4 className="font-bold text-slate-900 mb-3 text-lg">3. Materiais Ferromagneticos</h4>
+                  <div className="space-y-2 text-sm text-slate-700">
+                    <p><strong>Definicao:</strong> Momentos magneticos atomicos alinhados paralelamente. Possuem magnetizacao permanente.</p>
+                    <p><strong>Propriedade:</strong> Permeabilidade relativa ur muito maior que 1 (tipicamente 100 a 10000)</p>
+                    <p><strong>Exemplos:</strong> Ferro, niquel, cobalto, aco, ligas especiais</p>
+                    <p><strong>Temperatura de Curie:</strong> Acima desta temperatura, perde propriedades ferromagneticas</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4">Magnetizacao e Suscetibilidade</h3>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 space-y-6">
+                <div>
+                  <h4 className="font-bold text-slate-800 mb-3">Magnetizacao (M)</h4>
+                  <p className="text-slate-700 text-sm mb-2">Momento magnetico por unidade de volume:</p>
+                  <MathFormula formula="M = \frac{\text{momento magnetico total}}{\text{volume}}" display={true} />
+                </div>
+                
+                <div className="border-t border-slate-200 pt-6">
+                  <h4 className="font-bold text-slate-800 mb-3">Suscetibilidade Magnetica (chi)</h4>
+                  <p className="text-slate-700 text-sm mb-2">Medida de quao facil um material se magnetiza:</p>
+                  <MathFormula formula="M = \chi H" display={true} />
+                  <p className="text-slate-700 text-sm mt-3">Relacao com permeabilidade: ur = 1 + chi</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Info Box */}
         <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 mb-12">
           <h4 className="font-bold text-red-900 mb-2">Próximos Tópicos</h4>

@@ -17,6 +17,7 @@
 - [x] Campos Magnéticos - Conteúdo ITA/IME com deduções e exemplos
   - [x] Lei de Ampère - APROFUNDADO com contexto histórico, analogia com Gauss, deduções completas, passo-a-passo, 3 exemplos resolvidos
   - [x] Solenóides - APROFUNDADO com contexto, dedução completa, passo-a-passo, aplicações avançadas, 4+ exemplos
+  - [x] Propriedades Magnéticas - APROFUNDADO com contexto, classificação, deduções, passo-a-passo, 5+ exemplos
 - [x] Indução Eletromagnética - Lei de Faraday, Lei de Lenz, Transformadores
 - [x] Equações de Maxwell - Forma integral e diferencial
 - [x] Ondas Eletromagnéticas Avançado - Polarização, Poynting, Espectro
