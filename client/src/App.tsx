@@ -54,6 +54,12 @@ import EletricidadeTopicDieletricos from "./pages/EletricidadeTopicDieletricos";
 import EletricidadeTopicCircuitosAC from "./pages/EletricidadeTopicCircuitosAC";
 import EletricidadeTopicOndasEletromagneticas from "./pages/EletricidadeTopicOndasEletromagneticas";
 import EletromagnetismoHome from "./pages/EletromagnetismoHome";
+import EletromagnetismoTopicCamposMagneticos from "./pages/EletromagnetismoTopicCamposMagneticos";
+import EletromagnetismoTopicInducaoEletromagnetica from "./pages/EletromagnetismoTopicInducaoEletromagnetica";
+import EletromagnetismoTopicEquacoesMacwell from "./pages/EletromagnetismoTopicEquacoesMacwell";
+import EletromagnetismoTopicOndasAvancado from "./pages/EletromagnetismoTopicOndasAvancado";
+import EletromagnetismoTopicAplicacoes from "./pages/EletromagnetismoTopicAplicacoes";
+import EletromagnetismoTopicRadiacao from "./pages/EletromagnetismoTopicRadiacao";
 import MagnetismoHome from "./pages/MagnetismoHome";
 import MagnetismoTopicForcaMagnetica from "./pages/MagnetismoTopicForcaMagnetica";
 import TermologiaHome from "./pages/TermologiaHome";
@@ -177,6 +183,12 @@ function Router() {
       <Route path="/eletricidade/topic/ondas-eletromagneticas" component={EletricidadeTopicOndasEletromagneticas} />
 
       <Route path="/eletromagnetismo" component={EletromagnetismoHome} />
+      <Route path="/eletromagnetismo/topic/campos-magneticos" component={EletromagnetismoTopicCamposMagneticos} />
+      <Route path="/eletromagnetismo/topic/inducao-eletromagnetica" component={EletromagnetismoTopicInducaoEletromagnetica} />
+      <Route path="/eletromagnetismo/topic/equacoes-maxwell" component={EletromagnetismoTopicEquacoesMacwell} />
+      <Route path="/eletromagnetismo/topic/ondas-eletromagneticas-avancado" component={EletromagnetismoTopicOndasAvancado} />
+      <Route path="/eletromagnetismo/topic/aplicacoes-eletromagnetismo" component={EletromagnetismoTopicAplicacoes} />
+      <Route path="/eletromagnetismo/topic/radiacao-eletromagnetica" component={EletromagnetismoTopicRadiacao} />
 
       <Route path="/magnetismo" component={MagnetismoHome} />
       <Route path="/magnetismo/topic/forca-magnetica" component={MagnetismoTopicForcaMagnetica} />
