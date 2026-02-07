@@ -173,8 +173,8 @@ export default function FisicaSelector() {
                         <Magnet className="w-5 h-5 text-yellow-600" />
                       </div>
                       <div>
-                        <h4 className="font-bold text-slate-900">Magnetismo</h4>
-                        <p className="text-slate-600 text-sm">Campos magnéticos e indução</p>
+                        <h4 className="font-bold text-slate-900">Eletromagnetismo</h4>
+                        <p className="text-slate-600 text-sm">Campos magnéticos, indução e ondas</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">

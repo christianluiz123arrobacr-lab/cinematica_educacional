@@ -77,15 +77,15 @@ export default function FisicaIIIHome() {
             </div>
           </Link>
 
-          {/* Magnetismo */}
-          <Link href="/magnetismo">
+          {/* Eletromagnetismo */}
+          <Link href="/eletromagnetismo">
             <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-red-400 cursor-pointer">
               <div className="bg-gradient-to-br from-red-500 to-rose-600 p-8 text-white">
                 <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Magnet className="w-8 h-8" />
                 </div>
-                <h3 className="text-3xl font-bold mb-2">Magnetismo</h3>
-                <p className="text-red-100">Campos e Indução</p>
+                <h3 className="text-3xl font-bold mb-2">Eletromagnetismo</h3>
+                <p className="text-red-100">Campos, Indução e Ondas</p>
               </div>
               <div className="p-8">
                 <ul className="space-y-3 mb-8 text-slate-700">
