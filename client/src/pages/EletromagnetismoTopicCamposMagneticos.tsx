@@ -332,6 +332,106 @@ export default function EletromagnetismoTopicCamposMagneticos() {
                   </div>
                 </div>
               </div>
+
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6 mb-6">
+                <h4 className="font-bold text-slate-900 mb-3">🔍 Características Importantes de Solenóides</h4>
+                <div className="space-y-3 text-sm text-slate-700">
+                  <div className="bg-white p-3 rounded border border-blue-200">
+                    <p className="font-bold text-blue-700 mb-1">1. Uniformidade do Campo</p>
+                    <p>O campo magnético no interior de um solenóide ideal é uniforme e paralelo ao eixo. Isto é uma grande vantagem comparado a um fio reto, onde o campo varia com a distância.</p>
+                  </div>
+                  <div className="bg-white p-3 rounded border border-blue-200">
+                    <p className="font-bold text-blue-700 mb-1">2. Campo Nulo no Exterior</p>
+                    <p>Fora do solenóide, o campo é aproximadamente nulo. Isto permite confinar o campo magnético no interior, útil para blindagem magnética.</p>
+                  </div>
+                  <div className="bg-white p-3 rounded border border-blue-200">
+                    <p className="font-bold text-blue-700 mb-1">3. Independência do Diâmetro</p>
+                    <p>A fórmula B = μ₀nI não depende do diâmetro do solenóide, apenas do número de espiras por unidade de comprimento.</p>
+                  </div>
+                  <div className="bg-white p-3 rounded border border-blue-200">
+                    <p className="font-bold text-blue-700 mb-1">4. Efeito das Extremidades</p>
+                    <p>Perto das extremidades do solenóide, o campo é mais fraco porque as linhas de campo "escapam". Por isso a fórmula é válida apenas longe das extremidades.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+                <h4 className="font-bold text-purple-900 mb-3">🎯 Passo a Passo: Resolver Problemas de Solenóides</h4>
+                <ol className="space-y-3 text-sm text-slate-700">
+                  <li className="flex gap-3">
+                    <span className="font-bold text-purple-600 min-w-fit">Passo 1:</span>
+                    <span>Identifique os dados: N (número total de espiras), L (comprimento), I (corrente)</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="font-bold text-purple-600 min-w-fit">Passo 2:</span>
+                    <span>Calcule n: n = N/L (espiras por metro)</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="font-bold text-purple-600 min-w-fit">Passo 3:</span>
+                    <span>Verifique se o solenóide é longo o suficiente (L &gt;&gt; diâmetro) para usar a fórmula</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="font-bold text-purple-600 min-w-fit">Passo 4:</span>
+                    <span>Aplique a fórmula: B = μ₀nI</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="font-bold text-purple-600 min-w-fit">Passo 5:</span>
+                    <span>Se perguntado sobre energia: U = (1/2)LI² onde L = μ₀n²V</span>
+                  </li>
+                </ol>
+              </div>
+            </div>
+
+            {/* Aplicações Avançadas de Solenóides */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">3B</span>
+                Aplicações Avançadas de Solenóides
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Solenóides são componentes fundamentais em muitas aplicações tecnológicas. Vamos explorar algumas aplicações importantes:
+              </p>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-bold text-slate-800 mb-2">1. Solenóides com Núcleo de Ferro</h4>
+                    <p className="text-slate-700 text-sm mb-2">
+                      Quando um solenóide tem um núcleo de ferro, o campo magnético é amplificado significativamente:
+                    </p>
+                    <MathFormula formula="B = \mu_r \mu_0 n I" display={true} />
+                    <p className="text-slate-700 text-sm mt-2">
+                      onde μr é a permeabilidade relativa do ferro (tipicamente 100-10000). Isto é usado em eletroímãs e relés.
+                    </p>
+                  </div>
+                  <div className="border-t border-slate-200 pt-4">
+                    <h4 className="font-bold text-slate-800 mb-2">2. Indutância de um Solenóide</h4>
+                    <p className="text-slate-700 text-sm mb-2">
+                      A indutância de um solenóide é:
+                    </p>
+                    <MathFormula formula="L = \mu_0 n^2 V = \mu_0 n^2 A L" display={true} />
+                    <p className="text-slate-700 text-sm mt-2">
+                      onde V = AL é o volume do solenóide. A indutância é proporcional ao quadrado do número de espiras.
+                    </p>
+                  </div>
+                  <div className="border-t border-slate-200 pt-4">
+                    <h4 className="font-bold text-slate-800 mb-2">3. Energia Armazenada</h4>
+                    <p className="text-slate-700 text-sm mb-2">
+                      Um solenóide com corrente armazena energia magnética:
+                    </p>
+                    <MathFormula formula="U = \frac{1}{2}LI^2 = \frac{1}{2}\mu_0 n^2 V I^2" display={true} />
+                    <p className="text-slate-700 text-sm mt-2">
+                      Esta energia é liberada quando a corrente é desligada, o que pode causar picos de tensão (importante em circuitos com solenóides).
+                    </p>
+                  </div>
+                  <div className="border-t border-slate-200 pt-4">
+                    <h4 className="font-bold text-slate-800 mb-2">4. Solenóides Acoplados (Transformadores)</h4>
+                    <p className="text-slate-700 text-sm">
+                      Dois solenóides próximos podem acoplar magneticamente. Isto é a base dos transformadores, onde um solenóide primário induz tensão em um solenóide secundário.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Toróide - Aplicação Avançada */}
@@ -460,15 +560,15 @@ export default function EletromagnetismoTopicCamposMagneticos() {
                   </div>
                 </div>
 
-                {/* Exemplo 3 */}
+                {/* Exemplo 3 - Solenoides com Nucleo de Ferro */}
                 <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
                   <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
                     <CheckCircle2 className="w-6 h-6 text-green-600" />
-                    Exemplo 3: Força de Lorentz
+                    Exemplo 3: Solenoides com Nucleo de Ferro
                   </h4>
                   <div className="space-y-4">
                     <p className="text-slate-700 text-sm">
-                      <strong>Problema:</strong> Um elétron (q = 1,6 × 10⁻¹⁹ C) move-se com velocidade de 10⁶ m/s perpendicular a um campo magnético de 0,5 T. Qual é a força magnética sobre o elétron?
+                      <strong>Problema:</strong> Um solenóide com 1000 espiras, comprimento de 0,2 m, e núcleo de ferro (ur = 500) transporta uma corrente de 0,5 A. Qual é o campo magnético no interior?
                     </p>
                     <div className="bg-white p-4 rounded border border-slate-200">
                       <p className="text-slate-700 text-sm mb-3"><strong>Resolução:</strong></p>
