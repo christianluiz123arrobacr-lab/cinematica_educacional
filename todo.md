@@ -21,6 +21,7 @@
 - [x] Indução Eletromagnética - Lei de Faraday, Lei de Lenz, Transformadores
   - [x] Lei de Faraday - APROFUNDADO com contexto, analogias, deduções completas, Lei de Lenz, passo-a-passo, 5+ exemplos
 - [x] Equações de Maxwell - Forma integral e diferencial
+  - [x] Lei de Ampère-Maxwell - APROFUNDADO com contexto, corrente de deslocamento, deduções, passo-a-passo, 5+ exemplos
 - [x] Ondas Eletromagnéticas Avançado - Polarização, Poynting, Espectro
 - [x] Aplicações - Transformadores, Motores, Geradores
 - [x] Radiação Eletromagnética - Emissão, Absorção, Interação
