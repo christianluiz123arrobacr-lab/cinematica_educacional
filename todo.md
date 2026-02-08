@@ -20,8 +20,9 @@
   - [x] Propriedades Magnéticas - APROFUNDADO com contexto, classificação, deduções, passo-a-passo, 5+ exemplos
 - [x] Indução Eletromagnética - Lei de Faraday, Lei de Lenz, Transformadores
   - [x] Lei de Faraday - APROFUNDADO com contexto, analogias, deduções completas, Lei de Lenz, passo-a-passo, 5+ exemplos
-- [x] Equações de Maxwell - Forma integral e diferencial
+- [ ] Equações de Maxwell - Forma integral e diferencial
   - [x] Lei de Ampère-Maxwell - APROFUNDADO com contexto, corrente de deslocamento, deduções, passo-a-passo, 5+ exemplos
+  - [x] Melhorar didática - EXPLICAR CADA TERMO de cada fórmula em linguagem simples com analogias e exemplos numéricos
 - [x] Ondas Eletromagnéticas Avançado - Polarização, Poynting, Espectro
 - [x] Aplicações - Transformadores, Motores, Geradores
   - [x] Transformadores - APROFUNDADO com contexto, Lei de Faraday, ideais vs reais, passo-a-passo, 5+ exemplos

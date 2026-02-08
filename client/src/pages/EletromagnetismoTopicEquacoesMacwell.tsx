@@ -67,351 +67,382 @@ export default function EletromagnetismoTopicEquacoesMacwell() {
           </div>
         </div>
 
-        {/* FORMAS INTEGRAIS */}
+        {/* LEI DE GAUSS - DIDÁTICA */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">∮ Formas Integrais das Equações de Maxwell</h2>
-          
-          <div className="space-y-8">
-            {/* Contexto */}
-            <div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">0</span>
-                Contexto: Por que Formas Integrais?
-              </h3>
-              <p className="text-slate-700 mb-4 leading-relaxed">
-                A forma integral das Equações de Maxwell é mais intuitiva e prática para resolver problemas com simetria (esférica, cilíndrica, planar). Ela relaciona campos em superfícies ou caminhos fechados com as fontes (cargas, correntes) envolvidas. A forma integral é ideal quando há simetria que permite simplificar os cálculos.
-              </p>
-            </div>
-
-            {/* Lei de Gauss */}
-            <div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">1</span>
-                Lei de Gauss (Forma Integral)
-              </h3>
-              <p className="text-slate-700 mb-4 leading-relaxed">
-                A Lei de Gauss relaciona o fluxo elétrico através de uma superfície fechada com a carga elétrica total envolvida por essa superfície. É uma das formas mais poderosas para calcular campos elétricos em situações com simetria.
-              </p>
-              
-              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
-                <MathFormula formula="\oint_S \vec{E} \cdot d\vec{A} = \frac{Q_{env}}{\epsilon_0}" display={true} className="text-2xl mb-4" />
-                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="font-semibold text-yellow-400 mb-2">Definições:</p>
-                    <ul className="space-y-1">
-                      <li><MathFormula formula="\oint_S" display={false} />: Integral de superfície sobre superfície fechada S</li>
-                      <li><MathFormula formula="\vec{E}" display={false} />: Campo elétrico (N/C)</li>
-                      <li><MathFormula formula="d\vec{A}" display={false} />: Elemento de área (normal para fora)</li>
-                      <li><MathFormula formula="Q_{env}" display={false} />: Carga envolvida (C)</li>
-                      <li><MathFormula formula="\epsilon_0" display={false} />: Permissividade do vácuo</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-yellow-400 mb-2">Interpretação Física:</p>
-                    <p className="text-sm">O fluxo elétrico (linhas de campo) que sai de uma superfície fechada é proporcional à carga dentro dela. Cargas positivas geram fluxo para fora, cargas negativas para dentro.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-green-50 border-l-4 border-green-500 rounded p-6 mb-4">
-                <h4 className="font-bold text-slate-900 mb-2">Exemplo: Campo de Esfera Uniformemente Carregada</h4>
-                <p className="text-slate-700 text-sm mb-3">
-                  Uma esfera de raio R tem carga total Q uniformemente distribuída. Calcule o campo elétrico a uma distância r do centro (r &gt; R).
-                </p>
-                <div className="bg-white p-3 rounded border border-green-200 text-sm text-slate-700">
-                  <p className="mb-2"><strong>Solução:</strong> Por simetria, o campo é radial e tem mesmo módulo em qualquer ponto a distância r. Escolha superfície gaussiana esférica de raio r:</p>
-                  <MathFormula formula="\oint_S \vec{E} \cdot d\vec{A} = E \cdot 4\pi r^2 = \frac{Q}{\epsilon_0}" display={true} />
-                  <MathFormula formula="E = \frac{Q}{4\pi\epsilon_0 r^2} = \frac{kQ}{r^2}" display={true} />
-                </div>
-              </div>
-            </div>
-
-            {/* Lei de Gauss para Magnetismo */}
-            <div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">2</span>
-                Lei de Gauss para Magnetismo (Forma Integral)
-              </h3>
-              <p className="text-slate-700 mb-4 leading-relaxed">
-                Esta lei estabelece que não existem monopolos magnéticos isolados. O fluxo magnético através de qualquer superfície fechada é sempre zero, pois as linhas de campo magnético sempre formam loops fechados.
-              </p>
-              
-              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
-                <MathFormula formula="\oint_S \vec{B} \cdot d\vec{A} = 0" display={true} className="text-2xl mb-4" />
-                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300">
-                  <p className="font-semibold text-yellow-400 mb-2">Interpretação Física:</p>
-                  <p>Diferentemente de cargas elétricas que podem existir isoladas, não há "carga magnética" isolada. Sempre que há um polo norte, há um polo sul correspondente. As linhas de campo magnético nunca começam ou terminam - sempre formam loops fechados.</p>
-                </div>
-              </div>
-
-              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5" />
-                  <div>
-                    <h4 className="font-bold text-orange-800 text-sm">Diferença Fundamental</h4>
-                    <p className="text-sm text-orange-700">
-                      Lei de Gauss elétrica: <MathFormula formula="\oint \vec{E} \cdot d\vec{A} = Q/\epsilon_0" display={false} /> (não-zero)
-                      <br/>
-                      Lei de Gauss magnética: <MathFormula formula="\oint \vec{B} \cdot d\vec{A} = 0" display={false} /> (sempre zero)
-                      <br/>
-                      Isso reflete a ausência de monopolos magnéticos na natureza.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Lei de Faraday */}
-            <div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">3</span>
-                Lei de Faraday (Forma Integral)
-              </h3>
-              <p className="text-slate-700 mb-4 leading-relaxed">
-                A Lei de Faraday estabelece que uma variação de fluxo magnético através de uma superfície induz uma força eletromotriz (fem) ao redor do caminho que delimita essa superfície. É o princípio fundamental dos transformadores e geradores.
-              </p>
-              
-              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
-                <MathFormula formula="\oint_C \vec{E} \cdot d\vec{l} = -\frac{d\Phi_B}{dt}" display={true} className="text-2xl mb-4" />
-                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="font-semibold text-yellow-400 mb-2">Definições:</p>
-                    <ul className="space-y-1">
-                      <li><MathFormula formula="\oint_C" display={false} />: Integral de linha sobre caminho fechado C</li>
-                      <li><MathFormula formula="\Phi_B" display={false} />: Fluxo magnético (Wb = T·m²)</li>
-                      <li><MathFormula formula="d\Phi_B/dt" display={false} />: Taxa de variação do fluxo</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-yellow-400 mb-2">Interpretação:</p>
-                    <p className="text-sm">Campo magnético variável induz campo elétrico. O sinal negativo (Lei de Lenz) indica que o campo induzido se opõe à mudança de fluxo.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Lei de Ampère-Maxwell */}
-            <div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">4</span>
-                Lei de Ampère-Maxwell (Forma Integral)
-              </h3>
-              <p className="text-slate-700 mb-4 leading-relaxed">
-                A Lei de Ampère-Maxwell relaciona a circulação do campo magnético ao redor de um caminho fechado com a corrente elétrica que passa através desse caminho, mais um termo adicional: a corrente de deslocamento (variação do fluxo elétrico).
-              </p>
-              
-              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
-                <MathFormula formula="\oint_C \vec{B} \cdot d\vec{l} = \mu_0 \left( I_{env} + \epsilon_0 \frac{d\Phi_E}{dt} \right)" display={true} className="text-2xl mb-4" />
-                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="font-semibold text-yellow-400 mb-2">Definições:</p>
-                    <ul className="space-y-1">
-                      <li><MathFormula formula="I_{env}" display={false} />: Corrente envolvida (A)</li>
-                      <li><MathFormula formula="\Phi_E" display={false} />: Fluxo elétrico (N·m²/C)</li>
-                      <li><MathFormula formula="\mu_0" display={false} />: Permeabilidade do vácuo</li>
-                      <li><MathFormula formula="\epsilon_0 \frac{d\Phi_E}{dt}" display={false} />: Corrente de deslocamento</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-yellow-400 mb-2">Inovação de Maxwell:</p>
-                    <p className="text-sm">O termo de corrente de deslocamento foi adicionado por Maxwell. Ele permite que campos elétricos variáveis gerem campos magnéticos, mesmo sem corrente real. Isso é essencial para explicar ondas eletromagnéticas.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* FORMAS DIFERENCIAIS */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">∇ Formas Diferenciais das Equações de Maxwell</h2>
-          
-          <div className="space-y-8">
-            {/* Contexto */}
-            <div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">0</span>
-                Contexto: Operadores Diferenciais
-              </h3>
-              <p className="text-slate-700 mb-4 leading-relaxed">
-                A forma diferencial das Equações de Maxwell usa operadores vetoriais: divergência (∇·) e rotacional (∇×). Estas formas descrevem o comportamento local dos campos em cada ponto do espaço, sem precisar de simetria. São mais gerais mas requerem conhecimento de cálculo vetorial.
-              </p>
-              
-              <div className="bg-purple-50 border border-purple-200 rounded p-6">
-                <h4 className="font-bold text-slate-900 mb-3">Operadores Vetoriais Essenciais</h4>
-                <div className="space-y-3 text-sm text-slate-700">
-                  <p><strong>Divergência (∇·V):</strong> Mede quanto um campo "sai" de um ponto. Se ∇·E &gt; 0, há carga positiva. Se ∇·E &lt; 0, há carga negativa.</p>
-                  <p><strong>Rotacional (∇×V):</strong> Mede quanto um campo "gira" em torno de um ponto. Se ∇×E ≠ 0, o campo não é conservativo e há mudança de fluxo magnético.</p>
-                  <p><strong>Laplaciano (∇²V):</strong> Combinação de divergência e gradiente. Mede a curvatura de um campo.</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Lei de Gauss Diferencial */}
-            <div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">1</span>
-                Lei de Gauss (Forma Diferencial)
-              </h3>
-              
-              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
-                <MathFormula formula="\nabla \cdot \vec{E} = \frac{\rho}{\epsilon_0}" display={true} className="text-2xl mb-4" />
-                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300">
-                  <p className="font-semibold text-yellow-400 mb-2">Definições:</p>
-                  <p><MathFormula formula="\nabla \cdot \vec{E}" display={false} />: Divergência do campo elétrico (1/m)</p>
-                  <p><MathFormula formula="\rho" display={false} />: Densidade de carga (C/m³)</p>
-                  <p className="mt-3 text-yellow-300"><strong>Interpretação:</strong> A divergência do campo elétrico em um ponto é proporcional à densidade de carga naquele ponto. Cargas criam divergência (fontes/sumidouros de campo).</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Lei de Gauss para Magnetismo Diferencial */}
-            <div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">2</span>
-                Lei de Gauss para Magnetismo (Forma Diferencial)
-              </h3>
-              
-              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
-                <MathFormula formula="\nabla \cdot \vec{B} = 0" display={true} className="text-2xl mb-4" />
-                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300">
-                  <p className="font-semibold text-yellow-400 mb-2">Significado:</p>
-                  <p>A divergência do campo magnético é sempre zero em qualquer ponto. Isso confirma que não há monopolos magnéticos - as linhas de campo magnético sempre formam loops fechados, nunca começam ou terminam.</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Lei de Faraday Diferencial */}
-            <div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">3</span>
-                Lei de Faraday (Forma Diferencial)
-              </h3>
-              
-              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
-                <MathFormula formula="\nabla \times \vec{E} = -\frac{\partial \vec{B}}{\partial t}" display={true} className="text-2xl mb-4" />
-                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300">
-                  <p className="font-semibold text-yellow-400 mb-2">Definições:</p>
-                  <p><MathFormula formula="\nabla \times \vec{E}" display={false} />: Rotacional do campo elétrico (V/m²)</p>
-                  <p><MathFormula formula="\partial \vec{B}/\partial t" display={false} />: Taxa de variação temporal do campo magnético (T/s)</p>
-                  <p className="mt-3 text-yellow-300"><strong>Interpretação:</strong> Campo magnético variável no tempo induz um campo elétrico rotacional. O sinal negativo é a Lei de Lenz.</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Lei de Ampère-Maxwell Diferencial */}
-            <div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">4</span>
-                Lei de Ampère-Maxwell (Forma Diferencial)
-              </h3>
-              
-              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
-                <MathFormula formula="\nabla \times \vec{B} = \mu_0 \left( \vec{J} + \epsilon_0 \frac{\partial \vec{E}}{\partial t} \right)" display={true} className="text-2xl mb-4" />
-                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="font-semibold text-yellow-400 mb-2">Definições:</p>
-                    <ul className="space-y-1">
-                      <li><MathFormula formula="\nabla \times \vec{B}" display={false} />: Rotacional do campo magnético</li>
-                      <li><MathFormula formula="\vec{J}" display={false} />: Densidade de corrente (A/m²)</li>
-                      <li><MathFormula formula="\partial \vec{E}/\partial t" display={false} />: Variação temporal do campo elétrico</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-yellow-400 mb-2">Inovação de Maxwell:</p>
-                    <p className="text-sm">O termo <MathFormula formula="\epsilon_0 \partial \vec{E}/\partial t" display={false} /> (corrente de deslocamento) permite que campos elétricos variáveis gerem campos magnéticos, mesmo sem corrente real. Essencial para ondas eletromagnéticas.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* RELAÇÃO ENTRE FORMAS */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">🔄 Relação entre Formas Integral e Diferencial</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">⚡ Lei de Gauss (Forma Integral) - Explicação Completa</h2>
           
           <div className="space-y-6">
             <p className="text-slate-700 leading-relaxed">
-              As formas integral e diferencial das Equações de Maxwell são matematicamente equivalentes, relacionadas pelos <strong>Teorema da Divergência</strong> e <strong>Teorema de Stokes</strong>.
+              A Lei de Gauss é uma das equações mais importantes do eletromagnetismo. Ela relaciona cargas elétricas com campos elétricos. Vamos entender cada termo da fórmula:
             </p>
 
-            <div className="bg-blue-50 border border-blue-200 rounded p-6">
-              <h4 className="font-bold text-slate-900 mb-3">Teorema da Divergência (Gauss)</h4>
-              <p className="text-slate-700 text-sm mb-3">
-                A integral de superfície de um campo vetorial é igual à integral de volume de sua divergência:
+            {/* Fórmula Principal */}
+            <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white rounded-xl p-8 shadow-lg">
+              <p className="text-center text-sm mb-3 text-blue-200">A Lei de Gauss em sua forma integral:</p>
+              <MathFormula formula="\oint_S \vec{E} \cdot d\vec{A} = \frac{Q_{env}}{\epsilon_0}" display={true} className="text-3xl mb-6" />
+            </div>
+
+            {/* Explicação Termo a Termo */}
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">Entendendo Cada Termo:</h3>
+
+              {/* Termo 1: ∮_S */}
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  <MathFormula formula="\oint_S" display={false} /> - O Símbolo de Integral de Superfície
+                </h4>
+                <p className="text-slate-700 mb-3">
+                  Este símbolo significa: <strong>"integrar sobre uma superfície fechada"</strong>. O círculo no integral (∮) significa que a superfície é completamente fechada (como uma esfera, um cubo, etc.).
+                </p>
+                <div className="bg-white p-4 rounded border border-blue-200">
+                  <p className="text-sm text-slate-700 mb-2"><strong>O que significa na prática?</strong></p>
+                  <p className="text-sm text-slate-700">Imagine uma superfície fechada (como uma bolha de sabão). O integral ∮_S significa: "some tudo que está acontecendo em toda essa superfície". É como contar todas as linhas de campo que saem dessa bolha.</p>
+                </div>
+              </div>
+
+              {/* Termo 2: E */}
+              <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  <MathFormula formula="\vec{E}" display={false} /> - Campo Elétrico
+                </h4>
+                <p className="text-slate-700 mb-3">
+                  O campo elétrico é a <strong>força por unidade de carga</strong> que uma carga elétrica experimenta em um ponto do espaço. Ele tem direção (por isso o símbolo de vetor →) e magnitude.
+                </p>
+                <div className="bg-white p-4 rounded border border-green-200">
+                  <p className="text-sm text-slate-700 mb-2"><strong>Unidade:</strong> Newton por Coulomb (N/C) ou Volt por metro (V/m)</p>
+                  <p className="text-sm text-slate-700 mb-2"><strong>O que significa?</strong> Se você coloca uma carga de 1 Coulomb em um ponto onde E = 100 N/C, ela sofre uma força de 100 Newtons naquela direção.</p>
+                  <p className="text-sm text-slate-700"><strong>Analogia:</strong> Pense no campo elétrico como o "vento" em torno de uma carga. Quanto mais forte o vento (maior E), mais força ele exerce nas coisas.</p>
+                </div>
+              </div>
+
+              {/* Termo 3: dA */}
+              <div className="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  <MathFormula formula="d\vec{A}" display={false} /> - Elemento Infinitesimal de Área
+                </h4>
+                <p className="text-slate-700 mb-3">
+                  Este termo representa um <strong>pedacinho muito pequeno da superfície</strong>. Quando você integra, você soma infinitos pedacinhos.
+                </p>
+                <div className="bg-white p-4 rounded border border-purple-200">
+                  <p className="text-sm text-slate-700 mb-2"><strong>Unidade:</strong> Metro quadrado (m²)</p>
+                  <p className="text-sm text-slate-700 mb-2"><strong>Direção especial:</strong> O vetor dA sempre aponta para FORA da superfície (normal exterior). Isso é importante!</p>
+                  <p className="text-sm text-slate-700"><strong>Analogia:</strong> Imagine a superfície dividida em milhões de quadradinhos minúsculos. Cada dA é um desses quadradinhos.</p>
+                </div>
+              </div>
+
+              {/* Termo 4: E·dA */}
+              <div className="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  <MathFormula formula="\vec{E} \cdot d\vec{A}" display={false} /> - Produto Escalar (Ponto)
+                </h4>
+                <p className="text-slate-700 mb-3">
+                  O ponto (·) significa <strong>produto escalar</strong>. Ele mede quanto do campo E está apontando para FORA da superfície.
+                </p>
+                <div className="bg-white p-4 rounded border border-orange-200">
+                  <p className="text-sm text-slate-700 mb-2"><strong>O que ele faz?</strong></p>
+                  <ul className="text-sm text-slate-700 space-y-1">
+                    <li>• Se E aponta para FORA: E·dA é positivo (contribui positivamente)</li>
+                    <li>• Se E aponta para DENTRO: E·dA é negativo (contribui negativamente)</li>
+                    <li>• Se E é paralelo à superfície: E·dA é zero (não contribui)</li>
+                  </ul>
+                  <p className="text-sm text-slate-700 mt-2"><strong>Analogia:</strong> É como medir quanto "vento" está realmente saindo da bolha. Se o vento vai para fora, conta como positivo. Se vai para dentro, conta como negativo.</p>
+                </div>
+              </div>
+
+              {/* Termo 5: Q_env */}
+              <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  <MathFormula formula="Q_{env}" display={false} /> - Carga Envolvida
+                </h4>
+                <p className="text-slate-700 mb-3">
+                  Esta é a <strong>carga elétrica total dentro da superfície fechada</strong>. É a fonte que gera o campo elétrico.
+                </p>
+                <div className="bg-white p-4 rounded border border-red-200">
+                  <p className="text-sm text-slate-700 mb-2"><strong>Unidade:</strong> Coulomb (C)</p>
+                  <p className="text-sm text-slate-700 mb-2"><strong>Exemplos:</strong></p>
+                  <ul className="text-sm text-slate-700 space-y-1">
+                    <li>• Se há +5 C dentro: Q_env = +5 C</li>
+                    <li>• Se há -3 C dentro: Q_env = -3 C</li>
+                    <li>• Se há +5 C e -2 C dentro: Q_env = +3 C (soma algébrica)</li>
+                    <li>• Se não há carga dentro: Q_env = 0</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Termo 6: ε₀ */}
+              <div className="bg-indigo-50 border-l-4 border-indigo-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  <MathFormula formula="\epsilon_0" display={false} /> - Permissividade do Vácuo
+                </h4>
+                <p className="text-slate-700 mb-3">
+                  Esta é uma <strong>constante fundamental da natureza</strong> que relaciona cargas com campos elétricos no vácuo.
+                </p>
+                <div className="bg-white p-4 rounded border border-indigo-200">
+                  <p className="text-sm text-slate-700 mb-2"><strong>Valor:</strong> ε₀ = 8,854 × 10⁻¹² C²/(N·m²)</p>
+                  <p className="text-sm text-slate-700 mb-2"><strong>O que ela faz?</strong> Ela é um fator de conversão. Sem ela, as unidades não funcionariam. Ela também mede como o vácuo "resiste" aos campos elétricos.</p>
+                  <p className="text-sm text-slate-700"><strong>Analogia:</strong> É como a "rigidez" do vácuo. Quanto menor ε₀, mais forte é o campo para uma dada carga.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Significado Geral */}
+            <div className="bg-gradient-to-r from-yellow-100 to-yellow-50 border border-yellow-300 rounded-lg p-6">
+              <h4 className="font-bold text-slate-900 mb-3">O Significado Completo da Lei de Gauss:</h4>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                <strong>O fluxo elétrico total que sai de uma superfície fechada é igual à carga total dentro dessa superfície, dividida por ε₀.</strong>
               </p>
-              <MathFormula formula="\oint_S \vec{V} \cdot d\vec{A} = \int_V (\nabla \cdot \vec{V}) dV" display={true} />
-              <p className="text-slate-700 text-sm mt-3">
-                <strong>Aplicação:</strong> Lei de Gauss integral → Lei de Gauss diferencial
+              <p className="text-slate-700 text-sm mt-3 leading-relaxed">
+                Em outras palavras: cargas elétricas são as fontes dos campos elétricos. Quanto mais carga dentro, mais linhas de campo saem da superfície.
               </p>
             </div>
 
-            <div className="bg-green-50 border border-green-200 rounded p-6">
-              <h4 className="font-bold text-slate-900 mb-3">Teorema de Stokes</h4>
+            {/* Exemplo Numérico */}
+            <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
+              <h4 className="font-bold text-slate-900 mb-3">Exemplo Prático Numérico:</h4>
               <p className="text-slate-700 text-sm mb-3">
-                A integral de linha de um campo vetorial é igual à integral de superfície de seu rotacional:
+                Suponha uma esfera de raio R = 0,1 m com carga Q = 1 nC (1 × 10⁻⁹ C) no centro. Qual é o fluxo elétrico através da esfera?
               </p>
-              <MathFormula formula="\oint_C \vec{V} \cdot d\vec{l} = \int_S (\nabla \times \vec{V}) \cdot d\vec{A}" display={true} />
-              <p className="text-slate-700 text-sm mt-3">
-                <strong>Aplicação:</strong> Lei de Faraday integral → Lei de Faraday diferencial
+              <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-2">
+                <p><strong>Dados:</strong> Q_env = 1 × 10⁻⁹ C, ε₀ = 8,854 × 10⁻¹² C²/(N·m²)</p>
+                <p><strong>Pela Lei de Gauss:</strong></p>
+                <MathFormula formula="\oint_S \vec{E} \cdot d\vec{A} = \frac{Q_{env}}{\epsilon_0} = \frac{1 \times 10^{-9}}{8,854 \times 10^{-12}} = 113 \text{ N·m²/C}" display={true} />
+                <p><strong>Interpretação:</strong> O fluxo elétrico total saindo da esfera é 113 N·m²/C. Isso significa que há 113 "linhas de campo" saindo da esfera.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* LEI DE GAUSS PARA MAGNETISMO */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🧲 Lei de Gauss para Magnetismo - Explicação Completa</h2>
+          
+          <div className="space-y-6">
+            <p className="text-slate-700 leading-relaxed">
+              Esta lei é simples mas profunda. Ela diz que o magnetismo é fundamentalmente diferente da eletricidade:
+            </p>
+
+            <div className="bg-gradient-to-r from-red-900 to-red-800 text-white rounded-xl p-8 shadow-lg">
+              <p className="text-center text-sm mb-3 text-red-200">Lei de Gauss para Magnetismo:</p>
+              <MathFormula formula="\oint_S \vec{B} \cdot d\vec{A} = 0" display={true} className="text-3xl" />
+            </div>
+
+            <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
+              <h4 className="font-bold text-slate-900 mb-3">O que cada termo significa:</h4>
+              <ul className="space-y-3 text-slate-700 text-sm">
+                <li>
+                  <strong><MathFormula formula="\oint_S" display={false} />:</strong> Integral sobre superfície fechada (mesma coisa que antes)
+                </li>
+                <li>
+                  <strong><MathFormula formula="\vec{B}" display={false} />:</strong> Campo magnético (medido em Tesla, T). É o campo que faz agulhas de bússola apontarem para o norte.
+                </li>
+                <li>
+                  <strong><MathFormula formula="d\vec{A}" display={false} />:</strong> Elemento de área (mesma coisa que antes)
+                </li>
+                <li>
+                  <strong>= 0:</strong> O resultado é SEMPRE zero! Não importa qual superfície você escolha.
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
+              <h4 className="font-bold text-orange-900 mb-3">Por que é zero? A Grande Diferença:</h4>
+              <p className="text-slate-700 text-sm mb-3">
+                <strong>Não existem monopolos magnéticos!</strong> Diferentemente de cargas elétricas que podem existir isoladas (um elétron tem carga negativa, um próton tem carga positiva), não há "carga magnética" isolada.
+              </p>
+              <p className="text-slate-700 text-sm mb-3">
+                Sempre que há um polo norte, há um polo sul correspondente. Se você quebrar um imã ao meio, não fica um polo norte isolado - você fica com dois imãs menores, cada um com norte e sul.
+              </p>
+              <p className="text-slate-700 text-sm">
+                Por isso o fluxo magnético é sempre zero: as linhas de campo magnético sempre formam loops fechados. Elas nunca começam ou terminam em um ponto (como as linhas de campo elétrico fazem com as cargas).
               </p>
             </div>
           </div>
         </div>
 
-        {/* EXEMPLOS RESOLVIDOS */}
+        {/* LEI DE FARADAY */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">✅ Exemplos Resolvidos (Nível ITA/IME)</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">⚙️ Lei de Faraday - Explicação Completa</h2>
           
           <div className="space-y-6">
-            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-              <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <CheckCircle2 className="w-6 h-6 text-green-600" />
-                Exemplo 1: Campo Elétrico de Esfera Carregada
-              </h4>
-              <div className="space-y-3">
-                <p className="text-slate-700 text-sm">
-                  <strong>Problema:</strong> Uma esfera sólida de raio R tem densidade de carga uniforme ρ. Use a Lei de Gauss para encontrar o campo elétrico em r = R/2 (dentro da esfera).
+            <p className="text-slate-700 leading-relaxed">
+              A Lei de Faraday é o princípio por trás dos transformadores e geradores. Ela diz que campos magnéticos variáveis geram campos elétricos:
+            </p>
+
+            <div className="bg-gradient-to-r from-purple-900 to-purple-800 text-white rounded-xl p-8 shadow-lg">
+              <p className="text-center text-sm mb-3 text-purple-200">Lei de Faraday (Forma Integral):</p>
+              <MathFormula formula="\oint_C \vec{E} \cdot d\vec{l} = -\frac{d\Phi_B}{dt}" display={true} className="text-3xl" />
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">Entendendo Cada Termo:</h3>
+
+              <div className="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  <MathFormula formula="\oint_C" display={false} /> - Integral de Linha
+                </h4>
+                <p className="text-slate-700 text-sm mb-3">
+                  Diferentemente de antes (superfície), agora integramos sobre um <strong>caminho fechado</strong> (como um círculo ou um quadrado).
                 </p>
-                <div className="bg-white p-4 rounded border border-slate-200">
-                  <p className="text-slate-700 text-sm mb-2"><strong>Solução (Forma Integral):</strong></p>
-                  <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600">
-                    <li>Carga envolvida: <MathFormula formula="Q_{env} = \rho \cdot \frac{4}{3}\pi (R/2)^3 = \frac{\rho \pi R^3}{6}" display={false} /></li>
-                    <li>Lei de Gauss: <MathFormula formula="E \cdot 4\pi (R/2)^2 = \frac{Q_{env}}{\epsilon_0}" display={true} /></li>
-                    <li>Simplificando: <MathFormula formula="E = \frac{\rho R}{6\epsilon_0}" display={true} /></li>
-                  </ol>
-                </div>
+                <p className="text-slate-700 text-sm">
+                  <strong>O que significa:</strong> Imagine um fio em forma de loop. O integral ∮_C soma o campo elétrico ao longo de todo esse fio, indo em uma direção (horária ou anti-horária).
+                </p>
+              </div>
+
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  <MathFormula formula="d\vec{l}" display={false} /> - Elemento de Comprimento
+                </h4>
+                <p className="text-slate-700 text-sm">
+                  Um pedacinho muito pequeno do caminho, sempre apontando na direção que você está caminhando ao redor do loop.
+                </p>
+              </div>
+
+              <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  <MathFormula formula="\Phi_B" display={false} /> - Fluxo Magnético
+                </h4>
+                <p className="text-slate-700 text-sm mb-3">
+                  É a quantidade total de campo magnético passando através do loop. Medido em Weber (Wb) ou Tesla·m².
+                </p>
+                <p className="text-slate-700 text-sm">
+                  <strong>Analogia:</strong> Imagine o loop como uma rede. O fluxo magnético é quanto "vento magnético" passa através dessa rede.
+                </p>
+              </div>
+
+              <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  <MathFormula formula="\frac{d\Phi_B}{dt}" display={false} /> - Taxa de Variação do Fluxo
+                </h4>
+                <p className="text-slate-700 text-sm mb-3">
+                  Isto mede <strong>como rápido o fluxo magnético está mudando</strong> com o tempo.
+                </p>
+                <p className="text-slate-700 text-sm">
+                  <strong>Exemplos:</strong>
+                </p>
+                <ul className="text-sm text-slate-700 space-y-1 mt-2">
+                  <li>• Se o fluxo aumenta: dΦ_B/dt é positivo</li>
+                  <li>• Se o fluxo diminui: dΦ_B/dt é negativo</li>
+                  <li>• Se o fluxo é constante: dΦ_B/dt = 0 (nada acontece!)</li>
+                </ul>
+              </div>
+
+              <div className="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  O Sinal Negativo (Lei de Lenz)
+                </h4>
+                <p className="text-slate-700 text-sm mb-3">
+                  O sinal negativo (-) é <strong>muito importante</strong>. Ele é a Lei de Lenz: a natureza se opõe às mudanças!
+                </p>
+                <p className="text-slate-700 text-sm">
+                  Se o fluxo magnético está aumentando, o campo elétrico induzido vai tentar criar um campo magnético que se opõe a esse aumento. É como a natureza dizendo "não, não vou deixar você mudar tão facilmente!"
+                </p>
               </div>
             </div>
 
-            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-              <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <CheckCircle2 className="w-6 h-6 text-green-600" />
-                Exemplo 2: Indutor com Campo Magnético Variável
-              </h4>
-              <div className="space-y-3">
+            <div className="bg-gradient-to-r from-yellow-100 to-yellow-50 border border-yellow-300 rounded-lg p-6">
+              <h4 className="font-bold text-slate-900 mb-3">O Significado Completo da Lei de Faraday:</h4>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                <strong>Um campo magnético variável no tempo induz um campo elétrico ao redor de um caminho fechado. A força do campo elétrico induzido é proporcional à taxa de variação do fluxo magnético.</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* LEI DE AMPÈRE-MAXWELL */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🔄 Lei de Ampère-Maxwell - Explicação Completa</h2>
+          
+          <div className="space-y-6">
+            <p className="text-slate-700 leading-relaxed">
+              Esta é a equação que Maxwell modificou. Ela diz que campos magnéticos são gerados por correntes elétricas E por campos elétricos variáveis:
+            </p>
+
+            <div className="bg-gradient-to-r from-green-900 to-green-800 text-white rounded-xl p-8 shadow-lg">
+              <p className="text-center text-sm mb-3 text-green-200">Lei de Ampère-Maxwell (Forma Integral):</p>
+              <MathFormula formula="\oint_C \vec{B} \cdot d\vec{l} = \mu_0 \left( I_{env} + \epsilon_0 \frac{d\Phi_E}{dt} \right)" display={true} className="text-2xl" />
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">Entendendo Cada Termo:</h3>
+
+              <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  <MathFormula formula="\oint_C \vec{B} \cdot d\vec{l}" display={false} /> - Circulação do Campo Magnético
+                </h4>
                 <p className="text-slate-700 text-sm">
-                  <strong>Problema:</strong> Um solenóide tem campo magnético B(t) = B₀ sin(ωt) no interior. Uma espira circular de raio r está no centro do solenóide. Calcule a fem induzida.
+                  Integral de linha do campo magnético ao redor de um caminho fechado. Mede quanto o campo magnético "gira" ao redor do caminho.
                 </p>
-                <div className="bg-white p-4 rounded border border-slate-200">
-                  <p className="text-slate-700 text-sm mb-2"><strong>Solução (Lei de Faraday):</strong></p>
-                  <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600">
-                    <li>Fluxo magnético: <MathFormula formula="\Phi_B = B(t) \cdot \pi r^2 = B_0 \sin(\omega t) \pi r^2" display={true} /></li>
-                    <li>Lei de Faraday: <MathFormula formula="\mathcal{E} = -\frac{d\Phi_B}{dt} = -B_0 \omega \cos(\omega t) \pi r^2" display={true} /></li>
-                    <li>Amplitude: <MathFormula formula="|\mathcal{E}|_{max} = B_0 \omega \pi r^2" display={true} /></li>
-                  </ol>
-                </div>
               </div>
+
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  <MathFormula formula="\mu_0" display={false} /> - Permeabilidade do Vácuo
+                </h4>
+                <p className="text-slate-700 text-sm mb-2">
+                  Constante fundamental que relaciona correntes com campos magnéticos no vácuo.
+                </p>
+                <p className="text-slate-700 text-sm">
+                  <strong>Valor:</strong> μ₀ = 4π × 10⁻⁷ T·m/A (Tesla·metro por Ampère)
+                </p>
+              </div>
+
+              <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  <MathFormula formula="I_{env}" display={false} /> - Corrente Envolvida
+                </h4>
+                <p className="text-slate-700 text-sm mb-3">
+                  A corrente elétrica real que passa através do caminho fechado. Medida em Ampères (A).
+                </p>
+                <p className="text-slate-700 text-sm">
+                  <strong>Analogia:</strong> Quanto mais corrente passa através do loop, mais forte é o campo magnético ao redor dele. É como quanto mais água passa por um cano, mais "redemoinho" se forma ao redor.
+                </p>
+              </div>
+
+              <div className="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  <MathFormula formula="\frac{d\Phi_E}{dt}" display={false} /> - Taxa de Variação do Fluxo Elétrico
+                </h4>
+                <p className="text-slate-700 text-sm mb-3">
+                  Mede como rápido o fluxo elétrico está mudando com o tempo. Esta é a <strong>inovação de Maxwell</strong>!
+                </p>
+                <p className="text-slate-700 text-sm">
+                  <strong>O que significa:</strong> Mesmo sem corrente real, se o campo elétrico está mudando, ele gera um campo magnético. Isto é essencial para explicar ondas eletromagnéticas.
+                </p>
+              </div>
+
+              <div className="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">
+                  <MathFormula formula="\epsilon_0 \frac{d\Phi_E}{dt}" display={false} /> - Corrente de Deslocamento
+                </h4>
+                <p className="text-slate-700 text-sm mb-3">
+                  Este termo foi adicionado por Maxwell. É uma "corrente" que não é corrente real, mas tem o mesmo efeito de gerar campo magnético.
+                </p>
+                <p className="text-slate-700 text-sm">
+                  <strong>Exemplo prático:</strong> Em um capacitor carregando, há corrente real nos fios, mas entre as placas não há corrente real - apenas campo elétrico aumentando. A corrente de deslocamento explica por que há campo magnético entre as placas!
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-yellow-100 to-yellow-50 border border-yellow-300 rounded-lg p-6">
+              <h4 className="font-bold text-slate-900 mb-3">O Significado Completo da Lei de Ampère-Maxwell:</h4>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                <strong>Correntes elétricas E campos elétricos variáveis geram campos magnéticos. A força do campo magnético é proporcional à corrente real mais a "corrente de deslocamento".</strong>
+              </p>
             </div>
           </div>
         </div>
 
         {/* Info Box */}
         <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 mb-12">
-          <h4 className="font-bold text-red-900 mb-2">Próximos Tópicos</h4>
-          <p className="text-red-800 text-sm">
-            Agora que você compreende as Equações de Maxwell, explore <strong>Ondas Eletromagnéticas</strong> para ver como essas equações predizem a existência de ondas que se propagam no espaço, e <strong>Radiação Eletromagnética</strong> para entender como cargas aceleradas emitem ondas.
+          <h4 className="font-bold text-red-900 mb-2">Resumo das Quatro Equações</h4>
+          <ul className="text-red-800 text-sm space-y-2">
+            <li><strong>1. Lei de Gauss:</strong> Cargas geram campos elétricos</li>
+            <li><strong>2. Lei de Gauss Magnética:</strong> Não há monopolos magnéticos</li>
+            <li><strong>3. Lei de Faraday:</strong> Campos magnéticos variáveis geram campos elétricos</li>
+            <li><strong>4. Lei de Ampère-Maxwell:</strong> Correntes e campos elétricos variáveis geram campos magnéticos</li>
+          </ul>
+          <p className="text-red-800 text-sm mt-3">
+            Juntas, estas quatro equações descrevem TUDO sobre eletromagnetismo e predizem a existência de ondas eletromagnéticas (luz!).
           </p>
         </div>
       </section>
