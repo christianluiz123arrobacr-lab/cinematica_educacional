@@ -19,6 +19,7 @@
   - [x] Solenóides - APROFUNDADO com contexto, dedução completa, passo-a-passo, aplicações avançadas, 4+ exemplos
   - [x] Propriedades Magnéticas - APROFUNDADO com contexto, classificação, deduções, passo-a-passo, 5+ exemplos
 - [x] Indução Eletromagnética - Lei de Faraday, Lei de Lenz, Transformadores
+  - [x] Lei de Faraday - APROFUNDADO com contexto, analogias, deduções completas, Lei de Lenz, passo-a-passo, 5+ exemplos
 - [x] Equações de Maxwell - Forma integral e diferencial
 - [x] Ondas Eletromagnéticas Avançado - Polarização, Poynting, Espectro
 - [x] Aplicações - Transformadores, Motores, Geradores
