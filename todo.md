@@ -24,6 +24,7 @@
   - [x] Lei de Ampère-Maxwell - APROFUNDADO com contexto, corrente de deslocamento, deduções, passo-a-passo, 5+ exemplos
   - [x] Melhorar didática - EXPLICAR CADA TERMO de cada fórmula em linguagem simples com analogias e exemplos numéricos
 - [x] Ondas Eletromagnéticas Avançado - Polarização, Poynting, Espectro
+  - [x] Equação de Onda - APROFUNDADO com contexto, dedução completa, termo-a-termo, velocidade da luz, soluções, exemplos
 - [x] Aplicações - Transformadores, Motores, Geradores
   - [x] Transformadores - APROFUNDADO com contexto, Lei de Faraday, ideais vs reais, passo-a-passo, 5+ exemplos
   - [x] Motores Elétricos - APROFUNDADO com contexto, Lei de Ampère, força de Lorentz, tipos, passo-a-passo, 5+ exemplos
