@@ -26,6 +26,7 @@
 - [ ] Ondas Eletromagnéticas Avançado - Polarização, Poynting, Espectro
   - [x] Equação de Onda - APROFUNDADO com contexto, dedução completa, termo-a-termo, velocidade da luz, soluções, exemplos
   - [x] Polarização - APROFUNDADO com contexto, tipos, Lei de Malus, polarizadores, passo-a-passo, 5+ exemplos
+  - [x] Vetor de Poynting - APROFUNDADO com contexto, dedução, termo-a-termo, intensidade média, passo-a-passo, 5+ exemplos
 - [x] Aplicações - Transformadores, Motores, Geradores
   - [x] Transformadores - APROFUNDADO com contexto, Lei de Faraday, ideais vs reais, passo-a-passo, 5+ exemplos
   - [x] Motores Elétricos - APROFUNDADO com contexto, Lei de Ampère, força de Lorentz, tipos, passo-a-passo, 5+ exemplos

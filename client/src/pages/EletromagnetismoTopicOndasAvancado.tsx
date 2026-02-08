@@ -1,8 +1,7 @@
 import { Link } from "wouter";
-import { ArrowLeft, Magnet, Info, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Magnet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/components/MathFormula";
-import { Card } from "@/components/ui/card";
 
 export default function EletromagnetismoTopicOndasAvancado() {
   return (
@@ -39,7 +38,7 @@ export default function EletromagnetismoTopicOndasAvancado() {
                 As <strong>ondas eletromagnéticas</strong> são perturbações nos campos elétrico e magnético que se propagam no espaço. Diferentemente das ondas mecânicas, elas não necessitam de um meio para se propagar e viajam à velocidade da luz.
               </p>
               <p className="text-slate-700 leading-relaxed">
-                Neste tópico avançado, exploraremos a equação de onda que descreve como os campos E e B variam, como Maxwell derivou a velocidade da luz, polarização, e o vetor de Poynting que descreve o transporte de energia.
+                Neste tópico avançado, exploraremos a equação de onda, polarização, e o vetor de Poynting que descreve o transporte de energia.
               </p>
             </div>
           </div>
@@ -88,306 +87,262 @@ export default function EletromagnetismoTopicOndasAvancado() {
             </div>
 
             <p className="text-slate-700 leading-relaxed">
-              Esta é a solução mais importante da equação de onda. Descreve uma onda com uma única frequência propagando-se em uma direção específica. Todos os tipos de radiação eletromagnética (luz visível, rádio, raios-X, etc.) podem ser descritos como superposição de ondas planas monocromáticas.
+              Esta é a solução mais importante da equação de onda. Descreve uma onda com uma única frequência propagando-se em uma direção específica.
             </p>
           </div>
         </div>
 
-        {/* POLARIZAÇÃO - APROFUNDADO */}
+        {/* POLARIZAÇÃO */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">🔀 Polarização de Ondas Eletromagnéticas - Aprofundado</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🔀 Polarização de Ondas Eletromagnéticas</h2>
           
           <div className="space-y-6">
-            <div className="bg-green-50 border-l-4 border-green-500 rounded p-6">
-              <h3 className="text-xl font-bold text-slate-900 mb-3">O que é Polarização?</h3>
+            <p className="text-slate-700 leading-relaxed">
+              A <strong>polarização</strong> descreve a orientação do campo elétrico em relação à direção de propagação da onda.
+            </p>
+
+            <div className="space-y-4">
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3">Polarização Linear</h4>
+                <MathFormula formula="\vec{E} = E_0 \cos(kz - \omega t) \hat{x}" display={true} />
+                <p className="text-slate-700 text-sm mt-2">O campo elétrico oscila em uma única direção.</p>
+              </div>
+
+              <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3">Polarização Circular</h4>
+                <MathFormula formula="\vec{E} = E_0 [\cos(kz - \omega t) \hat{x} + \sin(kz - \omega t) \hat{y}]" display={true} />
+                <p className="text-slate-700 text-sm mt-2">O campo elétrico rotaciona mantendo magnitude constante.</p>
+              </div>
+
+              <div className="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3">Lei de Malus</h4>
+                <MathFormula formula="I = I_0 \cos^2(\theta)" display={true} />
+                <p className="text-slate-700 text-sm mt-2">Intensidade transmitida através de um polarizador.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* VETOR DE POYNTING - APROFUNDADO */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">⚡ Vetor de Poynting - Transporte de Energia (Aprofundado)</h2>
+          
+          <div className="space-y-6">
+            <div className="bg-red-50 border-l-4 border-red-500 rounded p-6">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">O que é o Vetor de Poynting?</h3>
               <p className="text-slate-700 leading-relaxed">
-                A <strong>polarização</strong> descreve a orientação e o comportamento do campo elétrico em relação à direção de propagação da onda. É uma propriedade fundamental que afeta como as ondas interagem com a matéria.
+                O <strong>vetor de Poynting</strong> descreve como a energia é transportada pela onda eletromagnética. Ele aponta na direção de propagação da energia e sua magnitude representa a densidade de fluxo de energia (potência por unidade de área).
               </p>
             </div>
 
             <div className="bg-blue-50 border border-blue-200 rounded p-6">
               <h4 className="font-bold text-slate-900 mb-3">📚 Contexto Histórico</h4>
               <p className="text-slate-700 text-sm leading-relaxed">
-                Em 1808, Étienne-Louis Malus descobriu que a luz refletida em vidro se comportava de forma estranha - sua intensidade variava com ângulos específicos. Isto levou à descoberta da polarização. Mais tarde, Young e Fresnel explicaram isto usando a natureza ondulatória da luz. Hoje, polarização é fundamental em tecnologias como LCD, 3D, comunicações ópticas e filtros solares.
+                Em 1884, John Henry Poynting descobriu que a energia em campos eletromagnéticos flui de forma específica, descrita por um vetor. Isto foi revolucionário porque mostrou que energia não está "armazenada" nos campos, mas flui continuamente através do espaço. Este conceito é fundamental para entender antenas, lasers, radiação solar e muitas aplicações tecnológicas.
               </p>
             </div>
 
-            {/* Tipos de Polarização */}
+            {/* Definição */}
             <div className="space-y-4">
-              <h3 className="text-2xl font-bold text-slate-900">Tipos de Polarização</h3>
+              <h3 className="text-2xl font-bold text-slate-900">Definição do Vetor de Poynting</h3>
+              
+              <div className="bg-gradient-to-r from-red-900 to-red-800 text-white rounded-xl p-8 shadow-lg">
+                <p className="text-center text-sm mb-3 text-red-200">Vetor de Poynting:</p>
+                <MathFormula formula="\vec{S} = \frac{1}{\mu_0} \vec{E} \times \vec{B}" display={true} className="text-2xl" />
+              </div>
 
-              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3 text-lg">1️⃣ Polarização Linear</h4>
-                <p className="text-slate-700 text-sm mb-3">
-                  O campo elétrico oscila em uma única direção fixa (perpendicular à propagação). É o tipo mais comum.
-                </p>
-                <div className="bg-white p-4 rounded border border-blue-200 space-y-3">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-800 mb-2">Fórmula:</p>
-                    <MathFormula formula="\vec{E} = E_0 \cos(kz - \omega t) \hat{x}" display={true} />
+              <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3">Explicação Termo-a-Termo:</h4>
+                <div className="space-y-3 text-sm text-slate-700">
+                  <div className="bg-white p-3 rounded border border-red-200">
+                    <p className="font-semibold mb-1">S (Vetor de Poynting)</p>
+                    <p>Densidade de fluxo de energia. Aponta na direção de propagação da onda. Unidade: W/m²</p>
                   </div>
-                  <p className="text-sm text-slate-700">
-                    <strong>Significado:</strong> O campo elétrico oscila apenas na direção x com amplitude E₀, enquanto a onda se propaga em z.
-                  </p>
-                  <p className="text-sm text-slate-700">
-                    <strong>Exemplos:</strong> Luz do sol, luz de lâmpadas, luz de monitores LCD
-                  </p>
+                  <div className="bg-white p-3 rounded border border-red-200">
+                    <p className="font-semibold mb-1">E (Campo Elétrico)</p>
+                    <p>Campo elétrico da onda. Varia sinusoidalmente no tempo e espaço. Unidade: V/m</p>
+                  </div>
+                  <div className="bg-white p-3 rounded border border-red-200">
+                    <p className="font-semibold mb-1">B (Campo Magnético)</p>
+                    <p>Campo magnético da onda. Perpendicular a E e também varia sinusoidalmente. Unidade: T (Tesla)</p>
+                  </div>
+                  <div className="bg-white p-3 rounded border border-red-200">
+                    <p className="font-semibold mb-1">μ₀ (Permeabilidade do vácuo)</p>
+                    <p>Constante fundamental: μ₀ = 4π × 10⁻⁷ H/m = 1,257 × 10⁻⁶ H/m</p>
+                  </div>
+                  <div className="bg-white p-3 rounded border border-red-200">
+                    <p className="font-semibold mb-1">× (Produto Vetorial)</p>
+                    <p>Operação que garante que S é perpendicular a E e B, apontando na direção de propagação.</p>
+                  </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Relação E-B */}
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">Relação entre E e B em uma Onda EM</h3>
+              
+              <div className="bg-gradient-to-r from-purple-900 to-purple-800 text-white rounded-xl p-8 shadow-lg">
+                <p className="text-center text-sm mb-3 text-purple-200">Relação entre amplitudes:</p>
+                <MathFormula formula="B_0 = \frac{E_0}{c}" display={true} className="text-2xl" />
+              </div>
+
+              <p className="text-slate-700 leading-relaxed">
+                Em uma onda eletromagnética, os campos E e B estão sempre em fase (oscilam juntos) e suas amplitudes estão relacionadas pela velocidade da luz. Isto significa que conhecendo E, podemos calcular B, e vice-versa.
+              </p>
+            </div>
+
+            {/* Intensidade Média */}
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">Intensidade Média - Potência Transportada</h3>
+              
+              <div className="bg-gradient-to-r from-green-900 to-green-800 text-white rounded-xl p-8 shadow-lg">
+                <p className="text-center text-sm mb-3 text-green-200">Intensidade Média (Valor Médio de S):</p>
+                <MathFormula formula="I = \langle S \rangle = \frac{1}{2} \frac{E_0 B_0}{\mu_0} = \frac{1}{2} \epsilon_0 c E_0^2" display={true} className="text-2xl" />
               </div>
 
               <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3 text-lg">2️⃣ Polarização Circular</h4>
-                <p className="text-slate-700 text-sm mb-3">
-                  O campo elétrico mantém magnitude constante mas rotaciona enquanto a onda se propaga, traçando um círculo.
+                <h4 className="font-bold text-slate-900 mb-3">Por que o fator 1/2?</h4>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  O vetor de Poynting oscila entre +S_max e -S_max. O valor médio é metade do máximo. Isto é análogo à potência em circuitos AC: P = V_rms × I_rms = (V_max/√2) × (I_max/√2) = V_max × I_max / 2.
                 </p>
-                <div className="bg-white p-4 rounded border border-green-200 space-y-3">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-800 mb-2">Fórmula (Circular à Direita):</p>
-                    <MathFormula formula="\vec{E} = E_0 [\cos(kz - \omega t) \hat{x} + \sin(kz - \omega t) \hat{y}]" display={true} />
-                  </div>
-                  <p className="text-sm text-slate-700">
-                    <strong>Significado:</strong> O campo elétrico traça um círculo no plano xy enquanto se propaga em z. A magnitude é sempre E₀.
-                  </p>
-                  <p className="text-sm text-slate-700">
-                    <strong>Exemplos:</strong> Luz refletida em superfícies, radiação de antenas circulares, filmes de cristal líquido
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3 text-lg">3️⃣ Polarização Elíptica</h4>
-                <p className="text-slate-700 text-sm mb-3">
-                  Caso geral onde o campo elétrico traça uma elipse. Polarização linear e circular são casos especiais.
-                </p>
-                <div className="bg-white p-4 rounded border border-orange-200 space-y-3">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-800 mb-2">Fórmula Geral:</p>
-                    <MathFormula formula="\vec{E} = E_x \cos(kz - \omega t) \hat{x} + E_y \cos(kz - \omega t + \delta) \hat{y}" display={true} />
-                  </div>
-                  <p className="text-sm text-slate-700">
-                    <strong>Significado:</strong> As componentes x e y têm amplitudes diferentes (Eₓ ≠ Eᵧ) e fases diferentes (δ). Isto cria uma elipse.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* LEI DE MALUS */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">📏 Lei de Malus - Intensidade Após Polarizador</h2>
-          
-          <div className="space-y-6">
-            <p className="text-slate-700 leading-relaxed">
-              Quando luz polarizada passa através de um polarizador (filtro), a intensidade transmitida depende do ângulo entre a polarização da luz e o eixo do polarizador.
-            </p>
-
-            <div className="bg-gradient-to-r from-purple-900 to-purple-800 text-white rounded-xl p-8 shadow-lg">
-              <p className="text-center text-sm mb-3 text-purple-200">Lei de Malus:</p>
-              <MathFormula formula="I = I_0 \cos^2(\theta)" display={true} className="text-3xl" />
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3">Explicação Termo-a-Termo:</h4>
-                <div className="space-y-3 text-sm text-slate-700">
-                  <div className="bg-white p-3 rounded border border-purple-200">
-                    <p className="font-semibold mb-1">I₀ = Intensidade incidente</p>
-                    <p>Intensidade da luz que chega ao polarizador. Medida em W/m².</p>
-                  </div>
-                  <div className="bg-white p-3 rounded border border-purple-200">
-                    <p className="font-semibold mb-1">θ = Ângulo entre polarizações</p>
-                    <p>Ângulo entre a direção de polarização da luz incidente e o eixo de transmissão do polarizador.</p>
-                  </div>
-                  <div className="bg-white p-3 rounded border border-purple-200">
-                    <p className="font-semibold mb-1">I = Intensidade transmitida</p>
-                    <p>Intensidade da luz que sai do polarizador. Sempre menor ou igual a I₀.</p>
-                  </div>
-                </div>
               </div>
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <h4 className="font-bold text-blue-900 mb-3">Casos Especiais:</h4>
+                <h4 className="font-bold text-blue-900 mb-3">Formas Equivalentes:</h4>
                 <div className="space-y-2 text-sm text-slate-700">
                   <div className="bg-white p-3 rounded border border-blue-200">
-                    <p><strong>θ = 0°:</strong> I = I₀ cos²(0°) = I₀ (transmissão máxima)</p>
+                    <p><strong>Usando E e B:</strong> I = (1/2) × (E₀ × B₀) / μ₀</p>
                   </div>
                   <div className="bg-white p-3 rounded border border-blue-200">
-                    <p><strong>θ = 45°:</strong> I = I₀ cos²(45°) = I₀/2 (transmissão de 50%)</p>
+                    <p><strong>Usando apenas E:</strong> I = (1/2) × ε₀ × c × E₀²</p>
                   </div>
                   <div className="bg-white p-3 rounded border border-blue-200">
-                    <p><strong>θ = 90°:</strong> I = I₀ cos²(90°) = 0 (bloqueio total - polarizadores cruzados)</p>
+                    <p><strong>Usando apenas B:</strong> I = (1/2) × c × B₀² / μ₀</p>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* POLARIZADORES */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">🔬 Polarizadores e Filtros</h2>
-          
-          <div className="space-y-6">
-            <p className="text-slate-700 leading-relaxed">
-              Um <strong>polarizador</strong> é um dispositivo que filtra a luz, permitindo passar apenas a componente polarizada em uma direção específica.
-            </p>
-
+            {/* Passo-a-Passo */}
             <div className="space-y-4">
-              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3">Tipos de Polarizadores:</h4>
-                <ul className="space-y-3 text-sm text-slate-700">
-                  <li className="bg-white p-3 rounded border border-blue-200">
-                    <strong>Polarizador Linear (Filtro Polaroid):</strong> Absorve uma componente do campo elétrico e transmite a outra. Usado em óculos de sol polarizados.
+              <h3 className="text-2xl font-bold text-slate-900">Passo-a-Passo: Calculando Intensidade de uma Onda EM</h3>
+              
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-6">
+                <ol className="space-y-3 text-sm text-slate-700">
+                  <li className="bg-white p-3 rounded border border-yellow-200">
+                    <strong>Passo 1:</strong> Identifique a amplitude do campo elétrico E₀ (em V/m)
                   </li>
-                  <li className="bg-white p-3 rounded border border-blue-200">
-                    <strong>Lâmina de Quarto de Onda (λ/4):</strong> Converte polarização linear em circular. Atrasa uma componente em 90°.
+                  <li className="bg-white p-3 rounded border border-yellow-200">
+                    <strong>Passo 2:</strong> Use a relação B₀ = E₀/c para encontrar a amplitude do campo magnético
                   </li>
-                  <li className="bg-white p-3 rounded border border-blue-200">
-                    <strong>Lâmina de Meia Onda (λ/2):</strong> Rotaciona a polarização linear. Atrasa uma componente em 180°.
+                  <li className="bg-white p-3 rounded border border-yellow-200">
+                    <strong>Passo 3:</strong> Escolha a fórmula apropriada para intensidade (depende dos dados disponíveis)
                   </li>
-                  <li className="bg-white p-3 rounded border border-blue-200">
-                    <strong>Cristal Birrefringente:</strong> Material que tem dois índices de refração diferentes. Separa luz em componentes polarizadas.
+                  <li className="bg-white p-3 rounded border border-yellow-200">
+                    <strong>Passo 4:</strong> Substitua os valores numéricos
                   </li>
-                </ul>
+                  <li className="bg-white p-3 rounded border border-yellow-200">
+                    <strong>Passo 5:</strong> Calcule o resultado em W/m²
+                  </li>
+                  <li className="bg-white p-3 rounded border border-yellow-200">
+                    <strong>Passo 6:</strong> Verifique se o resultado faz sentido (luz visível: ~1000 W/m² em dia ensolarado)
+                  </li>
+                </ol>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* EXEMPLOS PRÁTICOS */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">📋 Exemplos Resolvidos</h2>
-          
-          <div className="space-y-6">
-            {/* Exemplo 1 */}
-            <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
-              <h4 className="font-bold text-slate-900 mb-3">Exemplo 1: Lei de Malus com Dois Polarizadores</h4>
-              <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-3">
-                <p><strong>Problema:</strong> Luz não polarizada com intensidade I₀ = 100 W/m² passa por dois polarizadores. O primeiro polarizador está a 0°, o segundo a 30°. Qual é a intensidade final?</p>
-                
-                <div className="bg-blue-50 p-3 rounded border border-blue-200">
-                  <p className="font-semibold mb-2">Solução:</p>
-                  <p className="mb-2"><strong>Passo 1:</strong> Luz não polarizada passa pelo primeiro polarizador</p>
-                  <p className="mb-2">I₁ = I₀/2 = 100/2 = 50 W/m² (metade da intensidade é transmitida)</p>
+            {/* Exemplos */}
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">Exemplos Resolvidos</h3>
+
+              <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
+                <h4 className="font-bold text-slate-900 mb-3">Exemplo 1: Intensidade de Luz Visível</h4>
+                <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-3">
+                  <p><strong>Problema:</strong> Uma onda de luz visível tem amplitude de campo elétrico E₀ = 100 V/m. Qual é a intensidade média?</p>
                   
-                  <p className="mb-2"><strong>Passo 2:</strong> Luz polarizada passa pelo segundo polarizador a 30°</p>
-                  <MathFormula formula="I_2 = I_1 \cos^2(30°) = 50 \times (\frac{\sqrt{3}}{2})^2 = 50 \times 0,75 = 37,5 \text{ W/m}^2" display={true} />
+                  <div className="bg-blue-50 p-3 rounded border border-blue-200">
+                    <p className="font-semibold mb-2">Solução:</p>
+                    <p className="mb-2"><strong>Dados:</strong> E₀ = 100 V/m, ε₀ = 8,85 × 10⁻¹² F/m, c = 3 × 10⁸ m/s</p>
+                    <p className="mb-2"><strong>Fórmula:</strong> I = (1/2) × ε₀ × c × E₀²</p>
+                    <p className="mb-2">I = (1/2) × 8,85 × 10⁻¹² × 3 × 10⁸ × (100)² = 13,3 W/m²</p>
+                    <p className="mt-2"><strong>Resposta:</strong> A intensidade é 13,3 W/m²</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
+                <h4 className="font-bold text-slate-900 mb-3">Exemplo 2: Radiação Solar</h4>
+                <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-3">
+                  <p><strong>Problema:</strong> A radiação solar tem intensidade I = 1000 W/m². Qual é a amplitude do campo elétrico?</p>
                   
-                  <p className="mt-2"><strong>Resposta:</strong> A intensidade final é 37,5 W/m²</p>
+                  <div className="bg-green-50 p-3 rounded border border-green-200">
+                    <p className="font-semibold mb-2">Solução:</p>
+                    <p className="mb-2"><strong>Dados:</strong> I = 1000 W/m², ε₀ = 8,85 × 10⁻¹² F/m, c = 3 × 10⁸ m/s</p>
+                    <p className="mb-2"><strong>Resolva para E₀:</strong> E₀ = √(2I / (ε₀ × c)) ≈ 274 V/m</p>
+                    <p className="mt-2"><strong>Resposta:</strong> O campo elétrico é ~274 V/m. Este é um campo bastante forte!</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
+                <h4 className="font-bold text-slate-900 mb-3">Exemplo 3: Laser de Potência</h4>
+                <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-3">
+                  <p><strong>Problema:</strong> Um laser com potência P = 10 W é focado em uma área A = 1 mm² = 10⁻⁶ m². Qual é a intensidade no ponto focal?</p>
+                  
+                  <div className="bg-orange-50 p-3 rounded border border-orange-200">
+                    <p className="font-semibold mb-2">Solução:</p>
+                    <p className="mb-2"><strong>Dados:</strong> P = 10 W, A = 10⁻⁶ m²</p>
+                    <p className="mb-2"><strong>Fórmula:</strong> I = P / A = 10 / 10⁻⁶ = 10⁷ W/m²</p>
+                    <p className="mt-2"><strong>Resposta:</strong> A intensidade é 10⁷ W/m² = 10 MW/m². Isto é 10.000 vezes mais intenso que a luz solar!</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
+                <h4 className="font-bold text-slate-900 mb-3">Exemplo 4: Antena de Rádio</h4>
+                <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-3">
+                  <p><strong>Problema:</strong> Uma antena emite uma onda EM com E₀ = 10 V/m. Qual é a intensidade?</p>
+                  
+                  <div className="bg-purple-50 p-3 rounded border border-purple-200">
+                    <p className="font-semibold mb-2">Solução:</p>
+                    <p className="mb-2"><strong>Dados:</strong> E₀ = 10 V/m</p>
+                    <p className="mb-2">I = (1/2) × 8,85 × 10⁻¹² × 3 × 10⁸ × (10)² = 0,133 W/m²</p>
+                    <p className="mt-2"><strong>Resposta:</strong> A intensidade é 0,133 W/m² = 133 mW/m²</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Exemplo 2 */}
-            <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
-              <h4 className="font-bold text-slate-900 mb-3">Exemplo 2: Óculos Polarizados Bloqueando Reflexo</h4>
-              <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-3">
-                <p><strong>Problema:</strong> Luz refletida em água fica polarizada horizontalmente (paralela à superfície). Óculos com polarizador vertical bloqueiam esta luz. Se a intensidade do reflexo é 80 W/m², quanto é transmitido pelos óculos?</p>
-                
-                <div className="bg-green-50 p-3 rounded border border-green-200">
-                  <p className="font-semibold mb-2">Solução:</p>
-                  <p className="mb-2"><strong>Dados:</strong> Luz polarizada horizontalmente, polarizador vertical (90° de diferença)</p>
-                  <MathFormula formula="I = I_0 \cos^2(90°) = 80 \times 0 = 0 \text{ W/m}^2" display={true} />
-                  
-                  <p className="mt-2"><strong>Resposta:</strong> O reflexo é completamente bloqueado! Os óculos polarizados eliminam o brilho.</p>
+            {/* Aplicações */}
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">Aplicações Práticas do Vetor de Poynting</h3>
+              
+              <div className="space-y-3">
+                <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
+                  <h4 className="font-bold text-slate-900 mb-2">📡 Antenas e Radiação</h4>
+                  <p className="text-slate-700 text-sm">O vetor de Poynting descreve como a energia flui das antenas. Antenas são projetadas para maximizar o fluxo de energia em direções específicas.</p>
                 </div>
-              </div>
-            </div>
 
-            {/* Exemplo 3 */}
-            <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
-              <h4 className="font-bold text-slate-900 mb-3">Exemplo 3: Encontrando o Ângulo para Transmissão de 25%</h4>
-              <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-3">
-                <p><strong>Problema:</strong> Luz polarizada passa por um polarizador. Qual deve ser o ângulo entre eles para que 25% da intensidade seja transmitida?</p>
-                
-                <div className="bg-orange-50 p-3 rounded border border-orange-200">
-                  <p className="font-semibold mb-2">Solução:</p>
-                  <p className="mb-2"><strong>Dado:</strong> I = 0,25 I₀</p>
-                  <p className="mb-2"><strong>Passo 1:</strong> Usar Lei de Malus</p>
-                  <MathFormula formula="0,25 I_0 = I_0 \cos^2(\theta)" display={true} />
-                  
-                  <p className="mb-2"><strong>Passo 2:</strong> Simplificar</p>
-                  <MathFormula formula="\cos^2(\theta) = 0,25" display={true} />
-                  
-                  <p className="mb-2"><strong>Passo 3:</strong> Tirar raiz quadrada</p>
-                  <MathFormula formula="\cos(\theta) = 0,5" display={true} />
-                  
-                  <p className="mb-2"><strong>Passo 4:</strong> Encontrar θ</p>
-                  <MathFormula formula="\theta = \arccos(0,5) = 60°" display={true} />
-                  
-                  <p className="mt-2"><strong>Resposta:</strong> O ângulo deve ser 60°</p>
+                <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
+                  <h4 className="font-bold text-slate-900 mb-2">🔦 Lasers e Processamento de Materiais</h4>
+                  <p className="text-slate-700 text-sm">Lasers concentram energia em áreas muito pequenas, criando intensidades enormes. O vetor de Poynting quantifica esta concentração.</p>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* APLICAÇÕES PRÁTICAS */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">🏭 Aplicações Práticas da Polarização</h2>
-          
-          <div className="space-y-4">
-            <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
-              <h4 className="font-bold text-slate-900 mb-2">🕶️ Óculos Polarizados</h4>
-              <p className="text-slate-700 text-sm">Bloqueiam reflexos em água e superfícies. O reflexo é polarizado horizontalmente, enquanto os óculos têm polarizador vertical.</p>
-            </div>
+                <div className="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-6">
+                  <h4 className="font-bold text-slate-900 mb-2">☀️ Energia Solar</h4>
+                  <p className="text-slate-700 text-sm">A intensidade solar (~1000 W/m²) é determinada pelo vetor de Poynting. Painéis solares capturam esta energia.</p>
+                </div>
 
-            <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
-              <h4 className="font-bold text-slate-900 mb-2">📺 Telas LCD</h4>
-              <p className="text-slate-700 text-sm">Usam polarizadores e cristais líquidos para controlar a luz. Cada pixel tem dois polarizadores (entrada e saída) e cristal líquido entre eles.</p>
-            </div>
+                <div className="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-6">
+                  <h4 className="font-bold text-slate-900 mb-2">📡 Comunicações Ópticas</h4>
+                  <p className="text-slate-700 text-sm">Fibras ópticas transportam energia através do vetor de Poynting. A intensidade determina a taxa de transmissão de dados.</p>
+                </div>
 
-            <div className="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-6">
-              <h4 className="font-bold text-slate-900 mb-2">🎬 Filmes 3D</h4>
-              <p className="text-slate-700 text-sm">Usam polarização circular para enviar imagens diferentes para cada olho. Óculos 3D têm polarizadores que separam as imagens.</p>
-            </div>
-
-            <div className="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-6">
-              <h4 className="font-bold text-slate-900 mb-2">📡 Comunicações Ópticas</h4>
-              <p className="text-slate-700 text-sm">Fibras ópticas usam polarização para aumentar a capacidade de transmissão. Múltiplos canais podem usar diferentes polarizações.</p>
-            </div>
-
-            <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
-              <h4 className="font-bold text-slate-900 mb-2">☀️ Proteção Solar</h4>
-              <p className="text-slate-700 text-sm">Vidros polarizados em carros reduzem o brilho do sol. Bloqueiam luz refletida em estradas e outras superfícies.</p>
-            </div>
-          </div>
-        </div>
-
-        {/* VETOR DE POYNTING */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">⚡ Vetor de Poynting - Transporte de Energia</h2>
-          
-          <div className="space-y-6">
-            <p className="text-slate-700 leading-relaxed">
-              O <strong>vetor de Poynting</strong> descreve como a energia é transportada pela onda eletromagnética.
-            </p>
-
-            <div className="bg-gradient-to-r from-red-900 to-red-800 text-white rounded-xl p-8 shadow-lg">
-              <p className="text-center text-sm mb-3 text-red-200">Vetor de Poynting:</p>
-              <MathFormula formula="\vec{S} = \frac{1}{\mu_0} \vec{E} \times \vec{B}" display={true} className="text-2xl" />
-            </div>
-
-            <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
-              <h4 className="font-bold text-slate-900 mb-3">Significado:</h4>
-              <ul className="text-slate-700 text-sm space-y-2">
-                <li>• <strong>Direção:</strong> Aponta na direção de propagação da energia (mesma direção de k)</li>
-                <li>• <strong>Magnitude:</strong> Densidade de fluxo de energia (potência por unidade de área)</li>
-                <li>• <strong>Unidade:</strong> W/m² (Watts por metro quadrado)</li>
-              </ul>
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h4 className="font-bold text-blue-900 mb-3">Intensidade Média:</h4>
-              <p className="text-slate-700 text-sm mb-3">
-                A intensidade média (potência média por unidade de área) é:
-              </p>
-              <div className="bg-white p-4 rounded border border-blue-200">
-                <MathFormula formula="I = \langle S \rangle = \frac{1}{2} \frac{E_0 B_0}{\mu_0} = \frac{1}{2} \epsilon_0 c E_0^2" display={true} />
-                <p className="text-sm text-slate-700 mt-2">
-                  A intensidade é proporcional ao quadrado da amplitude do campo elétrico.
-                </p>
+                <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
+                  <h4 className="font-bold text-slate-900 mb-2">🛰️ Radiação Eletromagnética</h4>
+                  <p className="text-slate-700 text-sm">Todos os tipos de radiação (rádio, micro-ondas, luz, raios-X) transportam energia descrita pelo vetor de Poynting.</p>
+                </div>
               </div>
             </div>
           </div>
@@ -401,8 +356,9 @@ export default function EletromagnetismoTopicOndasAvancado() {
             <li>• Propagam-se à velocidade c = 1/√(μ₀ε₀) ≈ 3 × 10⁸ m/s</li>
             <li>• Podem ter diferentes polarizações (linear, circular, elíptica)</li>
             <li>• Lei de Malus: I = I₀cos²(θ) descreve transmissão através de polarizadores</li>
-            <li>• Transportam energia descrita pelo vetor de Poynting</li>
-            <li>• Aplicações: óculos polarizados, LCD, 3D, comunicações ópticas</li>
+            <li>• Transportam energia descrita pelo vetor de Poynting: S = (1/μ₀) E × B</li>
+            <li>• Intensidade média: I = (1/2) ε₀ c E₀²</li>
+            <li>• Aplicações: antenas, lasers, energia solar, comunicações ópticas</li>
           </ul>
         </div>
       </section>
