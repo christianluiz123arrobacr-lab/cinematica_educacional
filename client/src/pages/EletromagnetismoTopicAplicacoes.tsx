@@ -401,17 +401,370 @@ export default function EletromagnetismoTopicAplicacoes() {
           </div>
         </div>
 
+        {/* MOTORES ELÉTRICOS - APROFUNDADO COM DIDÁTICA SUPERIOR */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">⚙️ Motores Elétricos - Aprofundamento Didático Completo</h2>
+          
+          <div className="space-y-8">
+            {/* O que é um Motor Elétrico? */}
+            <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">O que é um Motor Elétrico?</h3>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                Um <strong>motor elétrico</strong> é um dispositivo que converte energia elétrica em energia mecânica (movimento). Ele funciona usando campos magnéticos para criar força e torque, fazendo uma bobina girar continuamente.
+              </p>
+              <div className="bg-white p-4 rounded border border-blue-200 mt-4">
+                <p className="text-slate-700 text-sm mb-2"><strong>Analogia com engrenagens:</strong> Imagine duas engrenagens - uma movida por você (energia elétrica) e outra que gira em resposta (energia mecânica). Um motor elétrico faz isso sem contato físico, usando apenas campos magnéticos!</p>
+              </div>
+            </div>
+
+            {/* Contexto Histórico */}
+            <div className="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-6">
+              <h4 className="font-bold text-slate-900 mb-3">📚 Contexto Histórico (1887)</h4>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                O motor elétrico moderno foi desenvolvido por Nikola Tesla em 1887. Antes disso, as máquinas eram movidas a vapor ou energia hidráulica - pesadas, perigosas e ineficientes. Os motores elétricos revolucionaram a indústria permitindo controle preciso, partida instantânea e eficiência superior. Hoje, motores elétricos consomem cerca de 45% da eletricidade mundial!
+              </p>
+            </div>
+
+            {/* Princípio de Funcionamento */}
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">Como Funciona: Força de Lorentz + Lei de Ampère</h3>
+              
+              <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+                <h4 className="font-bold text-green-900 mb-3">💡 Princípio Básico:</h4>
+                <p className="text-slate-700 text-sm leading-relaxed mb-3">
+                  Um motor elétrico usa dois princípios fundamentais:
+                </p>
+                <ol className="space-y-2 text-sm text-slate-700 list-decimal list-inside">
+                  <li><strong>Lei de Ampère:</strong> Corrente elétrica gera campo magnético ao redor de um condutor</li>
+                  <li><strong>Força de Lorentz:</strong> Campo magnético externo exerce força sobre um condutor com corrente</li>
+                </ol>
+                <p className="text-slate-700 text-sm mt-3">Quando você combina esses dois efeitos em uma bobina, ela começa a girar!</p>
+              </div>
+
+              <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white rounded-xl p-8 shadow-lg mb-6">
+                <h4 className="font-semibold text-blue-200 mb-4 text-center">Força de Lorentz em um Condutor</h4>
+                <MathFormula formula="\vec{F} = I\vec{L} \times \vec{B}" display={true} className="text-2xl mb-4" />
+                
+                <div className="mt-6 pt-4 border-t border-blue-700">
+                  <h5 className="font-semibold text-blue-200 mb-3">Explicação Termo-a-Termo:</h5>
+                  <div className="space-y-3">
+                    <div className="bg-white/10 p-3 rounded border border-blue-600">
+                      <p className="font-semibold mb-1">F (Força)</p>
+                      <p className="text-sm text-blue-100">Força resultante que empurra o condutor, medida em newtons (N). Esta força é perpendicular tanto à corrente quanto ao campo magnético.</p>
+                    </div>
+                    <div className="bg-white/10 p-3 rounded border border-blue-600">
+                      <p className="font-semibold mb-1">I (Corrente)</p>
+                      <p className="text-sm text-blue-100">Corrente elétrica que passa pelo condutor, medida em ampères (A). Quanto maior a corrente, maior a força.</p>
+                    </div>
+                    <div className="bg-white/10 p-3 rounded border border-blue-600">
+                      <p className="font-semibold mb-1">L (Comprimento)</p>
+                      <p className="text-sm text-blue-100">Comprimento do condutor dentro do campo magnético, medido em metros (m). Quanto maior o comprimento, maior a força.</p>
+                    </div>
+                    <div className="bg-white/10 p-3 rounded border border-blue-600">
+                      <p className="font-semibold mb-1">B (Campo Magnético)</p>
+                      <p className="text-sm text-blue-100">Intensidade do campo magnético externo, medido em teslas (T). Quanto mais forte o campo, maior a força.</p>
+                    </div>
+                    <div className="bg-white/10 p-3 rounded border border-blue-600">
+                      <p className="font-semibold mb-1">× (Produto Vetorial)</p>
+                      <p className="text-sm text-blue-100">Indica que a força é perpendicular tanto à corrente quanto ao campo. Use a regra da mão direita para encontrar a direção.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-purple-900 to-purple-800 text-white rounded-xl p-8 shadow-lg mb-6">
+                <h4 className="font-semibold text-purple-200 mb-4 text-center">Torque em uma Bobina (Motor)</h4>
+                <MathFormula formula="\tau = NIAB\sin\theta" display={true} className="text-2xl mb-4" />
+                
+                <div className="mt-6 pt-4 border-t border-purple-700">
+                  <h5 className="font-semibold text-purple-200 mb-3">Explicação Termo-a-Termo:</h5>
+                  <div className="space-y-3">
+                    <div className="bg-white/10 p-3 rounded border border-purple-600">
+                      <p className="font-semibold mb-1">τ (Torque)</p>
+                      <p className="text-sm text-purple-100">Torque (momento) que faz a bobina girar, medido em newton-metros (N·m). É a "força de rotação".</p>
+                    </div>
+                    <div className="bg-white/10 p-3 rounded border border-purple-600">
+                      <p className="font-semibold mb-1">N (Número de Espiras)</p>
+                      <p className="text-sm text-purple-100">Quantas voltas de fio tem a bobina. Mais espiras = mais torque. Típico: 50-500 espiras.</p>
+                    </div>
+                    <div className="bg-white/10 p-3 rounded border border-purple-600">
+                      <p className="font-semibold mb-1">I (Corrente)</p>
+                      <p className="text-sm text-purple-100">Corrente que passa pela bobina, em ampères (A). Controlar a corrente controla o torque.</p>
+                    </div>
+                    <div className="bg-white/10 p-3 rounded border border-purple-600">
+                      <p className="font-semibold mb-1">A (Área da Bobina)</p>
+                      <p className="text-sm text-purple-100">Área da bobina em metros quadrados (m²). Bobinas maiores geram mais torque.</p>
+                    </div>
+                    <div className="bg-white/10 p-3 rounded border border-purple-600">
+                      <p className="font-semibold mb-1">B (Campo Magnético)</p>
+                      <p className="text-sm text-purple-100">Intensidade do campo magnético externo, em teslas (T). Campos mais fortes geram mais torque.</p>
+                    </div>
+                    <div className="bg-white/10 p-3 rounded border border-purple-600">
+                      <p className="font-semibold mb-1">θ (Ângulo)</p>
+                      <p className="text-sm text-purple-100">Ângulo entre a normal da bobina e o campo magnético. Torque máximo quando θ = 90° (sin 90° = 1).</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3">Como a Bobina Gira Continuamente?</h4>
+                <p className="text-slate-700 text-sm leading-relaxed mb-3">
+                  Quando corrente passa pela bobina em um campo magnético, a Força de Lorentz atua em lados opostos da bobina em direções opostas. Isto cria um torque que faz a bobina começar a girar.
+                </p>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  <strong>O truque:</strong> Para manter a rotação contínua, a corrente deve ser invertida (comutada) a cada meia volta. Isto mantém o torque sempre empurrando na mesma direção de rotação. Sem comutação, a bobina oscilaria para frente e para trás, mas não giraria continuamente.
+                </p>
+              </div>
+            </div>
+
+            {/* Tipos de Motores */}
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">Tipos de Motores Elétricos</h3>
+              
+              <div className="space-y-3">
+                <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
+                  <h4 className="font-bold text-slate-900 mb-3">🔋 Motor CC (Corrente Contínua)</h4>
+                  <div className="bg-white p-4 rounded border border-blue-200 space-y-2 text-sm text-slate-700">
+                    <p><strong>Como funciona:</strong> Usa comutadores (escovas de carvão) para inverter a corrente a cada meia volta automaticamente, mantendo o torque sempre na mesma direção.</p>
+                    <p><strong>Vantagens:</strong> Controle preciso de velocidade e torque. Torque de partida muito alto. Ideal para aplicações que exigem controle fino.</p>
+                    <p><strong>Desvantagens:</strong> Comutadores (escovas) se desgastam com o tempo e requerem manutenção periódica. Mais caro que motores CA.</p>
+                    <p><strong>Aplicações:</strong> Veículos elétricos, ferramentas elétricas, robótica, elevadores, guindastes</p>
+                  </div>
+                </div>
+
+                <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
+                  <h4 className="font-bold text-slate-900 mb-3">🔌 Motor CA Síncrono (Corrente Alternada)</h4>
+                  <div className="bg-white p-4 rounded border border-green-200 space-y-2 text-sm text-slate-700">
+                    <p><strong>Como funciona:</strong> O campo magnético gira com a frequência da corrente alternada (50 Hz ou 60 Hz). A bobina "segue" o campo girante em sincronismo perfeito.</p>
+                    <p><strong>Vantagens:</strong> Velocidade constante e precisa. Sem comutadores (sem desgaste). Alta eficiência.</p>
+                    <p><strong>Desvantagens:</strong> Requer sincronização inicial. Torque de partida baixo. Não funciona bem com cargas variáveis.</p>
+                    <p><strong>Aplicações:</strong> Relógios elétricos, gravadores de fita, equipamentos de precisão, geradores síncronos</p>
+                  </div>
+                </div>
+
+                <div className="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-6">
+                  <h4 className="font-bold text-slate-900 mb-3">⚡ Motor CA de Indução (Assíncrono)</h4>
+                  <div className="bg-white p-4 rounded border border-orange-200 space-y-2 text-sm text-slate-700">
+                    <p><strong>Como funciona:</strong> O rotor não segue exatamente o campo girante - há um pequeno "escorregamento" (slip). Este escorregamento induz corrente no rotor, criando seu próprio campo magnético.</p>
+                    <p><strong>Vantagens:</strong> Extremamente robusto e confiável. Sem comutadores. Barato. Fácil de manter. Funciona bem com cargas variáveis.</p>
+                    <p><strong>Desvantagens:</strong> Velocidade varia ligeiramente com a carga. Controle de velocidade mais complexo.</p>
+                    <p><strong>Aplicações:</strong> Bombas, ventiladores, compressores, máquinas industriais, eletrodomésticos (geladeiras, ar-condicionado)</p>
+                    <p className="font-semibold text-orange-900 mt-3">Este é o tipo de motor mais usado no mundo!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Passo-a-Passo */}
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">Passo-a-Passo: Resolver Problemas com Motores</h3>
+              
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-6">
+                <ol className="space-y-3 text-sm text-slate-700">
+                  <li className="bg-white p-3 rounded border border-yellow-200">
+                    <strong>Passo 1:</strong> Identifique o tipo de motor (CC, CA síncrono, indução)
+                  </li>
+                  <li className="bg-white p-3 rounded border border-yellow-200">
+                    <strong>Passo 2:</strong> Anote os dados: N (espiras), A (área da bobina), B (campo magnético), I (corrente), θ (ângulo)
+                  </li>
+                  <li className="bg-white p-3 rounded border border-yellow-200">
+                    <strong>Passo 3:</strong> Calcule o torque usando τ = NIAB sin(θ). Torque máximo quando θ = 90°
+                  </li>
+                  <li className="bg-white p-3 rounded border border-yellow-200">
+                    <strong>Passo 4:</strong> Se tiver velocidade angular ω (rad/s), calcule potência mecânica: P = τω
+                  </li>
+                  <li className="bg-white p-3 rounded border border-yellow-200">
+                    <strong>Passo 5:</strong> Calcule eficiência: η = P_mecânica / P_elétrica × 100%
+                  </li>
+                  <li className="bg-white p-3 rounded border border-yellow-200">
+                    <strong>Passo 6:</strong> Verifique unidades: torque em N·m, potência em W, eficiência em %
+                  </li>
+                </ol>
+              </div>
+            </div>
+
+            {/* Exemplos Resolvidos */}
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">Exemplos Resolvidos Detalhados</h3>
+              
+              <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
+                <h4 className="font-bold text-slate-900 mb-4">Exemplo 1: Torque Máximo em Motor CC</h4>
+                <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-3">
+                  <p><strong>Problema:</strong> Um motor CC tem uma bobina com 50 espiras, área de 0,02 m², em um campo magnético de 0,5 T. A corrente é 10 A. Qual é o torque máximo?</p>
+                  
+                  <div className="bg-blue-50 p-3 rounded border border-blue-200">
+                    <p className="font-semibold mb-2">Solução Passo-a-Passo:</p>
+                    <p className="mb-2"><strong>Dados:</strong> N = 50, A = 0,02 m², B = 0,5 T, I = 10 A</p>
+                    
+                    <p className="mt-3 mb-2"><strong>Passo 1 - Torque máximo ocorre quando sin(θ) = 1 (θ = 90°):</strong></p>
+                    <MathFormula formula="\tau_{max} = NIAB = 50 \times 10 \times 0,02 \times 0,5" display={true} />
+                    
+                    <p className="mt-3 mb-2"><strong>Passo 2 - Calcular:</strong></p>
+                    <MathFormula formula="\tau_{max} = 50 \times 10 \times 0,02 \times 0,5 = 5 \text{ N·m}" display={true} />
+                    
+                    <div className="mt-4 pt-3 border-t border-blue-200">
+                      <p className="font-semibold">Resposta:</p>
+                      <p>• Torque máximo: <strong>5 N·m</strong></p>
+                      <p className="mt-2 text-xs text-slate-600">Este é um torque moderado, típico de motores pequenos usados em ferramentas elétricas ou ventiladores. Para comparação, um motor de carro tem torque de 200-400 N·m.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
+                <h4 className="font-bold text-slate-900 mb-4">Exemplo 2: Potência Mecânica de um Motor</h4>
+                <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-3">
+                  <p><strong>Problema:</strong> Um motor gera torque de 8 N·m e gira a 300 rpm (rotações por minuto). Qual é a potência mecânica?</p>
+                  
+                  <div className="bg-green-50 p-3 rounded border border-green-200">
+                    <p className="font-semibold mb-2">Solução Passo-a-Passo:</p>
+                    <p className="mb-2"><strong>Dados:</strong> τ = 8 N·m, rotação = 300 rpm</p>
+                    
+                    <p className="mt-3 mb-2"><strong>Passo 1 - Converter rpm para rad/s:</strong></p>
+                    <MathFormula formula="\omega = 300 \text{ rpm} \times \frac{2\pi \text{ rad}}{1 \text{ rot}} \times \frac{1 \text{ min}}{60 \text{ s}}" display={true} />
+                    <MathFormula formula="\omega = 300 \times \frac{2\pi}{60} = 300 \times 0,1047 = 31,4 \text{ rad/s}" display={true} />
+                    
+                    <p className="mt-3 mb-2"><strong>Passo 2 - Calcular potência:</strong></p>
+                    <MathFormula formula="P = \tau \omega = 8 \times 31,4 = 251,2 \text{ W}" display={true} />
+                    
+                    <div className="mt-4 pt-3 border-t border-green-200">
+                      <p className="font-semibold">Resposta:</p>
+                      <p>• Velocidade angular: <strong>31,4 rad/s</strong></p>
+                      <p>• Potência mecânica: <strong>251 W</strong> (aproximadamente 0,34 HP)</p>
+                      <p className="mt-2 text-xs text-slate-600">Este é um motor de potência moderada, típico de ferramentas elétricas como furadeiras ou serras circulares.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
+                <h4 className="font-bold text-slate-900 mb-4">Exemplo 3: Eficiência de um Motor Real</h4>
+                <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-3">
+                  <p><strong>Problema:</strong> Um motor consome 1000 W de potência elétrica e produz 850 W de potência mecânica. Qual é a eficiência? Quanto de energia é perdido?</p>
+                  
+                  <div className="bg-orange-50 p-3 rounded border border-orange-200">
+                    <p className="font-semibold mb-2">Solução:</p>
+                    <p className="mb-2"><strong>Dados:</strong> P_elétrica = 1000 W, P_mecânica = 850 W</p>
+                    
+                    <p className="mt-3 mb-2"><strong>Passo 1 - Calcular eficiência:</strong></p>
+                    <MathFormula formula="\eta = \frac{P_{mecânica}}{P_{elétrica}} \times 100\% = \frac{850}{1000} \times 100\% = 85\%" display={true} />
+                    
+                    <p className="mt-3 mb-2"><strong>Passo 2 - Calcular potência perdida:</strong></p>
+                    <MathFormula formula="P_{perdida} = P_{elétrica} - P_{mecânica} = 1000 - 850 = 150 \text{ W}" display={true} />
+                    
+                    <div className="mt-4 pt-3 border-t border-orange-200">
+                      <p className="font-semibold">Resposta:</p>
+                      <p>• Eficiência: <strong>85%</strong></p>
+                      <p>• Potência perdida: <strong>150 W</strong> (15% de perdas)</p>
+                      <p className="mt-2 text-xs text-slate-600">Estas perdas são principalmente aquecimento dos fios (resistência), atrito nos rolamentos e perdas magnéticas. Motores modernos têm eficiências de 85-95%. Motores industriais de alta eficiência chegam a 96-98%.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
+                <h4 className="font-bold text-slate-900 mb-4">Exemplo 4: Motor com Ângulo Variável</h4>
+                <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-3">
+                  <p><strong>Problema:</strong> Um motor tem N = 100, I = 5 A, A = 0,01 m², B = 0,8 T. Calcule o torque quando θ = 30°, 60° e 90°.</p>
+                  
+                  <div className="bg-purple-50 p-3 rounded border border-purple-200">
+                    <p className="font-semibold mb-2">Solução:</p>
+                    <p className="mb-2"><strong>Dados:</strong> N = 100, I = 5 A, A = 0,01 m², B = 0,8 T</p>
+                    
+                    <p className="mt-3 mb-2"><strong>Fórmula geral:</strong></p>
+                    <MathFormula formula="\tau = NIAB\sin\theta = 100 \times 5 \times 0,01 \times 0,8 \times \sin\theta = 4\sin\theta" display={true} />
+                    
+                    <p className="mt-3 mb-2"><strong>Para θ = 30°:</strong></p>
+                    <MathFormula formula="\tau_{30} = 4 \times \sin(30°) = 4 \times 0,5 = 2 \text{ N·m}" display={true} />
+                    
+                    <p className="mt-3 mb-2"><strong>Para θ = 60°:</strong></p>
+                    <MathFormula formula="\tau_{60} = 4 \times \sin(60°) = 4 \times 0,866 = 3,46 \text{ N·m}" display={true} />
+                    
+                    <p className="mt-3 mb-2"><strong>Para θ = 90°:</strong></p>
+                    <MathFormula formula="\tau_{90} = 4 \times \sin(90°) = 4 \times 1 = 4 \text{ N·m}" display={true} />
+                    
+                    <div className="mt-4 pt-3 border-t border-purple-200">
+                      <p className="font-semibold">Resposta:</p>
+                      <p>• θ = 30°: <strong>2 N·m</strong> (50% do torque máximo)</p>
+                      <p>• θ = 60°: <strong>3,46 N·m</strong> (86,5% do torque máximo)</p>
+                      <p>• θ = 90°: <strong>4 N·m</strong> (100% - torque máximo)</p>
+                      <p className="mt-2 text-xs text-slate-600">O torque varia com o seno do ângulo. Por isso motores precisam de comutação - para manter o ângulo próximo de 90° e maximizar o torque continuamente.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Aplicações Práticas */}
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">Aplicações Práticas de Motores Elétricos</h3>
+              
+              <div className="space-y-3">
+                <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
+                  <h4 className="font-bold text-slate-900 mb-2">🚗 Veículos Elétricos</h4>
+                  <p className="text-slate-700 text-sm mb-2">
+                    <strong>Tipo:</strong> Motores CC sem escovas (brushless) ou motores de indução trifásicos
+                  </p>
+                  <p className="text-slate-700 text-sm">
+                    <strong>Vantagens:</strong> Torque instantâneo, alta eficiência (90-95%), regeneração de energia na frenagem, controle preciso de velocidade. Tesla Model S usa motor de indução de 450 HP.
+                  </p>
+                </div>
+
+                <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
+                  <h4 className="font-bold text-slate-900 mb-2">🏭 Indústria e Manufatura</h4>
+                  <p className="text-slate-700 text-sm mb-2">
+                    <strong>Aplicações:</strong> Bombas, ventiladores, compressores, esteiras transportadoras, máquinas CNC, robôs industriais
+                  </p>
+                  <p className="text-slate-700 text-sm">
+                    <strong>Tipo dominante:</strong> Motores de indução trifásicos (robustos, baratos, confiáveis). Respondem por 70% do consumo industrial de eletricidade.
+                  </p>
+                </div>
+
+                <div className="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-6">
+                  <h4 className="font-bold text-slate-900 mb-2">🏠 Eletrodomésticos</h4>
+                  <p className="text-slate-700 text-sm mb-2">
+                    <strong>Exemplos:</strong> Geladeiras, ar-condicionado, máquinas de lavar, ventiladores, liquidificadores, aspiradores de pó
+                  </p>
+                  <p className="text-slate-700 text-sm">
+                    <strong>Tipos:</strong> Motores de indução (geladeiras, AC), motores universais (liquidificadores, aspiradores), motores CC (ventiladores modernos com controle de velocidade)
+                  </p>
+                </div>
+
+                <div className="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-6">
+                  <h4 className="font-bold text-slate-900 mb-2">🤖 Robótica e Automação</h4>
+                  <p className="text-slate-700 text-sm mb-2">
+                    <strong>Tipo:</strong> Servomotores (motores CC com controle de posição preciso)
+                  </p>
+                  <p className="text-slate-700 text-sm">
+                    <strong>Características:</strong> Controle de posição angular preciso (±0,1°), resposta rápida, torque controlável. Essencial em braços robóticos, drones, impressoras 3D, câmeras automatizadas.
+                  </p>
+                </div>
+
+                <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
+                  <h4 className="font-bold text-slate-900 mb-2">🚆 Transporte Ferroviário</h4>
+                  <p className="text-slate-700 text-sm mb-2">
+                    <strong>Aplicações:</strong> Trens elétricos, metrôs, bondes, trens de alta velocidade (Shinkansen, TGV)
+                  </p>
+                  <p className="text-slate-700 text-sm">
+                    <strong>Vantagens:</strong> Torque alto em baixas velocidades (partida), eficiência superior a motores a diesel, regeneração de energia na frenagem, menor manutenção.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Info Box Final */}
         <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 mb-12">
-          <h4 className="font-bold text-red-900 mb-2">Resumo: Transformadores</h4>
+          <h4 className="font-bold text-red-900 mb-2">Resumo: Transformadores e Motores</h4>
           <ul className="text-red-800 text-sm space-y-2">
-            <li>• Funcionam apenas com corrente alternada (AC)</li>
-            <li>• Baseados na Lei de Faraday: V_s/V_p = N_s/N_p</li>
-            <li>• Conservam potência: V_p I_p = V_s I_s (ideal)</li>
-            <li>• Elevadores aumentam tensão, reduzem corrente</li>
-            <li>• Abaixadores reduzem tensão, aumentam corrente</li>
-            <li>• Essenciais para transmissão de energia de longa distância</li>
-            <li>• Eficiência típica: 95-99% em transformadores modernos</li>
+            <li>• <strong>Transformadores:</strong> Mudam tensão/corrente sem alterar potência. Essenciais para transmissão de energia.</li>
+            <li>• <strong>Motores:</strong> Convertem energia elétrica em mecânica usando Força de Lorentz.</li>
+            <li>• <strong>Ambos:</strong> Baseados em eletromagnetismo (Lei de Faraday, Lei de Ampère)</li>
+            <li>• <strong>Transformadores:</strong> Funcionam apenas com AC. Eficiência típica: 95-99%</li>
+            <li>• <strong>Motores:</strong> Podem ser CC ou CA. Eficiência típica: 85-95%</li>
+            <li>• <strong>Impacto:</strong> Transformadores permitiram cidades modernas. Motores consomem 45% da eletricidade mundial.</li>
           </ul>
         </div>
       </section>

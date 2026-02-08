@@ -29,7 +29,7 @@
   - [x] Vetor de Poynting - APROFUNDADO com contexto, dedução, termo-a-termo, intensidade média, passo-a-passo, 5+ exemplos
 - [x] Aplicações - Transformadores, Motores, Geradores
   - [x] Transformadores - REESCRITO COM DIDÁTICA SUPERIOR: termo-a-termo, analogias, 3 tipos, 3 exemplos, 4 aplicações práticas
-  - [x] Motores Elétricos - APROFUNDADO com contexto, Lei de Ampère, força de Lorentz, tipos, passo-a-passo, 5+ exemplos
+  - [x] Motores Elétricos - REESCRITO COM DIDÁTICA SUPERIOR: termo-a-termo, analogias, 3 tipos, passo-a-passo, 4 exemplos, 5 aplicações práticas
 - [x] Radiação Eletromagnética - Emissão, Absorção, Interação
 
 ### Diagramas Educacionais
