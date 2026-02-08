@@ -38,6 +38,10 @@
 - [x] Testar navegação entre tópicos
 - [x] Verificar que todas as páginas carregam corretamente
 
+## Dinâmica - Padronização em Progresso
+- [x] Leis de Newton - APROFUNDADO com contexto histórico, deduções completas, passo-a-passo, 3 exemplos resolvidos
+- [ ] Cinemática - Padronizar com mesma estrutura de Eletricidade (opcional - já tem conteúdo bom)
+
 ## Eletricidade - Completo
 - [x] 8 tópicos com conteúdo ITA/IME rigoroso
 - [x] 15 diagramas educacionais em português
