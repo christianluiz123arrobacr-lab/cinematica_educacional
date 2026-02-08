@@ -24,6 +24,8 @@
   - [x] Lei de Ampère-Maxwell - APROFUNDADO com contexto, corrente de deslocamento, deduções, passo-a-passo, 5+ exemplos
 - [x] Ondas Eletromagnéticas Avançado - Polarização, Poynting, Espectro
 - [x] Aplicações - Transformadores, Motores, Geradores
+  - [x] Transformadores - APROFUNDADO com contexto, Lei de Faraday, ideais vs reais, passo-a-passo, 5+ exemplos
+  - [x] Motores Elétricos - APROFUNDADO com contexto, Lei de Ampère, força de Lorentz, tipos, passo-a-passo, 5+ exemplos
 - [x] Radiação Eletromagnética - Emissão, Absorção, Interação
 
 ### Diagramas Educacionais

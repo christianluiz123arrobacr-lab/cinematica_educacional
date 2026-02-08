@@ -39,7 +39,7 @@ export default function EletromagnetismoTopicAplicacoes() {
                 O eletromagnetismo não é apenas uma teoria abstrata - é a base de praticamente toda a tecnologia moderna. Desde a geração de eletricidade até a transmissão de dados, os princípios eletromagnéticos são aplicados continuamente em dispositivos que usamos diariamente.
               </p>
               <p className="text-slate-700 leading-relaxed">
-                Neste tópico, exploraremos as aplicações mais importantes: transformadores, motores elétricos e geradores. Compreender como esses dispositivos funcionam é essencial para qualquer engenheiro.
+                Neste tópico, exploraremos as aplicações mais importantes: transformadores e motores elétricos. Compreender como esses dispositivos funcionam é essencial para qualquer engenheiro.
               </p>
             </div>
 
@@ -48,85 +48,270 @@ export default function EletromagnetismoTopicAplicacoes() {
               <ul className="space-y-2 text-slate-700">
                 <li className="flex items-start gap-2">
                   <span className="text-blue-600 font-bold mt-1">•</span>
-                  <span><strong>Transformadores:</strong> Convertem tensões e correntes em sistemas de potência.</span>
+                  <span><strong>Transformadores:</strong> Convertem tensões e correntes em sistemas de potência (Lei de Faraday).</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-blue-600 font-bold mt-1">•</span>
-                  <span><strong>Motores Elétricos:</strong> Convertem energia elétrica em energia mecânica.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-600 font-bold mt-1">•</span>
-                  <span><strong>Geradores:</strong> Convertem energia mecânica em energia elétrica.</span>
+                  <span><strong>Motores Elétricos:</strong> Convertem energia elétrica em energia mecânica (Lei de Ampère + Força de Lorentz).</span>
                 </li>
               </ul>
             </div>
           </div>
         </div>
 
-        {/* Transformadores */}
+        {/* TRANSFORMADORES - APROFUNDADO */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">⚡ Transformadores</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">⚡ Transformadores - Aprofundamento Completo</h2>
           
           <div className="space-y-8">
-            {/* Funcionamento */}
+            {/* Contexto Histórico */}
             <div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">1</span>
-                Princípio de Funcionamento
+                Contexto Histórico e Importância
               </h3>
               <p className="text-slate-700 mb-4 leading-relaxed">
-                Um transformador consiste em duas bobinas (primária e secundária) enroladas em torno de um núcleo de ferro. Quando uma tensão alternada é aplicada à bobina primária, cria um campo magnético variável que induz uma tensão na bobina secundária.
+                O transformador foi inventado em 1886 por Nikola Tesla e Westinghouse, revolucionando a transmissão de energia elétrica. Antes dos transformadores, a eletricidade tinha que ser gerada perto de onde era consumida, limitando a distância de transmissão. Os transformadores permitiram transmitir energia em alta tensão (reduzindo perdas) e depois reduzir para tensões seguras para uso.
+              </p>
+              
+              <div className="bg-purple-50 border-l-4 border-purple-500 rounded p-6 mb-6">
+                <h4 className="font-bold text-slate-900 mb-3">Por que Transformadores são Essenciais?</h4>
+                <div className="space-y-3 text-sm text-slate-700">
+                  <p>
+                    <strong>Problema:</strong> Transmitir energia em baixa tensão causa perdas enormes (P_perda = I²R). Com correntes altas, o aquecimento dos fios é proporcional ao quadrado da corrente.
+                  </p>
+                  <p>
+                    <strong>Solução:</strong> Transformadores elevadores aumentam a tensão (reduzindo corrente) para transmissão, depois transformadores abaixadores reduzem a tensão para uso seguro.
+                  </p>
+                  <p className="border-t border-purple-200 pt-2 mt-2">
+                    <strong>Resultado:</strong> Redução drástica de perdas, permitindo transmissão de energia a milhares de quilômetros.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Princípio de Funcionamento */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">2</span>
+                Princípio de Funcionamento Baseado em Lei de Faraday
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Um transformador consiste em duas bobinas (primária e secundária) enroladas em torno de um núcleo de ferro. Quando uma tensão alternada é aplicada à bobina primária, cria um campo magnético variável que induz uma tensão na bobina secundária através da Lei de Faraday.
               </p>
               
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
-                <h4 className="font-bold text-slate-800 mb-3">Equação de Transformação</h4>
-                <MathFormula formula="\frac{V_s}{V_p} = \frac{N_s}{N_p}" display={true} className="text-xl mb-4" />
-                <div className="text-sm text-slate-600 bg-white p-4 rounded-lg border border-slate-100 shadow-sm">
-                  <p className="font-semibold mb-2 text-slate-800">Onde:</p>
-                  <ul className="space-y-1">
-                    <li><MathFormula formula="V_p, V_s" display={false} />: Tensões primária e secundária (V)</li>
-                    <li><MathFormula formula="N_p, N_s" display={false} />: Número de espiras primária e secundária</li>
-                    <li><strong>Transformador elevador:</strong> <MathFormula formula="N_s > N_p" display={false} /> (aumenta tensão, diminui corrente)</li>
-                    <li><strong>Transformador abaixador:</strong> <MathFormula formula="N_s < N_p" display={false} /> (diminui tensão, aumenta corrente)</li>
-                  </ul>
+                <h4 className="font-bold text-slate-800 mb-3">Lei de Faraday em Transformadores</h4>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-slate-600 mb-2">Na bobina primária:</p>
+                    <MathFormula formula="V_p = -N_p \frac{d\Phi_B}{dt}" display={true} />
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-600 mb-2">Na bobina secundária:</p>
+                    <MathFormula formula="V_s = -N_s \frac{d\Phi_B}{dt}" display={true} />
+                  </div>
+                  <div className="bg-white p-3 rounded border border-slate-200">
+                    <p className="text-sm text-slate-700">
+                      Como o fluxo magnético é o mesmo em ambas as bobinas (núcleo de ferro), dividindo as equações:
+                    </p>
+                    <MathFormula formula="\frac{V_s}{V_p} = \frac{N_s}{N_p}" display={true} />
+                  </div>
                 </div>
               </div>
 
               <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg mb-6">
                 <h4 className="font-bold text-yellow-800 flex items-center gap-2 mb-2">
                   <Info className="w-4 h-4" />
-                  Conservação de Potência
+                  Condição Essencial
                 </h4>
                 <p className="text-slate-700 text-sm">
-                  Em um transformador ideal (sem perdas), a potência é conservada:
+                  Transformadores funcionam APENAS com corrente alternada (AC). Com corrente contínua (DC), não há variação de fluxo magnético, portanto não há indução.
                 </p>
-                <MathFormula formula="P_p = P_s \Rightarrow V_p I_p = V_s I_s" display={true} className="mt-2" />
               </div>
             </div>
 
-            {/* Aplicações */}
+            {/* Transformadores Ideais vs Reais */}
             <div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">2</span>
-                Aplicações de Transformadores
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">3</span>
+                Transformadores Ideais vs Reais
               </h3>
-              <p className="text-slate-700 mb-4 leading-relaxed">
-                Transformadores são essenciais em sistemas de potência e eletrônica:
-              </p>
               
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-bold text-slate-800 mb-2">Transmissão de Energia</h4>
-                    <p className="text-slate-700 text-sm">Transformadores elevadores aumentam a tensão para transmissão de longa distância (reduzindo perdas), e transformadores abaixadores reduzem a tensão para distribuição local.</p>
+                    <h4 className="font-bold text-slate-800 mb-2">Transformador Ideal</h4>
+                    <p className="text-slate-700 text-sm mb-2">Assumptions:</p>
+                    <ul className="text-sm text-slate-600 space-y-1 ml-4">
+                      <li>• Sem perdas de energia (eficiência = 100%)</li>
+                      <li>• Sem resistência nos fios</li>
+                      <li>• Núcleo de ferro perfeito (sem perdas magnéticas)</li>
+                      <li>• Acoplamento magnético perfeito entre bobinas</li>
+                    </ul>
+                  </div>
+                  <div className="border-t border-slate-200 pt-4">
+                    <h4 className="font-bold text-slate-800 mb-2">Transformador Real</h4>
+                    <p className="text-slate-700 text-sm mb-2">Perdas práticas:</p>
+                    <ul className="text-sm text-slate-600 space-y-1 ml-4">
+                      <li>• Perdas por resistência (aquecimento dos fios): I²R</li>
+                      <li>• Perdas no núcleo (histerese magnética): P_núcleo</li>
+                      <li>• Eficiência típica: 95-99%</li>
+                      <li>• Acoplamento magnético: 95-98%</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-green-50 border-l-4 border-green-500 rounded p-6">
+                <h4 className="font-bold text-slate-900 mb-3">Conservação de Potência (Ideal)</h4>
+                <p className="text-slate-700 text-sm mb-3">
+                  Em um transformador ideal, a potência é conservada:
+                </p>
+                <div className="bg-white p-3 rounded border border-green-200">
+                  <MathFormula formula="P_p = P_s" display={true} />
+                  <MathFormula formula="V_p I_p = V_s I_s" display={true} />
+                  <p className="text-sm text-slate-700 mt-3">
+                    Se aumentamos a tensão (step-up), a corrente diminui proporcionalmente. Se diminuímos a tensão (step-down), a corrente aumenta proporcionalmente.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Passo a Passo */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">4</span>
+                Passo a Passo: Resolver Problemas com Transformadores
+              </h3>
+              
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+                <ol className="space-y-3 text-sm text-slate-700">
+                  <li className="flex gap-3">
+                    <span className="font-bold text-purple-600 min-w-fit">Passo 1:</span>
+                    <span>Identifique se é transformador ideal ou real</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="font-bold text-purple-600 min-w-fit">Passo 2:</span>
+                    <span>Anote os dados: N_p, N_s, V_p (ou V_s), I_p (ou I_s)</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="font-bold text-purple-600 min-w-fit">Passo 3:</span>
+                    <span>Use a relação de transformação: V_s/V_p = N_s/N_p</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="font-bold text-purple-600 min-w-fit">Passo 4:</span>
+                    <span>Se ideal, use conservação de potência: V_p I_p = V_s I_s</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="font-bold text-purple-600 min-w-fit">Passo 5:</span>
+                    <span>Se real, calcule perdas e eficiência: η = P_saída / P_entrada</span>
+                  </li>
+                </ol>
+              </div>
+            </div>
+
+            {/* Exemplos Resolvidos */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">5</span>
+                Exemplos Resolvidos
+              </h3>
+              
+              <div className="space-y-6">
+                {/* Exemplo 1: Step-Up */}
+                <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                  <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <CheckCircle2 className="w-6 h-6 text-green-600" />
+                    Exemplo 1: Transformador Elevador (Step-Up)
+                  </h4>
+                  <div className="space-y-4">
+                    <p className="text-slate-700 text-sm">
+                      <strong>Problema:</strong> Uma usina gera 10 kV com corrente de 1000 A. Um transformador elevador tem 100 espiras na primária e 10000 espiras na secundária. Qual é a tensão e corrente secundárias (assumindo ideal)?
+                    </p>
+                    <div className="bg-white p-4 rounded border border-slate-200">
+                      <p className="text-slate-700 text-sm mb-3"><strong>Resolução:</strong></p>
+                      <ol className="list-decimal list-inside space-y-3 text-sm text-slate-600">
+                        <li>
+                          <strong>Relação de transformação:</strong>
+                          <MathFormula formula="\frac{N_s}{N_p} = \frac{10000}{100} = 100" display={true} />
+                        </li>
+                        <li>
+                          <strong>Tensão secundária:</strong>
+                          <MathFormula formula="V_s = V_p \times \frac{N_s}{N_p} = 10000 \times 100 = 1.000.000 \text{ V} = 1 \text{ MV}" display={true} />
+                        </li>
+                        <li>
+                          <strong>Corrente secundária (conservação de potência):</strong>
+                          <MathFormula formula="I_s = I_p \times \frac{N_p}{N_s} = 1000 \times \frac{100}{10000} = 10 \text{ A}" display={true} />
+                        </li>
+                        <li>
+                          <strong>Verificar potência:</strong>
+                          <MathFormula formula="P_p = 10000 \times 1000 = 10 \text{ MW}" display={true} />
+                          <MathFormula formula="P_s = 1000000 \times 10 = 10 \text{ MW}" display={true} />
+                        </li>
+                      </ol>
+                      <div className="mt-4 pt-4 border-t border-slate-200">
+                        <p className="text-slate-700 text-sm"><strong>Resposta:</strong> Tensão secundária = <strong>1 MV</strong>, Corrente secundária = <strong>10 A</strong>. A tensão aumentou 100 vezes, a corrente diminuiu 100 vezes, potência conservada.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Exemplo 2: Step-Down */}
+                <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                  <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <CheckCircle2 className="w-6 h-6 text-green-600" />
+                    Exemplo 2: Transformador Abaixador (Step-Down)
+                  </h4>
+                  <div className="space-y-4">
+                    <p className="text-slate-700 text-sm">
+                      <strong>Problema:</strong> Uma fonte de alimentação tem um transformador com 500 espiras na primária e 10 espiras na secundária. A tensão primária é 220 V AC. Qual é a tensão secundária? Se a corrente secundária é 5 A, qual é a corrente primária (ideal)?
+                    </p>
+                    <div className="bg-white p-4 rounded border border-slate-200">
+                      <p className="text-slate-700 text-sm mb-3"><strong>Resolução:</strong></p>
+                      <ol className="list-decimal list-inside space-y-3 text-sm text-slate-600">
+                        <li>
+                          <strong>Tensão secundária:</strong>
+                          <MathFormula formula="V_s = V_p \times \frac{N_s}{N_p} = 220 \times \frac{10}{500} = 220 \times 0,02 = 4,4 \text{ V}" display={true} />
+                        </li>
+                        <li>
+                          <strong>Corrente primária (conservação de potência):</strong>
+                          <MathFormula formula="I_p = I_s \times \frac{N_s}{N_p} = 5 \times \frac{10}{500} = 5 \times 0,02 = 0,1 \text{ A}" display={true} />
+                        </li>
+                      </ol>
+                      <div className="mt-4 pt-4 border-t border-slate-200">
+                        <p className="text-slate-700 text-sm"><strong>Resposta:</strong> Tensão secundária = <strong>4,4 V</strong>, Corrente primária = <strong>0,1 A</strong>. Este é um transformador típico de fonte de alimentação.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Aplicações Práticas */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">6</span>
+                Aplicações Práticas de Transformadores
+              </h3>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-bold text-slate-800 mb-2">Transmissão de Energia (Longa Distância)</h4>
+                    <p className="text-slate-700 text-sm">Transformadores elevadores aumentam a tensão para transmissão de longa distância (reduzindo perdas I²R), e transformadores abaixadores reduzem a tensão para distribuição local segura.</p>
                   </div>
                   <div className="border-t border-slate-200 pt-4">
                     <h4 className="font-bold text-slate-800 mb-2">Eletrônica de Consumo</h4>
-                    <p className="text-slate-700 text-sm">Transformadores em fontes de alimentação convertem 110V/220V AC para tensões menores (ex: 12V) necessárias para eletrônicos.</p>
+                    <p className="text-slate-700 text-sm">Transformadores em fontes de alimentação convertem 110V/220V AC para tensões menores (ex: 12V, 5V) necessárias para eletrônicos, computadores, carregadores de celular.</p>
                   </div>
                   <div className="border-t border-slate-200 pt-4">
                     <h4 className="font-bold text-slate-800 mb-2">Isolamento Elétrico</h4>
-                    <p className="text-slate-700 text-sm">Transformadores isolam circuitos, protegendo equipamentos e pessoas de choques elétricos.</p>
+                    <p className="text-slate-700 text-sm">Transformadores isolam circuitos, protegendo equipamentos e pessoas de choques elétricos. Essencial em equipamentos médicos e industriais.</p>
+                  </div>
+                  <div className="border-t border-slate-200 pt-4">
+                    <h4 className="font-bold text-slate-800 mb-2">Ajuste de Impedância</h4>
+                    <p className="text-slate-700 text-sm">Transformadores ajustam impedâncias entre circuitos para máxima transferência de potência. Usado em sistemas de áudio e RF.</p>
                   </div>
                 </div>
               </div>
@@ -134,54 +319,81 @@ export default function EletromagnetismoTopicAplicacoes() {
           </div>
         </div>
 
-        {/* Motores Elétricos */}
+        {/* MOTORES ELÉTRICOS - APROFUNDADO */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">⚙️ Motores Elétricos</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">⚙️ Motores Elétricos - Aprofundamento Completo</h2>
           
           <div className="space-y-8">
-            {/* Princípio */}
+            {/* Contexto Histórico */}
             <div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">1</span>
-                Princípio de Funcionamento
+                Contexto Histórico e Importância
               </h3>
               <p className="text-slate-700 mb-4 leading-relaxed">
-                Um motor elétrico converte energia elétrica em energia mecânica usando a força magnética sobre um condutor que transporta corrente. A força de Lorentz sobre uma bobina em um campo magnético gera um torque que faz a bobina girar.
+                O motor elétrico foi desenvolvido por Nikola Tesla em 1887, revolucionando a indústria. Antes dos motores elétricos, as máquinas eram acionadas por vapor ou energia hidráulica. Os motores elétricos permitiram maior precisão, controle e eficiência, transformando completamente a manufatura moderna.
+              </p>
+              
+              <div className="bg-orange-50 border-l-4 border-orange-500 rounded p-6 mb-6">
+                <h4 className="font-bold text-slate-900 mb-3">Importância dos Motores Elétricos</h4>
+                <p className="text-slate-700 text-sm">
+                  Motores elétricos são responsáveis por aproximadamente 45% do consumo de eletricidade mundial. Estão em praticamente tudo: ventiladores, bombas, compressores, máquinas industriais, veículos elétricos, etc. Melhorar a eficiência de motores tem impacto direto na sustentabilidade energética global.
+                </p>
+              </div>
+            </div>
+
+            {/* Princípio de Funcionamento */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">2</span>
+                Princípio de Funcionamento: Lei de Ampère + Força de Lorentz
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Um motor elétrico converte energia elétrica em energia mecânica usando dois princípios fundamentais: (1) Lei de Ampère (corrente gera campo magnético) e (2) Força de Lorentz (campo magnético exerce força sobre condutor com corrente).
               </p>
               
               <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
-                <h4 className="font-semibold text-yellow-400 mb-3">Força e Torque</h4>
-                <MathFormula formula="\vec{F} = I\vec{L} \times \vec{B}" display={true} className="text-lg mb-4" />
-                <MathFormula formula="\tau = NIAB\sin\theta" display={true} className="text-lg mb-4" />
-                <div className="text-sm text-slate-300">
-                  <p className="font-semibold text-yellow-400 mb-2">Onde:</p>
-                  <ul className="space-y-1">
-                    <li><MathFormula formula="N" display={false} />: Número de espiras na bobina</li>
-                    <li><MathFormula formula="I" display={false} />: Corrente (A)</li>
-                    <li><MathFormula formula="A" display={false} />: Área da bobina (m²)</li>
-                    <li><MathFormula formula="B" display={false} />: Campo magnético (T)</li>
-                    <li><MathFormula formula="\theta" display={false} />: Ângulo entre a normal da bobina e o campo</li>
+                <h4 className="font-semibold text-yellow-400 mb-4">Força de Lorentz em um Condutor</h4>
+                <MathFormula formula="\vec{F} = I\vec{L} \times \vec{B}" display={true} className="text-2xl mb-4" />
+                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300">
+                  <p className="font-semibold text-yellow-400 mb-3">Significado:</p>
+                  <ul className="space-y-2">
+                    <li><strong>I:</strong> Corrente no condutor (A)</li>
+                    <li><strong>L:</strong> Comprimento do condutor (m)</li>
+                    <li><strong>B:</strong> Campo magnético (T)</li>
+                    <li><strong>F:</strong> Força resultante (N) - perpendicular a I e B</li>
                   </ul>
                 </div>
               </div>
 
-              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5" />
-                  <div>
-                    <h4 className="font-bold text-orange-800 text-sm">Torque Máximo</h4>
-                    <p className="text-sm text-orange-700">
-                      O torque é máximo quando <MathFormula formula="\sin\theta = 1" display={false} />, ou seja, quando o plano da bobina é paralelo ao campo magnético.
-                    </p>
-                  </div>
+              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
+                <h4 className="font-semibold text-yellow-400 mb-4">Torque em uma Bobina</h4>
+                <MathFormula formula="\tau = NIAB\sin\theta" display={true} className="text-2xl mb-4" />
+                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300">
+                  <p className="font-semibold text-yellow-400 mb-3">Onde:</p>
+                  <ul className="space-y-2">
+                    <li><strong>N:</strong> Número de espiras na bobina</li>
+                    <li><strong>I:</strong> Corrente (A)</li>
+                    <li><strong>A:</strong> Área da bobina (m²)</li>
+                    <li><strong>B:</strong> Campo magnético (T)</li>
+                    <li><strong>θ:</strong> Ângulo entre a normal da bobina e o campo</li>
+                    <li><strong>τ:</strong> Torque (N·m) - causa rotação</li>
+                  </ul>
                 </div>
+              </div>
+
+              <div className="bg-green-50 border-l-4 border-green-500 rounded p-6">
+                <h4 className="font-bold text-slate-900 mb-3">Como Funciona a Rotação?</h4>
+                <p className="text-slate-700 text-sm mb-3">
+                  Quando corrente passa pela bobina em um campo magnético, a força de Lorentz atua em lados opostos da bobina em direções opostas, criando um torque. A bobina começa a girar. Para manter a rotação contínua, a corrente deve ser comutada (invertida) a cada meia volta, mantendo o torque sempre na mesma direção.
+                </p>
               </div>
             </div>
 
             {/* Tipos de Motores */}
             <div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">2</span>
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">3</span>
                 Tipos de Motores Elétricos
               </h3>
               
@@ -189,109 +401,151 @@ export default function EletromagnetismoTopicAplicacoes() {
                 <div className="space-y-4">
                   <div>
                     <h4 className="font-bold text-slate-800 mb-2">Motor CC (Corrente Contínua)</h4>
-                    <p className="text-slate-700 text-sm">Usa comutadores para manter o torque constante. Oferece controle preciso de velocidade e torque. Usado em aplicações que requerem variação de velocidade.</p>
+                    <p className="text-slate-700 text-sm mb-2"><strong>Funcionamento:</strong> Usa comutadores (escovas) para inverter a corrente a cada meia volta, mantendo o torque.</p>
+                    <p className="text-slate-700 text-sm mb-2"><strong>Vantagens:</strong> Controle preciso de velocidade e torque. Torque de partida alto.</p>
+                    <p className="text-slate-700 text-sm"><strong>Desvantagens:</strong> Comutadores requerem manutenção. Mais caro. Não ideal para altas velocidades.</p>
                   </div>
                   <div className="border-t border-slate-200 pt-4">
-                    <h4 className="font-bold text-slate-800 mb-2">Motor CA (Corrente Alternada)</h4>
-                    <p className="text-slate-700 text-sm">Mais simples e robusto que motores CC. Não requer comutadores. Muito usado em aplicações industriais e domésticas.</p>
+                    <h4 className="font-bold text-slate-800 mb-2">Motor CA (Corrente Alternada) - Síncrono</h4>
+                    <p className="text-slate-700 text-sm mb-2"><strong>Funcionamento:</strong> O campo magnético gira com a frequência da AC. A bobina segue o campo (sincronismo).</p>
+                    <p className="text-slate-700 text-sm mb-2"><strong>Vantagens:</strong> Velocidade constante. Sem comutadores.</p>
+                    <p className="text-slate-700 text-sm"><strong>Desvantagens:</strong> Requer sincronismo. Torque de partida baixo.</p>
+                  </div>
+                  <div className="border-t border-slate-200 pt-4">
+                    <h4 className="font-bold text-slate-800 mb-2">Motor CA - Indução (Assíncrono)</h4>
+                    <p className="text-slate-700 text-sm mb-2"><strong>Funcionamento:</strong> O rotor não segue exatamente o campo (escorregamento). Muito robusto e simples.</p>
+                    <p className="text-slate-700 text-sm mb-2"><strong>Vantagens:</strong> Muito robusto. Sem comutadores. Barato. Fácil de manter.</p>
+                    <p className="text-slate-700 text-sm"><strong>Aplicação:</strong> Mais usado em aplicações industriais e domésticas.</p>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Geradores */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">⚡ Geradores Elétricos</h2>
-          
-          <div className="space-y-8">
-            {/* Princípio */}
+            {/* Passo a Passo */}
             <div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">1</span>
-                Princípio de Funcionamento
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">4</span>
+                Passo a Passo: Resolver Problemas com Motores
               </h3>
-              <p className="text-slate-700 mb-4 leading-relaxed">
-                Um gerador elétrico converte energia mecânica em energia elétrica usando indução eletromagnética. Quando uma bobina gira em um campo magnético, a variação do fluxo magnético induz uma fem (força eletromotriz) que gera corrente elétrica.
-              </p>
               
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
-                <h4 className="font-bold text-slate-800 mb-3">Fem Induzida</h4>
-                <MathFormula formula="\mathcal{E} = NAB\omega \sin(\omega t)" display={true} className="text-xl mb-4" />
-                <div className="text-sm text-slate-600 bg-white p-4 rounded-lg border border-slate-100 shadow-sm">
-                  <p className="font-semibold mb-2 text-slate-800">Onde:</p>
-                  <ul className="space-y-1">
-                    <li><MathFormula formula="N" display={false} />: Número de espiras</li>
-                    <li><MathFormula formula="A" display={false} />: Área da bobina (m²)</li>
-                    <li><MathFormula formula="B" display={false} />: Campo magnético (T)</li>
-                    <li><MathFormula formula="\omega" display={false} />: Velocidade angular (rad/s)</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg mb-6">
-                <h4 className="font-bold text-yellow-800 flex items-center gap-2 mb-2">
-                  <Info className="w-4 h-4" />
-                  Fem Máxima
-                </h4>
-                <p className="text-slate-700 text-sm">
-                  A fem máxima é <MathFormula formula="\mathcal{E}_{max} = NAB\omega" display={false} />, que ocorre quando <MathFormula formula="\sin(\omega t) = 1" display={false} />.
-                </p>
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+                <ol className="space-y-3 text-sm text-slate-700">
+                  <li className="flex gap-3">
+                    <span className="font-bold text-purple-600 min-w-fit">Passo 1:</span>
+                    <span>Identifique o tipo de motor (CC, CA síncrono, indução)</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="font-bold text-purple-600 min-w-fit">Passo 2:</span>
+                    <span>Anote os dados: N (espiras), A (área), B (campo), I (corrente), θ (ângulo)</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="font-bold text-purple-600 min-w-fit">Passo 3:</span>
+                    <span>Calcule o torque: τ = NIAB sin(θ)</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="font-bold text-purple-600 min-w-fit">Passo 4:</span>
+                    <span>Se tiver velocidade angular ω, calcule potência: P = τω</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="font-bold text-purple-600 min-w-fit">Passo 5:</span>
+                    <span>Calcule eficiência: η = P_mecânica / P_elétrica</span>
+                  </li>
+                </ol>
               </div>
             </div>
 
-            {/* Tipos de Geradores */}
+            {/* Exemplos Resolvidos */}
             <div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">2</span>
-                Tipos de Geradores
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">5</span>
+                Exemplos Resolvidos
+              </h3>
+              
+              <div className="space-y-6">
+                {/* Exemplo 1: Motor CC */}
+                <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                  <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <CheckCircle2 className="w-6 h-6 text-green-600" />
+                    Exemplo 1: Torque em Motor CC
+                  </h4>
+                  <div className="space-y-4">
+                    <p className="text-slate-700 text-sm">
+                      <strong>Problema:</strong> Um motor CC tem uma bobina com 50 espiras, área de 0,02 m², em um campo magnético de 0,5 T. A corrente é 10 A. Qual é o torque máximo?
+                    </p>
+                    <div className="bg-white p-4 rounded border border-slate-200">
+                      <p className="text-slate-700 text-sm mb-3"><strong>Resolução:</strong></p>
+                      <ol className="list-decimal list-inside space-y-3 text-sm text-slate-600">
+                        <li>
+                          <strong>Torque máximo ocorre quando sin(θ) = 1:</strong>
+                          <MathFormula formula="\tau_{max} = NIAB = 50 \times 10 \times 0,02 \times 0,5" display={true} />
+                        </li>
+                        <li>
+                          <strong>Calcular:</strong>
+                          <MathFormula formula="\tau_{max} = 50 \times 10 \times 0,02 \times 0,5 = 5 \text{ N·m}" display={true} />
+                        </li>
+                      </ol>
+                      <div className="mt-4 pt-4 border-t border-slate-200">
+                        <p className="text-slate-700 text-sm"><strong>Resposta:</strong> O torque máximo é <strong>5 N·m</strong>. Este é um torque moderado, típico de motores pequenos.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Exemplo 2: Potência do Motor */}
+                <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                  <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <CheckCircle2 className="w-6 h-6 text-green-600" />
+                    Exemplo 2: Potência Mecânica de um Motor
+                  </h4>
+                  <div className="space-y-4">
+                    <p className="text-slate-700 text-sm">
+                      <strong>Problema:</strong> O motor do exemplo anterior gira a 1800 RPM. Qual é a potência mecânica desenvolvida?
+                    </p>
+                    <div className="bg-white p-4 rounded border border-slate-200">
+                      <p className="text-slate-700 text-sm mb-3"><strong>Resolução:</strong></p>
+                      <ol className="list-decimal list-inside space-y-3 text-sm text-slate-600">
+                        <li>
+                          <strong>Converter RPM para rad/s:</strong>
+                          <MathFormula formula="\omega = 1800 \text{ RPM} = 1800 \times \frac{2\pi}{60} = 60\pi \text{ rad/s} \approx 188,5 \text{ rad/s}" display={true} />
+                        </li>
+                        <li>
+                          <strong>Potência = Torque × Velocidade Angular:</strong>
+                          <MathFormula formula="P = \tau \omega = 5 \times 188,5 = 942,5 \text{ W} \approx 1 \text{ kW}" display={true} />
+                        </li>
+                      </ol>
+                      <div className="mt-4 pt-4 border-t border-slate-200">
+                        <p className="text-slate-700 text-sm"><strong>Resposta:</strong> A potência mecânica é aproximadamente <strong>1 kW</strong>. Este é um motor típico para aplicações industriais pequenas.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Aplicações Práticas */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">6</span>
+                Aplicações Práticas de Motores Elétricos
               </h3>
               
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-bold text-slate-800 mb-2">Gerador CA (Alternador)</h4>
-                    <p className="text-slate-700 text-sm">Produz corrente alternada. Sem comutadores, é mais simples e robusto. Usado em usinas de energia elétrica.</p>
+                    <h4 className="font-bold text-slate-800 mb-2">Ventiladores e Bombas</h4>
+                    <p className="text-slate-700 text-sm">Motores CA indução de baixa potência (0,1-1 kW) em ventiladores, ar condicionado, bombas de água.</p>
                   </div>
                   <div className="border-t border-slate-200 pt-4">
-                    <h4 className="font-bold text-slate-800 mb-2">Gerador CC</h4>
-                    <p className="text-slate-700 text-sm">Produz corrente contínua usando comutadores. Usado em aplicações que requerem CC, como carregamento de baterias.</p>
+                    <h4 className="font-bold text-slate-800 mb-2">Máquinas Industriais</h4>
+                    <p className="text-slate-700 text-sm">Motores CA indução de alta potência (10-100 kW) em compressores, máquinas de usinagem, transportadores.</p>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Exemplo Resolvido */}
-            <div>
-              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-                <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-                  <CheckCircle2 className="w-6 h-6 text-green-600" />
-                  Exemplo Resolvido: Gerador AC
-                </h4>
-                <div className="space-y-4">
-                  <p className="text-slate-700 text-sm">
-                    <strong>Problema:</strong> Um gerador AC tem uma bobina com 100 espiras, área de 0,1 m², girando em um campo magnético de 0,5 T a uma frequência de 60 Hz. Qual é a fem máxima gerada?
-                  </p>
-                  <div className="bg-white p-4 rounded border border-slate-200">
-                    <p className="text-slate-700 text-sm mb-3"><strong>Resolução:</strong></p>
-                    <ol className="list-decimal list-inside space-y-3 text-sm text-slate-600">
-                      <li>
-                        <strong>Calcular a velocidade angular:</strong>
-                        <MathFormula formula="\omega = 2\pi f = 2\pi \times 60 = 120\pi \text{ rad/s}" display={true} />
-                      </li>
-                      <li>
-                        <strong>Calcular a fem máxima:</strong>
-                        <MathFormula formula="\mathcal{E}_{max} = NAB\omega = 100 \times 0,1 \times 0,5 \times 120\pi" display={true} />
-                      </li>
-                      <li>
-                        <strong>Resultado:</strong>
-                        <MathFormula formula="\mathcal{E}_{max} = 600\pi \approx 1884 \text{ V}" display={true} />
-                      </li>
-                    </ol>
-                    <div className="mt-4 pt-4 border-t border-slate-200">
-                      <p className="text-slate-700 text-sm"><strong>Resposta:</strong> A fem máxima gerada é aproximadamente <strong>1884 V</strong> ou <strong>1,88 kV</strong>.</p>
-                    </div>
+                  <div className="border-t border-slate-200 pt-4">
+                    <h4 className="font-bold text-slate-800 mb-2">Eletrônicos de Consumo</h4>
+                    <p className="text-slate-700 text-sm">Motores CC pequenos (1-100 W) em liquidificadores, furadeiras, ventiladores de computador, drones.</p>
+                  </div>
+                  <div className="border-t border-slate-200 pt-4">
+                    <h4 className="font-bold text-slate-800 mb-2">Veículos Elétricos</h4>
+                    <p className="text-slate-700 text-sm">Motores síncronos de alta potência (50-300 kW) em carros elétricos, oferecendo alto torque e eficiência.</p>
                   </div>
                 </div>
               </div>
