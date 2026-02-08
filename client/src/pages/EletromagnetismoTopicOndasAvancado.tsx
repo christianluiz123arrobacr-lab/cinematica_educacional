@@ -45,266 +45,312 @@ export default function EletromagnetismoTopicOndasAvancado() {
           </div>
         </div>
 
-        {/* EQUAÇÃO DE ONDA - DIDÁTICA */}
+        {/* EQUAÇÃO DE ONDA */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">🌊 Equação de Onda Eletromagnética - Explicação Completa</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🌊 Equação de Onda Eletromagnética</h2>
           
           <div className="space-y-6">
-            <p className="text-slate-700 leading-relaxed">
-              A equação de onda eletromagnética é derivada diretamente das Equações de Maxwell. Ela descreve como os campos elétrico e magnético variam no espaço e no tempo.
-            </p>
-
-            {/* Contexto Histórico */}
-            <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
-              <h3 className="text-xl font-bold text-slate-900 mb-3">📚 Contexto Histórico</h3>
-              <p className="text-slate-700 text-sm leading-relaxed">
-                Em 1865, James Clerk Maxwell combinou suas quatro equações e descobriu algo extraordinário: os campos elétrico e magnético obedecem à mesma equação que descreve ondas mecânicas! Isto significava que luz é uma onda eletromagnética. Ao calcular a velocidade dessa onda, Maxwell obteve exatamente a velocidade da luz conhecida experimentalmente (c ≈ 3 × 10⁸ m/s). Esta foi uma das maiores descobertas da física!
-              </p>
-            </div>
-
-            {/* Forma Geral da Equação de Onda */}
             <div className="bg-gradient-to-r from-green-900 to-green-800 text-white rounded-xl p-8 shadow-lg">
-              <p className="text-center text-sm mb-3 text-green-200">Equação de Onda Eletromagnética (Forma Geral):</p>
-              <MathFormula formula="\nabla^2 \vec{E} = \mu_0 \epsilon_0 \frac{\partial^2 \vec{E}}{\partial t^2}" display={true} className="text-2xl mb-4" />
-              <MathFormula formula="\nabla^2 \vec{B} = \mu_0 \epsilon_0 \frac{\partial^2 \vec{B}}{\partial t^2}" display={true} className="text-2xl" />
+              <p className="text-center text-sm mb-3 text-green-200">Equação de Onda Eletromagnética:</p>
+              <MathFormula formula="\nabla^2 \vec{E} = \mu_0 \epsilon_0 \frac{\partial^2 \vec{E}}{\partial t^2}" display={true} className="text-2xl" />
             </div>
 
-            {/* Explicação Termo a Termo */}
-            <div className="space-y-4">
-              <h3 className="text-2xl font-bold text-slate-900">Entendendo Cada Termo:</h3>
-
-              <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3 text-lg">
-                  <MathFormula formula="\nabla^2" display={false} /> - O Operador Laplaciano
-                </h4>
-                <p className="text-slate-700 mb-3">
-                  Este símbolo (∇²) é chamado de <strong>Laplaciano</strong>. Ele mede como o campo varia no espaço em todas as direções.
-                </p>
-                <div className="bg-white p-4 rounded border border-green-200">
-                  <p className="text-sm text-slate-700 mb-2"><strong>O que ele faz?</strong></p>
-                  <p className="text-sm text-slate-700 mb-2">O Laplaciano calcula a "curvatura" do campo em um ponto. Se o campo está muito curvado (mudando rapidamente no espaço), o Laplaciano é grande.</p>
-                  <p className="text-sm text-slate-700"><strong>Analogia:</strong> Imagine uma corda vibrando. O Laplaciano mede quanto a corda está "ondulada" em um ponto.</p>
-                </div>
-              </div>
-
-              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3 text-lg">
-                  <MathFormula formula="\frac{\partial^2 \vec{E}}{\partial t^2}" display={false} /> - Aceleração do Campo Elétrico
-                </h4>
-                <p className="text-slate-700 mb-3">
-                  Este termo mede como rápido o campo elétrico está mudando com o tempo, especificamente a <strong>segunda derivada</strong> (aceleração).
-                </p>
-                <div className="bg-white p-4 rounded border border-blue-200">
-                  <p className="text-sm text-slate-700 mb-2"><strong>O que significa?</strong></p>
-                  <p className="text-sm text-slate-700 mb-2">Se o campo está aumentando rapidamente, a primeira derivada é grande. Se está acelerando (aumentando mais rápido), a segunda derivada é grande.</p>
-                  <p className="text-sm text-slate-700"><strong>Analogia:</strong> Se você está em um carro, a primeira derivada é a velocidade. A segunda derivada é a aceleração (como rápido você está acelerando).</p>
-                </div>
-              </div>
-
-              <div className="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3 text-lg">
-                  <MathFormula formula="\mu_0 \epsilon_0" display={false} /> - Produto de Constantes Fundamentais
-                </h4>
-                <p className="text-slate-700 mb-3">
-                  Este produto de duas constantes fundamentais determina a <strong>velocidade da onda</strong>.
-                </p>
-                <div className="bg-white p-4 rounded border border-purple-200">
-                  <p className="text-sm text-slate-700 mb-2"><strong>Valores:</strong></p>
-                  <ul className="text-sm text-slate-700 space-y-1">
-                    <li>• μ₀ = 4π × 10⁻⁷ T·m/A (permeabilidade do vácuo)</li>
-                    <li>• ε₀ = 8,854 × 10⁻¹² C²/(N·m²) (permissividade do vácuo)</li>
-                  </ul>
-                  <p className="text-sm text-slate-700 mt-2"><strong>O que ele faz?</strong> Relaciona a "curvatura espacial" do campo com sua "aceleração temporal". Quanto menor μ₀ε₀, mais rápido o campo se propaga.</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Significado Geral */}
-            <div className="bg-gradient-to-r from-yellow-100 to-yellow-50 border border-yellow-300 rounded-lg p-6">
-              <h4 className="font-bold text-slate-900 mb-3">O Significado Completo da Equação de Onda:</h4>
-              <p className="text-slate-700 text-sm leading-relaxed">
-                <strong>A curvatura espacial do campo elétrico é proporcional à sua aceleração temporal.</strong> Isto descreve uma onda: quando o campo está muito curvado em um ponto, ele está acelerando rapidamente no tempo, propagando-se como uma onda.
-              </p>
-            </div>
+            <p className="text-slate-700 leading-relaxed">
+              Esta equação descreve como o campo elétrico varia no espaço e no tempo. A solução mais importante é a onda plana monocromática que descreve luz visível, rádio, micro-ondas e outras radiações eletromagnéticas.
+            </p>
           </div>
         </div>
 
         {/* VELOCIDADE DA LUZ */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">⚡ Derivação da Velocidade da Luz</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">⚡ Velocidade da Luz</h2>
           
           <div className="space-y-6">
-            <p className="text-slate-700 leading-relaxed">
-              Uma das maiores descobertas de Maxwell foi que a velocidade da onda eletromagnética é determinada apenas pelas constantes fundamentais do vácuo!
-            </p>
-
             <div className="bg-gradient-to-r from-red-900 to-red-800 text-white rounded-xl p-8 shadow-lg">
               <p className="text-center text-sm mb-3 text-red-200">Velocidade da Onda Eletromagnética:</p>
-              <MathFormula formula="c = \frac{1}{\sqrt{\mu_0 \epsilon_0}}" display={true} className="text-3xl" />
+              <MathFormula formula="c = \frac{1}{\sqrt{\mu_0 \epsilon_0}} = 2,998 \times 10^8 \text{ m/s}" display={true} className="text-2xl" />
             </div>
 
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
-              <h4 className="font-bold text-orange-900 mb-3">Como Maxwell Derivou Isto:</h4>
-              <p className="text-slate-700 text-sm mb-3">
-                Comparando a equação de onda eletromagnética com a forma padrão de uma onda:
-              </p>
-              <div className="bg-white p-4 rounded border border-orange-200 text-sm text-slate-700 space-y-2">
-                <p><strong>Forma padrão de onda:</strong> ∇²f = (1/v²) ∂²f/∂t²</p>
-                <p><strong>Nossa equação:</strong> ∇²E = μ₀ε₀ ∂²E/∂t²</p>
-                <p><strong>Comparando:</strong> 1/v² = μ₀ε₀</p>
-                <p><strong>Portanto:</strong> v = 1/√(μ₀ε₀) = c</p>
-              </div>
-            </div>
-
-            <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
-              <h4 className="font-bold text-slate-900 mb-3">Cálculo Numérico:</h4>
-              <div className="bg-white p-4 rounded border border-green-200 text-sm text-slate-700 space-y-2">
-                <p><strong>Dados:</strong> μ₀ = 4π × 10⁻⁷, ε₀ = 8,854 × 10⁻¹²</p>
-                <MathFormula formula="c = \frac{1}{\sqrt{(4\pi \times 10^{-7})(8,854 \times 10^{-12})}} = \frac{1}{\sqrt{1,112 \times 10^{-17}}} = 2,998 \times 10^8 \text{ m/s}" display={true} />
-                <p><strong>Resultado:</strong> c ≈ 3 × 10⁸ m/s (velocidade da luz no vácuo!)</p>
-              </div>
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h4 className="font-bold text-blue-900 mb-3">O Significado Profundo:</h4>
-              <p className="text-slate-700 text-sm leading-relaxed">
-                Maxwell descobriu que a velocidade da luz não é uma constante arbitrária - ela é determinada pelas propriedades fundamentais do vácuo! Isto sugeriu que luz é uma onda eletromagnética, unificando ótica e eletromagnetismo. Mais tarde, Einstein usaria este resultado como base para a Relatividade Especial.
-              </p>
-            </div>
+            <p className="text-slate-700 leading-relaxed">
+              Maxwell descobriu que a velocidade da onda eletromagnética é determinada apenas pelas constantes fundamentais do vácuo. Isto levou à conclusão revolucionária de que luz é uma onda eletromagnética.
+            </p>
           </div>
         </div>
 
         {/* ONDA PLANA MONOCROMÁTICA */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">〰️ Onda Plana Monocromática - Solução Mais Comum</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">〰️ Onda Plana Monocromática</h2>
           
           <div className="space-y-6">
-            <p className="text-slate-700 leading-relaxed">
-              A solução mais importante da equação de onda é a <strong>onda plana monocromática</strong>, que descreve uma onda com uma única frequência propagando-se em uma direção.
-            </p>
-
             <div className="bg-gradient-to-r from-purple-900 to-purple-800 text-white rounded-xl p-8 shadow-lg">
               <p className="text-center text-sm mb-3 text-purple-200">Onda Plana Monocromática:</p>
-              <MathFormula formula="\vec{E}(\vec{r}, t) = \vec{E}_0 \cos(\vec{k} \cdot \vec{r} - \omega t + \phi)" display={true} className="text-2xl mb-4" />
-              <MathFormula formula="\vec{B}(\vec{r}, t) = \vec{B}_0 \cos(\vec{k} \cdot \vec{r} - \omega t + \phi)" display={true} className="text-2xl" />
+              <MathFormula formula="\vec{E}(\vec{r}, t) = \vec{E}_0 \cos(\vec{k} \cdot \vec{r} - \omega t + \phi)" display={true} className="text-2xl" />
             </div>
 
-            <div className="space-y-4">
-              <h3 className="text-2xl font-bold text-slate-900">Entendendo Cada Termo:</h3>
+            <p className="text-slate-700 leading-relaxed">
+              Esta é a solução mais importante da equação de onda. Descreve uma onda com uma única frequência propagando-se em uma direção específica. Todos os tipos de radiação eletromagnética (luz visível, rádio, raios-X, etc.) podem ser descritos como superposição de ondas planas monocromáticas.
+            </p>
+          </div>
+        </div>
 
-              <div className="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3 text-lg">
-                  <MathFormula formula="\vec{E}_0" display={false} /> - Amplitude do Campo Elétrico
-                </h4>
-                <p className="text-slate-700 text-sm">
-                  Valor máximo que o campo elétrico atinge. Medido em V/m ou N/C.
-                </p>
-                <p className="text-slate-700 text-sm mt-2">
-                  <strong>Analogia:</strong> Se você agita uma corda, a amplitude é o quanto você levanta a corda para cima.
-                </p>
-              </div>
+        {/* POLARIZAÇÃO - APROFUNDADO */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🔀 Polarização de Ondas Eletromagnéticas - Aprofundado</h2>
+          
+          <div className="space-y-6">
+            <div className="bg-green-50 border-l-4 border-green-500 rounded p-6">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">O que é Polarização?</h3>
+              <p className="text-slate-700 leading-relaxed">
+                A <strong>polarização</strong> descreve a orientação e o comportamento do campo elétrico em relação à direção de propagação da onda. É uma propriedade fundamental que afeta como as ondas interagem com a matéria.
+              </p>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded p-6">
+              <h4 className="font-bold text-slate-900 mb-3">📚 Contexto Histórico</h4>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                Em 1808, Étienne-Louis Malus descobriu que a luz refletida em vidro se comportava de forma estranha - sua intensidade variava com ângulos específicos. Isto levou à descoberta da polarização. Mais tarde, Young e Fresnel explicaram isto usando a natureza ondulatória da luz. Hoje, polarização é fundamental em tecnologias como LCD, 3D, comunicações ópticas e filtros solares.
+              </p>
+            </div>
+
+            {/* Tipos de Polarização */}
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">Tipos de Polarização</h3>
 
               <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3 text-lg">
-                  <MathFormula formula="\vec{k}" display={false} /> - Vetor de Onda
-                </h4>
-                <p className="text-slate-700 text-sm mb-2">
-                  Aponta na direção de propagação e tem magnitude k = 2π/λ (número de onda).
-                </p>
-                <p className="text-slate-700 text-sm">
-                  <strong>O que significa:</strong> Quanto maior k, mais rapidamente a onda oscila no espaço (comprimento de onda menor).
-                </p>
-              </div>
-
-              <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3 text-lg">
-                  <MathFormula formula="\omega" display={false} /> - Frequência Angular
-                </h4>
-                <p className="text-slate-700 text-sm mb-2">
-                  Mede como rápido a onda oscila no tempo. ω = 2πf, onde f é a frequência em Hz.
-                </p>
-                <p className="text-slate-700 text-sm">
-                  <strong>Unidade:</strong> Radianos por segundo (rad/s)
-                </p>
-              </div>
-
-              <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3 text-lg">
-                  <MathFormula formula="\phi" display={false} /> - Fase Inicial
-                </h4>
-                <p className="text-slate-700 text-sm">
-                  Determina o valor do campo no ponto r = 0 e tempo t = 0. Medida em radianos.
-                </p>
-              </div>
-
-              <div className="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3 text-lg">
-                  Relação de Dispersão
-                </h4>
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">1️⃣ Polarização Linear</h4>
                 <p className="text-slate-700 text-sm mb-3">
-                  Para ondas eletromagnéticas no vácuo, existe uma relação especial entre k e ω:
+                  O campo elétrico oscila em uma única direção fixa (perpendicular à propagação). É o tipo mais comum.
                 </p>
-                <div className="bg-white p-3 rounded border border-orange-200">
-                  <MathFormula formula="\omega = ck" display={true} />
-                  <p className="text-sm text-slate-700 mt-2">
-                    Isto significa que a frequência é proporcional ao número de onda. Ondas com comprimentos de onda menores oscilam mais rapidamente.
+                <div className="bg-white p-4 rounded border border-blue-200 space-y-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800 mb-2">Fórmula:</p>
+                    <MathFormula formula="\vec{E} = E_0 \cos(kz - \omega t) \hat{x}" display={true} />
+                  </div>
+                  <p className="text-sm text-slate-700">
+                    <strong>Significado:</strong> O campo elétrico oscila apenas na direção x com amplitude E₀, enquanto a onda se propaga em z.
+                  </p>
+                  <p className="text-sm text-slate-700">
+                    <strong>Exemplos:</strong> Luz do sol, luz de lâmpadas, luz de monitores LCD
                   </p>
                 </div>
               </div>
-            </div>
 
-            {/* Exemplo Numérico */}
-            <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
-              <h4 className="font-bold text-slate-900 mb-3">Exemplo: Onda de Luz Visível (Verde)</h4>
-              <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-2">
-                <p><strong>Comprimento de onda:</strong> λ = 550 nm (verde)</p>
-                <p><strong>Número de onda:</strong> k = 2π/λ = 2π/(550 × 10⁻⁹) = 1,14 × 10⁷ m⁻¹</p>
-                <p><strong>Frequência:</strong> f = c/λ = (3 × 10⁸)/(550 × 10⁻⁹) = 5,45 × 10¹⁴ Hz</p>
-                <p><strong>Frequência angular:</strong> ω = 2πf = 3,42 × 10¹⁵ rad/s</p>
-                <p className="mt-3"><strong>Verificação:</strong> ω/k = (3,42 × 10¹⁵)/(1,14 × 10⁷) = 3 × 10⁸ m/s = c ✓</p>
+              <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">2️⃣ Polarização Circular</h4>
+                <p className="text-slate-700 text-sm mb-3">
+                  O campo elétrico mantém magnitude constante mas rotaciona enquanto a onda se propaga, traçando um círculo.
+                </p>
+                <div className="bg-white p-4 rounded border border-green-200 space-y-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800 mb-2">Fórmula (Circular à Direita):</p>
+                    <MathFormula formula="\vec{E} = E_0 [\cos(kz - \omega t) \hat{x} + \sin(kz - \omega t) \hat{y}]" display={true} />
+                  </div>
+                  <p className="text-sm text-slate-700">
+                    <strong>Significado:</strong> O campo elétrico traça um círculo no plano xy enquanto se propaga em z. A magnitude é sempre E₀.
+                  </p>
+                  <p className="text-sm text-slate-700">
+                    <strong>Exemplos:</strong> Luz refletida em superfícies, radiação de antenas circulares, filmes de cristal líquido
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3 text-lg">3️⃣ Polarização Elíptica</h4>
+                <p className="text-slate-700 text-sm mb-3">
+                  Caso geral onde o campo elétrico traça uma elipse. Polarização linear e circular são casos especiais.
+                </p>
+                <div className="bg-white p-4 rounded border border-orange-200 space-y-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800 mb-2">Fórmula Geral:</p>
+                    <MathFormula formula="\vec{E} = E_x \cos(kz - \omega t) \hat{x} + E_y \cos(kz - \omega t + \delta) \hat{y}" display={true} />
+                  </div>
+                  <p className="text-sm text-slate-700">
+                    <strong>Significado:</strong> As componentes x e y têm amplitudes diferentes (Eₓ ≠ Eᵧ) e fases diferentes (δ). Isto cria uma elipse.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* POLARIZAÇÃO */}
+        {/* LEI DE MALUS */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">🔀 Polarização de Ondas Eletromagnéticas</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">📏 Lei de Malus - Intensidade Após Polarizador</h2>
           
           <div className="space-y-6">
             <p className="text-slate-700 leading-relaxed">
-              A <strong>polarização</strong> descreve a orientação do campo elétrico em relação à direção de propagação da onda.
+              Quando luz polarizada passa através de um polarizador (filtro), a intensidade transmitida depende do ângulo entre a polarização da luz e o eixo do polarizador.
+            </p>
+
+            <div className="bg-gradient-to-r from-purple-900 to-purple-800 text-white rounded-xl p-8 shadow-lg">
+              <p className="text-center text-sm mb-3 text-purple-200">Lei de Malus:</p>
+              <MathFormula formula="I = I_0 \cos^2(\theta)" display={true} className="text-3xl" />
+            </div>
+
+            <div className="space-y-4">
+              <div className="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-6">
+                <h4 className="font-bold text-slate-900 mb-3">Explicação Termo-a-Termo:</h4>
+                <div className="space-y-3 text-sm text-slate-700">
+                  <div className="bg-white p-3 rounded border border-purple-200">
+                    <p className="font-semibold mb-1">I₀ = Intensidade incidente</p>
+                    <p>Intensidade da luz que chega ao polarizador. Medida em W/m².</p>
+                  </div>
+                  <div className="bg-white p-3 rounded border border-purple-200">
+                    <p className="font-semibold mb-1">θ = Ângulo entre polarizações</p>
+                    <p>Ângulo entre a direção de polarização da luz incidente e o eixo de transmissão do polarizador.</p>
+                  </div>
+                  <div className="bg-white p-3 rounded border border-purple-200">
+                    <p className="font-semibold mb-1">I = Intensidade transmitida</p>
+                    <p>Intensidade da luz que sai do polarizador. Sempre menor ou igual a I₀.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <h4 className="font-bold text-blue-900 mb-3">Casos Especiais:</h4>
+                <div className="space-y-2 text-sm text-slate-700">
+                  <div className="bg-white p-3 rounded border border-blue-200">
+                    <p><strong>θ = 0°:</strong> I = I₀ cos²(0°) = I₀ (transmissão máxima)</p>
+                  </div>
+                  <div className="bg-white p-3 rounded border border-blue-200">
+                    <p><strong>θ = 45°:</strong> I = I₀ cos²(45°) = I₀/2 (transmissão de 50%)</p>
+                  </div>
+                  <div className="bg-white p-3 rounded border border-blue-200">
+                    <p><strong>θ = 90°:</strong> I = I₀ cos²(90°) = 0 (bloqueio total - polarizadores cruzados)</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* POLARIZADORES */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🔬 Polarizadores e Filtros</h2>
+          
+          <div className="space-y-6">
+            <p className="text-slate-700 leading-relaxed">
+              Um <strong>polarizador</strong> é um dispositivo que filtra a luz, permitindo passar apenas a componente polarizada em uma direção específica.
             </p>
 
             <div className="space-y-4">
               <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3">Polarização Linear</h4>
-                <p className="text-slate-700 text-sm mb-3">
-                  O campo elétrico oscila em uma única direção (perpendicular à propagação).
-                </p>
-                <div className="bg-white p-3 rounded border border-blue-200 text-sm text-slate-700">
-                  <MathFormula formula="\vec{E} = E_0 \cos(kz - \omega t) \hat{x}" display={true} />
-                  <p className="mt-2">O campo elétrico oscila apenas na direção x, enquanto a onda se propaga em z.</p>
+                <h4 className="font-bold text-slate-900 mb-3">Tipos de Polarizadores:</h4>
+                <ul className="space-y-3 text-sm text-slate-700">
+                  <li className="bg-white p-3 rounded border border-blue-200">
+                    <strong>Polarizador Linear (Filtro Polaroid):</strong> Absorve uma componente do campo elétrico e transmite a outra. Usado em óculos de sol polarizados.
+                  </li>
+                  <li className="bg-white p-3 rounded border border-blue-200">
+                    <strong>Lâmina de Quarto de Onda (λ/4):</strong> Converte polarização linear em circular. Atrasa uma componente em 90°.
+                  </li>
+                  <li className="bg-white p-3 rounded border border-blue-200">
+                    <strong>Lâmina de Meia Onda (λ/2):</strong> Rotaciona a polarização linear. Atrasa uma componente em 180°.
+                  </li>
+                  <li className="bg-white p-3 rounded border border-blue-200">
+                    <strong>Cristal Birrefringente:</strong> Material que tem dois índices de refração diferentes. Separa luz em componentes polarizadas.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* EXEMPLOS PRÁTICOS */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">📋 Exemplos Resolvidos</h2>
+          
+          <div className="space-y-6">
+            {/* Exemplo 1 */}
+            <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
+              <h4 className="font-bold text-slate-900 mb-3">Exemplo 1: Lei de Malus com Dois Polarizadores</h4>
+              <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-3">
+                <p><strong>Problema:</strong> Luz não polarizada com intensidade I₀ = 100 W/m² passa por dois polarizadores. O primeiro polarizador está a 0°, o segundo a 30°. Qual é a intensidade final?</p>
+                
+                <div className="bg-blue-50 p-3 rounded border border-blue-200">
+                  <p className="font-semibold mb-2">Solução:</p>
+                  <p className="mb-2"><strong>Passo 1:</strong> Luz não polarizada passa pelo primeiro polarizador</p>
+                  <p className="mb-2">I₁ = I₀/2 = 100/2 = 50 W/m² (metade da intensidade é transmitida)</p>
+                  
+                  <p className="mb-2"><strong>Passo 2:</strong> Luz polarizada passa pelo segundo polarizador a 30°</p>
+                  <MathFormula formula="I_2 = I_1 \cos^2(30°) = 50 \times (\frac{\sqrt{3}}{2})^2 = 50 \times 0,75 = 37,5 \text{ W/m}^2" display={true} />
+                  
+                  <p className="mt-2"><strong>Resposta:</strong> A intensidade final é 37,5 W/m²</p>
                 </div>
               </div>
+            </div>
 
-              <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3">Polarização Circular</h4>
-                <p className="text-slate-700 text-sm mb-3">
-                  O campo elétrico mantém magnitude constante mas rotaciona enquanto a onda se propaga.
-                </p>
-                <div className="bg-white p-3 rounded border border-green-200 text-sm text-slate-700">
-                  <MathFormula formula="\vec{E} = E_0 [\cos(kz - \omega t) \hat{x} + \sin(kz - \omega t) \hat{y}]" display={true} />
-                  <p className="mt-2">O campo elétrico traça um círculo no plano xy enquanto se propaga em z.</p>
+            {/* Exemplo 2 */}
+            <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
+              <h4 className="font-bold text-slate-900 mb-3">Exemplo 2: Óculos Polarizados Bloqueando Reflexo</h4>
+              <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-3">
+                <p><strong>Problema:</strong> Luz refletida em água fica polarizada horizontalmente (paralela à superfície). Óculos com polarizador vertical bloqueiam esta luz. Se a intensidade do reflexo é 80 W/m², quanto é transmitido pelos óculos?</p>
+                
+                <div className="bg-green-50 p-3 rounded border border-green-200">
+                  <p className="font-semibold mb-2">Solução:</p>
+                  <p className="mb-2"><strong>Dados:</strong> Luz polarizada horizontalmente, polarizador vertical (90° de diferença)</p>
+                  <MathFormula formula="I = I_0 \cos^2(90°) = 80 \times 0 = 0 \text{ W/m}^2" display={true} />
+                  
+                  <p className="mt-2"><strong>Resposta:</strong> O reflexo é completamente bloqueado! Os óculos polarizados eliminam o brilho.</p>
                 </div>
               </div>
+            </div>
 
-              <div className="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-6">
-                <h4 className="font-bold text-slate-900 mb-3">Polarização Elíptica</h4>
-                <p className="text-slate-700 text-sm">
-                  Caso geral onde o campo elétrico traça uma elipse. Polarização linear e circular são casos especiais.
-                </p>
+            {/* Exemplo 3 */}
+            <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
+              <h4 className="font-bold text-slate-900 mb-3">Exemplo 3: Encontrando o Ângulo para Transmissão de 25%</h4>
+              <div className="bg-white p-4 rounded border border-slate-300 text-sm text-slate-700 space-y-3">
+                <p><strong>Problema:</strong> Luz polarizada passa por um polarizador. Qual deve ser o ângulo entre eles para que 25% da intensidade seja transmitida?</p>
+                
+                <div className="bg-orange-50 p-3 rounded border border-orange-200">
+                  <p className="font-semibold mb-2">Solução:</p>
+                  <p className="mb-2"><strong>Dado:</strong> I = 0,25 I₀</p>
+                  <p className="mb-2"><strong>Passo 1:</strong> Usar Lei de Malus</p>
+                  <MathFormula formula="0,25 I_0 = I_0 \cos^2(\theta)" display={true} />
+                  
+                  <p className="mb-2"><strong>Passo 2:</strong> Simplificar</p>
+                  <MathFormula formula="\cos^2(\theta) = 0,25" display={true} />
+                  
+                  <p className="mb-2"><strong>Passo 3:</strong> Tirar raiz quadrada</p>
+                  <MathFormula formula="\cos(\theta) = 0,5" display={true} />
+                  
+                  <p className="mb-2"><strong>Passo 4:</strong> Encontrar θ</p>
+                  <MathFormula formula="\theta = \arccos(0,5) = 60°" display={true} />
+                  
+                  <p className="mt-2"><strong>Resposta:</strong> O ângulo deve ser 60°</p>
+                </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* APLICAÇÕES PRÁTICAS */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🏭 Aplicações Práticas da Polarização</h2>
+          
+          <div className="space-y-4">
+            <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
+              <h4 className="font-bold text-slate-900 mb-2">🕶️ Óculos Polarizados</h4>
+              <p className="text-slate-700 text-sm">Bloqueiam reflexos em água e superfícies. O reflexo é polarizado horizontalmente, enquanto os óculos têm polarizador vertical.</p>
+            </div>
+
+            <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
+              <h4 className="font-bold text-slate-900 mb-2">📺 Telas LCD</h4>
+              <p className="text-slate-700 text-sm">Usam polarizadores e cristais líquidos para controlar a luz. Cada pixel tem dois polarizadores (entrada e saída) e cristal líquido entre eles.</p>
+            </div>
+
+            <div className="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-6">
+              <h4 className="font-bold text-slate-900 mb-2">🎬 Filmes 3D</h4>
+              <p className="text-slate-700 text-sm">Usam polarização circular para enviar imagens diferentes para cada olho. Óculos 3D têm polarizadores que separam as imagens.</p>
+            </div>
+
+            <div className="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-6">
+              <h4 className="font-bold text-slate-900 mb-2">📡 Comunicações Ópticas</h4>
+              <p className="text-slate-700 text-sm">Fibras ópticas usam polarização para aumentar a capacidade de transmissão. Múltiplos canais podem usar diferentes polarizações.</p>
+            </div>
+
+            <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
+              <h4 className="font-bold text-slate-900 mb-2">☀️ Proteção Solar</h4>
+              <p className="text-slate-700 text-sm">Vidros polarizados em carros reduzem o brilho do sol. Bloqueiam luz refletida em estradas e outras superfícies.</p>
             </div>
           </div>
         </div>
@@ -349,14 +395,14 @@ export default function EletromagnetismoTopicOndasAvancado() {
 
         {/* Info Box */}
         <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 mb-12">
-          <h4 className="font-bold text-red-900 mb-2">Resumo: Ondas Eletromagnéticas</h4>
+          <h4 className="font-bold text-red-900 mb-2">Resumo: Ondas Eletromagnéticas Avançadas</h4>
           <ul className="text-red-800 text-sm space-y-2">
             <li>• Descritas pela equação de onda derivada de Maxwell</li>
             <li>• Propagam-se à velocidade c = 1/√(μ₀ε₀) ≈ 3 × 10⁸ m/s</li>
-            <li>• Campos E e B oscilam em fase, perpendiculares entre si</li>
             <li>• Podem ter diferentes polarizações (linear, circular, elíptica)</li>
+            <li>• Lei de Malus: I = I₀cos²(θ) descreve transmissão através de polarizadores</li>
             <li>• Transportam energia descrita pelo vetor de Poynting</li>
-            <li>• Exemplos: luz visível, rádio, micro-ondas, raios-X</li>
+            <li>• Aplicações: óculos polarizados, LCD, 3D, comunicações ópticas</li>
           </ul>
         </div>
       </section>
