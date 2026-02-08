@@ -1,12 +1,12 @@
 import { Link } from "wouter";
-import { ArrowLeft, Zap } from "lucide-react";
+import { ArrowLeft, Zap, Info, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/components/MathFormula";
+import { Card } from "@/components/ui/card";
 
 export default function MecanicaTopicCinematica() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-50 to-slate-100">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-slate-50 to-cyan-50">
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/mecanica">
@@ -20,163 +20,275 @@ export default function MecanicaTopicCinematica() {
               <Zap className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900">Cinemática - Nível ITA/IME</h1>
-              <p className="text-xs text-slate-600">Mecânica</p>
+              <h1 className="text-xl font-bold text-slate-900">Mecânica</h1>
+              <p className="text-xs text-slate-600">Cinemática</p>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
       <section className="container mx-auto px-4 py-12 max-w-5xl">
-        
-        {/* ===== INTRODUÇÃO ===== */}
+        {/* INTRODUÇÃO */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">📍 Cinemática: O Estudo do Movimento</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">📍 Introdução à Cinemática</h2>
           
           <div className="space-y-6">
             <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Definição Rigorosa</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">O que é Cinemática?</h3>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                <strong>Cinemática é o ramo da Mecânica que descreve o movimento dos corpos sem considerar as causas (forças) que o produzem.</strong> Ela estuda as grandezas cinemáticas: posição, deslocamento, velocidade e aceleração, respondendo a pergunta "Como o objeto se move?" sem se preocupar com "Por que se move assim?"
+              </p>
               <p className="text-slate-700 leading-relaxed">
-                <strong>Cinemática é o ramo da Mecânica que descreve o movimento dos corpos sem considerar as causas (forças) que o produzem.</strong> Ela estuda as grandezas: posição, deslocamento, velocidade e aceleração.
-              </p>
-              <p className="text-slate-700 leading-relaxed mt-3">
-                Diferentemente da Dinâmica (que estuda as forças), a Cinemática é puramente descritiva. Ela responde: "Como o objeto se move?" mas não "Por que se move assim?"
+                A Cinemática foi desenvolvida sistematicamente por Galileu Galilei no século XVI e XVII, revolucionando a forma como compreendemos o movimento. Ela é a base para toda a Dinâmica e é essencial para descrever fenômenos desde o movimento de projéteis até a órbita de satélites.
               </p>
             </div>
 
-            <div className="bg-yellow-50 border border-yellow-200 rounded p-6">
-              <h4 className="font-bold text-slate-900 mb-3">🎯 Conceitos Fundamentais</h4>
+            <div className="bg-blue-50 border border-blue-200 rounded p-6">
+              <h4 className="font-bold text-slate-900 mb-3">💡 Conceitos Fundamentais</h4>
               <div className="space-y-3 text-slate-700 text-sm">
-                <div className="bg-white p-3 rounded border border-yellow-300">
-                  <p className="font-bold mb-1">Posição:</p>
-                  <MathFormula formula={String.raw`$$x \text{ ou } s$$`} display={false} />
-                  <p className="text-xs mt-1">Localização do objeto em relação a um referencial (origem).</p>
-                </div>
-                <div className="bg-white p-3 rounded border border-yellow-300">
-                  <p className="font-bold mb-1">Deslocamento:</p>
-                  <MathFormula formula={String.raw`$$\Delta x = x_{final} - x_{inicial}$$`} display={false} />
-                  <p className="text-xs mt-1">Variação de posição. É um vetor!</p>
-                </div>
-                <div className="bg-white p-3 rounded border border-yellow-300">
-                  <p className="font-bold mb-1">Distância:</p>
-                  <MathFormula formula={String.raw`$$d = \text{comprimento total do caminho percorrido}$$`} display={false} />
-                  <p className="text-xs mt-1">É um escalar (sempre positivo).</p>
-                </div>
-                <div className="bg-white p-3 rounded border border-yellow-300">
-                  <p className="font-bold mb-1">Velocidade:</p>
-                  <MathFormula formula={String.raw`$$v = \frac{\Delta x}{\Delta t}$$`} display={false} />
-                  <p className="text-xs mt-1">Taxa de variação da posição. Pode ser média ou instantânea.</p>
-                </div>
-                <div className="bg-white p-3 rounded border border-yellow-300">
-                  <p className="font-bold mb-1">Aceleração:</p>
-                  <MathFormula formula={String.raw`$$a = \frac{\Delta v}{\Delta t}$$`} display={false} />
-                  <p className="text-xs mt-1">Taxa de variação da velocidade.</p>
-                </div>
+                <p><strong>Posição (x ou s):</strong> Localização do objeto em relação a um referencial (origem). É uma grandeza vetorial. Unidade: metro (m).</p>
+                <p><strong>Deslocamento (Δx):</strong> Variação de posição entre dois instantes. <MathFormula formula="\Delta x = x_{final} - x_{inicial}" display={false} />. É um vetor, não depende do caminho percorrido.</p>
+                <p><strong>Distância (d):</strong> Comprimento total do caminho percorrido. É um escalar (sempre positivo), diferente do deslocamento.</p>
+                <p><strong>Velocidade (v):</strong> Taxa de variação da posição em relação ao tempo. <MathFormula formula="v = \frac{\Delta x}{\Delta t}" display={false} />. Pode ser média ou instantânea.</p>
+                <p><strong>Aceleração (a):</strong> Taxa de variação da velocidade em relação ao tempo. <MathFormula formula="a = \frac{\Delta v}{\Delta t}" display={false} />. Mede como a velocidade muda.</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ===== SEÇÃO 1: MRU ===== */}
+        {/* MOVIMENTO RETILÍNEO UNIFORME (MRU) */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">1️⃣ Movimento Retilíneo Uniforme (MRU)</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">📐 Movimento Retilíneo Uniforme (MRU) - Aprofundado</h2>
           
           <div className="space-y-8">
-            <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Definição e Características</h3>
-              <p className="text-slate-700 mb-4">
-                <strong>MRU é o movimento com velocidade constante em linha reta.</strong> Isso implica aceleração nula.
+            {/* Contexto Histórico */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">0</span>
+                Contexto Histórico e Importância
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                O Movimento Retilíneo Uniforme (MRU) é o tipo mais simples de movimento. Galileu o identificou como o movimento natural de um corpo quando nenhuma força atua sobre ele (Primeira Lei de Newton). O MRU é fundamental para compreender movimentos mais complexos e é usado como referencial em muitos problemas de Física.
               </p>
-              <div className="bg-white border border-blue-300 rounded p-4 space-y-3">
-                <p className="font-bold text-slate-900 mb-2">Características:</p>
-                <div className="space-y-2">
-                  <div className="bg-blue-50 p-2 rounded">
-                    <MathFormula formula={String.raw`$$v = \text{constante}$$`} display={false} />
-                  </div>
-                  <div className="bg-blue-50 p-2 rounded">
-                    <MathFormula formula={String.raw`$$a = 0$$`} display={false} />
-                  </div>
-                  <div className="bg-blue-50 p-2 rounded">
-                    <MathFormula formula={String.raw`$$\Delta x \propto t$$`} display={false} />
-                    <p className="text-xs text-slate-600 mt-1">Deslocamento é proporcional ao tempo</p>
-                  </div>
-                  <p className="text-slate-700 text-sm">• Trajetória é uma linha reta</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-green-50 border-l-4 border-green-500 rounded p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Equações Fundamentais do MRU</h3>
               
-              <div className="space-y-4">
-                <div className="bg-white border border-green-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">Velocidade Média:</p>
-                  <MathFormula formula={String.raw`$$v = \frac{\Delta x}{\Delta t} = \frac{x_f - x_i}{t_f - t_i}$$`} display={true} />
-                </div>
+              <div className="bg-purple-50 border-l-4 border-purple-500 rounded p-6">
+                <h4 className="font-bold text-slate-900 mb-3">Por que MRU é Importante?</h4>
+                <p className="text-slate-700 text-sm">
+                  O MRU é a base para compreender movimentos mais complexos. Qualquer movimento pode ser decomposto em componentes de MRU. Além disso, é o movimento de referência em sistemas inerciais (referenciais onde a Primeira Lei de Newton é válida).
+                </p>
+              </div>
+            </div>
 
-                <div className="bg-white border border-green-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">Equação Horária da Posição:</p>
-                  <MathFormula formula={String.raw`$$x(t) = x_0 + v \cdot t$$`} display={true} />
-                  <div className="bg-green-50 p-2 rounded mt-2">
-                    <MathFormula formula={String.raw`$$\text{Onde: } x_0 = \text{posição inicial}, \quad v = \text{velocidade (constante)}, \quad t = \text{tempo}$$`} display={true} />
+            {/* Formulação Escalar */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">1</span>
+                Formulação Escalar
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                No MRU, a velocidade é constante em magnitude e direção. Isso significa que o objeto percorre distâncias iguais em intervalos de tempo iguais, e a aceleração é nula.
+              </p>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                  <div className="flex-1 w-full">
+                    <MathFormula formula="x = x_0 + v \cdot t" display={true} className="text-xl" />
+                  </div>
+                  <div className="flex-1 text-sm text-slate-600 bg-white p-4 rounded-lg border border-slate-100 shadow-sm">
+                    <p className="font-semibold mb-2 text-slate-800">Onde:</p>
+                    <ul className="space-y-1">
+                      <li><MathFormula formula="x" display={false} />: Posição final (m)</li>
+                      <li><MathFormula formula="x_0" display={false} />: Posição inicial (m)</li>
+                      <li><MathFormula formula="v" display={false} />: Velocidade constante (m/s)</li>
+                      <li><MathFormula formula="t" display={false} />: Tempo (s)</li>
+                    </ul>
                   </div>
                 </div>
+              </div>
 
-                <div className="bg-white border border-green-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">Deslocamento Escalar:</p>
-                  <MathFormula formula={String.raw`$$\Delta x = v \cdot \Delta t$$`} display={true} />
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg mb-6">
+                <h4 className="font-bold text-yellow-800 flex items-center gap-2 mb-2">
+                  <Info className="w-4 h-4" />
+                  Características do MRU
+                </h4>
+                <div className="space-y-2 text-slate-700 text-sm">
+                  <p>• Velocidade é <strong>constante</strong>: <MathFormula formula="v = \text{constante}" display={false} /></p>
+                  <p>• Aceleração é <strong>nula</strong>: <MathFormula formula="a = 0" display={false} /></p>
+                  <p>• Gráfico posição-tempo é uma <strong>reta</strong></p>
+                  <p>• Gráfico velocidade-tempo é uma <strong>reta horizontal</strong></p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-blue-100 to-cyan-100 p-6 rounded-lg border border-blue-300">
-              <p className="font-bold mb-4 text-lg">📝 Exemplo 1: Problema Clássico de Encontro (ESPCEX)</p>
-              <div className="bg-white p-4 rounded mb-4">
-                <p className="text-slate-700 mb-3"><strong>Enunciado:</strong></p>
-                <p className="text-slate-700 text-sm mb-3">
-                  Dois trens partem simultaneamente de duas estações A e B, distantes 600 km. O trem 1 sai de A com velocidade constante de 80 km/h em direção a B. O trem 2 sai de B com velocidade constante de 70 km/h em direção a A. Determine:
-                </p>
-                <p className="text-slate-700 text-sm mb-2">a) Tempo até o encontro</p>
-                <p className="text-slate-700 text-sm mb-3">b) Posição do encontro em relação a A</p>
+            {/* Formulação Vetorial */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">2</span>
+                Formulação Vetorial (Rigor Matemático)
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                Para problemas em 2D ou 3D, a forma vetorial é indispensável. O vetor deslocamento é o produto da velocidade (vetor) pelo intervalo de tempo:
+              </p>
+              
+              <div className="bg-slate-900 text-slate-100 rounded-xl p-6 mb-6 shadow-inner">
+                <MathFormula formula="\vec{r}(t) = \vec{r}_0 + \vec{v} \cdot t" display={true} className="text-xl mb-4" />
+                <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-300 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="font-semibold text-yellow-400 mb-2">Definições:</p>
+                    <ul className="space-y-1">
+                      <li><MathFormula formula="\vec{r}(t)" display={false} />: Vetor posição em função do tempo</li>
+                      <li><MathFormula formula="\vec{r}_0" display={false} />: Vetor posição inicial</li>
+                      <li><MathFormula formula="\vec{v}" display={false} />: Vetor velocidade (constante)</li>
+                      <li><MathFormula formula="t" display={false} />: Tempo</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-yellow-400 mb-2">Componentes:</p>
+                    <p className="text-sm">Em componentes cartesianas:</p>
+                    <MathFormula formula="x = x_0 + v_x t \quad ; \quad y = y_0 + v_y t" display={false} />
+                  </div>
+                </div>
               </div>
+            </div>
 
-              <div className="bg-yellow-50 p-4 rounded">
-                <p className="font-bold text-slate-900 mb-3">Resolução Detalhada:</p>
-                <div className="space-y-3 text-slate-700 text-sm">
-                  <p><strong>Passo 1: Estabelecer referencial</strong></p>
-                  <p className="ml-4">Origem em A, sentido positivo para B.</p>
-                  
-                  <p className="mt-3"><strong>Passo 2: Escrever equações horárias</strong></p>
-                  <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$\text{Trem 1: } x_1(t) = 0 + 80t = 80t$$`} display={true} />
-                    <MathFormula formula={String.raw`$$\text{Trem 2: } x_2(t) = 600 - 70t$$`} display={true} />
-                    <p className="text-xs text-slate-600 mt-2">(velocidade negativa, pois vai contra o sentido positivo)</p>
+            {/* Análise Gráfica */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">3</span>
+                Análise Gráfica
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <h4 className="font-bold text-slate-700 mb-2 text-center">Posição x Tempo (<MathFormula formula="x \times t" display={false} />)</h4>
+                  <div className="h-48 flex items-center justify-center bg-white rounded border border-slate-100 mb-2">
+                    <div className="relative w-full h-full p-4">
+                      <div className="absolute left-8 bottom-8 w-[calc(100%-4rem)] h-[1px] bg-slate-400"></div>
+                      <div className="absolute left-8 bottom-8 w-[1px] h-[calc(100%-4rem)] bg-slate-400"></div>
+                      <svg className="absolute left-8 bottom-8 w-[calc(100%-4rem)] h-[calc(100%-4rem)] overflow-visible">
+                        <line x1="0" y1="100" x2="150" y2="20" stroke="#3b82f6" strokeWidth="2" />
+                      </svg>
+                      <span className="absolute bottom-2 right-4 text-xs font-bold">t</span>
+                      <span className="absolute top-4 left-2 text-xs font-bold">x</span>
+                    </div>
                   </div>
-                  
-                  <p className="mt-3"><strong>Passo 3: Encontro ocorre quando</strong></p>
-                  <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$x_1 = x_2$$`} display={true} />
-                    <MathFormula formula={String.raw`$$80t = 600 - 70t$$`} display={true} />
-                    <MathFormula formula={String.raw`$$150t = 600$$`} display={true} />
-                    <MathFormula formula={String.raw`$$t = 4 \text{ horas}$$`} display={true} />
+                  <p className="text-xs text-slate-600 text-center">
+                    Reta com inclinação <MathFormula formula="v" display={false} />. A posição cresce linearmente com o tempo.
+                  </p>
+                </div>
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <h4 className="font-bold text-slate-700 mb-2 text-center">Velocidade x Tempo (<MathFormula formula="v \times t" display={false} />)</h4>
+                  <div className="h-48 flex items-center justify-center bg-white rounded border border-slate-100 mb-2">
+                    <div className="relative w-full h-full p-4">
+                      <div className="absolute left-8 bottom-8 w-[calc(100%-4rem)] h-[1px] bg-slate-400"></div>
+                      <div className="absolute left-8 bottom-8 w-[1px] h-[calc(100%-4rem)] bg-slate-400"></div>
+                      <svg className="absolute left-8 bottom-8 w-[calc(100%-4rem)] h-[calc(100%-4rem)] overflow-visible">
+                        <line x1="0" y1="60" x2="150" y2="60" stroke="#3b82f6" strokeWidth="2" />
+                      </svg>
+                      <span className="absolute bottom-2 right-4 text-xs font-bold">t</span>
+                      <span className="absolute top-4 left-2 text-xs font-bold">v</span>
+                    </div>
                   </div>
-                  
-                  <p className="mt-3"><strong>Passo 4: Posição do encontro</strong></p>
-                  <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$x = 80 \times 4 = 320 \text{ km de A}$$`} display={true} />
+                  <p className="text-xs text-slate-600 text-center">
+                    Reta horizontal. A velocidade é constante. Área sob a curva = deslocamento.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Passo a Passo */}
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
+              <h3 className="text-xl font-bold text-slate-900 mb-4">📋 Passo a Passo: Resolver Problemas de MRU</h3>
+              <ol className="space-y-3 text-sm text-slate-700">
+                <li className="flex gap-3">
+                  <span className="font-bold text-purple-600 min-w-fit">Passo 1:</span>
+                  <span><strong>Identifique o tipo de movimento:</strong> Verifique se a velocidade é constante (MRU) ou não.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="font-bold text-purple-600 min-w-fit">Passo 2:</span>
+                  <span><strong>Escolha um referencial:</strong> Defina a origem (x₀) e o sentido positivo do movimento.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="font-bold text-purple-600 min-w-fit">Passo 3:</span>
+                  <span><strong>Identifique os dados:</strong> Posição inicial, velocidade, tempo ou distância.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="font-bold text-purple-600 min-w-fit">Passo 4:</span>
+                  <span><strong>Aplique a equação:</strong> Use <MathFormula formula="x = x_0 + vt" display={false} /> ou <MathFormula formula="v = \frac{\Delta x}{\Delta t}" display={false} />.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="font-bold text-purple-600 min-w-fit">Passo 5:</span>
+                  <span><strong>Resolva algebricamente:</strong> Isole a variável desejada.</span>
+                </li>
+              </ol>
+            </div>
+
+            {/* Exemplos Resolvidos */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <CheckCircle2 className="w-6 h-6 text-green-600" />
+                Exemplos Resolvidos (Nível ITA/IME)
+              </h3>
+
+              {/* Exemplo 1 */}
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                <h4 className="font-bold text-slate-900 mb-3">Exemplo 1: Cálculo de Tempo</h4>
+                <div className="space-y-3">
+                  <p className="text-slate-700 text-sm">
+                    <strong>Problema:</strong> Um carro se move em MRU com velocidade v = 20 m/s. Qual o tempo necessário para percorrer uma distância de 100 m?
+                  </p>
+                  <div className="bg-white p-4 rounded border border-slate-200">
+                    <p className="text-slate-700 text-sm mb-2"><strong>Resolução:</strong></p>
+                    <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600">
+                      <li>Dados: <MathFormula formula="v = 20 \text{ m/s}" display={false} />, <MathFormula formula="\Delta x = 100 \text{ m}" display={false} /></li>
+                      <li>Fórmula: <MathFormula formula="v = \frac{\Delta x}{\Delta t}" display={true} /></li>
+                      <li>Isolando t: <MathFormula formula="\Delta t = \frac{\Delta x}{v} = \frac{100}{20} = 5 \text{ s}" display={true} /></li>
+                    </ol>
+                    <div className="mt-3 pt-3 border-t border-slate-200">
+                      <p className="text-slate-700 text-sm"><strong>Resposta:</strong> O tempo necessário é <strong>5 segundos</strong>.</p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-green-50 border border-green-200 rounded p-4 mt-4">
-                <p className="font-bold text-green-900 mb-2">✅ Resposta:</p>
-                <div className="space-y-2">
-                  <div className="bg-white p-2 rounded">
-                    <MathFormula formula={String.raw`$$\text{a) } t = 4 \text{ horas}$$`} display={true} />
+              {/* Exemplo 2 */}
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                <h4 className="font-bold text-slate-900 mb-3">Exemplo 2: Encontro de Dois Móveis</h4>
+                <div className="space-y-3">
+                  <p className="text-slate-700 text-sm">
+                    <strong>Problema:</strong> Dois carros partem simultaneamente de um mesmo ponto em sentidos opostos. O carro A tem velocidade v_A = 30 m/s e o carro B tem velocidade v_B = 20 m/s. Qual a distância entre eles após 10 segundos?
+                  </p>
+                  <div className="bg-white p-4 rounded border border-slate-200">
+                    <p className="text-slate-700 text-sm mb-2"><strong>Resolução:</strong></p>
+                    <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600">
+                      <li>Distância percorrida por A: <MathFormula formula="x_A = v_A \cdot t = 30 \times 10 = 300 \text{ m}" display={true} /></li>
+                      <li>Distância percorrida por B: <MathFormula formula="x_B = v_B \cdot t = 20 \times 10 = 200 \text{ m}" display={true} /></li>
+                      <li>Distância entre eles (em sentidos opostos): <MathFormula formula="d = x_A + x_B = 300 + 200 = 500 \text{ m}" display={true} /></li>
+                    </ol>
+                    <div className="mt-3 pt-3 border-t border-slate-200">
+                      <p className="text-slate-700 text-sm"><strong>Resposta:</strong> A distância entre os carros é <strong>500 metros</strong>.</p>
+                    </div>
                   </div>
-                  <div className="bg-white p-2 rounded">
-                    <MathFormula formula={String.raw`$$\text{b) } x = 320 \text{ km}$$`} display={true} />
+                </div>
+              </div>
+
+              {/* Exemplo 3 */}
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                <h4 className="font-bold text-slate-900 mb-3">Exemplo 3: Alcance em MRU</h4>
+                <div className="space-y-3">
+                  <p className="text-slate-700 text-sm">
+                    <strong>Problema:</strong> Um carro A está 50 m atrás de um carro B. Ambos se movem em MRU na mesma direção. O carro A tem velocidade 25 m/s e o carro B tem velocidade 15 m/s. Quanto tempo leva para o carro A alcançar o carro B?
+                  </p>
+                  <div className="bg-white p-4 rounded border border-slate-200">
+                    <p className="text-slate-700 text-sm mb-2"><strong>Resolução:</strong></p>
+                    <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600">
+                      <li>Posição de A: <MathFormula formula="x_A = 0 + 25t" display={false} /></li>
+                      <li>Posição de B: <MathFormula formula="x_B = 50 + 15t" display={false} /></li>
+                      <li>Encontro quando <MathFormula formula="x_A = x_B" display={false} />: <MathFormula formula="25t = 50 + 15t" display={true} /></li>
+                      <li>Resolvendo: <MathFormula formula="10t = 50 \Rightarrow t = 5 \text{ s}" display={true} /></li>
+                    </ol>
+                    <div className="mt-3 pt-3 border-t border-slate-200">
+                      <p className="text-slate-700 text-sm"><strong>Resposta:</strong> O carro A alcança o carro B em <strong>5 segundos</strong>.</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -184,434 +296,98 @@ export default function MecanicaTopicCinematica() {
           </div>
         </div>
 
-        {/* ===== SEÇÃO 2: MRUV COM DERIVAÇÕES ===== */}
+        {/* MOVIMENTO RETILÍNEO UNIFORMEMENTE VARIADO (MRUV) */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">2️⃣ Movimento Retilíneo Uniformemente Variado (MRUV)</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">📐 Movimento Retilíneo Uniformemente Variado (MRUV) - Aprofundado</h2>
           
           <div className="space-y-8">
-            <div className="bg-red-50 border-l-4 border-red-500 rounded p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Definição e Características</h3>
-              <p className="text-slate-700 mb-4">
-                <strong>MRUV é o movimento com aceleração constante em linha reta.</strong> A velocidade varia linearmente com o tempo.
-              </p>
-              <div className="bg-white border border-red-300 rounded p-4 space-y-3">
-                <p className="font-bold text-slate-900 mb-2">Características:</p>
-                <div className="space-y-2">
-                  <div className="bg-red-50 p-2 rounded">
-                    <MathFormula formula={String.raw`$$a = \text{constante} \neq 0$$`} display={false} />
-                  </div>
-                  <div className="bg-red-50 p-2 rounded">
-                    <MathFormula formula={String.raw`$$v(t) = v_0 + at$$`} display={false} />
-                    <p className="text-xs text-slate-600 mt-1">Velocidade varia linearmente</p>
-                  </div>
-                  <div className="bg-red-50 p-2 rounded">
-                    <MathFormula formula={String.raw`$$\Delta x \propto t^2$$`} display={false} />
-                    <p className="text-xs text-slate-600 mt-1">Deslocamento varia quadraticamente</p>
-                  </div>
-                  <p className="text-slate-700 text-sm">• Trajetória é uma linha reta</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-orange-50 border-l-4 border-orange-500 rounded p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Derivação das Equações do MRUV</h3>
-              
-              <div className="space-y-4 mb-6">
-                <div className="bg-white border border-orange-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-3">Derivação 1: Velocidade em função do tempo</p>
-                  <p className="text-slate-700 text-sm mb-2">Partindo da definição de aceleração:</p>
-                  <MathFormula formula={String.raw`$$a = \frac{\Delta v}{\Delta t} = \frac{v - v_0}{t - 0}$$`} display={true} />
-                  <p className="text-slate-700 text-sm mt-2">Isolando v:</p>
-                  <MathFormula formula={String.raw`$$a \cdot t = v - v_0$$`} display={true} />
-                  <MathFormula formula={String.raw`$$\boxed{v(t) = v_0 + at}$$`} display={true} />
-                </div>
-
-                <div className="bg-white border border-orange-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-3">Derivação 2: Posição em função do tempo</p>
-                  <p className="text-slate-700 text-sm mb-2">A velocidade média em MRUV é:</p>
-                  <MathFormula formula={String.raw`$$v_{med} = \frac{v_0 + v}{2}$$`} display={true} />
-                  <p className="text-slate-700 text-sm mt-2">O deslocamento é:</p>
-                  <MathFormula formula={String.raw`$$\Delta x = v_{med} \cdot t = \frac{v_0 + v}{2} \cdot t$$`} display={true} />
-                  <p className="text-slate-700 text-sm mt-2">Substituindo v = v₀ + at:</p>
-                  <MathFormula formula={String.raw`$$\Delta x = \frac{v_0 + (v_0 + at)}{2} \cdot t = \frac{2v_0 + at}{2} \cdot t$$`} display={true} />
-                  <MathFormula formula={String.raw`$$\Delta x = v_0 t + \frac{1}{2}at^2$$`} display={true} />
-                  <MathFormula formula={String.raw`$$\boxed{x(t) = x_0 + v_0 t + \frac{1}{2}at^2}$$`} display={true} />
-                </div>
-
-                <div className="bg-white border border-orange-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-3">Derivação 3: Equação de Torricelli (sem tempo)</p>
-                  <p className="text-slate-700 text-sm mb-2">De v = v₀ + at, isolamos t:</p>
-                  <MathFormula formula={String.raw`$$t = \frac{v - v_0}{a}$$`} display={true} />
-                  <p className="text-slate-700 text-sm mt-2">Substituindo em Δx = v₀t + ½at²:</p>
-                  <MathFormula formula={String.raw`$$\Delta x = v_0 \left(\frac{v - v_0}{a}\right) + \frac{1}{2}a\left(\frac{v - v_0}{a}\right)^2$$`} display={true} />
-                  <MathFormula formula={String.raw`$$\Delta x = \frac{v_0(v - v_0)}{a} + \frac{(v - v_0)^2}{2a}$$`} display={true} />
-                  <MathFormula formula={String.raw`$$\Delta x = \frac{2v_0(v - v_0) + (v - v_0)^2}{2a}$$`} display={true} />
-                  <MathFormula formula={String.raw`$$\Delta x = \frac{(v - v_0)(2v_0 + v - v_0)}{2a} = \frac{(v - v_0)(v_0 + v)}{2a}$$`} display={true} />
-                  <MathFormula formula={String.raw`$$2a\Delta x = v^2 - v_0^2$$`} display={true} />
-                  <MathFormula formula={String.raw`$$\boxed{v^2 = v_0^2 + 2a\Delta x}$$`} display={true} />
-                </div>
-              </div>
-
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Equações Fundamentais do MRUV</h3>
-              
-              <div className="space-y-4">
-                <div className="bg-white border border-orange-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">1. Velocidade em Função do Tempo:</p>
-                  <MathFormula formula={String.raw`$$v(t) = v_0 + a \cdot t$$`} display={true} />
-                  <div className="bg-orange-50 p-2 rounded mt-2">
-                    <MathFormula formula={String.raw`$$\text{Onde: } v_0 = \text{velocidade inicial}, \quad a = \text{aceleração (constante)}$$`} display={true} />
-                  </div>
-                </div>
-
-                <div className="bg-white border border-orange-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">2. Posição em Função do Tempo:</p>
-                  <MathFormula formula={String.raw`$$x(t) = x_0 + v_0 \cdot t + \frac{1}{2} a \cdot t^2$$`} display={true} />
-                </div>
-
-                <div className="bg-white border border-orange-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">3. Equação de Torricelli (sem tempo):</p>
-                  <MathFormula formula={String.raw`$$v^2 = v_0^2 + 2 \cdot a \cdot \Delta x$$`} display={true} />
-                  <p className="text-slate-700 text-sm mt-2">Muito útil quando não conhecemos o tempo!</p>
-                </div>
-
-                <div className="bg-white border border-orange-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">4. Deslocamento Médio:</p>
-                  <MathFormula formula={String.raw`$$\Delta x = \frac{(v_0 + v) \cdot t}{2}$$`} display={true} />
-                  <p className="text-slate-700 text-sm mt-2">Também igual à velocidade média vezes o tempo</p>
-                </div>
-
-                <div className="bg-white border border-orange-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">5. Aceleração Média:</p>
-                  <MathFormula formula={String.raw`$$a = \frac{\Delta v}{\Delta t} = \frac{v - v_0}{t}$$`} display={true} />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-r from-red-100 to-orange-100 p-6 rounded-lg border border-red-300">
-              <p className="font-bold mb-4 text-lg">📝 Exemplo 2: Frenagem de Emergência (EFOMM)</p>
-              <div className="bg-white p-4 rounded mb-4">
-                <p className="text-slate-700 mb-3"><strong>Enunciado:</strong></p>
-                <p className="text-slate-700 text-sm mb-3">
-                  Um carro viaja a 90 km/h quando o motorista avista um obstáculo a 50 m de distância. Ele freia imediatamente com aceleração constante de -5 m/s². Determine:
-                </p>
-                <p className="text-slate-700 text-sm mb-2">a) Velocidade ao atingir o obstáculo</p>
-                <p className="text-slate-700 text-sm mb-2">b) Tempo de frenagem até parar</p>
-                <p className="text-slate-700 text-sm mb-3">c) Distância de frenagem até parar completamente</p>
-              </div>
-
-              <div className="bg-yellow-50 p-4 rounded">
-                <p className="font-bold text-slate-900 mb-3">Resolução Detalhada:</p>
-                <div className="space-y-3 text-slate-700 text-sm">
-                  <p><strong>Passo 1: Converter unidades</strong></p>
-                  <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$v_0 = 90 \text{ km/h} = \frac{90}{3,6} = 25 \text{ m/s}$$`} display={true} />
-                    <MathFormula formula={String.raw`$$a = -5 \text{ m/s}^2 \quad \text{(negativa porque freia)}$$`} display={true} />
-                  </div>
-                  
-                  <p className="mt-3"><strong>Passo 2: Velocidade ao atingir o obstáculo (50 m)</strong></p>
-                  <p className="ml-4">Usar Torricelli:</p>
-                  <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$v^2 = v_0^2 + 2a\Delta x$$`} display={true} />
-                    <MathFormula formula={String.raw`$$v^2 = 25^2 + 2 \times (-5) \times 50$$`} display={true} />
-                    <MathFormula formula={String.raw`$$v^2 = 625 - 500 = 125$$`} display={true} />
-                    <MathFormula formula={String.raw`$$v = \sqrt{125} = 5\sqrt{5} \approx 11,18 \text{ m/s}$$`} display={true} />
-                  </div>
-                  
-                  <p className="mt-3"><strong>Passo 3: Tempo até parar completamente</strong></p>
-                  <p className="ml-4">Usar</p>
-                  <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$v = v_0 + at, \quad \text{com } v = 0$$`} display={true} />
-                    <MathFormula formula={String.raw`$$0 = 25 + (-5) \times t$$`} display={true} />
-                    <MathFormula formula={String.raw`$$t = 5 \text{ segundos}$$`} display={true} />
-                  </div>
-                  
-                  <p className="mt-3"><strong>Passo 4: Distância de frenagem total</strong></p>
-                  <p className="ml-4">Usar Torricelli com</p>
-                  <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$v = 0$$`} display={true} />
-                    <MathFormula formula={String.raw`$$0 = 25^2 + 2 \times (-5) \times \Delta x$$`} display={true} />
-                    <MathFormula formula={String.raw`$$10 \Delta x = 625$$`} display={true} />
-                    <MathFormula formula={String.raw`$$\Delta x = 62,5 \text{ m}$$`} display={true} />
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-red-50 border border-red-200 rounded p-4 mt-4">
-                <p className="font-bold text-red-900 mb-2">⚠️ Análise Crítica:</p>
-                <p className="text-red-900 text-sm mb-2">O carro NÃO consegue parar a tempo! Ele atinge o obstáculo com velocidade de 11,18 m/s (≈ 40 km/h). Distância necessária (62,5 m) é maior que a disponível (50 m).</p>
-                <p className="text-red-900 text-sm"><strong>Conclusão:</strong> Haverá colisão!</p>
-              </div>
-
-              <div className="bg-green-50 border border-green-200 rounded p-4 mt-4">
-                <p className="font-bold text-green-900 mb-2">✅ Respostas:</p>
-                <div className="space-y-2">
-                  <div className="bg-white p-2 rounded">
-                    <MathFormula formula={String.raw`$$\text{a) } v \approx 11,18 \text{ m/s} \approx 40,2 \text{ km/h}$$`} display={true} />
-                  </div>
-                  <div className="bg-white p-2 rounded">
-                    <MathFormula formula={String.raw`$$\text{b) } t = 5 \text{ s (tempo até parar completamente)}$$`} display={true} />
-                  </div>
-                  <div className="bg-white p-2 rounded">
-                    <MathFormula formula={String.raw`$$\text{c) } \Delta x = 62,5 \text{ m (distância total de frenagem)}$$`} display={true} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ===== SEÇÃO 3: LANÇAMENTOS ===== */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">3️⃣ Lançamentos: Horizontal, Oblíquo e Vertical</h2>
-          
-          <div className="space-y-8">
-            <div className="bg-purple-50 border-l-4 border-purple-500 rounded p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Princípio da Superposição</h3>
-              <p className="text-slate-700 mb-4">
-                <strong>Lançamentos são movimentos compostos:</strong> movimento horizontal (MRU) + movimento vertical (MRUV sob gravidade).
-              </p>
-              <div className="bg-white border border-purple-300 rounded p-4">
-                <p className="font-bold text-slate-900 mb-2">Decomposição:</p>
-                <div className="space-y-2">
-                  <div className="bg-purple-50 p-2 rounded">
-                    <MathFormula formula={String.raw`$$\text{Eixo X (horizontal): } v_x = \text{constante (sem aceleração)}$$`} display={true} />
-                  </div>
-                  <div className="bg-purple-50 p-2 rounded">
-                    <MathFormula formula={String.raw`$$\text{Eixo Y (vertical): } a_y = -g = -10 \text{ m/s}^2 \text{ (aceleração da gravidade)}$$`} display={true} />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* LANÇAMENTO HORIZONTAL */}
-            <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">A. Lançamento Horizontal</h3>
-              
-              <div className="space-y-4">
-                <div className="bg-white border border-blue-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">Equações do Lançamento Horizontal:</p>
-                  <p className="text-slate-700 text-sm mb-2">Eixo X (horizontal):</p>
-                  <MathFormula formula={String.raw`$$x(t) = v_0 \cdot t$$`} display={true} />
-                  
-                  <p className="text-slate-700 text-sm mt-3 mb-2">Eixo Y (vertical):</p>
-                  <MathFormula formula={String.raw`$$y(t) = h - \frac{1}{2}g t^2$$`} display={true} />
-                  <MathFormula formula={String.raw`$$v_y(t) = -g \cdot t$$`} display={true} />
-                </div>
-
-                <div className="bg-white border border-blue-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">Tempo de Queda (até y = 0):</p>
-                  <MathFormula formula={String.raw`$$0 = h - \frac{1}{2}g t^2 \Rightarrow t = \sqrt{\frac{2h}{g}}$$`} display={true} />
-                </div>
-
-                <div className="bg-white border border-blue-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">Alcance Horizontal:</p>
-                  <MathFormula formula={String.raw`$$A = v_0 \cdot t = v_0 \sqrt{\frac{2h}{g}}$$`} display={true} />
-                </div>
-              </div>
-            </div>
-
-            {/* LANÇAMENTO OBLÍQUO */}
-            <div className="bg-green-50 border-l-4 border-green-500 rounded p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">B. Lançamento Oblíquo</h3>
-              
-              <div className="space-y-4">
-                <div className="bg-white border border-green-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">Decomposição da Velocidade Inicial:</p>
-                  <MathFormula formula={String.raw`$$v_{0x} = v_0 \cos\theta$$`} display={true} />
-                  <MathFormula formula={String.raw`$$v_{0y} = v_0 \sin\theta$$`} display={true} />
-                </div>
-
-                <div className="bg-white border border-green-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">Equações Horárias:</p>
-                  <MathFormula formula={String.raw`$$x(t) = v_0 \cos\theta \cdot t$$`} display={true} />
-                  <MathFormula formula={String.raw`$$y(t) = v_0 \sin\theta \cdot t - \frac{1}{2}g t^2$$`} display={true} />
-                </div>
-
-                <div className="bg-white border border-green-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">Tempo de Voo (até y = 0):</p>
-                  <MathFormula formula={String.raw`$$t_{voo} = \frac{2 v_0 \sin\theta}{g}$$`} display={true} />
-                </div>
-
-                <div className="bg-white border border-green-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">Alcance Máximo:</p>
-                  <MathFormula formula={String.raw`$$A = \frac{v_0^2 \sin(2\theta)}{g}$$`} display={true} />
-                  <div className="bg-green-50 p-2 rounded mt-2">
-                    <MathFormula formula={String.raw`$$\text{Máximo quando } \theta = 45°$$`} display={true} />
-                  </div>
-                </div>
-
-                <div className="bg-white border border-green-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">Altura Máxima:</p>
-                  <MathFormula formula={String.raw`$$h_{max} = \frac{(v_0 \sin\theta)^2}{2g}$$`} display={true} />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-6 rounded-lg border border-purple-300">
-              <p className="font-bold mb-4 text-lg">📝 Exemplo 3: Lançamento Oblíquo (EEAR)</p>
-              <div className="bg-white p-4 rounded mb-4">
-                <p className="text-slate-700 mb-3"><strong>Enunciado:</strong></p>
-                <p className="text-slate-700 text-sm mb-3">
-                  Um projétil é lançado com velocidade inicial de 50 m/s em um ângulo de 30° com a horizontal. Considerando g = 10 m/s², determine:
-                </p>
-                <p className="text-slate-700 text-sm mb-2">a) Altura máxima atingida</p>
-                <p className="text-slate-700 text-sm mb-2">b) Tempo de voo total</p>
-                <p className="text-slate-700 text-sm mb-3">c) Alcance horizontal máximo</p>
-              </div>
-
-              <div className="bg-yellow-50 p-4 rounded">
-                <p className="font-bold text-slate-900 mb-3">Resolução Detalhada:</p>
-                <div className="space-y-3 text-slate-700 text-sm">
-                  <p><strong>Passo 1: Decomposição da velocidade inicial</strong></p>
-                  <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$v_{0x} = 50 \cos(30°) = 50 \times \frac{\sqrt{3}}{2} = 25\sqrt{3} \text{ m/s}$$`} display={true} />
-                    <MathFormula formula={String.raw`$$v_{0y} = 50 \sin(30°) = 50 \times \frac{1}{2} = 25 \text{ m/s}$$`} display={true} />
-                  </div>
-                  
-                  <p className="mt-3"><strong>Passo 2: Altura máxima</strong></p>
-                  <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$h_{max} = \frac{(25)^2}{2 \times 10} = \frac{625}{20} = 31,25 \text{ m}$$`} display={true} />
-                  </div>
-                  
-                  <p className="mt-3"><strong>Passo 3: Tempo de voo</strong></p>
-                  <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$t_{voo} = \frac{2 \times 25}{10} = 5 \text{ s}$$`} display={true} />
-                  </div>
-                  
-                  <p className="mt-3"><strong>Passo 4: Alcance horizontal</strong></p>
-                  <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$A = 25\sqrt{3} \times 5 = 125\sqrt{3} \approx 216,5 \text{ m}$$`} display={true} />
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-green-50 border border-green-200 rounded p-4 mt-4">
-                <p className="font-bold text-green-900 mb-2">✅ Respostas:</p>
-                <div className="space-y-2">
-                  <div className="bg-white p-2 rounded">
-                    <MathFormula formula={String.raw`$$\text{a) } h_{max} = 31,25 \text{ m}$$`} display={true} />
-                  </div>
-                  <div className="bg-white p-2 rounded">
-                    <MathFormula formula={String.raw`$$\text{b) } t_{voo} = 5 \text{ s}$$`} display={true} />
-                  </div>
-                  <div className="bg-white p-2 rounded">
-                    <MathFormula formula={String.raw`$$\text{c) } A = 125\sqrt{3} \approx 216,5 \text{ m}$$`} display={true} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ===== SEÇÃO 4: MCU ===== */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">4️⃣ Movimento Circular Uniforme (MCU)</h2>
-          
-          <div className="space-y-8">
-            <div className="bg-indigo-50 border-l-4 border-indigo-500 rounded p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Definição e Grandezas</h3>
-              <p className="text-slate-700 mb-4">
-                <strong>MCU é o movimento em trajetória circular com velocidade escalar constante.</strong> Apesar da velocidade escalar ser constante, há aceleração (centrípeta) pois a direção muda.
+            {/* Definição */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm">1</span>
+                Definição e Características
+              </h3>
+              <p className="text-slate-700 mb-4 leading-relaxed">
+                No MRUV, a aceleração é constante (não nula). Isso significa que a velocidade varia uniformemente com o tempo, aumentando ou diminuindo de forma linear.
               </p>
               
-              <div className="space-y-4">
-                <div className="bg-white border border-indigo-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">Grandezas Angulares:</p>
-                  <MathFormula formula={String.raw`$$\omega = \frac{\theta}{t} \quad \text{(velocidade angular)}$$`} display={true} />
-                  <MathFormula formula={String.raw`$$f = \frac{1}{T} \quad \text{(frequência)}$$`} display={true} />
-                  <MathFormula formula={String.raw`$$T = \frac{2\pi}{\omega} \quad \text{(período)}$$`} display={true} />
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                  <div className="flex-1 w-full">
+                    <MathFormula formula="v = v_0 + a \cdot t" display={true} className="text-xl mb-4" />
+                    <MathFormula formula="x = x_0 + v_0 t + \frac{1}{2}a t^2" display={true} className="text-xl mb-4" />
+                    <MathFormula formula="v^2 = v_0^2 + 2a\Delta x" display={true} className="text-xl" />
+                  </div>
+                  <div className="flex-1 text-sm text-slate-600 bg-white p-4 rounded-lg border border-slate-100 shadow-sm">
+                    <p className="font-semibold mb-2 text-slate-800">Onde:</p>
+                    <ul className="space-y-1">
+                      <li><MathFormula formula="v" display={false} />: Velocidade final (m/s)</li>
+                      <li><MathFormula formula="v_0" display={false} />: Velocidade inicial (m/s)</li>
+                      <li><MathFormula formula="a" display={false} />: Aceleração (m/s²)</li>
+                      <li><MathFormula formula="t" display={false} />: Tempo (s)</li>
+                      <li><MathFormula formula="x" display={false} />: Posição final (m)</li>
+                    </ul>
+                  </div>
                 </div>
+              </div>
 
-                <div className="bg-white border border-indigo-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">Relação entre Grandezas Lineares e Angulares:</p>
-                  <MathFormula formula={String.raw`$$v = \omega \cdot R$$`} display={true} />
-                  <MathFormula formula={String.raw`$$a_c = \frac{v^2}{R} = \omega^2 \cdot R$$`} display={true} />
-                </div>
-
-                <div className="bg-white border border-indigo-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-2">Deslocamento Angular:</p>
-                  <MathFormula formula={String.raw`$$\theta(t) = \theta_0 + \omega \cdot t$$`} display={true} />
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg">
+                <h4 className="font-bold text-yellow-800 flex items-center gap-2 mb-2">
+                  <Info className="w-4 h-4" />
+                  Características do MRUV
+                </h4>
+                <div className="space-y-2 text-slate-700 text-sm">
+                  <p>• Aceleração é <strong>constante</strong> e <strong>não nula</strong>: <MathFormula formula="a \neq 0" display={false} /></p>
+                  <p>• Velocidade varia <strong>linearmente</strong> com o tempo</p>
+                  <p>• Gráfico posição-tempo é uma <strong>parábola</strong></p>
+                  <p>• Gráfico velocidade-tempo é uma <strong>reta inclinada</strong></p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-amber-50 border-l-4 border-amber-500 rounded p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Derivações Importantes</h3>
-              <div className="space-y-4">
-                <div className="bg-white border border-amber-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-3\">Relação entre Período e Frequência em MCU</p>
-                  <p className="text-slate-700 text-sm mb-2">Em uma volta completa, o ângulo percorrido é 2π radianos:</p>
-                  <MathFormula formula={String.raw`$$\theta = \omega t$$`} display={true} />
-                  <p className="text-slate-700 text-sm mt-2">Para uma volta completa (t = T):</p>
-                  <MathFormula formula={String.raw`$$2\pi = \omega T$$`} display={true} />
-                  <MathFormula formula={String.raw`$$\boxed{T = \frac{2\pi}{\omega}}$$`} display={true} />
-                  <p className="text-slate-700 text-sm mt-2">Como frequência f = 1/T:</p>
-                  <MathFormula formula={String.raw`$$\boxed{\omega = 2\pi f}$$`} display={true} />
-                </div>
+            {/* Exemplos MRUV */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <CheckCircle2 className="w-6 h-6 text-green-600" />
+                Exemplos Resolvidos (MRUV)
+              </h3>
 
-                <div className="bg-white border border-amber-300 rounded p-4">
-                  <p className="font-bold text-slate-900 mb-3\">Aceleração Centrípeta: Por que existe?</p>
-                  <p className="text-slate-700 text-sm mb-2\"><strong>Conceito:</strong> Embora a velocidade escalar seja constante em MCU, a direção muda continuamente. Isso implica aceleração!</p>
-                  <p className="text-slate-700 text-sm mt-3 mb-2\">Considere dois pontos próximos na trajetória:</p>
-                  <MathFormula formula={String.raw`$$\Delta v = v_f - v_i$$`} display={true} />
-                  <p className="text-slate-700 text-sm mt-2\">Como |v| é constante mas a direção muda, Δv aponta para o centro.</p>
-                  <p className="text-slate-700 text-sm mt-3 mb-2\">A aceleração é:</p>
-                  <MathFormula formula={String.raw`$$a_c = \frac{\Delta v}{\Delta t} = \frac{v^2}{R}$$`} display={true} />
-                  <p className="text-slate-700 text-sm mt-2\">Ou em termos angulares:</p>
-                  <MathFormula formula={String.raw`$$\boxed{a_c = \omega^2 R}$$`} display={true} />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-r from-indigo-100 to-blue-100 p-6 rounded-lg border border-indigo-300">
-              <p className="font-bold mb-4 text-lg">📝 Exemplo 4: Satélite em Órbita Circular (AFA)</p>
-              <div className="bg-white p-4 rounded mb-4">
-                <p className="text-slate-700 mb-3"><strong>Enunciado:</strong></p>
-                <p className="text-slate-700 text-sm mb-3">
-                  Um satélite geoestacionário orbita a Terra em uma órbita circular. Sabendo que o período é T = 24 horas e o raio da órbita é R = 42.000 km, determine:
-                </p>
-                <p className="text-slate-700 text-sm mb-2">a) Velocidade angular em rad/s</p>
-                <p className="text-slate-700 text-sm mb-2">b) Velocidade linear em m/s</p>
-                <p className="text-slate-700 text-sm mb-3">c) Aceleração centrípeta em m/s²</p>
-              </div>
-
-              <div className="bg-yellow-50 p-4 rounded">
-                <p className="font-bold text-slate-900 mb-3">Resolução Detalhada:</p>
-                <div className="space-y-3 text-slate-700 text-sm">
-                  <p><strong>Passo 1: Converter unidades</strong></p>
-                  <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$T = 24 \text{ h} = 24 \times 3600 = 86.400 \text{ s}$$`} display={true} />
-                    <MathFormula formula={String.raw`$$R = 42.000 \text{ km} = 42 \times 10^6 \text{ m}$$`} display={true} />
-                  </div>
-                  
-                  <p className="mt-3"><strong>Passo 2: Velocidade angular</strong></p>
-                  <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$\omega = \frac{2\pi}{T} = \frac{2\pi}{86.400} \approx 7,27 \times 10^{-5} \text{ rad/s}$$`} display={true} />
-                  </div>
-                  
-                  <p className="mt-3"><strong>Passo 3: Velocidade linear</strong></p>
-                  <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$v = \omega R = 7,27 \times 10^{-5} \times 42 \times 10^6 \approx 3.054 \text{ m/s}$$`} display={true} />
-                  </div>
-                  
-                  <p className="mt-3"><strong>Passo 4: Aceleração centrípeta</strong></p>
-                  <div className="bg-white p-2 rounded ml-4 mt-2">
-                    <MathFormula formula={String.raw`$$a_c = \omega^2 R = (7,27 \times 10^{-5})^2 \times 42 \times 10^6 \approx 0,22 \text{ m/s}^2$$`} display={true} />
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                <h4 className="font-bold text-slate-900 mb-3">Exemplo 1: Carro Acelerando</h4>
+                <div className="space-y-3">
+                  <p className="text-slate-700 text-sm">
+                    <strong>Problema:</strong> Um carro parte do repouso (v₀ = 0) com aceleração constante a = 5 m/s². Qual é a velocidade após 4 segundos?
+                  </p>
+                  <div className="bg-white p-4 rounded border border-slate-200">
+                    <p className="text-slate-700 text-sm mb-2"><strong>Resolução:</strong></p>
+                    <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600">
+                      <li>Dados: <MathFormula formula="v_0 = 0" display={false} />, <MathFormula formula="a = 5 \text{ m/s}^2" display={false} />, <MathFormula formula="t = 4 \text{ s}" display={false} /></li>
+                      <li>Fórmula: <MathFormula formula="v = v_0 + at" display={true} /></li>
+                      <li>Cálculo: <MathFormula formula="v = 0 + 5 \times 4 = 20 \text{ m/s}" display={true} /></li>
+                    </ol>
+                    <div className="mt-3 pt-3 border-t border-slate-200">
+                      <p className="text-slate-700 text-sm"><strong>Resposta:</strong> A velocidade após 4 segundos é <strong>20 m/s</strong>.</p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-green-50 border border-green-200 rounded p-4 mt-4">
-                <p className="font-bold text-green-900 mb-2">✅ Respostas:</p>
-                <div className="space-y-2">
-                  <div className="bg-white p-2 rounded">
-                    <MathFormula formula={String.raw`$$\text{a) } \omega \approx 7,27 \times 10^{-5} \text{ rad/s}$$`} display={true} />
-                  </div>
-                  <div className="bg-white p-2 rounded">
-                    <MathFormula formula={String.raw`$$\text{b) } v \approx 3.054 \text{ m/s (≈ 11.000 km/h)}$$`} display={true} />
-                  </div>
-                  <div className="bg-white p-2 rounded">
-                    <MathFormula formula={String.raw`$$\text{c) } a_c \approx 0,22 \text{ m/s}^2$$`} display={true} />
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                <h4 className="font-bold text-slate-900 mb-3">Exemplo 2: Distância Percorrida em MRUV</h4>
+                <div className="space-y-3">
+                  <p className="text-slate-700 text-sm">
+                    <strong>Problema:</strong> Um objeto é lançado verticalmente para cima com velocidade inicial v₀ = 20 m/s. Considerando g = 10 m/s² (aceleração da gravidade), qual é a altura máxima atingida?
+                  </p>
+                  <div className="bg-white p-4 rounded border border-slate-200">
+                    <p className="text-slate-700 text-sm mb-2"><strong>Resolução:</strong></p>
+                    <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600">
+                      <li>Na altura máxima, v = 0: <MathFormula formula="v^2 = v_0^2 - 2g h" display={true} /></li>
+                      <li>Substituindo: <MathFormula formula="0 = 20^2 - 2 \times 10 \times h" display={true} /></li>
+                      <li>Resolvendo: <MathFormula formula="20h = 400 \Rightarrow h = 20 \text{ m}" display={true} /></li>
+                    </ol>
+                    <div className="mt-3 pt-3 border-t border-slate-200">
+                      <p className="text-slate-700 text-sm"><strong>Resposta:</strong> A altura máxima é <strong>20 metros</strong>.</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -619,46 +395,14 @@ export default function MecanicaTopicCinematica() {
           </div>
         </div>
 
-        {/* ===== RESUMO ===== */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
-          <h3 className="text-xl font-bold text-green-900 mb-4">📋 Resumo de Fórmulas Essenciais</h3>
-          <div className="space-y-3 text-green-900 text-sm">
-            <div className="bg-white p-2 rounded">
-              <MathFormula formula={String.raw`$$\text{MRU: } x = x_0 + vt$$`} display={true} />
-            </div>
-            <div className="bg-white p-2 rounded">
-              <MathFormula formula={String.raw`$$\text{MRUV: } v = v_0 + at; \quad x = x_0 + v_0 t + \frac{1}{2}at^2; \quad v^2 = v_0^2 + 2a\Delta x$$`} display={true} />
-            </div>
-            <div className="bg-white p-2 rounded">
-              <MathFormula formula={String.raw`$$\text{Lançamento Oblíquo: } A = \frac{v_0^2\sin 2\theta}{g}; \quad h_{max} = \frac{v_0^2\sin^2\theta}{2g}$$`} display={true} />
-            </div>
-            <div className="bg-white p-2 rounded">
-              <MathFormula formula={String.raw`$$\text{MCU: } v = \omega R; \quad a_c = \frac{v^2}{R} = \omega^2 R; \quad T = \frac{2\pi}{\omega}$$`} display={true} />
-            </div>
-          </div>
-        </div>
-
-        {/* ===== PRÓXIMOS PASSOS ===== */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-xl font-bold text-blue-900 mb-4">🚀 Próximos Passos</h3>
-          <p className="text-blue-900 mb-4">Agora que domina Cinemática, estude:</p>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/mecanica/topic/dinamica">
-              <Button className="bg-blue-600 hover:bg-blue-700">Dinâmica - Leis de Newton</Button>
-            </Link>
-            <Link href="/mecanica">
-              <Button variant="outline">Voltar para Mecânica</Button>
-            </Link>
-          </div>
+        {/* Info Box */}
+        <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6 mb-12">
+          <h4 className="font-bold text-blue-900 mb-2">Próximos Tópicos</h4>
+          <p className="text-blue-800 text-sm">
+            Agora que você compreende os movimentos básicos, explore <strong>Dinâmica</strong> para entender as forças que causam esses movimentos, e <strong>Trabalho e Energia</strong> para uma perspectiva diferente da Mecânica.
+          </p>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-slate-900 text-slate-400 py-8 border-t border-slate-800 mt-20">
-        <div className="container mx-auto px-4 text-center">
-          <p>© 2026 Projeto ITA - Do Zero a Aprovação. Todos os direitos reservados.</p>
-        </div>
-      </footer>
     </div>
   );
 }

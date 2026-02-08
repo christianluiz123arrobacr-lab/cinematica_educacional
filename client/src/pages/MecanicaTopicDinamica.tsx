@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 
 export default function MecanicaTopicDinamica() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-slate-50 to-cyan-50">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-slate-50 to-orange-50">
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/mecanica">
@@ -16,7 +16,7 @@ export default function MecanicaTopicDinamica() {
             </Button>
           </Link>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-orange-600 rounded-lg flex items-center justify-center">
               <Zap className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -33,24 +33,24 @@ export default function MecanicaTopicDinamica() {
           <h2 className="text-3xl font-bold text-slate-900 mb-6">⚡ Introdução à Dinâmica</h2>
           
           <div className="space-y-6">
-            <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
+            <div className="bg-red-50 border-l-4 border-red-500 rounded p-6">
               <h3 className="text-xl font-bold text-slate-900 mb-3">O que é Dinâmica?</h3>
               <p className="text-slate-700 leading-relaxed mb-4">
                 <strong>Dinâmica é o ramo da Mecânica que estuda as causas do movimento, ou seja, as forças.</strong> Enquanto a Cinemática descreve "como" os objetos se movem (velocidade, aceleração), a Dinâmica responde "por que" eles se movem assim, relacionando forças, massa e aceleração através das Leis de Newton.
               </p>
               <p className="text-slate-700 leading-relaxed">
-                A Dinâmica é fundamentada em três leis universais descobertas por Isaac Newton em 1687, que revolucionaram nossa compreensão do movimento e formam a base da Mecânica Clássica. Estas leis são válidas para praticamente todos os fenômenos macroscópicos que observamos no dia a dia.
+                Isaac Newton formulou suas três leis do movimento em 1687, revolucionando nossa compreensão do universo. Essas leis são válidas para praticamente todos os fenômenos macroscópicos e formam a base de toda a Mecânica Clássica, sendo essenciais para engenharia, física e tecnologia moderna.
               </p>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded p-6">
+            <div className="bg-red-50 border border-red-200 rounded p-6">
               <h4 className="font-bold text-slate-900 mb-3">💡 Conceitos Fundamentais</h4>
               <div className="space-y-3 text-slate-700 text-sm">
-                <p><strong>Força (F):</strong> Ação que altera o estado de movimento ou repouso de um corpo. É uma grandeza vetorial. Unidade no SI: Newton (N = kg·m/s²).</p>
-                <p><strong>Massa (m):</strong> Medida da inércia de um corpo, ou seja, sua resistência a mudanças de movimento. Propriedade intrínseca, não depende da gravidade local.</p>
-                <p><strong>Peso (P):</strong> Força gravitacional exercida pela Terra sobre um corpo. <MathFormula formula="P = mg" display={false} />. Varia com a gravidade local (9,8 m/s² na Terra).</p>
-                <p><strong>Normal (N):</strong> Força de contato perpendicular à superfície, exercida por uma superfície sobre um corpo em contato com ela.</p>
-                <p><strong>Atrito (f):</strong> Força que se opõe ao movimento relativo entre superfícies em contato. Pode ser estático (repouso) ou cinético (movimento).</p>
+                <p><strong>Força (F):</strong> Ação que altera o estado de movimento ou repouso de um corpo. É uma grandeza vetorial. Unidade: Newton (N = kg·m/s²).</p>
+                <p><strong>Massa (m):</strong> Medida da inércia de um corpo, sua resistência a mudanças de movimento. Propriedade intrínseca, não depende da gravidade local.</p>
+                <p><strong>Peso (P):</strong> Força gravitacional exercida pela Terra. <MathFormula formula="P = mg" display={false} />. Varia com a gravidade local.</p>
+                <p><strong>Normal (N):</strong> Força de contato perpendicular à superfície, exercida por uma superfície sobre um corpo.</p>
+                <p><strong>Atrito (f):</strong> Força que se opõe ao movimento relativo entre superfícies. Pode ser estático ou cinético.</p>
               </div>
             </div>
           </div>
@@ -68,13 +68,13 @@ export default function MecanicaTopicDinamica() {
                 Contexto Histórico e Importância
               </h3>
               <p className="text-slate-700 mb-4 leading-relaxed">
-                Isaac Newton publicou suas três leis do movimento em 1687 no livro "Philosophiæ Naturalis Principia Mathematica" (Princípios Matemáticos da Filosofia Natural). Estas leis unificaram toda a Mecânica e permitiram descrever o movimento de objetos desde uma maçã caindo até os planetas orbitando o Sol. As leis de Newton permanem válidas e são a base de toda a engenharia clássica.
+                Isaac Newton publicou suas três leis do movimento em 1687 no livro "Philosophiæ Naturalis Principia Mathematica" (Princípios Matemáticos da Filosofia Natural). Estas leis unificaram toda a Mecânica e permitiram descrever o movimento de objetos desde uma maçã caindo até os planetas orbitando o Sol. As leis de Newton permancem válidas e são a base de toda a engenharia clássica, sendo fundamentais para projetar máquinas, estruturas e sistemas.
               </p>
               
               <div className="bg-purple-50 border-l-4 border-purple-500 rounded p-6">
                 <h4 className="font-bold text-slate-900 mb-3">Por que as Leis de Newton são Fundamentais?</h4>
                 <p className="text-slate-700 text-sm">
-                  As Leis de Newton estabelecem a relação entre força, massa e aceleração, permitindo prever o movimento de qualquer objeto sob a ação de forças conhecidas. Sem elas, seria impossível projetar máquinas, edifícios, veículos, ou compreender fenômenos naturais. São as leis mais importantes da Física Clássica.
+                  As Leis de Newton estabelecem a relação entre força, massa e aceleração, permitindo prever o movimento de qualquer objeto sob ação de forças conhecidas. Sem elas, seria impossível projetar máquinas, edifícios, veículos, ou compreender fenômenos naturais. São as leis mais importantes da Física Clássica e formam o alicerce de toda a tecnologia moderna.
                 </p>
               </div>
             </div>
@@ -86,7 +86,7 @@ export default function MecanicaTopicDinamica() {
                 Primeira Lei: Lei da Inércia
               </h3>
               <p className="text-slate-700 mb-4 leading-relaxed">
-                A Primeira Lei de Newton, também conhecida como Lei da Inércia, estabelece que um corpo em repouso permanece em repouso, e um corpo em movimento uniforme permanece em movimento uniforme, a menos que uma força resultante não-nula atue sobre ele.
+                A Primeira Lei de Newton, também conhecida como Lei da Inércia, estabelece que um corpo em repouso permanece em repouso, e um corpo em movimento uniforme permanece em movimento uniforme, a menos que uma força resultante não-nula atue sobre ele. Esta lei define o conceito fundamental de inércia.
               </p>
               
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
@@ -98,7 +98,7 @@ export default function MecanicaTopicDinamica() {
                 </div>
 
                 <div className="bg-yellow-50 border border-yellow-200 rounded p-4">
-                  <p className="text-slate-700 text-sm"><strong>Interpretação Física:</strong> Se a força resultante é nula, o corpo está em equilíbrio (repouso ou movimento retilíneo uniforme - MRU). A inércia é a tendência natural dos corpos de manter seu estado de movimento.</p>
+                  <p className="text-slate-700 text-sm"><strong>Interpretação Física:</strong> Se a força resultante é nula, o corpo está em equilíbrio (repouso ou movimento retilíneo uniforme). A inércia é a tendência natural dos corpos de manter seu estado de movimento ou repouso.</p>
                 </div>
               </div>
 
@@ -369,14 +369,59 @@ export default function MecanicaTopicDinamica() {
                 </div>
               </div>
             </div>
+
+            {/* Exemplo 4 */}
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <CheckCircle2 className="w-6 h-6 text-green-600" />
+                Exemplo 4: Força em Ângulo (Nível ITA)
+              </h4>
+              <div className="space-y-4">
+                <p className="text-slate-700 text-sm">
+                  <strong>Problema:</strong> Um bloco de massa m = 4 kg está em repouso sobre uma superfície horizontal. Uma força F = 20 N é aplicada em um ângulo de θ = 37° acima da horizontal. O coeficiente de atrito estático é μ_s = 0,3. Determine se o bloco se move e, se sim, qual é a aceleração. (g = 10 m/s², sen 37° = 0,6, cos 37° = 0,8)
+                </p>
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <p className="text-slate-700 text-sm mb-3"><strong>Resolução:</strong></p>
+                  <ol className="list-decimal list-inside space-y-3 text-sm text-slate-600">
+                    <li>
+                      <strong>Componentes da força F:</strong>
+                      <MathFormula formula="F_x = F \cos\theta = 20 \times 0,8 = 16 \text{ N}" display={true} />
+                      <MathFormula formula="F_y = F \sin\theta = 20 \times 0,6 = 12 \text{ N}" display={true} />
+                    </li>
+                    <li>
+                      <strong>Equilíbrio vertical:</strong>
+                      <MathFormula formula="N + F_y = mg \Rightarrow N = 40 - 12 = 28 \text{ N}" display={true} />
+                    </li>
+                    <li>
+                      <strong>Força de atrito estático máxima:</strong>
+                      <MathFormula formula="f_{s,max} = \mu_s N = 0,3 \times 28 = 8,4 \text{ N}" display={true} />
+                    </li>
+                    <li>
+                      <strong>Comparação:</strong> <MathFormula formula="F_x = 16 \text{ N} > f_{s,max} = 8,4 \text{ N}" display={false} /> → Bloco se move!
+                    </li>
+                    <li>
+                      <strong>Força de atrito cinético:</strong>
+                      <MathFormula formula="f_k = \mu_k N = 0,2 \times 28 = 5,6 \text{ N}" display={true} />
+                    </li>
+                    <li>
+                      <strong>Aceleração:</strong>
+                      <MathFormula formula="a = \frac{F_x - f_k}{m} = \frac{16 - 5,6}{4} = \frac{10,4}{4} = 2,6 \text{ m/s}^2" display={true} />
+                    </li>
+                  </ol>
+                  <div className="mt-4 pt-4 border-t border-slate-200">
+                    <p className="text-slate-700 text-sm"><strong>Resposta:</strong> O bloco se move com aceleração <strong>2,6 m/s²</strong>.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Info Box */}
-        <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6 mb-12">
-          <h4 className="font-bold text-blue-900 mb-2">Próximos Tópicos</h4>
-          <p className="text-blue-800 text-sm">
-            Agora que você compreende as Leis de Newton, explore <strong>Trabalho e Energia</strong>, que relacionam força e deslocamento, e <strong>Quantidade de Movimento</strong>, que estende os conceitos de dinâmica.
+        <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 mb-12">
+          <h4 className="font-bold text-red-900 mb-2">Próximos Tópicos</h4>
+          <p className="text-red-800 text-sm">
+            Agora que você compreende as Leis de Newton, explore <strong>Trabalho e Energia</strong>, que relacionam força e deslocamento, e <strong>Quantidade de Movimento</strong>, que estende os conceitos de dinâmica para sistemas mais complexos.
           </p>
         </div>
       </section>
