@@ -32,6 +32,7 @@
   - [x] Motores Elétricos - REESCRITO COM DIDÁTICA SUPERIOR: termo-a-termo, analogias, 3 tipos, passo-a-passo, 4 exemplos, 5 aplicações práticas
   - [x] Geradores Elétricos - CRIADO COM DIDÁTICA SUPERIOR: termo-a-termo, analogias, 2 tipos (CA/CC), passo-a-passo, 4 exemplos, 6 aplicações práticas
 - [x] Radiação Eletromagnética - Emissão, Absorção, Interação
+  - [x] Emissão de Radiação - CRIADO COM DIDÁTICA SUPERIOR: termo-a-termo, cargas aceleradas, Larmor, dipolo oscilante, passo-a-passo, 4 exemplos, 6 aplicações
 
 ### Diagramas Educacionais
 - [ ] Gerar 6+ diagramas em português para Eletromagnetismo (opcional - conteúdo funciona sem diagramas)
