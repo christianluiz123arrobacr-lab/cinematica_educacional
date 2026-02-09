@@ -755,16 +755,363 @@ export default function EletromagnetismoTopicAplicacoes() {
           </div>
         </div>
 
+        {/* Geradores Elétricos */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-purple-900 mb-6">3. Geradores Elétricos</h2>
+          
+          {/* O que é um Gerador */}
+          <div className="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-6 mb-8">
+            <h4 className="font-bold text-purple-900 mb-3">💡 O que é um Gerador Elétrico?</h4>
+            <p className="text-purple-800 leading-relaxed">
+              Um <strong>gerador elétrico</strong> é uma máquina que converte <strong>energia mecânica</strong> (movimento) em <strong>energia elétrica</strong>. 
+              É o <strong>inverso de um motor</strong>: enquanto o motor usa eletricidade para criar movimento, o gerador usa movimento para criar eletricidade.
+            </p>
+            <p className="text-purple-800 leading-relaxed mt-3">
+              <strong>Analogia:</strong> Imagine uma bicicleta com dínamo. Quando você pedala (energia mecânica), o dínamo gira e acende a luz (energia elétrica). 
+              Você está convertendo o movimento das suas pernas em eletricidade!
+            </p>
+          </div>
+
+          {/* Contexto Histórico */}
+          <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-6 mb-8">
+            <h4 className="font-bold text-purple-900 mb-3">📜 Contexto Histórico</h4>
+            <p className="text-purple-800 leading-relaxed">
+              O primeiro gerador elétrico prático foi inventado por <strong>Michael Faraday em 1831</strong>, baseado na sua descoberta da <strong>indução eletromagnética</strong>. 
+              Ele percebeu que mover um ímã perto de uma bobina induz uma corrente elétrica.
+            </p>
+            <p className="text-purple-800 leading-relaxed mt-3">
+              Em <strong>1866</strong>, Werner von Siemens desenvolveu o <strong>gerador de corrente contínua (CC)</strong> auto-excitado. 
+              Em <strong>1882</strong>, Nikola Tesla inventou o <strong>gerador de corrente alternada (CA)</strong>, que revolucionou a transmissão de energia elétrica.
+            </p>
+            <p className="text-purple-800 leading-relaxed mt-3">
+              Hoje, <strong>geradores</strong> são a base de toda a produção de eletricidade: usinas hidrelétricas, térmicas, eólicas e nucleares usam geradores para converter movimento em eletricidade.
+            </p>
+          </div>
+
+          {/* Princípio de Funcionamento */}
+          <div className="space-y-6 mb-8">
+            <h3 className="text-2xl font-bold text-purple-900">Princípio de Funcionamento</h3>
+            
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h4 className="font-bold text-purple-900 mb-4">Lei de Faraday Aplicada a Geradores</h4>
+              <p className="text-gray-700 leading-relaxed mb-4">
+                Um gerador funciona baseado na <strong>Lei de Faraday</strong>: quando o fluxo magnético através de uma bobina varia, uma <strong>força eletromotriz (fem)</strong> é induzida.
+              </p>
+              
+              <div className="bg-purple-50 rounded-lg p-4 mb-4">
+                <p className="font-mono text-lg text-center mb-3">ε = -N dΦ/dt</p>
+                <div className="text-sm text-gray-700 space-y-2">
+                  <p><strong>ε (epsilon):</strong> Força eletromotriz induzida (fem) em volts (V)</p>
+                  <p><strong>N:</strong> Número de espiras na bobina (adimensional)</p>
+                  <p><strong>dΦ/dt:</strong> Taxa de variação do fluxo magnético (Wb/s = V)</p>
+                  <p><strong>Sinal negativo:</strong> Lei de Lenz - a fem se opõe à variação do fluxo</p>
+                </div>
+              </div>
+
+              <p className="text-gray-700 leading-relaxed">
+                Em um gerador, uma bobina gira dentro de um campo magnético (ou um ímã gira perto de bobinas fixas). 
+                Conforme a bobina gira, o fluxo magnético através dela varia continuamente, induzindo uma fem alternada.
+              </p>
+            </div>
+
+            {/* Gerador Simples */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h4 className="font-bold text-purple-900 mb-4">Gerador de Corrente Alternada (CA) Simples</h4>
+              <p className="text-gray-700 leading-relaxed mb-4">
+                Considere uma bobina retangular de área <strong>A</strong> com <strong>N</strong> espiras girando com velocidade angular <strong>ω</strong> em um campo magnético uniforme <strong>B</strong>.
+              </p>
+              
+              <div className="bg-purple-50 rounded-lg p-4 mb-4">
+                <p className="font-mono text-lg text-center mb-3">ε(t) = NABω sin(ωt) = ε₀ sin(ωt)</p>
+                <div className="text-sm text-gray-700 space-y-2">
+                  <p><strong>ε(t):</strong> Fem induzida em função do tempo (V)</p>
+                  <p><strong>N:</strong> Número de espiras (adimensional)</p>
+                  <p><strong>A:</strong> Área de cada espira (m²)</p>
+                  <p><strong>B:</strong> Campo magnético (T)</p>
+                  <p><strong>ω (omega):</strong> Velocidade angular de rotação (rad/s)</p>
+                  <p><strong>ε₀ = NABω:</strong> Amplitude máxima da fem (V)</p>
+                  <p><strong>sin(ωt):</strong> Função senoidal que varia entre -1 e +1</p>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-4 mb-4">
+                <p className="text-yellow-800 text-sm">
+                  <strong>Interpretação Física:</strong> A fem é máxima quando a bobina está na posição horizontal (sin(ωt) = ±1) e zero quando está na posição vertical (sin(ωt) = 0). 
+                  Isso cria uma <strong>corrente alternada (CA)</strong> que muda de direção periodicamente.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Tipos de Geradores */}
+          <div className="space-y-6 mb-8">
+            <h3 className="text-2xl font-bold text-purple-900">Tipos de Geradores</h3>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Gerador CA */}
+              <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                <h4 className="font-bold text-green-900 mb-3">Gerador de Corrente Alternada (CA)</h4>
+                <p className="text-gray-700 text-sm leading-relaxed mb-3">
+                  Produz corrente que varia senoidalmente com o tempo. Usado em <strong>usinas elétricas</strong> (hidrelétricas, térmicas, eólicas).
+                </p>
+                <div className="text-sm text-gray-700 space-y-2">
+                  <p><strong>Vantagens:</strong></p>
+                  <ul className="list-disc list-inside ml-2 space-y-1">
+                    <li>Mais simples (sem comutador)</li>
+                    <li>Pode usar transformadores para mudar tensão</li>
+                    <li>Transmissão eficiente em longas distâncias</li>
+                  </ul>
+                  <p className="mt-2"><strong>Desvantagens:</strong></p>
+                  <ul className="list-disc list-inside ml-2 space-y-1">
+                    <li>Requer retificação para obter CC</li>
+                  </ul>
+                  <p className="mt-2"><strong>Aplicações:</strong> Usinas elétricas, geradores portáteis, alternadores de veículos</p>
+                </div>
+              </div>
+
+              {/* Gerador CC */}
+              <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                <h4 className="font-bold text-blue-900 mb-3">Gerador de Corrente Contínua (CC)</h4>
+                <p className="text-gray-700 text-sm leading-relaxed mb-3">
+                  Usa um <strong>comutador</strong> (anel dividido) para converter a corrente alternada em corrente contínua pulsante.
+                </p>
+                <div className="text-sm text-gray-700 space-y-2">
+                  <p><strong>Vantagens:</strong></p>
+                  <ul className="list-disc list-inside ml-2 space-y-1">
+                    <li>Produz corrente contínua diretamente</li>
+                    <li>Bom para carregar baterias</li>
+                  </ul>
+                  <p className="mt-2"><strong>Desvantagens:</strong></p>
+                  <ul className="list-disc list-inside ml-2 space-y-1">
+                    <li>Comutador requer manutenção</li>
+                    <li>Não pode usar transformadores</li>
+                    <li>Menos eficiente para transmissão</li>
+                  </ul>
+                  <p className="mt-2"><strong>Aplicações:</strong> Dínamos de bicicleta, geradores de soldagem, sistemas de backup</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Passo-a-Passo */}
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6 mb-8">
+            <h3 className="text-2xl font-bold text-purple-900 mb-4">Passo-a-Passo para Resolver Problemas de Geradores</h3>
+            <ol className="space-y-3 text-gray-700">
+              <li className="flex items-start">
+                <span className="bg-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0 font-bold">1</span>
+                <div>
+                  <strong>Identifique o tipo de gerador:</strong> CA (senoidal) ou CC (comutador)?
+                </div>
+              </li>
+              <li className="flex items-start">
+                <span className="bg-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0 font-bold">2</span>
+                <div>
+                  <strong>Anote os dados:</strong> N (espiras), A (área), B (campo), ω (velocidade angular)
+                </div>
+              </li>
+              <li className="flex items-start">
+                <span className="bg-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0 font-bold">3</span>
+                <div>
+                  <strong>Calcule a fem máxima:</strong> ε₀ = NABω
+                </div>
+              </li>
+              <li className="flex items-start">
+                <span className="bg-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0 font-bold">4</span>
+                <div>
+                  <strong>Escreva a fem em função do tempo:</strong> ε(t) = ε₀ sin(ωt) para CA
+                </div>
+              </li>
+              <li className="flex items-start">
+                <span className="bg-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0 font-bold">5</span>
+                <div>
+                  <strong>Calcule a corrente:</strong> i(t) = ε(t)/R se houver resistência R
+                </div>
+              </li>
+              <li className="flex items-start">
+                <span className="bg-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0 font-bold">6</span>
+                <div>
+                  <strong>Calcule a potência:</strong> P(t) = ε(t) × i(t) ou P_média = ε₀²/(2R)
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          {/* Exemplos Resolvidos */}
+          <div className="space-y-8 mb-8">
+            <h3 className="text-2xl font-bold text-purple-900">Exemplos Resolvidos</h3>
+            
+            {/* Exemplo 1 */}
+            <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-purple-500">
+              <h4 className="font-bold text-purple-900 mb-4">Exemplo 1: Gerador CA Simples</h4>
+              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <p className="text-gray-700 font-semibold mb-2">Enunciado:</p>
+                <p className="text-gray-700">
+                  Um gerador CA possui uma bobina com N = 100 espiras, área A = 0,05 m², girando a ω = 120 rad/s em um campo magnético B = 0,8 T. 
+                  Calcule: (a) a fem máxima, (b) a fem em t = π/240 s.
+                </p>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <p className="font-semibold text-purple-900 mb-2">Solução (a): Fem máxima</p>
+                  <div className="bg-purple-50 rounded p-3 space-y-2 text-sm">
+                    <p>Dados: N = 100, A = 0,05 m², ω = 120 rad/s, B = 0,8 T</p>
+                    <p>ε₀ = NABω = 100 × 0,05 × 0,8 × 120</p>
+                    <p>ε₀ = 480 V</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="font-semibold text-purple-900 mb-2">Solução (b): Fem em t = π/240 s</p>
+                  <div className="bg-purple-50 rounded p-3 space-y-2 text-sm">
+                    <p>ε(t) = ε₀ sin(ωt) = 480 sin(120 × π/240)</p>
+                    <p>ε(t) = 480 sin(π/2) = 480 × 1</p>
+                    <p>ε(t) = 480 V (fem máxima neste instante)</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Exemplo 2 */}
+            <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500">
+              <h4 className="font-bold text-green-900 mb-4">Exemplo 2: Potência Média de um Gerador</h4>
+              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <p className="text-gray-700 font-semibold mb-2">Enunciado:</p>
+                <p className="text-gray-700">
+                  O gerador do Exemplo 1 está conectado a uma resistência R = 50 Ω. Calcule a potência média fornecida.
+                </p>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <p className="font-semibold text-green-900 mb-2">Solução:</p>
+                  <div className="bg-green-50 rounded p-3 space-y-2 text-sm">
+                    <p>Dados: ε₀ = 480 V (do Exemplo 1), R = 50 Ω</p>
+                    <p>A potência instantânea é: P(t) = ε²(t)/R = [ε₀ sin(ωt)]²/R</p>
+                    <p>A potência média é: P_média = ε₀²/(2R)</p>
+                    <p>P_média = (480)²/(2 × 50) = 230400/100</p>
+                    <p>P_média = 2304 W ≈ 2,3 kW</p>
+                  </div>
+                </div>
+                <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded p-3">
+                  <p className="text-yellow-800 text-sm">
+                    <strong>Nota:</strong> A potência média é metade da potência máxima (ε₀²/R) porque a função sin²(ωt) tem valor médio de 1/2.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Exemplo 3 */}
+            <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
+              <h4 className="font-bold text-blue-900 mb-4">Exemplo 3: Gerador de Usina Hidrelétrica</h4>
+              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <p className="text-gray-700 font-semibold mb-2">Enunciado:</p>
+                <p className="text-gray-700">
+                  Uma turbina hidrelétrica gira a 60 rpm (rotações por minuto). O gerador possui N = 500 espiras, A = 2 m², B = 1,5 T. 
+                  Calcule a fem máxima gerada.
+                </p>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <p className="font-semibold text-blue-900 mb-2">Solução:</p>
+                  <div className="bg-blue-50 rounded p-3 space-y-2 text-sm">
+                    <p>Dados: N = 500, A = 2 m², B = 1,5 T, f = 60 rpm</p>
+                    <p>Primeiro, converta rpm para rad/s:</p>
+                    <p>ω = 2πf = 2π × (60/60) = 2π × 1 = 6,28 rad/s</p>
+                    <p>Agora calcule ε₀:</p>
+                    <p>ε₀ = NABω = 500 × 2 × 1,5 × 6,28</p>
+                    <p>ε₀ = 9420 V ≈ 9,4 kV</p>
+                  </div>
+                </div>
+                <div className="bg-green-50 border-l-4 border-green-500 rounded p-3">
+                  <p className="text-green-800 text-sm">
+                    <strong>Aplicação Real:</strong> Usinas hidrelétricas geram tensões de 10-25 kV, que são elevadas para 230-500 kV por transformadores para transmissão eficiente.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Exemplo 4 */}
+            <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-orange-500">
+              <h4 className="font-bold text-orange-900 mb-4">Exemplo 4: Frequência de um Gerador</h4>
+              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <p className="text-gray-700 font-semibold mb-2">Enunciado:</p>
+                <p className="text-gray-700">
+                  Um gerador CA deve produzir corrente alternada com frequência f = 60 Hz. Quantas rotações por segundo a turbina deve fazer?
+                </p>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <p className="font-semibold text-orange-900 mb-2">Solução:</p>
+                  <div className="bg-orange-50 rounded p-3 space-y-2 text-sm">
+                    <p>Dados: f = 60 Hz (frequência da corrente alternada)</p>
+                    <p>A frequência da corrente alternada é igual à frequência de rotação da bobina:</p>
+                    <p>f_rotação = f = 60 Hz = 60 rotações/segundo</p>
+                    <p>Em rpm: f_rotação = 60 × 60 = 3600 rpm</p>
+                  </div>
+                </div>
+                <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-3">
+                  <p className="text-blue-800 text-sm">
+                    <strong>Nota:</strong> No Brasil, a frequência padrão é 60 Hz. Na Europa, é 50 Hz. Geradores de usinas são projetados para girar a 3600 rpm (60 Hz) ou 3000 rpm (50 Hz).
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Aplicações Práticas */}
+          <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-6 mb-8">
+            <h3 className="text-2xl font-bold text-purple-900 mb-4">Aplicações Práticas de Geradores</h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-white rounded-lg p-4">
+                <h4 className="font-bold text-purple-900 mb-2">1. Usinas Hidrelétricas</h4>
+                <p className="text-gray-700 text-sm">
+                  Água em queda gira turbinas conectadas a geradores CA de grande porte (100-700 MW). Fornecem 60% da eletricidade do Brasil.
+                </p>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <h4 className="font-bold text-green-900 mb-2">2. Usinas Eólicas</h4>
+                <p className="text-gray-700 text-sm">
+                  Vento gira pás conectadas a geradores CA (2-8 MW por turbina). Energia limpa e renovável em crescimento.
+                </p>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <h4 className="font-bold text-orange-900 mb-2">3. Usinas Térmicas e Nucleares</h4>
+                <p className="text-gray-700 text-sm">
+                  Vapor de água gira turbinas conectadas a geradores CA (500-1500 MW). Usam combustíveis fósseis ou fissão nuclear.
+                </p>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <h4 className="font-bold text-blue-900 mb-2">4. Alternadores de Veículos</h4>
+                <p className="text-gray-700 text-sm">
+                  Motor do carro gira um alternador (gerador CA) que carrega a bateria e alimenta sistemas elétricos (12V, 50-150A).
+                </p>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <h4 className="font-bold text-red-900 mb-2">5. Geradores Portáteis</h4>
+                <p className="text-gray-700 text-sm">
+                  Motor a gasolina/diesel gira gerador CA para fornecer eletricidade em locais remotos ou emergências (1-10 kW).
+                </p>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <h4 className="font-bold text-indigo-900 mb-2">6. Dínamos de Bicicleta</h4>
+                <p className="text-gray-700 text-sm">
+                  Roda da bicicleta gira um pequeno gerador CC que acende faróis (6V, 3W). Exemplo clássico de gerador mecânico.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Info Box Final */}
         <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 mb-12">
-          <h4 className="font-bold text-red-900 mb-2">Resumo: Transformadores e Motores</h4>
+          <h4 className="font-bold text-red-900 mb-2">Resumo: Transformadores, Motores e Geradores</h4>
           <ul className="text-red-800 text-sm space-y-2">
             <li>• <strong>Transformadores:</strong> Mudam tensão/corrente sem alterar potência. Essenciais para transmissão de energia.</li>
             <li>• <strong>Motores:</strong> Convertem energia elétrica em mecânica usando Força de Lorentz.</li>
-            <li>• <strong>Ambos:</strong> Baseados em eletromagnetismo (Lei de Faraday, Lei de Ampère)</li>
+            <li>• <strong>Geradores:</strong> Convertem energia mecânica em elétrica usando Lei de Faraday (inverso do motor).</li>
+            <li>• <strong>Todos:</strong> Baseados em eletromagnetismo (Lei de Faraday, Lei de Ampère, Lei de Lenz)</li>
             <li>• <strong>Transformadores:</strong> Funcionam apenas com AC. Eficiência típica: 95-99%</li>
             <li>• <strong>Motores:</strong> Podem ser CC ou CA. Eficiência típica: 85-95%</li>
-            <li>• <strong>Impacto:</strong> Transformadores permitiram cidades modernas. Motores consomem 45% da eletricidade mundial.</li>
+            <li>• <strong>Geradores:</strong> Produzem CA (usinas) ou CC (dínamos). Eficiência típica: 90-98%</li>
+            <li>• <strong>Impacto:</strong> Geradores produzem 100% da eletricidade mundial. Transformadores permitem transmissão eficiente. Motores consomem 45% da eletricidade.</li>
           </ul>
         </div>
       </section>
