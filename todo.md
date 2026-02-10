@@ -27,6 +27,7 @@
   - [x] Equação de Onda - APROFUNDADO com contexto, dedução completa, termo-a-termo, velocidade da luz, soluções, exemplos
   - [x] Polarização - APROFUNDADO com contexto, tipos, Lei de Malus, polarizadores, passo-a-passo, 5+ exemplos
   - [x] Vetor de Poynting - APROFUNDADO com contexto, dedução, termo-a-termo, intensidade média, passo-a-passo, 5+ exemplos
+  - [x] Espectro Eletromagnético - CRIADO COM DIDÁTICA SUPERIOR: todas as 7 faixas, termo-a-termo, tabela completa, 4 exemplos, aplicações
 - [x] Aplicações - Transformadores, Motores, Geradores
   - [x] Transformadores - REESCRITO COM DIDÁTICA SUPERIOR: termo-a-termo, analogias, 3 tipos, 3 exemplos, 4 aplicações práticas
   - [x] Motores Elétricos - REESCRITO COM DIDÁTICA SUPERIOR: termo-a-termo, analogias, 3 tipos, passo-a-passo, 4 exemplos, 5 aplicações práticas
