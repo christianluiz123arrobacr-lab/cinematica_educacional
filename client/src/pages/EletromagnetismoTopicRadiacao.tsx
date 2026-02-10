@@ -569,6 +569,400 @@ export default function EletromagnetismoTopicRadiacao() {
           </div>
         </div>
 
+        {/* Interação com Matéria */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🔬 Interação da Radiação Eletromagnética com a Matéria</h2>
+          
+          <div className="space-y-8">
+            {/* Explicação Simples */}
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-500 rounded p-6">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">O que é Interação com Matéria?</h3>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                Quando a radiação eletromagnética (luz, ondas de rádio, raios X, etc.) encontra um material, ela pode interagir de várias formas. Pense em uma bola de tênis batendo em uma parede: ela pode <strong>ser absorvida</strong> (a parede é macia e absorve a energia), <strong>ser refletida</strong> (a parede é dura e a bola volta), <strong>atravessar</strong> (a parede é transparente) ou <strong>mudar de direção</strong> (a parede é inclinada).
+              </p>
+              <p className="text-slate-700 leading-relaxed">
+                De forma similar, a radiação EM pode ser <strong>absorvida</strong> (energia é transferida para o material), <strong>refletida</strong> (volta na direção oposta), <strong>refratada</strong> (muda de direção ao passar para outro meio) ou <strong>espalhada</strong> (dispersa em várias direções).
+              </p>
+            </div>
+
+            {/* Contexto Histórico */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded p-6">
+              <h4 className="font-bold text-slate-900 mb-3">📜 Contexto Histórico</h4>
+              <p className="text-slate-700 leading-relaxed mb-3">
+                O estudo da interação da luz com a matéria remonta à Antiguidade. <strong>Euclides</strong> (300 a.C.) estudou a reflexão. <strong>Snell</strong> (1621) descobriu a lei da refração. <strong>Rayleigh</strong> (1871) explicou por que o céu é azul (espalhamento). <strong>Compton</strong> (1923) descobriu o espalhamento de raios X por elétrons.
+              </p>
+              <p className="text-slate-700 leading-relaxed">
+                Hoje, compreendemos que a interação da radiação EM com a matéria é fundamental para tecnologias como óculos, fibras ópticas, espelhos, lentes, lasers e muito mais.
+              </p>
+            </div>
+
+            {/* 1. Absorção */}
+            <div>
+              <h3 className="text-2xl font-bold text-purple-700 mb-4">1️⃣ Absorção</h3>
+              
+              <div className="bg-purple-50 border-l-4 border-purple-500 p-6 rounded-r mb-4">
+                <h4 className="font-bold text-slate-900 mb-3">O que é Absorção?</h4>
+                <p className="text-slate-700 leading-relaxed mb-4">
+                  <strong>Absorção</strong> é o processo pelo qual a energia da radiação eletromagnética é transferida para o material. Os átomos e moléculas do material absorvem fótons (partículas de luz) e ganham energia, que pode ser convertida em calor, energia química ou outras formas.
+                </p>
+                <p className="text-slate-700 leading-relaxed">
+                  Pense em um painel solar: ele absorve a luz do Sol e converte a energia em eletricidade. Ou em uma roupa preta em um dia ensolarado: ela absorve muita luz e esquenta.
+                </p>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded p-6 mb-4">
+                <h4 className="font-bold text-slate-900 mb-3">Fórmula da Absorção (Lei de Beer-Lambert)</h4>
+                <div className="bg-slate-50 p-4 rounded mb-4">
+                  <MathFormula formula="I = I_0 e^{-\\alpha x}" />
+                </div>
+                <div className="space-y-2 text-slate-700">
+                  <p><strong>Onde:</strong></p>
+                  <ul className="space-y-1 ml-6">
+                    <li><MathFormula formula="I" inline /> = intensidade da radiação após atravessar o material (W/m²)</li>
+                    <li><MathFormula formula="I_0" inline /> = intensidade inicial da radiação (W/m²)</li>
+                    <li><MathFormula formula="\\alpha" inline /> = coeficiente de absorção do material (m⁻¹)</li>
+                    <li><MathFormula formula="x" inline /> = espessura do material (m)</li>
+                    <li><MathFormula formula="e" inline /> = número de Euler (≈ 2,718)</li>
+                  </ul>
+                </div>
+                <div className="mt-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r">
+                  <p className="text-sm text-slate-700">
+                    <strong>Interpretação:</strong> A intensidade da radiação diminui exponencialmente à medida que atravessa o material. Quanto maior o coeficiente de absorção <MathFormula formula="\\alpha" inline /> ou a espessura <MathFormula formula="x" inline />, menor a intensidade que sai do outro lado.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-green-50 border border-green-200 rounded p-6">
+                <h4 className="font-bold text-slate-900 mb-3">💡 Exemplo 1: Absorção de Luz por Vidro</h4>
+                <p className="text-slate-700 mb-3">
+                  Um feixe de luz com intensidade inicial <MathFormula formula="I_0 = 1000 \\, \\text{W/m}^2" inline /> atravessa uma placa de vidro de espessura <MathFormula formula="x = 5 \\, \\text{cm} = 0,05 \\, \\text{m}" inline />. O coeficiente de absorção do vidro é <MathFormula formula="\\alpha = 0,1 \\, \\text{m}^{-1}" inline />. Qual a intensidade da luz após atravessar o vidro?
+                </p>
+                <div className="bg-white p-4 rounded mb-3">
+                  <p className="font-bold text-slate-900 mb-2">Solução:</p>
+                  <div className="space-y-2 text-slate-700">
+                    <p>Usando a Lei de Beer-Lambert:</p>
+                    <div className="bg-slate-50 p-3 rounded">
+                      <MathFormula formula="I = I_0 e^{-\\alpha x}" />
+                    </div>
+                    <p>Substituindo os valores:</p>
+                    <div className="bg-slate-50 p-3 rounded">
+                      <MathFormula formula="I = 1000 \\cdot e^{-0,1 \\cdot 0,05}" />
+                    </div>
+                    <div className="bg-slate-50 p-3 rounded">
+                      <MathFormula formula="I = 1000 \\cdot e^{-0,005}" />
+                    </div>
+                    <div className="bg-slate-50 p-3 rounded">
+                      <MathFormula formula="I = 1000 \\cdot 0,995" />
+                    </div>
+                    <div className="bg-slate-50 p-3 rounded">
+                      <MathFormula formula="I \\approx 995 \\, \\text{W/m}^2" />
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-green-50 border-l-4 border-green-500 p-3 rounded-r">
+                  <p className="text-sm text-green-900">
+                    <strong>Resposta:</strong> A intensidade da luz após atravessar o vidro é aproximadamente 995 W/m². O vidro absorveu apenas 0,5% da luz (5 W/m²), por isso é considerado transparente.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Reflexão */}
+            <div>
+              <h3 className="text-2xl font-bold text-blue-700 mb-4">2️⃣ Reflexão</h3>
+              
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r mb-4">
+                <h4 className="font-bold text-slate-900 mb-3">O que é Reflexão?</h4>
+                <p className="text-slate-700 leading-relaxed mb-4">
+                  <strong>Reflexão</strong> é o processo pelo qual a radiação eletromagnética "volta" ao encontrar uma superfície. Pense em um espelho: quando você olha para ele, a luz que sai do seu rosto é refletida pelo espelho e volta para seus olhos, permitindo que você veja sua imagem.
+                </p>
+                <p className="text-slate-700 leading-relaxed">
+                  A reflexão pode ser <strong>especular</strong> (superfície lisa, como espelho) ou <strong>difusa</strong> (superfície rugosa, como papel).
+                </p>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded p-6 mb-4">
+                <h4 className="font-bold text-slate-900 mb-3">Lei da Reflexão</h4>
+                <div className="bg-slate-50 p-4 rounded mb-4">
+                  <MathFormula formula="\\theta_i = \\theta_r" />
+                </div>
+                <div className="space-y-2 text-slate-700">
+                  <p><strong>Onde:</strong></p>
+                  <ul className="space-y-1 ml-6">
+                    <li><MathFormula formula="\\theta_i" inline /> = ângulo de incidência (graus ou radianos)</li>
+                    <li><MathFormula formula="\\theta_r" inline /> = ângulo de reflexão (graus ou radianos)</li>
+                  </ul>
+                </div>
+                <div className="mt-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r">
+                  <p className="text-sm text-slate-700">
+                    <strong>Interpretação:</strong> O ângulo de incidência (entre o raio incidente e a normal à superfície) é igual ao ângulo de reflexão (entre o raio refletido e a normal). Ambos os raios e a normal estão no mesmo plano.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-green-50 border border-green-200 rounded p-6">
+                <h4 className="font-bold text-slate-900 mb-3">💡 Exemplo 2: Reflexão em Espelho Plano</h4>
+                <p className="text-slate-700 mb-3">
+                  Um raio de luz incide em um espelho plano com ângulo de incidência <MathFormula formula="\\theta_i = 30°" inline />. Qual o ângulo de reflexão?
+                </p>
+                <div className="bg-white p-4 rounded mb-3">
+                  <p className="font-bold text-slate-900 mb-2">Solução:</p>
+                  <div className="space-y-2 text-slate-700">
+                    <p>Pela Lei da Reflexão:</p>
+                    <div className="bg-slate-50 p-3 rounded">
+                      <MathFormula formula="\\theta_r = \\theta_i = 30°" />
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-green-50 border-l-4 border-green-500 p-3 rounded-r">
+                  <p className="text-sm text-green-900">
+                    <strong>Resposta:</strong> O ângulo de reflexão é 30°, igual ao ângulo de incidência.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Refração */}
+            <div>
+              <h3 className="text-2xl font-bold text-green-700 mb-4">3️⃣ Refração</h3>
+              
+              <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-r mb-4">
+                <h4 className="font-bold text-slate-900 mb-3">O que é Refração?</h4>
+                <p className="text-slate-700 leading-relaxed mb-4">
+                  <strong>Refração</strong> é o processo pelo qual a radiação eletromagnética muda de direção ao passar de um meio para outro. Pense em um canudo dentro de um copo com água: ele parece "quebrado" porque a luz muda de direção ao passar do ar para a água.
+                </p>
+                <p className="text-slate-700 leading-relaxed">
+                  A refração ocorre porque a velocidade da luz é diferente em diferentes meios. No vácuo, a luz viaja a <MathFormula formula="c = 3 \\times 10^8 \\, \\text{m/s}" inline />. Na água, ela viaja mais devagar, a cerca de <MathFormula formula="2,25 \\times 10^8 \\, \\text{m/s}" inline />.
+                </p>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded p-6 mb-4">
+                <h4 className="font-bold text-slate-900 mb-3">Lei de Snell (Lei da Refração)</h4>
+                <div className="bg-slate-50 p-4 rounded mb-4">
+                  <MathFormula formula="n_1 \\sin(\\theta_1) = n_2 \\sin(\\theta_2)" />
+                </div>
+                <div className="space-y-2 text-slate-700">
+                  <p><strong>Onde:</strong></p>
+                  <ul className="space-y-1 ml-6">
+                    <li><MathFormula formula="n_1" inline /> = índice de refração do meio 1 (adimensional)</li>
+                    <li><MathFormula formula="n_2" inline /> = índice de refração do meio 2 (adimensional)</li>
+                    <li><MathFormula formula="\\theta_1" inline /> = ângulo de incidência no meio 1 (graus ou radianos)</li>
+                    <li><MathFormula formula="\\theta_2" inline /> = ângulo de refração no meio 2 (graus ou radianos)</li>
+                  </ul>
+                </div>
+                <div className="mt-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r">
+                  <p className="text-sm text-slate-700 mb-2">
+                    <strong>Interpretação:</strong> Quando a luz passa de um meio com índice de refração <MathFormula formula="n_1" inline /> para outro com <MathFormula formula="n_2" inline />, o ângulo muda de acordo com a Lei de Snell.
+                  </p>
+                  <p className="text-sm text-slate-700">
+                    <strong>Índice de refração:</strong> <MathFormula formula="n = c/v" inline />, onde <MathFormula formula="c" inline /> é a velocidade da luz no vácuo e <MathFormula formula="v" inline /> é a velocidade da luz no meio. Exemplos: ar (<MathFormula formula="n \\approx 1,0" inline />), água (<MathFormula formula="n \\approx 1,33" inline />), vidro (<MathFormula formula="n \\approx 1,5" inline />).
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-green-50 border border-green-200 rounded p-6">
+                <h4 className="font-bold text-slate-900 mb-3">💡 Exemplo 3: Refração Ar-Água</h4>
+                <p className="text-slate-700 mb-3">
+                  Um raio de luz passa do ar (<MathFormula formula="n_1 = 1,0" inline />) para a água (<MathFormula formula="n_2 = 1,33" inline />) com ângulo de incidência <MathFormula formula="\\theta_1 = 45°" inline />. Qual o ângulo de refração?
+                </p>
+                <div className="bg-white p-4 rounded mb-3">
+                  <p className="font-bold text-slate-900 mb-2">Solução:</p>
+                  <div className="space-y-2 text-slate-700">
+                    <p>Usando a Lei de Snell:</p>
+                    <div className="bg-slate-50 p-3 rounded">
+                      <MathFormula formula="n_1 \\sin(\\theta_1) = n_2 \\sin(\\theta_2)" />
+                    </div>
+                    <p>Substituindo os valores:</p>
+                    <div className="bg-slate-50 p-3 rounded">
+                      <MathFormula formula="1,0 \\cdot \\sin(45°) = 1,33 \\cdot \\sin(\\theta_2)" />
+                    </div>
+                    <div className="bg-slate-50 p-3 rounded">
+                      <MathFormula formula="0,707 = 1,33 \\cdot \\sin(\\theta_2)" />
+                    </div>
+                    <div className="bg-slate-50 p-3 rounded">
+                      <MathFormula formula="\\sin(\\theta_2) = \\frac{0,707}{1,33} = 0,532" />
+                    </div>
+                    <div className="bg-slate-50 p-3 rounded">
+                      <MathFormula formula="\\theta_2 = \\arcsin(0,532) \\approx 32,1°" />
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-green-50 border-l-4 border-green-500 p-3 rounded-r">
+                  <p className="text-sm text-green-900">
+                    <strong>Resposta:</strong> O ângulo de refração é aproximadamente 32,1°. A luz "entorta" em direção à normal ao entrar na água porque a água tem maior índice de refração que o ar.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. Espalhamento */}
+            <div>
+              <h3 className="text-2xl font-bold text-orange-700 mb-4">4️⃣ Espalhamento</h3>
+              
+              <div className="bg-orange-50 border-l-4 border-orange-500 p-6 rounded-r mb-4">
+                <h4 className="font-bold text-slate-900 mb-3">O que é Espalhamento?</h4>
+                <p className="text-slate-700 leading-relaxed mb-4">
+                  <strong>Espalhamento</strong> é o processo pelo qual a radiação eletromagnética é dispersa em várias direções ao interagir com partículas pequenas. Pense no céu azul: a luz do Sol é espalhada pelas moléculas de ar, e a luz azul (menor comprimento de onda) é espalhada mais que a luz vermelha (maior comprimento de onda).
+                </p>
+                <p className="text-slate-700 leading-relaxed">
+                  Há três tipos principais de espalhamento: <strong>Rayleigh</strong> (partículas muito menores que o comprimento de onda), <strong>Mie</strong> (partículas do tamanho do comprimento de onda) e <strong>Compton</strong> (raios X espalhados por elétrons).
+                </p>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded p-6 mb-4">
+                <h4 className="font-bold text-slate-900 mb-3">Espalhamento Rayleigh</h4>
+                <div className="bg-slate-50 p-4 rounded mb-4">
+                  <MathFormula formula="I \\propto \\frac{1}{\\lambda^4}" />
+                </div>
+                <div className="space-y-2 text-slate-700">
+                  <p><strong>Onde:</strong></p>
+                  <ul className="space-y-1 ml-6">
+                    <li><MathFormula formula="I" inline /> = intensidade da luz espalhada</li>
+                    <li><MathFormula formula="\\lambda" inline /> = comprimento de onda da luz (m)</li>
+                  </ul>
+                </div>
+                <div className="mt-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r">
+                  <p className="text-sm text-slate-700">
+                    <strong>Interpretação:</strong> A intensidade da luz espalhada é inversamente proporcional à quarta potência do comprimento de onda. Luz azul (<MathFormula formula="\\lambda \\approx 450 \\, \\text{nm}" inline />) é espalhada cerca de 10 vezes mais que luz vermelha (<MathFormula formula="\\lambda \\approx 650 \\, \\text{nm}" inline />), por isso o céu é azul.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-green-50 border border-green-200 rounded p-6">
+                <h4 className="font-bold text-slate-900 mb-3">💡 Exemplo 4: Por que o Céu é Azul?</h4>
+                <p className="text-slate-700 mb-3">
+                  Compare o espalhamento da luz azul (<MathFormula formula="\\lambda_\\text{azul} = 450 \\, \\text{nm}" inline />) com a luz vermelha (<MathFormula formula="\\lambda_\\text{vermelho} = 650 \\, \\text{nm}" inline />).
+                </p>
+                <div className="bg-white p-4 rounded mb-3">
+                  <p className="font-bold text-slate-900 mb-2">Solução:</p>
+                  <div className="space-y-2 text-slate-700">
+                    <p>A razão entre as intensidades espalhadas é:</p>
+                    <div className="bg-slate-50 p-3 rounded">
+                      <MathFormula formula="\\frac{I_\\text{azul}}{I_\\text{vermelho}} = \\left(\\frac{\\lambda_\\text{vermelho}}{\\lambda_\\text{azul}}\\right)^4" />
+                    </div>
+                    <p>Substituindo os valores:</p>
+                    <div className="bg-slate-50 p-3 rounded">
+                      <MathFormula formula="\\frac{I_\\text{azul}}{I_\\text{vermelho}} = \\left(\\frac{650}{450}\\right)^4 = (1,44)^4 \\approx 4,3" />
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-green-50 border-l-4 border-green-500 p-3 rounded-r">
+                  <p className="text-sm text-green-900">
+                    <strong>Resposta:</strong> A luz azul é espalhada cerca de 4,3 vezes mais que a luz vermelha. Por isso, quando olhamos para o céu (longe do Sol), vemos predominantemente luz azul espalhada pelas moléculas de ar.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Passo-a-Passo */}
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-l-4 border-blue-500 p-6 rounded-r">
+              <h3 className="text-xl font-bold text-slate-900 mb-4">🛤️ Passo-a-Passo: Como Resolver Problemas de Interação com Matéria</h3>
+              <ol className="space-y-3 text-slate-700">
+                <li className="flex gap-3">
+                  <span className="font-bold text-blue-600 flex-shrink-0">1.</span>
+                  <span><strong>Identifique o tipo de interação:</strong> É absorção, reflexão, refração ou espalhamento? Leia o enunciado com atenção para identificar qual fenômeno está ocorrendo.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="font-bold text-blue-600 flex-shrink-0">2.</span>
+                  <span><strong>Identifique os dados fornecidos:</strong> Quais são os valores de intensidade inicial, ângulos, índices de refração, comprimentos de onda, etc.?</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="font-bold text-blue-600 flex-shrink-0">3.</span>
+                  <span><strong>Escolha a fórmula apropriada:</strong> Lei de Beer-Lambert para absorção, Lei da Reflexão para reflexão, Lei de Snell para refração, Espalhamento Rayleigh para espalhamento.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="font-bold text-blue-600 flex-shrink-0">4.</span>
+                  <span><strong>Substitua os valores na fórmula:</strong> Certifique-se de que todas as unidades estão consistentes (metros, radianos, etc.).</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="font-bold text-blue-600 flex-shrink-0">5.</span>
+                  <span><strong>Resolva a equação:</strong> Faça os cálculos passo-a-passo, mostrando cada etapa intermediária.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="font-bold text-blue-600 flex-shrink-0">6.</span>
+                  <span><strong>Interprete o resultado:</strong> O que o valor calculado significa fisicamente? Faz sentido? Por exemplo, se o ângulo de refração é menor que o ângulo de incidência, a luz "entortou" em direção à normal.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="font-bold text-blue-600 flex-shrink-0">7.</span>
+                  <span><strong>Verifique as unidades:</strong> O resultado final tem as unidades corretas? Intensidade em W/m², ângulos em graus ou radianos, etc.</span>
+                </li>
+              </ol>
+            </div>
+
+            {/* Aplicações Práticas */}
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 border-l-4 border-green-500 p-6 rounded-r">
+              <h3 className="text-xl font-bold text-slate-900 mb-4">🌐 Aplicações Práticas da Interação com Matéria</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <h4 className="font-bold text-slate-900 mb-2">1. Óculos de Sol</h4>
+                  <p className="text-sm text-slate-700">
+                    Absorvem luz UV prejudicial aos olhos. Lentes polarizadas também reduzem reflexos.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <h4 className="font-bold text-slate-900 mb-2">2. Fibras Ópticas</h4>
+                  <p className="text-sm text-slate-700">
+                    Usam reflexão total interna para transmitir luz (e dados) por longas distâncias sem perdas.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <h4 className="font-bold text-slate-900 mb-2">3. Lentes e Óculos</h4>
+                  <p className="text-sm text-slate-700">
+                    Usam refração para corrigir problemas de visão (miopia, hipermetropia, astigmatismo).
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <h4 className="font-bold text-slate-900 mb-2">4. Céu Azul e Pôr do Sol</h4>
+                  <p className="text-sm text-slate-700">
+                    Espalhamento Rayleigh explica por que o céu é azul durante o dia e vermelho ao pôr do sol.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <h4 className="font-bold text-slate-900 mb-2">5. Espelhos e Retrovisores</h4>
+                  <p className="text-sm text-slate-700">
+                    Usam reflexão especular para formar imagens nítidas.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <h4 className="font-bold text-slate-900 mb-2">6. Painéis Solares</h4>
+                  <p className="text-sm text-slate-700">
+                    Absorvem luz solar e convertem a energia em eletricidade.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Exemplo Final */}
+            <div className="bg-green-50 border border-green-200 rounded p-6">
+              <h4 className="font-bold text-slate-900 mb-3">💡 Exemplo 5: Reflexão Total Interna em Fibra Óptica</h4>
+              <p className="text-slate-700 mb-3">
+                Uma fibra óptica tem núcleo de vidro (<MathFormula formula="n_1 = 1,5" inline />) e casca de vidro com menor índice (<MathFormula formula="n_2 = 1,4" inline />). Qual o ângulo crítico para reflexão total interna?
+              </p>
+              <div className="bg-white p-4 rounded mb-3">
+                <p className="font-bold text-slate-900 mb-2">Solução:</p>
+                <div className="space-y-2 text-slate-700">
+                  <p>O ângulo crítico <MathFormula formula="\\theta_c" inline /> é dado por:</p>
+                  <div className="bg-slate-50 p-3 rounded">
+                    <MathFormula formula="\\sin(\\theta_c) = \\frac{n_2}{n_1}" />
+                  </div>
+                  <p>Substituindo os valores:</p>
+                  <div className="bg-slate-50 p-3 rounded">
+                    <MathFormula formula="\\sin(\\theta_c) = \\frac{1,4}{1,5} = 0,933" />
+                  </div>
+                  <div className="bg-slate-50 p-3 rounded">
+                    <MathFormula formula="\\theta_c = \\arcsin(0,933) \\approx 69°" />
+                  </div>
+                </div>
+              </div>
+              <div className="bg-green-50 border-l-4 border-green-500 p-3 rounded-r">
+                <p className="text-sm text-green-900">
+                  <strong>Resposta:</strong> O ângulo crítico é aproximadamente 69°. Se a luz incidir com ângulo maior que 69° (em relação à normal), ela será totalmente refletida dentro do núcleo, permitindo que a luz viaje por longas distâncias sem escapar.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Info Box */}
         <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
           <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2">
@@ -576,7 +970,7 @@ export default function EletromagnetismoTopicRadiacao() {
             Resumo
           </h3>
           <p className="text-slate-700 text-sm">
-            A radiação eletromagnética é emitida por cargas aceleradas (Fórmula de Larmor) e por objetos aquecidos (radiação térmica). A potência irradiada depende da carga, aceleração e frequência. Aplicações incluem antenas de rádio, celulares, raios X e comunicação por satélite. A radiação térmica é descrita pelas Leis de Stefan-Boltzmann e Wien.
+            A radiação eletromagnética interage com a matéria de quatro formas principais: <strong>absorção</strong> (energia transferida para o material), <strong>reflexão</strong> (ângulo de incidência = ângulo de reflexão), <strong>refração</strong> (mudança de direção ao mudar de meio, Lei de Snell), e <strong>espalhamento</strong> (dispersão em várias direções, Rayleigh/Mie/Compton). Aplicações incluem óculos, fibras ópticas, lentes, céu azul, espelhos e painéis solares.
           </p>
         </div>
       </section>
