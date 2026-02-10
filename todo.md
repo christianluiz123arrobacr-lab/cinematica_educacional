@@ -50,7 +50,10 @@
 - [x] Leis de Newton - APROFUNDADO com contexto histórico, deduções completas, passo-a-passo, 3 exemplos resolvidos
 - [ ] Cinemática - Padronizar com mesma estrutura de Eletricidade (opcional - já tem conteúdo bom)
 
-## Eletricidade - Completo
+## Eletricidade - Revisão com Didática Superior em Progresso
+- [x] Lei de Coulomb - REESCRITO COM DIDÁTICA SUPERIOR: explicação simples, contexto histórico, termo-a-termo completo, superposição, passo-a-passo em 7 etapas, 5 exemplos resolvidos, 6 aplicações práticas
+- [ ] Campo Elétrico - REESCREVER com didática superior: termo-a-termo, linhas de campo, passo-a-passo, 5+ exemplos
+- [ ] Potencial Elétrico - REESCREVER com didática superior: termo-a-termo, analogias, trabalho-energia, passo-a-passo, 5+ exemplos
 - [x] 8 tópicos com conteúdo ITA/IME rigoroso
 - [x] 15 diagramas educacionais em português
 - [x] AI Resolver integrado
