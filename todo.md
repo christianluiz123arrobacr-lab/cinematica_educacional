@@ -52,7 +52,7 @@
 
 ## Eletricidade - Revisão com Didática Superior em Progresso
 - [x] Lei de Coulomb - REESCRITO COM DIDÁTICA SUPERIOR: explicação simples, contexto histórico, termo-a-termo completo, superposição, passo-a-passo em 7 etapas, 5 exemplos resolvidos, 6 aplicações práticas
-- [ ] Campo Elétrico - REESCREVER com didática superior: termo-a-termo, linhas de campo, passo-a-passo, 5+ exemplos
+- [x] Campo Elétrico - REESCRITO COM DIDÁTICA SUPERIOR: explicação simples (analogias: piscina, mapa de ventos, limalha), contexto histórico (Faraday, Maxwell), termo-a-termo completo (escalar e vetorial), princípio da superposição, linhas de campo (5 propriedades + padrões), passo-a-passo em 7 etapas, 6 exemplos resolvidos ITA/IME, 8 aplicações práticas
 - [ ] Potencial Elétrico - REESCREVER com didática superior: termo-a-termo, analogias, trabalho-energia, passo-a-passo, 5+ exemplos
 - [x] 8 tópicos com conteúdo ITA/IME rigoroso
 - [x] 15 diagramas educacionais em português

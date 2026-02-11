@@ -774,6 +774,681 @@ export default function EletricidadeTopicEletrostatica() {
           </div>
         </div>
 
+        {/* Campo Elétrico com Didática Superior */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🌊 Campo Elétrico (Didática Superior)</h2>
+          
+          {/* 1. Explicação Simples */}
+          <div className="bg-green-50 border-l-4 border-green-500 rounded-r-lg p-6 mb-6">
+            <h3 className="text-xl font-bold text-slate-900 mb-3">O que é Campo Elétrico? (Explicação Simples)</h3>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              Imagine que você está em uma piscina e alguém joga uma pedra na água. Você sente as ondas chegando até você, mesmo sem tocar na pedra diretamente. O <strong>campo elétrico</strong> funciona de forma similar: uma carga elétrica "perturba" o espaço ao seu redor, criando uma "influência invisível" que pode ser sentida por outras cargas.
+            </p>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              Pense no campo elétrico como um "mapa de forças": em cada ponto do espaço, o campo elétrico indica a direção e a intensidade da força que uma carga de teste positiva sentiria se fosse colocada ali. É como um mapa de ventos que mostra a direção e a velocidade do vento em cada região - mas aqui estamos falando de forças elétricas!
+            </p>
+            <p className="text-slate-700 leading-relaxed">
+              <strong>Analogia prática:</strong> Se você espalhar limalha de ferro perto de um ímã, as limalhas se alinham mostrando o "campo magnético". Da mesma forma, cargas elétricas criam um "campo elétrico" ao seu redor, que pode ser visualizado através de linhas de campo (que veremos adiante).
+            </p>
+          </div>
+
+          {/* 2. Contexto Histórico */}
+          <div className="bg-orange-50 border-l-4 border-orange-500 rounded-r-lg p-6 mb-6">
+            <h3 className="text-xl font-bold text-slate-900 mb-3">📜 Contexto Histórico</h3>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              O conceito de <strong>campo elétrico</strong> foi introduzido pelo físico e químico inglês <strong>Michael Faraday</strong> (1791-1867) na década de 1830. Antes de Faraday, os físicos pensavam em termos de "ação à distância" - uma carga simplesmente exercia força sobre outra, instantaneamente, sem nenhum mecanismo intermediário.
+            </p>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              Faraday, que tinha formação de encadernador e era autodidata em ciências, revolucionou a física ao propor que o espaço ao redor de uma carga não é "vazio", mas sim preenchido por um <strong>campo</strong> - uma entidade física real que transmite forças. Essa ideia foi inicialmente recebida com ceticismo pela comunidade científica, mas foi matematicamente formalizada por <strong>James Clerk Maxwell</strong> (1831-1879) nas suas famosas equações de eletromagnetismo (1865).
+            </p>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              A introdução do conceito de campo foi uma das maiores revoluções conceituais da física. Hoje, sabemos que campos (elétrico, magnético, gravitacional, quântico) são fundamentais para descrever todas as interações da natureza. O campo elétrico não é apenas uma ferramenta matemática conveniente - ele é uma entidade física real que armazena energia e momento!
+            </p>
+            <p className="text-slate-700 leading-relaxed">
+              <strong>Curiosidade:</strong> Faraday visualizava os campos através de "linhas de força" (hoje chamadas linhas de campo), que ele desenhava meticulosamente em seus cadernos de laboratório. Essas visualizações intuitivas foram essenciais para o desenvolvimento da teoria eletromagnética moderna.
+            </p>
+          </div>
+
+          {/* 3. Definição e Fórmulas */}
+          <div className="space-y-6 mb-6">
+            <h3 className="text-2xl font-bold text-slate-900">Definição e Fórmulas</h3>
+            
+            {/* Definição Geral */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+              <h4 className="font-bold text-slate-900 mb-3">Definição Geral de Campo Elétrico</h4>
+              <p className="text-slate-700 text-sm mb-4">
+                O <strong>campo elétrico</strong> <MathFormula formula="\vec{E}" /> em um ponto do espaço é definido como a força elétrica <MathFormula formula="\vec{F}" /> que atuaria sobre uma <strong>carga de teste positiva</strong> <MathFormula formula="q_0" /> colocada nesse ponto, dividida pelo valor dessa carga:
+              </p>
+              <div className="bg-white p-4 rounded border border-yellow-300 mb-4">
+                <MathFormula formula="\vec{E} = \frac{\vec{F}}{q_0}" />
+              </div>
+              <div className="bg-blue-50 border border-blue-200 rounded p-4 space-y-2 text-sm">
+                <p className="font-bold text-slate-900">📖 Explicação Termo-a-Termo:</p>
+                <div className="space-y-2 text-slate-700">
+                  <p><strong>• <MathFormula formula="\vec{E}" /></strong> = Campo elétrico (grandeza vetorial, medida em Newton por Coulomb, N/C, ou Volt por metro, V/m). É a "força por unidade de carga" - indica quanta força uma carga unitária sentiria em cada ponto.</p>
+                  <p><strong>• <MathFormula formula="\vec{F}" /></strong> = Força elétrica que atua sobre a carga de teste (em Newtons, N). É a força que a carga <MathFormula formula="q_0" /> realmente sente devido às outras cargas presentes.</p>
+                  <p><strong>• <MathFormula formula="q_0" /></strong> = Carga de teste positiva (em Coulombs, C). Deve ser muito pequena para não perturbar a distribuição de cargas que cria o campo. Por convenção, usamos carga positiva para definir a direção do campo.</p>
+                </div>
+              </div>
+              <p className="text-slate-700 text-sm mt-4">
+                <strong>Interpretação física:</strong> O campo elétrico é uma propriedade do espaço criada pelas cargas fontes. Uma vez que sabemos <MathFormula formula="\vec{E}" /> em um ponto, podemos calcular a força sobre qualquer carga <MathFormula formula="q" /> colocada ali: <MathFormula formula="\vec{F} = q \vec{E}" />. Se <MathFormula formula="q > 0" />, a força tem a mesma direção do campo; se <MathFormula formula="q < 0" />, a força é oposta ao campo.
+              </p>
+            </div>
+
+            {/* Campo de Carga Pontual */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h4 className="font-bold text-slate-900 mb-3">Campo Elétrico de uma Carga Pontual</h4>
+              <p className="text-slate-700 text-sm mb-4">
+                Para uma carga pontual <MathFormula formula="Q" /> (a carga fonte), o campo elétrico a uma distância <MathFormula formula="r" /> dela é dado por:
+              </p>
+              <div className="bg-white p-4 rounded border border-blue-300 mb-4 space-y-3">
+                <div>
+                  <p className="text-xs text-slate-600 mb-2">Forma Escalar (módulo):</p>
+                  <MathFormula formula="E = k \cdot \frac{|Q|}{r^2}" />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-600 mb-2">Forma Vetorial:</p>
+                  <MathFormula formula="\vec{E} = k \cdot \frac{Q}{r^2} \hat{r}" />
+                </div>
+              </div>
+              <div className="bg-green-50 border border-green-200 rounded p-4 space-y-2 text-sm">
+                <p className="font-bold text-slate-900">📖 Explicação Termo-a-Termo (Forma Escalar):</p>
+                <div className="space-y-2 text-slate-700">
+                  <p><strong>• <MathFormula formula="E" /></strong> = Módulo (intensidade) do campo elétrico no ponto considerado (em N/C ou V/m). Quanto maior <MathFormula formula="E" />, maior a força por unidade de carga.</p>
+                  <p><strong>• <MathFormula formula="k \approx 9,0 \times 10^9 \, N \cdot m^2/C^2" /></strong> = Constante eletrostática de Coulomb (mesma da Lei de Coulomb). Depende do meio: no vácuo é <MathFormula formula="k_0" />, em outros meios é <MathFormula formula="k = k_0/\epsilon_r" />.</p>
+                  <p><strong>• <MathFormula formula="Q" /></strong> = Carga fonte que cria o campo (em Coulombs, C). Pode ser positiva ou negativa. O módulo <MathFormula formula="|Q|" /> garante que <MathFormula formula="E \geq 0" />.</p>
+                  <p><strong>• <MathFormula formula="r" /></strong> = Distância do ponto onde queremos calcular o campo até a carga fonte <MathFormula formula="Q" /> (em metros, m). Quanto maior a distância, menor o campo (decai com <MathFormula formula="1/r^2" />).</p>
+                </div>
+              </div>
+              <div className="bg-purple-50 border border-purple-200 rounded p-4 space-y-2 text-sm mt-4">
+                <p className="font-bold text-slate-900">📖 Explicação Termo-a-Termo (Forma Vetorial):</p>
+                <div className="space-y-2 text-slate-700">
+                  <p><strong>• <MathFormula formula="\vec{E}" /></strong> = Campo elétrico vetorial (tem módulo, direção e sentido). Aponta radialmente para fora se <MathFormula formula="Q > 0" /> (carga positiva repele carga de teste positiva) e radialmente para dentro se <MathFormula formula="Q < 0" /> (carga negativa atrai carga de teste positiva).</p>
+                  <p><strong>• <MathFormula formula="\hat{r}" /></strong> = Vetor unitário radial (módulo 1) que aponta da carga fonte <MathFormula formula="Q" /> para o ponto onde calculamos o campo. Define a direção do campo.</p>
+                  <p><strong>• Sinal de <MathFormula formula="Q" /></strong>: Se <MathFormula formula="Q > 0" />, <MathFormula formula="\vec{E}" /> aponta no sentido de <MathFormula formula="\hat{r}" /> (para fora). Se <MathFormula formula="Q < 0" />, <MathFormula formula="\vec{E}" /> aponta no sentido oposto a <MathFormula formula="\hat{r}" /> (para dentro).</p>
+                </div>
+              </div>
+              <p className="text-slate-700 text-sm mt-4">
+                <strong>Interpretação física:</strong> O campo elétrico de uma carga pontual diminui com o quadrado da distância (<MathFormula formula="E \propto 1/r^2" />), assim como a força de Coulomb. Isso significa que o campo é muito intenso perto da carga e enfraquece rapidamente ao nos afastarmos. Por exemplo, ao dobrar a distância, o campo cai para 1/4 do valor original!
+              </p>
+            </div>
+
+            {/* Princípio da Superposição */}
+            <div className="bg-pink-50 border border-pink-200 rounded-lg p-6">
+              <h4 className="font-bold text-slate-900 mb-3">Princípio da Superposição para Campos Elétricos</h4>
+              <p className="text-slate-700 text-sm mb-4">
+                Quando temos <strong>múltiplas cargas</strong> <MathFormula formula="Q_1, Q_2, Q_3, \ldots, Q_n" /> criando campos elétricos, o campo elétrico resultante em um ponto é a <strong>soma vetorial</strong> dos campos criados por cada carga individualmente:
+              </p>
+              <div className="bg-white p-4 rounded border border-pink-300 mb-4">
+                <MathFormula formula="\vec{E}_{\text{total}} = \vec{E}_1 + \vec{E}_2 + \vec{E}_3 + \cdots + \vec{E}_n = \sum_{i=1}^{n} \vec{E}_i" />
+              </div>
+              <div className="bg-orange-50 border border-orange-200 rounded p-4 space-y-2 text-sm">
+                <p className="font-bold text-slate-900">📖 Explicação Termo-a-Termo:</p>
+                <div className="space-y-2 text-slate-700">
+                  <p><strong>• <MathFormula formula="\vec{E}_{\text{total}}" /></strong> = Campo elétrico resultante (total) no ponto considerado (em N/C). É o campo que uma carga de teste realmente "sente".</p>
+                  <p><strong>• <MathFormula formula="\vec{E}_i" /></strong> = Campo elétrico criado pela carga <MathFormula formula="Q_i" /> no ponto considerado. Calculado usando <MathFormula formula="\vec{E}_i = k Q_i / r_i^2 \hat{r}_i" />, onde <MathFormula formula="r_i" /> é a distância de <MathFormula formula="Q_i" /> ao ponto.</p>
+                  <p><strong>• <MathFormula formula="\sum_{i=1}^{n}" /></strong> = Símbolo de somatório - significa "some todos os campos de i=1 até i=n". É uma soma vetorial, não escalar!</p>
+                </div>
+              </div>
+              <p className="text-slate-700 text-sm mt-4">
+                <strong>Como fazer a soma vetorial:</strong> Decomponha cada campo <MathFormula formula="\vec{E}_i" /> em componentes x, y (e z, se 3D). Some todas as componentes x para obter <MathFormula formula="E_x" />, todas as componentes y para obter <MathFormula formula="E_y" />. O módulo do campo total é <MathFormula formula="E_{\text{total}} = \sqrt{E_x^2 + E_y^2}" /> e a direção é <MathFormula formula="\theta = \arctan(E_y/E_x)" />.
+              </p>
+            </div>
+          </div>
+
+          {/* 4. Linhas de Campo Elétrico */}
+          <div className="bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg p-6 mb-6">
+            <h3 className="text-xl font-bold text-slate-900 mb-3">🌀 Linhas de Campo Elétrico</h3>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              As <strong>linhas de campo elétrico</strong> são uma ferramenta visual poderosa para representar o campo elétrico. Elas foram introduzidas por Faraday e são essenciais para entender a estrutura do campo.
+            </p>
+            <div className="bg-white border border-indigo-200 rounded-lg p-5 mb-4">
+              <h4 className="font-bold text-slate-900 mb-3">Propriedades das Linhas de Campo</h4>
+              <div className="space-y-3 text-sm text-slate-700">
+                <div className="bg-indigo-50 p-4 rounded">
+                  <p className="font-bold text-indigo-900 mb-2">1. Direção e Sentido</p>
+                  <p>A <strong>tangente</strong> à linha de campo em cada ponto indica a <strong>direção</strong> do campo elétrico naquele ponto. O <strong>sentido</strong> da linha (indicado por setas) mostra para onde uma carga positiva seria empurrada.</p>
+                </div>
+                <div className="bg-indigo-50 p-4 rounded">
+                  <p className="font-bold text-indigo-900 mb-2">2. Origem e Término</p>
+                  <p>Linhas de campo <strong>nascem</strong> (originam-se) em cargas positivas e <strong>morrem</strong> (terminam) em cargas negativas. Se não há carga negativa próxima, as linhas vão até o infinito. Linhas nunca começam ou terminam no espaço vazio!</p>
+                </div>
+                <div className="bg-indigo-50 p-4 rounded">
+                  <p className="font-bold text-indigo-900 mb-2">3. Densidade de Linhas</p>
+                  <p>A <strong>densidade</strong> (número de linhas por unidade de área) é proporcional à <strong>intensidade</strong> do campo. Onde as linhas estão mais próximas, o campo é mais forte. Onde estão mais espaçadas, o campo é mais fraco.</p>
+                </div>
+                <div className="bg-indigo-50 p-4 rounded">
+                  <p className="font-bold text-indigo-900 mb-2">4. Linhas Nunca se Cruzam</p>
+                  <p>Duas linhas de campo <strong>nunca se cruzam</strong>. Se cruzassem, haveria duas direções diferentes para o campo no ponto de cruzamento, o que é impossível (o campo tem uma única direção em cada ponto).</p>
+                </div>
+                <div className="bg-indigo-50 p-4 rounded">
+                  <p className="font-bold text-indigo-900 mb-2">5. Perpendiculares a Superfícies Condutoras</p>
+                  <p>Linhas de campo são sempre <strong>perpendiculares</strong> à superfície de um condutor em equilíbrio eletrostático. Se não fossem, haveria componente tangencial do campo, causando movimento de cargas (contradizendo o equilíbrio).</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white border border-indigo-200 rounded-lg p-5">
+              <h4 className="font-bold text-slate-900 mb-3">Padrões Comuns de Linhas de Campo</h4>
+              <div className="space-y-3 text-sm text-slate-700">
+                <div className="bg-slate-50 p-4 rounded">
+                  <p className="font-bold text-slate-900 mb-2">• Carga Positiva Isolada</p>
+                  <p>Linhas radiais apontando para fora em todas as direções (como raios do Sol). Simetria esférica.</p>
+                </div>
+                <div className="bg-slate-50 p-4 rounded">
+                  <p className="font-bold text-slate-900 mb-2">• Carga Negativa Isolada</p>
+                  <p>Linhas radiais apontando para dentro em todas as direções (convergindo para a carga). Simetria esférica.</p>
+                </div>
+                <div className="bg-slate-50 p-4 rounded">
+                  <p className="font-bold text-slate-900 mb-2">• Dipolo Elétrico (+Q e -Q próximas)</p>
+                  <p>Linhas saem da carga positiva e entram na negativa, formando curvas suaves. Padrão assimétrico com concentração de linhas entre as cargas.</p>
+                </div>
+                <div className="bg-slate-50 p-4 rounded">
+                  <p className="font-bold text-slate-900 mb-2">• Duas Cargas Positivas</p>
+                  <p>Linhas saem de ambas as cargas e se repelem mutuamente, criando uma "zona de exclusão" entre elas.</p>
+                </div>
+                <div className="bg-slate-50 p-4 rounded">
+                  <p className="font-bold text-slate-900 mb-2">• Campo Uniforme (placas paralelas)</p>
+                  <p>Linhas paralelas e igualmente espaçadas, apontando da placa positiva para a negativa. Campo constante entre as placas.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 5. Passo-a-Passo Prático */}
+          <div className="bg-gradient-to-r from-cyan-50 to-blue-50 border-l-4 border-cyan-500 rounded-r-lg p-6 mb-6">
+            <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <Target className="w-6 h-6 text-cyan-600" />
+              Passo-a-Passo Prático para Calcular Campo Elétrico
+            </h3>
+            <div className="space-y-3">
+              <div className="bg-white p-4 rounded-lg border border-cyan-200">
+                <p className="font-bold text-cyan-900 mb-2">Passo 1: Identificar as cargas fontes</p>
+                <p className="text-sm text-slate-700">
+                  Liste todas as cargas <MathFormula formula="Q_1, Q_2, \ldots, Q_n" /> que criam o campo. Anote seus valores (com sinal!) e posições no espaço.
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg border border-cyan-200">
+                <p className="font-bold text-cyan-900 mb-2">Passo 2: Escolher o ponto de interesse</p>
+                <p className="text-sm text-slate-700">
+                  Defina o ponto P onde você quer calcular o campo elétrico. Estabeleça um sistema de coordenadas (x, y) ou (x, y, z).
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg border border-cyan-200">
+                <p className="font-bold text-cyan-900 mb-2">Passo 3: Calcular distâncias</p>
+                <p className="text-sm text-slate-700">
+                  Para cada carga <MathFormula formula="Q_i" />, calcule a distância <MathFormula formula="r_i" /> até o ponto P usando <MathFormula formula="r_i = \sqrt{(x_P - x_i)^2 + (y_P - y_i)^2}" /> (em 2D).
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg border border-cyan-200">
+                <p className="font-bold text-cyan-900 mb-2">Passo 4: Calcular campos individuais</p>
+                <p className="text-sm text-slate-700">
+                  Para cada carga, calcule o módulo do campo: <MathFormula formula="E_i = k |Q_i| / r_i^2" />. Determine a direção: o campo aponta radialmente para fora se <MathFormula formula="Q_i > 0" />, para dentro se <MathFormula formula="Q_i < 0" />.
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg border border-cyan-200">
+                <p className="font-bold text-cyan-900 mb-2">Passo 5: Decompor em componentes</p>
+                <p className="text-sm text-slate-700">
+                  Para cada campo <MathFormula formula="\vec{E}_i" />, encontre as componentes: <MathFormula formula="E_{ix} = E_i \cos(\theta_i)" /> e <MathFormula formula="E_{iy} = E_i \sin(\theta_i)" />, onde <MathFormula formula="\theta_i" /> é o ângulo com o eixo x. Atenção ao sinal (direção)!
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg border border-cyan-200">
+                <p className="font-bold text-cyan-900 mb-2">Passo 6: Somar componentes</p>
+                <p className="text-sm text-slate-700">
+                  Some todas as componentes x: <MathFormula formula="E_x = \sum E_{ix}" />. Some todas as componentes y: <MathFormula formula="E_y = \sum E_{iy}" />.
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg border border-cyan-200">
+                <p className="font-bold text-cyan-900 mb-2">Passo 7: Calcular módulo e direção do campo resultante</p>
+                <p className="text-sm text-slate-700">
+                  Módulo: <MathFormula formula="E = \sqrt{E_x^2 + E_y^2}" />. Direção: <MathFormula formula="\theta = \arctan(E_y / E_x)" /> (ângulo com eixo x). Verifique o quadrante correto!
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* 6. Exemplos Resolvidos */}
+          <div className="space-y-6 mb-6">
+            <h3 className="text-2xl font-bold text-slate-900">📝 Exemplos Resolvidos (Nível ITA/IME)</h3>
+            
+            {/* Exemplo 1 */}
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <h4 className="text-lg font-bold text-slate-900 mb-3">Exemplo 1: Campo de uma Carga Pontual</h4>
+              <div className="space-y-4">
+                <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                  <p className="text-slate-700 text-sm font-bold mb-2">📝 Enunciado:</p>
+                  <p className="text-slate-700 text-sm">
+                    Uma carga pontual <MathFormula formula="Q = +8,0 \, \mu C" /> está localizada na origem. Calcule o campo elétrico (módulo, direção e sentido) no ponto P = (3,0 m, 4,0 m).
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <p className="text-slate-700 text-sm mb-3"><strong>🔍 Resolução Detalhada:</strong></p>
+                  <div className="space-y-3 text-sm text-slate-700">
+                    <div>
+                      <p className="font-bold mb-1">Passo 1: Dados do problema</p>
+                      <ul className="list-disc list-inside ml-4 space-y-1">
+                        <li>Carga fonte: <MathFormula formula="Q = +8,0 \, \mu C = 8,0 \times 10^{-6} \, C" /></li>
+                        <li>Posição da carga: origem (0, 0)</li>
+                        <li>Ponto de interesse: P = (3,0 m, 4,0 m)</li>
+                        <li>Constante: <MathFormula formula="k = 9,0 \times 10^9 \, N \cdot m^2/C^2" /></li>
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 2: Calcular distância r</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="r = \sqrt{(3,0)^2 + (4,0)^2} = \sqrt{9 + 16} = \sqrt{25} = 5,0 \, m" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 3: Calcular módulo do campo</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="E = k \cdot \frac{|Q|}{r^2} = 9,0 \times 10^9 \cdot \frac{8,0 \times 10^{-6}}{(5,0)^2}" />
+                        <MathFormula formula="E = 9,0 \times 10^9 \cdot \frac{8,0 \times 10^{-6}}{25} = 9,0 \times 10^9 \cdot 3,2 \times 10^{-7}" />
+                        <MathFormula formula="E = 2,88 \times 10^3 \, N/C = 2880 \, N/C" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 4: Determinar direção e sentido</p>
+                      <p className="mb-2">Como <MathFormula formula="Q > 0" /> (carga positiva), o campo aponta radialmente para fora, ou seja, da origem (0, 0) para o ponto P (3,0 m, 4,0 m).</p>
+                      <p className="mb-2">Ângulo com o eixo x:</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="\theta = \arctan\left(\frac{4,0}{3,0}\right) = \arctan(1,333) \approx 53,1^\circ" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 5: Componentes do campo (opcional)</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="E_x = E \cos(53,1^\circ) = 2880 \times 0,6 = 1728 \, N/C" />
+                        <MathFormula formula="E_y = E \sin(53,1^\circ) = 2880 \times 0,8 = 2304 \, N/C" />
+                      </div>
+                    </div>
+                    <div className="bg-green-50 border border-green-200 rounded p-3">
+                      <p className="font-bold text-green-800">✅ Resposta Final:</p>
+                      <p className="text-green-700">Módulo: <MathFormula formula="E = 2880 \, N/C = 2,88 \, kN/C" /></p>
+                      <p className="text-green-700">Direção: <MathFormula formula="53,1^\circ" /> acima do eixo x positivo</p>
+                      <p className="text-green-700">Sentido: Radialmente para fora (da origem para P)</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Exemplo 2 */}
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <h4 className="text-lg font-bold text-slate-900 mb-3">Exemplo 2: Campo de Duas Cargas (Dipolo)</h4>
+              <div className="space-y-4">
+                <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                  <p className="text-slate-700 text-sm font-bold mb-2">📝 Enunciado:</p>
+                  <p className="text-slate-700 text-sm">
+                    Duas cargas <MathFormula formula="q_1 = +6,0 \, nC" /> em (-3,0 cm, 0) e <MathFormula formula="q_2 = -6,0 \, nC" /> em (+3,0 cm, 0) formam um dipolo elétrico. Calcule o campo elétrico no ponto P = (0, 4,0 cm) (no eixo y, equidistante das cargas).
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <p className="text-slate-700 text-sm mb-3"><strong>🔍 Resolução Detalhada:</strong></p>
+                  <div className="space-y-3 text-sm text-slate-700">
+                    <div>
+                      <p className="font-bold mb-1">Passo 1: Converter unidades e organizar dados</p>
+                      <ul className="list-disc list-inside ml-4 space-y-1">
+                        <li><MathFormula formula="q_1 = +6,0 \, nC = 6,0 \times 10^{-9} \, C" /> em (-0,03 m, 0)</li>
+                        <li><MathFormula formula="q_2 = -6,0 \, nC = -6,0 \times 10^{-9} \, C" /> em (+0,03 m, 0)</li>
+                        <li>Ponto P = (0, 0,04 m)</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 2: Calcular distâncias</p>
+                      <p className="mb-2">Distância de <MathFormula formula="q_1" /> a P:</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="r_1 = \sqrt{(0 - (-0,03))^2 + (0,04 - 0)^2} = \sqrt{(0,03)^2 + (0,04)^2}" />
+                        <MathFormula formula="r_1 = \sqrt{0,0009 + 0,0016} = \sqrt{0,0025} = 0,05 \, m = 5,0 \, cm" />
+                      </div>
+                      <p className="mb-2">Por simetria, <MathFormula formula="r_2 = r_1 = 0,05 \, m" />.</p>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 3: Calcular módulos dos campos</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="E_1 = k \cdot \frac{|q_1|}{r_1^2} = 9,0 \times 10^9 \cdot \frac{6,0 \times 10^{-9}}{(0,05)^2}" />
+                        <MathFormula formula="E_1 = 9,0 \times 10^9 \cdot \frac{6,0 \times 10^{-9}}{0,0025} = 9,0 \times 10^9 \cdot 2,4 \times 10^{-6}" />
+                        <MathFormula formula="E_1 = 21600 \, N/C = 21,6 \, kN/C" />
+                      </div>
+                      <p className="mb-2">Por simetria, <MathFormula formula="E_2 = E_1 = 21,6 \, kN/C" />.</p>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 4: Analisar direções</p>
+                      <p className="mb-2"><strong>Campo <MathFormula formula="\vec{E}_1" /></strong> (de <MathFormula formula="q_1 = +6,0 \, nC" />): Aponta de <MathFormula formula="q_1" /> para P, ou seja, da esquerda-baixo para cima-direita.</p>
+                      <p className="mb-2"><strong>Campo <MathFormula formula="\vec{E}_2" /></strong> (de <MathFormula formula="q_2 = -6,0 \, nC" />): Aponta de P para <MathFormula formula="q_2" /> (atração), ou seja, de cima para baixo-direita.</p>
+                      <p className="mb-2">Ângulos com a vertical (eixo y):</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="\alpha = \arctan\left(\frac{0,03}{0,04}\right) = \arctan(0,75) \approx 36,9^\circ" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 5: Decompor em componentes</p>
+                      <p className="mb-2"><strong>Para <MathFormula formula="\vec{E}_1" /></strong> (carga positiva à esquerda):</p>
+                      <ul className="list-disc list-inside ml-4 space-y-1 mb-2">
+                        <li>Componente x: <MathFormula formula="E_{1x} = E_1 \sin(\alpha) = 21600 \times \sin(36,9^\circ) = 21600 \times 0,6 = 12960 \, N/C" /> (para direita, +x)</li>
+                        <li>Componente y: <MathFormula formula="E_{1y} = E_1 \cos(\alpha) = 21600 \times \cos(36,9^\circ) = 21600 \times 0,8 = 17280 \, N/C" /> (para cima, +y)</li>
+                      </ul>
+                      <p className="mb-2"><strong>Para <MathFormula formula="\vec{E}_2" /></strong> (carga negativa à direita):</p>
+                      <ul className="list-disc list-inside ml-4 space-y-1">
+                        <li>Componente x: <MathFormula formula="E_{2x} = E_2 \sin(\alpha) = 21600 \times 0,6 = 12960 \, N/C" /> (para direita, +x)</li>
+                        <li>Componente y: <MathFormula formula="E_{2y} = -E_2 \cos(\alpha) = -21600 \times 0,8 = -17280 \, N/C" /> (para baixo, -y, pois aponta para <MathFormula formula="q_2" />)</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 6: Somar componentes</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="E_x = E_{1x} + E_{2x} = 12960 + 12960 = 25920 \, N/C" />
+                        <MathFormula formula="E_y = E_{1y} + E_{2y} = 17280 + (-17280) = 0 \, N/C" />
+                      </div>
+                      <p className="mt-2"><strong>Observação importante:</strong> A componente y se cancela por simetria! O campo resultante é puramente horizontal (na direção x).</p>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 7: Módulo e direção do campo resultante</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="E = \sqrt{E_x^2 + E_y^2} = \sqrt{(25920)^2 + 0^2} = 25920 \, N/C = 25,9 \, kN/C" />
+                      </div>
+                      <p className="mt-2">Direção: Puramente horizontal, apontando para a direita (+x).</p>
+                    </div>
+                    <div className="bg-green-50 border border-green-200 rounded p-3">
+                      <p className="font-bold text-green-800">✅ Resposta Final:</p>
+                      <p className="text-green-700">Módulo: <MathFormula formula="E = 25,9 \, kN/C" /></p>
+                      <p className="text-green-700">Direção: Horizontal (eixo +x)</p>
+                      <p className="text-green-700">Sentido: Para a direita (da carga negativa para a positiva)</p>
+                      <p className="text-green-700 mt-2"><strong>Interpretação física:</strong> No eixo de simetria de um dipolo, as componentes perpendiculares se cancelam e o campo aponta na direção do dipolo (de - para +).</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Exemplo 3 */}
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <h4 className="text-lg font-bold text-slate-900 mb-3">Exemplo 3: Campo de Três Cargas em Triângulo</h4>
+              <div className="space-y-4">
+                <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                  <p className="text-slate-700 text-sm font-bold mb-2">📝 Enunciado:</p>
+                  <p className="text-slate-700 text-sm">
+                    Três cargas idênticas <MathFormula formula="q = +5,0 \, \mu C" /> estão nos vértices de um triângulo equilátero de lado <MathFormula formula="L = 10 \, cm" />. Calcule o campo elétrico no centro do triângulo.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <p className="text-slate-700 text-sm mb-3"><strong>🔍 Resolução Detalhada:</strong></p>
+                  <div className="space-y-3 text-sm text-slate-700">
+                    <div>
+                      <p className="font-bold mb-1">Passo 1: Geometria do triângulo equilátero</p>
+                      <p className="mb-2">Em um triângulo equilátero, o centro (centróide) está a uma distância <MathFormula formula="r" /> de cada vértice, onde:</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="r = \frac{L}{\sqrt{3}} = \frac{0,10}{\sqrt{3}} = \frac{0,10}{1,732} \approx 0,0577 \, m = 5,77 \, cm" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 2: Calcular módulo do campo de cada carga</p>
+                      <p className="mb-2">Como as três cargas são idênticas e equidistantes do centro:</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="E_1 = E_2 = E_3 = k \cdot \frac{q}{r^2} = 9,0 \times 10^9 \cdot \frac{5,0 \times 10^{-6}}{(0,0577)^2}" />
+                        <MathFormula formula="E = 9,0 \times 10^9 \cdot \frac{5,0 \times 10^{-6}}{0,00333} = 9,0 \times 10^9 \cdot 1,50 \times 10^{-3}" />
+                        <MathFormula formula="E = 1,35 \times 10^7 \, N/C = 13,5 \, MN/C" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 3: Analisar simetria</p>
+                      <p className="mb-2">As três cargas são positivas e idênticas, dispostas simetricamente ao redor do centro. Cada campo aponta radialmente para fora (do vértice para o centro é a direção de repulsão, então do centro para fora).</p>
+                      <p className="mb-2">Os três vetores campo formam ângulos de <MathFormula formula="120^\circ" /> entre si (simetria trigonal).</p>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 4: Aplicar princípio da superposição</p>
+                      <p className="mb-2">Por simetria, a soma vetorial dos três campos é <strong>zero</strong>! Vamos verificar:</p>
+                      <p className="mb-2">Escolhendo um sistema de coordenadas com um vértice no eixo +x:</p>
+                      <ul className="list-disc list-inside ml-4 space-y-1 mb-2">
+                        <li><MathFormula formula="\vec{E}_1" />: aponta na direção <MathFormula formula="0^\circ" /> (eixo +x)</li>
+                        <li><MathFormula formula="\vec{E}_2" />: aponta na direção <MathFormula formula="120^\circ" /></li>
+                        <li><MathFormula formula="\vec{E}_3" />: aponta na direção <MathFormula formula="240^\circ" /></li>
+                      </ul>
+                      <p className="mb-2">Componentes x:</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="E_x = E(\cos 0^\circ + \cos 120^\circ + \cos 240^\circ)" />
+                        <MathFormula formula="E_x = E(1 + (-0,5) + (-0,5)) = E \times 0 = 0" />
+                      </div>
+                      <p className="mb-2">Componentes y:</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="E_y = E(\sin 0^\circ + \sin 120^\circ + \sin 240^\circ)" />
+                        <MathFormula formula="E_y = E(0 + 0,866 + (-0,866)) = E \times 0 = 0" />
+                      </div>
+                    </div>
+                    <div className="bg-green-50 border border-green-200 rounded p-3">
+                      <p className="font-bold text-green-800">✅ Resposta Final:</p>
+                      <p className="text-green-700"><MathFormula formula="\vec{E}_{\text{total}} = \vec{0}" /> (campo nulo no centro)</p>
+                      <p className="text-green-700 mt-2"><strong>Interpretação física:</strong> Devido à simetria perfeita (três cargas idênticas igualmente espaçadas), os campos se cancelam completamente no centro. Este é um ponto de equilíbrio (instável) para uma carga de teste.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Exemplo 4 */}
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <h4 className="text-lg font-bold text-slate-900 mb-3">Exemplo 4: Força sobre Carga em Campo Elétrico</h4>
+              <div className="space-y-4">
+                <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                  <p className="text-slate-700 text-sm font-bold mb-2">📝 Enunciado:</p>
+                  <p className="text-slate-700 text-sm">
+                    Um elétron (<MathFormula formula="q = -1,6 \times 10^{-19} \, C" />, <MathFormula formula="m = 9,1 \times 10^{-31} \, kg" />) é colocado em um campo elétrico uniforme <MathFormula formula="\vec{E} = 5,0 \times 10^4 \, N/C" /> apontando para cima (+y). Calcule: (a) a força sobre o elétron, (b) a aceleração do elétron.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <p className="text-slate-700 text-sm mb-3"><strong>🔍 Resolução Detalhada:</strong></p>
+                  <div className="space-y-3 text-sm text-slate-700">
+                    <div>
+                      <p className="font-bold mb-1">Parte (a): Força sobre o elétron</p>
+                      <p className="mb-2">A força elétrica sobre uma carga em um campo é:</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="\vec{F} = q \vec{E}" />
+                      </div>
+                      <p className="mb-2">Substituindo os valores:</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="\vec{F} = (-1,6 \times 10^{-19}) \times (5,0 \times 10^4 \, \hat{j})" />
+                        <MathFormula formula="\vec{F} = -8,0 \times 10^{-15} \, \hat{j} \, N" />
+                      </div>
+                      <p className="mb-2">O sinal negativo indica que a força aponta para baixo (-y), <strong>oposta ao campo</strong> (pois a carga é negativa).</p>
+                      <p className="mb-2">Módulo da força:</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="F = 8,0 \times 10^{-15} \, N" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Parte (b): Aceleração do elétron</p>
+                      <p className="mb-2">Usando a Segunda Lei de Newton:</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="\vec{a} = \frac{\vec{F}}{m} = \frac{-8,0 \times 10^{-15}}{9,1 \times 10^{-31}} \, \hat{j}" />
+                        <MathFormula formula="\vec{a} = -8,79 \times 10^{15} \, \hat{j} \, m/s^2" />
+                      </div>
+                      <p className="mb-2">Módulo da aceleração:</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="a = 8,79 \times 10^{15} \, m/s^2 \approx 8,8 \times 10^{15} \, m/s^2" />
+                      </div>
+                      <p className="mt-2"><strong>Observação:</strong> Essa aceleração é <strong>gigantesca</strong> - cerca de <MathFormula formula="10^{15}" /> vezes a gravidade terrestre! Isso mostra como as forças elétricas são intensas em escala atômica.</p>
+                    </div>
+                    <div className="bg-green-50 border border-green-200 rounded p-3">
+                      <p className="font-bold text-green-800">✅ Resposta Final:</p>
+                      <p className="text-green-700">(a) Força: <MathFormula formula="F = 8,0 \times 10^{-15} \, N" />, apontando para baixo (-y)</p>
+                      <p className="text-green-700">(b) Aceleração: <MathFormula formula="a = 8,8 \times 10^{15} \, m/s^2" />, apontando para baixo (-y)</p>
+                      <p className="text-green-700 mt-2"><strong>Interpretação:</strong> O elétron (carga negativa) é acelerado na direção oposta ao campo elétrico.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Exemplo 5 */}
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <h4 className="text-lg font-bold text-slate-900 mb-3">Exemplo 5: Campo no Eixo de um Dipolo</h4>
+              <div className="space-y-4">
+                <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                  <p className="text-slate-700 text-sm font-bold mb-2">📝 Enunciado:</p>
+                  <p className="text-slate-700 text-sm">
+                    Um dipolo elétrico é formado por cargas <MathFormula formula="+q" /> e <MathFormula formula="-q" /> separadas por uma distância <MathFormula formula="d = 2,0 \, mm" />, onde <MathFormula formula="q = 1,0 \, nC" />. Calcule o campo elétrico em um ponto P no eixo do dipolo, a uma distância <MathFormula formula="x = 10 \, cm" /> do centro do dipolo (com <MathFormula formula="x \gg d" />).
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <p className="text-slate-700 text-sm mb-3"><strong>🔍 Resolução Detalhada:</strong></p>
+                  <div className="space-y-3 text-sm text-slate-700">
+                    <div>
+                      <p className="font-bold mb-1">Passo 1: Configuração do problema</p>
+                      <p className="mb-2">Considere o dipolo orientado ao longo do eixo x, com a carga <MathFormula formula="+q" /> em <MathFormula formula="x = +d/2" /> e a carga <MathFormula formula="-q" /> em <MathFormula formula="x = -d/2" />. O ponto P está em <MathFormula formula="x = 10 \, cm = 0,10 \, m" />.</p>
+                      <ul className="list-disc list-inside ml-4 space-y-1">
+                        <li>Distância de <MathFormula formula="+q" /> a P: <MathFormula formula="r_+ = x - d/2 = 0,10 - 0,001 = 0,099 \, m" /></li>
+                        <li>Distância de <MathFormula formula="-q" /> a P: <MathFormula formula="r_- = x + d/2 = 0,10 + 0,001 = 0,101 \, m" /></li>
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 2: Campos individuais</p>
+                      <p className="mb-2">Campo de <MathFormula formula="+q" /> em P (aponta para +x):</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="E_+ = k \cdot \frac{q}{r_+^2} = 9,0 \times 10^9 \cdot \frac{1,0 \times 10^{-9}}{(0,099)^2}" />
+                        <MathFormula formula="E_+ = 9,0 \times 10^9 \cdot \frac{1,0 \times 10^{-9}}{0,0098} = 918,4 \, N/C" />
+                      </div>
+                      <p className="mb-2">Campo de <MathFormula formula="-q" /> em P (aponta para -x, em direção à carga negativa):</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="E_- = k \cdot \frac{q}{r_-^2} = 9,0 \times 10^9 \cdot \frac{1,0 \times 10^{-9}}{(0,101)^2}" />
+                        <MathFormula formula="E_- = 9,0 \times 10^9 \cdot \frac{1,0 \times 10^{-9}}{0,0102} = 882,4 \, N/C" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 3: Campo resultante</p>
+                      <p className="mb-2">Ambos os campos apontam na mesma direção (+x), então somamos:</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="E_{\text{total}} = E_+ - E_- = 918,4 - 882,4 = 36,0 \, N/C" />
+                      </div>
+                      <p className="mt-2"><strong>Observação:</strong> Subtraímos porque <MathFormula formula="E_-" /> aponta para -x (oposto a <MathFormula formula="E_+" />).</p>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Passo 4: Aproximação para <MathFormula formula="x \gg d" /></p>
+                      <p className="mb-2">Quando <MathFormula formula="x \gg d" />, existe uma fórmula aproximada para o campo no eixo do dipolo:</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="E \approx k \cdot \frac{2qd}{x^3} = k \cdot \frac{2p}{x^3}" />
+                      </div>
+                      <p className="mb-2">onde <MathFormula formula="p = qd" /> é o <strong>momento de dipolo elétrico</strong>. Verificando:</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="p = qd = (1,0 \times 10^{-9})(0,002) = 2,0 \times 10^{-12} \, C \cdot m" />
+                        <MathFormula formula="E \approx 9,0 \times 10^9 \cdot \frac{2 \times 2,0 \times 10^{-12}}{(0,10)^3}" />
+                        <MathFormula formula="E \approx 9,0 \times 10^9 \cdot \frac{4,0 \times 10^{-12}}{0,001} = 36,0 \, N/C" />
+                      </div>
+                      <p className="mt-2">A aproximação concorda perfeitamente com o cálculo exato!</p>
+                    </div>
+                    <div className="bg-green-50 border border-green-200 rounded p-3">
+                      <p className="font-bold text-green-800">✅ Resposta Final:</p>
+                      <p className="text-green-700">Campo elétrico: <MathFormula formula="E = 36,0 \, N/C" />, apontando na direção +x (da carga negativa para a positiva)</p>
+                      <p className="text-green-700 mt-2"><strong>Interpretação:</strong> O campo de um dipolo decai com <MathFormula formula="1/x^3" /> (mais rápido que <MathFormula formula="1/x^2" /> de uma carga isolada), pois as contribuições das duas cargas quase se cancelam a grandes distâncias.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Exemplo 6 */}
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <h4 className="text-lg font-bold text-slate-900 mb-3">Exemplo 6: Campo Elétrico Uniforme entre Placas Paralelas</h4>
+              <div className="space-y-4">
+                <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                  <p className="text-slate-700 text-sm font-bold mb-2">📝 Enunciado:</p>
+                  <p className="text-slate-700 text-sm">
+                    Duas placas metálicas paralelas estão separadas por <MathFormula formula="d = 2,0 \, cm" />. A placa superior tem carga <MathFormula formula="+Q" /> e a inferior <MathFormula formula="-Q" />, criando um campo uniforme <MathFormula formula="E = 1,5 \times 10^5 \, N/C" /> entre elas. Um próton (<MathFormula formula="q = +1,6 \times 10^{-19} \, C" />, <MathFormula formula="m = 1,67 \times 10^{-27} \, kg" />) é liberado do repouso na placa positiva. Calcule: (a) a aceleração do próton, (b) a velocidade ao atingir a placa negativa.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded border border-slate-200">
+                  <p className="text-slate-700 text-sm mb-3"><strong>🔍 Resolução Detalhada:</strong></p>
+                  <div className="space-y-3 text-sm text-slate-700">
+                    <div>
+                      <p className="font-bold mb-1">Parte (a): Aceleração do próton</p>
+                      <p className="mb-2">Força sobre o próton:</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="F = qE = (1,6 \times 10^{-19})(1,5 \times 10^5) = 2,4 \times 10^{-14} \, N" />
+                      </div>
+                      <p className="mb-2">Aceleração (Segunda Lei de Newton):</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="a = \frac{F}{m} = \frac{2,4 \times 10^{-14}}{1,67 \times 10^{-27}} = 1,44 \times 10^{13} \, m/s^2" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-bold mb-1">Parte (b): Velocidade final</p>
+                      <p className="mb-2">Usando cinemática (MUV com <MathFormula formula="v_0 = 0" />, <MathFormula formula="\Delta x = d = 0,02 \, m" />):</p>
+                      <div className="bg-slate-50 p-3 rounded my-2 space-y-2">
+                        <MathFormula formula="v^2 = v_0^2 + 2a\Delta x = 0 + 2(1,44 \times 10^{13})(0,02)" />
+                        <MathFormula formula="v^2 = 5,76 \times 10^{11}" />
+                        <MathFormula formula="v = \sqrt{5,76 \times 10^{11}} = 7,59 \times 10^5 \, m/s \approx 759 \, km/s" />
+                      </div>
+                      <p className="mt-2"><strong>Observação:</strong> Essa velocidade é cerca de 0,25% da velocidade da luz! Em aplicações reais (aceleradores de partículas), seria necessário usar relatividade.</p>
+                    </div>
+                    <div className="bg-green-50 border border-green-200 rounded p-3">
+                      <p className="font-bold text-green-800">✅ Resposta Final:</p>
+                      <p className="text-green-700">(a) Aceleração: <MathFormula formula="a = 1,44 \times 10^{13} \, m/s^2" /></p>
+                      <p className="text-green-700">(b) Velocidade final: <MathFormula formula="v = 7,59 \times 10^5 \, m/s = 759 \, km/s" /></p>
+                      <p className="text-green-700 mt-2"><strong>Aplicação:</strong> Este é o princípio básico de aceleradores lineares de partículas e tubos de raios catódicos (TVs antigas).</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 7. Aplicações Práticas */}
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-500 rounded-r-lg p-6 mb-6">
+            <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <Zap className="w-6 h-6 text-purple-600" />
+              Aplicações Práticas do Campo Elétrico
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-white p-4 rounded-lg border border-purple-100">
+                <p className="font-bold text-purple-800 mb-2">1. Tubos de Raios Catódicos (CRT)</p>
+                <p className="text-sm text-slate-700">
+                  TVs e monitores antigos usam campos elétricos para acelerar e direcionar elétrons contra uma tela fluorescente, criando imagens. O canhão de elétrons usa campo uniforme para aceleração.
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg border border-purple-100">
+                <p className="font-bold text-purple-800 mb-2">2. Impressoras a Jato de Tinta</p>
+                <p className="text-sm text-slate-700">
+                  Gotículas de tinta carregadas são desviadas por campos elétricos para atingir posições precisas no papel, permitindo impressão de alta resolução.
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg border border-purple-100">
+                <p className="font-bold text-purple-800 mb-2">3. Aceleradores de Partículas</p>
+                <p className="text-sm text-slate-700">
+                  LHC (CERN) e outros aceleradores usam campos elétricos intensos para acelerar prótons e elétrons a velocidades próximas à da luz, permitindo estudar a estrutura fundamental da matéria.
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg border border-purple-100">
+                <p className="font-bold text-purple-800 mb-2">4. Microscópios Eletrônicos</p>
+                <p className="text-sm text-slate-700">
+                  Usam campos elétricos (e magnéticos) para focar feixes de elétrons, permitindo visualizar estruturas em escala nanométrica (vírus, moléculas, átomos).
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg border border-purple-100">
+                <p className="font-bold text-purple-800 mb-2">5. Sensores de Toque Capacitivos</p>
+                <p className="text-sm text-slate-700">
+                  Telas de smartphones e tablets detectam mudanças no campo elétrico quando seu dedo (condutor) se aproxima, permitindo interação sem pressão mecânica.
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg border border-purple-100">
+                <p className="font-bold text-purple-800 mb-2">6. Gaiola de Faraday</p>
+                <p className="text-sm text-slate-700">
+                  Estruturas metálicas que bloqueiam campos elétricos externos, protegendo equipamentos sensíveis de interferências. Usadas em laboratórios, aviões e salas de ressonância magnética.
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg border border-purple-100">
+                <p className="font-bold text-purple-800 mb-2">7. Raios em Tempestades</p>
+                <p className="text-sm text-slate-700">
+                  Campos elétricos intensos (até <MathFormula formula="3 \times 10^6 \, V/m" />) se formam entre nuvens e o solo durante tempestades, causando descargas elétricas (raios) quando o ar ioniza.
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg border border-purple-100">
+                <p className="font-bold text-purple-800 mb-2">8. Eletroforese (Bioquímica)</p>
+                <p className="text-sm text-slate-700">
+                  Técnica que usa campos elétricos para separar moléculas carregadas (DNA, proteínas) em gel, essencial para análise genética e diagnóstico médico.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Info Box Final */}
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
           <div className="flex items-start gap-3">
@@ -781,7 +1456,7 @@ export default function EletricidadeTopicEletrostatica() {
             <div>
               <h3 className="font-bold text-blue-900 mb-2">📚 Conteúdo em Desenvolvimento</h3>
               <p className="text-sm text-blue-800 leading-relaxed">
-                Esta página está sendo expandida com conteúdo de nível ITA/IME. Em breve, adicionaremos seções sobre <strong>Campo Elétrico</strong>, <strong>Potencial Elétrico</strong>, <strong>Energia Potencial Elétrica</strong> e muito mais, todas com a mesma didática superior (termo-a-termo, sem poupar palavras, múltiplos exemplos resolvidos)!
+                Esta página está sendo expandida com conteúdo de nível ITA/IME. Em breve, adicionaremos seções sobre <strong>Potencial Elétrico</strong>, <strong>Energia Potencial Elétrica</strong>, <strong>Trabalho da Força Elétrica</strong> e muito mais, todas com a mesma didática superior (termo-a-termo, sem poupar palavras, múltiplos exemplos resolvidos)!
               </p>
             </div>
           </div>
