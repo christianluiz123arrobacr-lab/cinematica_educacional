@@ -103,3 +103,13 @@
 - [ ] Testes de integração dos domínios
 - [x] Documentar padrões arquiteturais (ARCHITECTURE.md)
 - [x] Guia de contribuição para novos módulos (ARCHITECTURE.md)
+
+## Física Moderna - Nova Área (Estrutura)
+- [x] Criar FisicaModernaHome.tsx (página inicial)
+- [x] Criar FisicaModernaTopicRelatividade.tsx (Relatividade Restrita)
+- [x] Criar FisicaModernaTopicQuantica.tsx (Física Quântica)
+- [x] Criar FisicaModernaTopicAtomo.tsx (Átomo e Núcleo)
+- [x] Criar FisicaModernaTopicParticulas.tsx (Partículas Elementares)
+- [x] Criar FisicaModernaTopicAplicacoes.tsx (Aplicações Modernas)
+- [x] Integrar rotas no App.tsx
+- [x] Adicionar link em FisicaIIIHome.tsx

@@ -114,7 +114,7 @@ export default function FisicaIIIHome() {
           </Link>
 
           {/* Física Moderna */}
-          <Link href="/moderna">
+          <Link href="/fisica-moderna">
             <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-purple-400 cursor-pointer">
             <div className="bg-gradient-to-br from-purple-500 to-pink-600 p-8 text-white">
               <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">

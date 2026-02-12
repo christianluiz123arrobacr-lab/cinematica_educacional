@@ -92,6 +92,12 @@ import OpticaSimulator from "./pages/OpticaSimulator";
 import OpticaGraphs from "./pages/OpticaGraphs";
 import OpticaQuiz from "./pages/OpticaQuiz";
 import IAResolver from "./pages/IAResolver";
+import FisicaModernaHome from "./pages/FisicaModernaHome";
+import FisicaModernaTopicRelatividade from "./pages/FisicaModernaTopicRelatividade";
+import FisicaModernaTopicQuantica from "./pages/FisicaModernaTopicQuantica";
+import FisicaModernaTopicAtomo from "./pages/FisicaModernaTopicAtomo";
+import FisicaModernaTopicParticulas from "./pages/FisicaModernaTopicParticulas";
+import FisicaModernaTopicAplicacoes from "./pages/FisicaModernaTopicAplicacoes";
 
 
 
@@ -192,6 +198,13 @@ function Router() {
 
       <Route path="/magnetismo" component={MagnetismoHome} />
       <Route path="/magnetismo/topic/forca-magnetica" component={MagnetismoTopicForcaMagnetica} />
+
+      <Route path="/fisica-moderna" component={FisicaModernaHome} />
+      <Route path="/fisica-moderna/topic/relatividade" component={FisicaModernaTopicRelatividade} />
+      <Route path="/fisica-moderna/topic/quantica" component={FisicaModernaTopicQuantica} />
+      <Route path="/fisica-moderna/topic/atomo" component={FisicaModernaTopicAtomo} />
+      <Route path="/fisica-moderna/topic/particulas" component={FisicaModernaTopicParticulas} />
+      <Route path="/fisica-moderna/topic/aplicacoes" component={FisicaModernaTopicAplicacoes} />
 
       <Route path="/progress" component={Progress} />
       <Route path="/ia-resolver" component={IAResolver} />
