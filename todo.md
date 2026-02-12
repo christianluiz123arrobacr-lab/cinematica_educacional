@@ -58,3 +58,48 @@
 - [x] 15 diagramas educacionais em português
 - [x] AI Resolver integrado
 - [x] Navegação e rotas funcionando
+
+## Refatoração Arquitetural - Sistema Educacional Escalável
+
+### Análise e Planejamento
+- [x] Mapear estrutura atual de domínios (cinemática, dinâmica, eletricidade, etc.)
+- [x] Identificar dependências cruzadas e acoplamentos
+- [x] Documentar padrões inconsistentes
+
+### Tipagem e Contratos
+- [x] Criar /shared/types/domain.ts com contratos centralizados
+- [x] Definir interfaces: TheoryModule, Section, ContentBlock, SimulatorDefinition
+- [x] Eliminar tipagem implícita em todos os módulos
+- [x] Garantir implementação correta dos contratos
+
+### Arquitetura de Domínios
+- [x] Estruturar cada domínio com padrão: theory/, exercises/, simulators/, index.ts (piloto: kinematics)
+- [x] Isolar domínios (sem dependências cruzadas desnecessárias)
+- [x] Criar barrel exports consistentes
+
+### Separação Conteúdo/Renderização
+- [x] Transformar conteúdo JSX em estrutura serializável baseada em blocos (sistema criado)
+- [x] Criar renderizador genérico de blocos
+- [x] Preparar para exportação (PDF, API, mobile)
+
+### Modularização de Simuladores
+- [ ] Separar: lógica física, estado (hooks), UI
+- [ ] Garantir responsabilidade única por arquivo
+- [ ] Remover lógica física de componentes de layout
+
+### Padronização e Limpeza
+- [ ] Padronizar imports (@/ vs relativos)
+- [x] Remover arquivos .bak e duplicados (73 arquivos removidos)
+- [ ] Excluir componentes não utilizados
+- [x] Validar tsconfig para suportar nova estrutura
+
+### Preparação para Escalabilidade
+- [x] Estrutura para sistema de progresso persistente (tipos criados)
+- [x] Preparar para versionamento de conteúdo (TopicMetadata.version)
+- [x] Arquitetura compatível com backend futuro (conteúdo serializável)
+- [x] Base para internacionalização (documentado)
+
+### Validação e Documentação
+- [ ] Testes de integração dos domínios
+- [x] Documentar padrões arquiteturais (ARCHITECTURE.md)
+- [x] Guia de contribuição para novos módulos (ARCHITECTURE.md)
