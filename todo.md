@@ -134,3 +134,11 @@
   - [x] Passo-a-passo prático em 7 etapas
   - [ ] 5+ exemplos resolvidos ITA/IME (próxima fase)
   - [x] Aplicações práticas (GPS, aceleradores de partículas)
+
+## Física Moderna - Ajustar Layout de Relatividade
+- [x] Ler página de Eletromagnetismo como referência de layout
+- [x] Identificar padrão de estrutura (seções numeradas 0-5, cards coloridos, termo-a-termo)
+- [x] Reescrever Relatividade seguindo padrão exato do Eletromagnetismo
+- [x] Manter didática superior mas melhorar organização visual
+- [ ] Adicionar mais exemplos resolvidos detalhados (próxima fase)
+- [ ] Adicionar exercícios propostos (próxima fase)
