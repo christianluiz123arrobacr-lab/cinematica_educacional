@@ -113,3 +113,13 @@
 - [x] Criar FisicaModernaTopicAplicacoes.tsx (Aplicações Modernas)
 - [x] Integrar rotas no App.tsx
 - [x] Adicionar link em FisicaIIIHome.tsx
+
+## Física Moderna - Melhorar Layout
+- [x] Ler EletricidadeHome.tsx como referência de layout completo
+- [x] Adicionar seção de estatísticas/números
+- [x] Adicionar seção "Por que estudar Física Moderna?"
+- [x] Adicionar seção de recursos/ferramentas
+- [x] Melhorar cards de tópicos (mais elaborados)
+- [x] Adicionar footer com informações (Call to Action)
+- [x] Adicionar animações e transições
+- [x] Garantir consistência visual com outras áreas
