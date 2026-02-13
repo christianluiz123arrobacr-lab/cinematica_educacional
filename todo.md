@@ -123,3 +123,14 @@
 - [x] Adicionar footer com informações (Call to Action)
 - [x] Adicionar animações e transições
 - [x] Garantir consistência visual com outras áreas
+
+## Física Moderna - Relatividade Restrita (Conteúdo)
+- [x] Escrever Postulados de Einstein com didática superior:
+  - [x] Explicação simples com analogias práticas
+  - [x] Contexto histórico detalhado (crise do éter, Michelson-Morley)
+  - [x] Postulado 1 termo-a-termo (Princípio da Relatividade)
+  - [x] Postulado 2 termo-a-termo (Constância da velocidade da luz)
+  - [x] Consequências revolucionárias
+  - [x] Passo-a-passo prático em 7 etapas
+  - [ ] 5+ exemplos resolvidos ITA/IME (próxima fase)
+  - [x] Aplicações práticas (GPS, aceleradores de partículas)
