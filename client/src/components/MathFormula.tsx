@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface MathFormulaProps {
   children?: string;
@@ -14,28 +14,80 @@ export function MathFormula({ children, formula, inline, display, className = ''
   
   // Use children if provided, otherwise use formula
   const content = children || formula || '';
+  
   // Use a generic ref that can handle both div and span
   const ref = useRef<HTMLElement>(null);
+  
+  // Track if component is mounted
+  const [isMounted, setIsMounted] = useState(false);
+  
+  // Track rendering state to prevent multiple renders
+  const isRenderingRef = useRef(false);
 
   useEffect(() => {
-    if (!ref.current) return;
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+      isRenderingRef.current = false;
+    };
+  }, []);
 
-    // Função para renderizar MathJax
+  useEffect(() => {
+    // Safety checks before rendering
+    if (!isMounted || !ref.current || isRenderingRef.current) return;
+    
+    // Check if element is still in the DOM
+    if (!document.body.contains(ref.current)) return;
+
+    // Função para renderizar MathJax com segurança
     const renderMath = async () => {
-      if (typeof window !== 'undefined' && (window as any).MathJax) {
-        try {
-          // Renderizar o elemento específico
+      if (typeof window === 'undefined' || !(window as any).MathJax) return;
+      
+      // Check again if component is still mounted and element exists
+      if (!isMounted || !ref.current || !document.body.contains(ref.current)) return;
+      
+      // Mark as rendering to prevent concurrent renders
+      isRenderingRef.current = true;
+      
+      try {
+        // Clear any existing MathJax content first
+        const mjxContainers = ref.current.querySelectorAll('mjx-container');
+        mjxContainers.forEach(container => {
+          try {
+            if (container.parentNode === ref.current) {
+              container.remove();
+            }
+          } catch (e) {
+            // Silently ignore removal errors
+          }
+        });
+        
+        // Render the element with safety checks
+        if (ref.current && document.body.contains(ref.current)) {
           await (window as any).MathJax.typesetPromise?.([ref.current]);
-        } catch (error) {
-          console.error('MathJax render error:', error);
         }
+      } catch (error) {
+        // Only log in development
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('MathJax render warning:', error);
+        }
+      } finally {
+        isRenderingRef.current = false;
       }
     };
 
-    // Renderizar com delay para garantir que o DOM está pronto
-    const timer = setTimeout(renderMath, 50);
-    return () => clearTimeout(timer);
-  }, [formula, display]);
+    // Use requestAnimationFrame for better mobile performance
+    const rafId = requestAnimationFrame(() => {
+      // Add small delay to ensure DOM is ready
+      const timer = setTimeout(renderMath, 100);
+      return () => clearTimeout(timer);
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      isRenderingRef.current = false;
+    };
+  }, [content, isDisplay, isMounted]);
 
   // Delimitadores corretos: $$ para display, $ para inline
   const delimiter = isDisplay ? '$$' : '$';

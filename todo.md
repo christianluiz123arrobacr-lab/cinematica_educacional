@@ -142,3 +142,12 @@
 - [x] Manter didática superior mas melhorar organização visual
 - [ ] Adicionar mais exemplos resolvidos detalhados (próxima fase)
 - [ ] Adicionar exercícios propostos (próxima fase)
+
+## Correção de Erro Mobile - MathFormula
+- [x] Analisar componente MathFormula atual
+- [x] Identificar causa do erro "NotFoundError: insertBefore" no mobile (MathJax tentando manipular DOM antes de estar pronto)
+- [x] Adicionar verificações de segurança antes de manipular DOM (isMounted, document.body.contains)
+- [x] Implementar useEffect com cleanup adequado (cancelAnimationFrame, clearTimeout)
+- [x] Adicionar fallback para erros de renderização (try-catch com warning apenas em dev)
+- [x] Garantir compatibilidade com React 19 (useState para tracking, refs adequados)
+- [x] Testar renderização no desktop (fórmulas renderizando corretamente)
