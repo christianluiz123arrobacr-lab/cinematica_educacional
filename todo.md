@@ -151,3 +151,17 @@
 - [x] Adicionar fallback para erros de renderização (try-catch com warning apenas em dev)
 - [x] Garantir compatibilidade com React 19 (useState para tracking, refs adequados)
 - [x] Testar renderização no desktop (fórmulas renderizando corretamente)
+
+## Relatividade - Refazer com Padrão Exato do Eletromagnetismo
+- [x] Ler página completa de Eletromagnetismo (Radiação) como referência
+- [x] Identificar padrão exato de estrutura:
+  - [x] Seções numeradas com badges roxos (1, 2, 3, 4, 5)
+  - [x] Cards coloridos: slate-900 (fórmulas), azul (interpretação), amarelo (info), verde (passo-a-passo), amber (histórico)
+  - [x] Formato de termo-a-termo em grid 2 colunas dentro de card escuro
+  - [x] Estrutura de deduções passo-a-passo com círculos numerados verdes
+  - [ ] Formato de exemplos resolvidos (próxima fase)
+  - [x] Alertas e notas importantes (cards amarelos com AlertTriangle)
+- [x] Reescrever Relatividade seguindo estrutura idêntica
+- [x] Manter profundidade didática mas ajustar formatação visual
+- [ ] Adicionar exemplos resolvidos no mesmo formato (próxima fase)
+- [ ] Validar que layout está idêntico ao Eletromagnetismo (próxima fase)
