@@ -165,3 +165,18 @@
 - [x] Manter profundidade didática mas ajustar formatação visual
 - [ ] Adicionar exemplos resolvidos no mesmo formato (próxima fase)
 - [ ] Validar que layout está idêntico ao Eletromagnetismo (próxima fase)
+
+## Temperaturas e Escalas - Refazer com Padrão Eletromagnetismo
+- [x] Ler página atual de Temperaturas e Escalas
+- [x] Identificar conteúdo existente e estrutura
+- [x] Reescrever completamente seguindo padrão Eletromagnetismo:
+  - [x] Seções numeradas (1, 2, 3, 4, 5, 6) com badges laranjas
+  - [x] Card amber com contexto histórico (Celsius 1742, Fahrenheit 1724, Kelvin 1848)
+  - [x] Cards slate-900 para fórmulas de conversão com termo-a-termo em grid
+  - [x] Cards azuis para características e interpretação
+  - [x] Cards amarelos para alertas importantes (variação vs valor absoluto)
+  - [x] Card verde com passo-a-passo de 7 etapas
+  - [x] Explicação simples antes de cada fórmula
+  - [ ] Exemplos resolvidos ITA/IME (próxima fase)
+  - [x] Aplicações práticas (meteorologia, medicina, indústria, culinária, física, astronomia)
+- [ ] Validar renderização (próxima fase)
