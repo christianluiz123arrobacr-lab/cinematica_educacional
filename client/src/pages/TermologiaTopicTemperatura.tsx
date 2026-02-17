@@ -95,7 +95,7 @@ export default function TermologiaTopicTemperatura() {
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
                 <h4 className="font-bold text-slate-800 mb-3">Explicação Simples</h4>
                 <p className="text-slate-700 leading-relaxed mb-4">
-                  A escala Celsius é a mais usada no dia a dia em quase todo o mundo (exceto EUA). Ela é baseada em dois pontos de referência fáceis de reproduzir: o ponto de fusão do gelo (0°C) e o ponto de ebulição da água (100°C), ambos medidos à pressão atmosférica padrão (1 atm).
+                  A escala Celsius é a mais usada no dia a dia em quase todo o mundo (exceto EUA). Ela é baseada em dois pontos de referência fáceis de reproduzir: o ponto de fusão do gelo (0°C) e o ponto de ebulição da água (100°C), ambos medidos à pressão atmosférica padrão (1 atm = 101.325 Pa).
                 </p>
                 <p className="text-slate-700 leading-relaxed mb-4">
                   Imagine que você divide o intervalo entre gelo derretendo e água fervendo em 100 partes iguais. Cada parte é 1 grau Celsius. É simples, intuitivo e prático para o cotidiano!
@@ -104,6 +104,59 @@ export default function TermologiaTopicTemperatura() {
                   <p className="text-slate-700 text-sm">
                     <strong>Pontos de referência:</strong> 0°C (fusão do gelo) e 100°C (ebulição da água) à pressão de 1 atm.
                   </p>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
+                <h4 className="font-semibold text-orange-400 mb-4">Dedução Matemática da Escala Celsius</h4>
+                <p className="text-slate-300 leading-relaxed mb-4">
+                  Anders Celsius escolheu a água como substância de referência porque ela é abundante, pura e tem transições de fase bem definidas. Mas por que exatamente <strong>0°C e 100°C</strong>? A resposta está na simplicidade matemática e na facilidade de reprodução experimental.
+                </p>
+                <div className="space-y-4">
+                  <div className="bg-slate-800/50 p-4 rounded-lg">
+                    <p className="font-semibold text-orange-400 mb-2">Passo 1: Escolha dos Pontos Fixos</p>
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                      Celsius precisava de dois pontos de temperatura que fossem <strong>facilmente reproduzíveis</strong> em qualquer laboratório. A fusão do gelo e a ebulição da água são transições de fase que ocorrem sempre nas mesmas temperaturas (à mesma pressão), independentemente da quantidade de água.
+                    </p>
+                  </div>
+                  <div className="bg-slate-800/50 p-4 rounded-lg">
+                    <p className="font-semibold text-orange-400 mb-2">Passo 2: Sistema Decimal (100 Divisões)</p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                      Por que 100 divisões e não 50, 180 ou 360? Celsius escolheu 100 porque o <strong>sistema decimal</strong> (base 10) é natural para humanos — temos 10 dedos! Isso facilita cálculos mentais e conversões.
+                    </p>
+                    <p className="text-sm text-slate-300">
+                      Se a água congela a 0° e ferve a 100°, cada grau representa <MathFormula formula="\frac{1}{100}" display={false} /> do intervalo total. Matematicamente:
+                    </p>
+                    <MathFormula formula="1\,^\circ\text{C} = \frac{\Delta T_{\text{fusão-ebulição}}}{100}" display={true} className="text-lg my-3" />
+                  </div>
+                  <div className="bg-slate-800/50 p-4 rounded-lg">
+                    <p className="font-semibold text-orange-400 mb-2">Passo 3: Atribuição de Valores</p>
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                      Celsius inicialmente definiu 0° como ebulição e 100° como fusão (invertido!). Após sua morte, a escala foi invertida para a forma atual, onde <strong>0°C = fusão</strong> (mais frio) e <strong>100°C = ebulição</strong> (mais quente), o que é mais intuitivo.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+                <h4 className="font-bold text-blue-900 mb-3">🔬 Por Que a Água Como Referência?</h4>
+                <div className="space-y-3 text-slate-700">
+                  <div className="flex items-start gap-3">
+                    <span className="text-blue-600 font-bold mt-1">1.</span>
+                    <p><strong>Abundância Universal:</strong> Água está disponível em qualquer lugar do mundo, facilitando a reprodução da escala em qualquer laboratório.</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-blue-600 font-bold mt-1">2.</span>
+                    <p><strong>Pureza Controlável:</strong> É relativamente fácil obter água pura (destilada), garantindo que as transições de fase ocorram sempre nas mesmas temperaturas.</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-blue-600 font-bold mt-1">3.</span>
+                    <p><strong>Transições de Fase Nítidas:</strong> A fusão (sólido → líquido) e ebulição (líquido → gás) da água ocorrem a temperaturas bem definidas à pressão constante, sem ambiguidade.</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-blue-600 font-bold mt-1">4.</span>
+                    <p><strong>Relevância Prática:</strong> Água é fundamental para a vida e para processos industriais. Uma escala baseada em suas propriedades é naturalmente útil no cotidiano.</p>
+                  </div>
                 </div>
               </div>
 
@@ -139,12 +192,128 @@ export default function TermologiaTopicTemperatura() {
                   A escala Fahrenheit usa pontos de referência diferentes: 32°F para o ponto de fusão do gelo e 212°F para o ponto de ebulição da água. Isso cria 180 divisões entre esses dois pontos (212 - 32 = 180).
                 </p>
                 <p className="text-slate-700 leading-relaxed mb-4">
-                  Fahrenheit escolheu 0°F como a temperatura mais baixa que conseguiu produzir em laboratório (mistura de gelo, água e sal) e 96°F como a temperatura do corpo humano (ele errou um pouco — a temperatura corporal real é 98,6°F ou 37°C).
+                  Fahrenheit escolheu 0°F como a temperatura mais baixa que conseguiu produzir em laboratório (mistura de gelo, água e sal de amônio) e 96°F como a temperatura do corpo humano (ele errou um pouco — a temperatura corporal real é 98,6°F ou 37°C).
                 </p>
                 <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r-lg">
                   <p className="text-slate-700 text-sm">
                     <strong>Pontos de referência:</strong> 32°F (fusão do gelo) e 212°F (ebulição da água) à pressão de 1 atm.
                   </p>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
+                <h4 className="font-semibold text-orange-400 mb-4">Dedução Histórica da Escala Fahrenheit</h4>
+                <p className="text-slate-300 leading-relaxed mb-4">
+                  Daniel Gabriel Fahrenheit criou sua escala em 1724, <strong>antes</strong> de Celsius. Sua escolha de pontos de referência foi mais complexa e menos intuitiva, mas tinha lógica prática para a época.
+                </p>
+                <div className="space-y-4">
+                  <div className="bg-slate-800/50 p-4 rounded-lg">
+                    <p className="font-semibold text-orange-400 mb-2">Passo 1: Escolha do Zero (0°F)</p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                      Fahrenheit queria que o zero de sua escala representasse a <strong>temperatura mais baixa reproduzível</strong> em laboratório na época. Ele usou uma mistura de gelo, água e sal de amônio (NH₄Cl), que atinge aproximadamente -17,8°C.
+                    </p>
+                    <p className="text-sm text-slate-300">
+                      Essa mistura era o "frio extremo" acessível no século XVIII. Definir isso como 0°F evitava valores negativos no dia a dia (clima frio raramente fica abaixo de 0°F).
+                    </p>
+                  </div>
+                  <div className="bg-slate-800/50 p-4 rounded-lg">
+                    <p className="font-semibold text-orange-400 mb-2">Passo 2: Temperatura Corporal (96°F)</p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                      Fahrenheit inicialmente definiu 96°F como a temperatura do corpo humano. Por que 96 e não 100? Porque <strong>96 = 2⁶ × 3</strong>, um número altamente divisível, facilitando a construção de termômetros com subdivisões (1/2, 1/4, 1/8, etc.).
+                    </p>
+                    <p className="text-sm text-slate-300">
+                      Mais tarde, descobriu-se que a temperatura corporal real é ~98,6°F (37°C), mas a escala já estava estabelecida.
+                    </p>
+                  </div>
+                  <div className="bg-slate-800/50 p-4 rounded-lg">
+                    <p className="font-semibold text-orange-400 mb-2">Passo 3: Pontos da Água (32°F e 212°F)</p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                      Com 0°F e 96°F definidos, Fahrenheit mediu os pontos de fusão e ebulição da água:
+                    </p>
+                    <ul className="text-sm text-slate-300 space-y-1 ml-4 list-disc">
+                      <li><strong>Fusão do gelo:</strong> 32°F</li>
+                      <li><strong>Ebulição da água:</strong> 212°F</li>
+                    </ul>
+                    <p className="text-sm text-slate-300 mt-2">
+                      Isso cria <strong>180 divisões</strong> entre fusão e ebulição (212 - 32 = 180). O número 180 é útil porque é divisível por muitos números (2, 3, 4, 5, 6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90), facilitando subdivisões.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
+                <h4 className="font-semibold text-orange-400 mb-4">Dedução Matemática do Fator 9/5</h4>
+                <p className="text-slate-300 leading-relaxed mb-4">
+                  A fórmula de conversão entre Celsius e Fahrenheit contém o misterioso fator <strong>9/5 (ou 1,8)</strong>. De onde vem esse número? Vamos deduzir matematicamente.
+                </p>
+                <div className="space-y-4">
+                  <div className="bg-slate-800/50 p-4 rounded-lg">
+                    <p className="font-semibold text-orange-400 mb-2">Passo 1: Comparar Intervalos</p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                      Ambas as escalas usam a água como referência. Vamos comparar quantas divisões cada escala tem entre fusão e ebulição:
+                    </p>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="bg-slate-700/50 p-3 rounded">
+                        <p className="font-semibold text-orange-300 mb-1">Celsius:</p>
+                        <p className="text-slate-300">100°C - 0°C = <strong>100 divisões</strong></p>
+                      </div>
+                      <div className="bg-slate-700/50 p-3 rounded">
+                        <p className="font-semibold text-orange-300 mb-1">Fahrenheit:</p>
+                        <p className="text-slate-300">212°F - 32°F = <strong>180 divisões</strong></p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-slate-800/50 p-4 rounded-lg">
+                    <p className="font-semibold text-orange-400 mb-2">Passo 2: Calcular a Razão</p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                      A razão entre as divisões é:
+                    </p>
+                    <MathFormula formula="\frac{\Delta T_F}{\Delta T_C} = \frac{180}{100} = \frac{9}{5} = 1{,}8" display={true} className="text-lg my-3" />
+                    <p className="text-sm text-slate-300">
+                      Isso significa que <strong>1°C de variação = 1,8°F de variação</strong>. A escala Fahrenheit é "mais fina" que Celsius.
+                    </p>
+                  </div>
+                  <div className="bg-slate-800/50 p-4 rounded-lg">
+                    <p className="font-semibold text-orange-400 mb-2">Passo 3: Deduzir a Fórmula Completa</p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                      Para converter temperatura (não apenas variação), precisamos considerar que as escalas começam em pontos diferentes:
+                    </p>
+                    <ul className="text-sm text-slate-300 space-y-2 ml-4 list-disc">
+                      <li>Celsius começa em 0°C (fusão da água)</li>
+                      <li>Fahrenheit começa em 32°F (fusão da água)</li>
+                    </ul>
+                    <p className="text-sm text-slate-300 mt-3 mb-2">
+                      Portanto, a fórmula completa é:
+                    </p>
+                    <MathFormula formula="T_F = \frac{9}{5} T_C + 32" display={true} className="text-lg my-3" />
+                    <div className="bg-slate-700/50 p-3 rounded mt-3">
+                      <p className="text-xs text-slate-400 mb-2">Onde cada termo significa:</p>
+                      <div className="grid grid-cols-2 gap-2 text-xs text-slate-300">
+                        <div><MathFormula formula="T_F" display={false} /> = Temperatura em Fahrenheit</div>
+                        <div><MathFormula formula="T_C" display={false} /> = Temperatura em Celsius</div>
+                        <div><MathFormula formula="\frac{9}{5}" display={false} /> = Fator de conversão (1,8)</div>
+                        <div><MathFormula formula="32" display={false} /> = Offset (diferença de início)</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+                <h4 className="font-bold text-blue-900 mb-3">🎯 Vantagens da Escala Fahrenheit</h4>
+                <div className="space-y-3 text-slate-700">
+                  <div className="flex items-start gap-3">
+                    <span className="text-blue-600 font-bold mt-1">1.</span>
+                    <p><strong>Maior Precisão sem Decimais:</strong> Como 1°C = 1,8°F, a escala Fahrenheit tem "divisões menores", permitindo maior precisão sem usar casas decimais. Exemplo: 20°C = 68°F, mas 20,5°C = 69°F (número inteiro).</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-blue-600 font-bold mt-1">2.</span>
+                    <p><strong>Menos Valores Negativos no Clima:</strong> Em regiões temperadas, a temperatura raramente fica abaixo de 0°F (-17,8°C), evitando números negativos no dia a dia.</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-blue-600 font-bold mt-1">3.</span>
+                    <p><strong>Escala "Humana":</strong> A faixa 0°F a 100°F cobre aproximadamente as temperaturas extremas que humanos experimentam no clima (muito frio a muito quente), tornando a escala intuitiva para meteorologia.</p>
+                  </div>
                 </div>
               </div>
 
@@ -181,20 +350,112 @@ export default function TermologiaTopicTemperatura() {
                 </div>
               </div>
 
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
+                <h4 className="font-semibold text-orange-400 mb-4">O Conceito Físico do Zero Absoluto</h4>
+                <p className="text-slate-300 leading-relaxed mb-4">
+                  O <strong>zero absoluto</strong> (0 K = -273,15°C) é a temperatura teórica mais baixa possível no universo. Mas o que isso significa fisicamente? Por que não podemos ir abaixo de 0 K?
+                </p>
+                <div className="space-y-4">
+                  <div className="bg-slate-800/50 p-4 rounded-lg">
+                    <p className="font-semibold text-orange-400 mb-2">Temperatura e Energia Cinética Molecular</p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-3">
+                      Temperatura <strong>não é calor</strong> — é uma medida da <strong>energia cinética média</strong> das partículas (átomos e moléculas) de um sistema. Quanto mais rápido as partículas se movem, maior a temperatura.
+                    </p>
+                    <p className="text-sm text-slate-300 mb-2">
+                      A relação matemática exata é dada pela <strong>teoria cinética dos gases</strong>:
+                    </p>
+                    <MathFormula formula="\langle E_c \rangle = \frac{3}{2} k_B T" display={true} className="text-lg my-3" />
+                    <div className="bg-slate-700/50 p-3 rounded mt-3">
+                      <p className="text-xs text-slate-400 mb-2">Onde cada termo significa:</p>
+                      <div className="grid grid-cols-2 gap-2 text-xs text-slate-300">
+                        <div><MathFormula formula="\langle E_c \rangle" display={false} /> = Energia cinética média por partícula</div>
+                        <div><MathFormula formula="k_B" display={false} /> = Constante de Boltzmann (1,38 × 10⁻²³ J/K)</div>
+                        <div><MathFormula formula="T" display={false} /> = Temperatura absoluta (em Kelvin)</div>
+                        <div><MathFormula formula="\frac{3}{2}" display={false} /> = Fator geométrico (3 dimensões espaciais)</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-slate-800/50 p-4 rounded-lg">
+                    <p className="font-semibold text-orange-400 mb-2">Por Que 0 K é o Limite Inferior?</p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                      Se temperatura é proporcional à energia cinética, o que acontece quando <MathFormula formula="T \to 0" display={false} />?
+                    </p>
+                    <MathFormula formula="T = 0 \,\text{K} \quad \Rightarrow \quad \langle E_c \rangle = 0 \,\text{J}" display={true} className="text-lg my-3" />
+                    <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                      No zero absoluto, as partículas teriam <strong>energia cinética zero</strong> — ou seja, estariam completamente paradas (classicamente). Como energia cinética não pode ser negativa (E = ½mv² ≥ 0), não existe temperatura abaixo de 0 K.
+                    </p>
+                    <div className="bg-yellow-900/30 border-l-2 border-yellow-500 p-3 rounded-r mt-3">
+                      <p className="text-xs text-yellow-200">
+                        <strong>Nota Quântica:</strong> Pela mecânica quântica, mesmo em 0 K as partículas têm uma <strong>energia de ponto zero</strong> (zero-point energy) devido ao princípio da incerteza de Heisenberg. Elas nunca param completamente!
+                      </p>
+                    </div>
+                  </div>
+                  <div className="bg-slate-800/50 p-4 rounded-lg">
+                    <p className="font-semibold text-orange-400 mb-2">Terceira Lei da Termodinâmica</p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                      A <strong>Terceira Lei da Termodinâmica</strong> (enunciado de Nernst-Planck) afirma que:
+                    </p>
+                    <div className="bg-slate-700/50 p-3 rounded italic text-sm text-slate-300">
+                      "É impossível atingir o zero absoluto em um número finito de processos."
+                    </div>
+                    <p className="text-sm text-slate-300 leading-relaxed mt-3">
+                      Podemos nos aproximar arbitrariamente de 0 K (cientistas já alcançaram nanókelvins, 10⁻⁹ K!), mas nunca atingir exatamente 0 K. Cada etapa de resfriamento fica exponencialmente mais difícil.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
+                <h4 className="font-semibold text-orange-400 mb-4">Dedução da Relação Kelvin-Celsius</h4>
+                <p className="text-slate-300 leading-relaxed mb-4">
+                  Por que <strong>T(K) = T(°C) + 273,15</strong>? De onde vem esse número 273,15?
+                </p>
+                <div className="space-y-4">
+                  <div className="bg-slate-800/50 p-4 rounded-lg">
+                    <p className="font-semibold text-orange-400 mb-2">Passo 1: Medir o Zero Absoluto em Celsius</p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                      Lord Kelvin (William Thomson) estudou a <strong>lei dos gases ideais</strong>:
+                    </p>
+                    <MathFormula formula="PV = nRT" display={true} className="text-lg my-3" />
+                    <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                      Ele percebeu que, se resfriasse um gás mantendo pressão e volume constantes, a temperatura cairia linearmente. Extrapolando para <MathFormula formula="P \to 0" display={false} /> (pressão zero), ele encontrou:
+                    </p>
+                    <MathFormula formula="T_{\text{zero absoluto}} \approx -273{,}15\,^\circ\text{C}" display={true} className="text-lg my-3" />
+                  </div>
+                  <div className="bg-slate-800/50 p-4 rounded-lg">
+                    <p className="font-semibold text-orange-400 mb-2">Passo 2: Definir Nova Escala Começando em 0 K</p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                      Kelvin propôs uma nova escala onde o <strong>zero absoluto = 0 K</strong> (não -273,15°C). Isso torna a escala <strong>absoluta</strong> — sem valores negativos.
+                    </p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                      Como a "divisão" de 1 K = 1°C (mesma variação), a relação é:
+                    </p>
+                    <MathFormula formula="T_K = T_C + 273{,}15" display={true} className="text-lg my-3" />
+                    <p className="text-sm text-slate-300">
+                      Exemplo: 0°C (fusão da água) = 273,15 K. 100°C (ebulição) = 373,15 K.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
-                <h4 className="font-bold text-blue-900 mb-3">🔍 Por Que Kelvin é Fundamental?</h4>
+                <h4 className="font-bold text-blue-900 mb-3">🔬 Por Que Kelvin é Obrigatória em Física?</h4>
                 <div className="space-y-3 text-slate-700">
                   <div className="flex items-start gap-3">
                     <span className="text-blue-600 font-bold mt-1">1.</span>
-                    <p><strong>Escala Absoluta:</strong> Kelvin não tem valores negativos. 0 K é o limite inferior absoluto — não existe temperatura menor.</p>
+                    <p><strong>Lei dos Gases Ideais:</strong> <MathFormula formula="PV = nRT" display={false} /> só funciona com T em Kelvin. Se usar Celsius, valores negativos de T dariam pressões negativas (impossível!).</p>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-blue-600 font-bold mt-1">2.</span>
-                    <p><strong>Proporcionalidade Direta:</strong> A energia cinética média das partículas é diretamente proporcional à temperatura em Kelvin: <MathFormula formula="E_c \propto T" display={false} />. Dobrar a temperatura em Kelvin dobra a energia cinética.</p>
+                    <p><strong>Energia Cinética Molecular:</strong> <MathFormula formula="\langle E_c \rangle = \frac{3}{2} k_B T" display={false} /> exige T em Kelvin para proporcionalidade direta. Dobrar T (em K) dobra a energia.</p>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-blue-600 font-bold mt-1">3.</span>
-                    <p><strong>Obrigatória em Física:</strong> Todas as equações da termodinâmica (lei dos gases ideais, entropia, etc.) exigem temperatura em Kelvin. Usar Celsius ou Fahrenheit daria resultados errados!</p>
+                    <p><strong>Entropia e Termodinâmica:</strong> A entropia <MathFormula formula="S = k_B \ln \Omega" display={false} /> e todas as leis da termodinâmica usam Kelvin como unidade natural de temperatura.</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-blue-600 font-bold mt-1">4.</span>
+                    <p><strong>Radiação de Corpo Negro:</strong> A lei de Stefan-Boltzmann <MathFormula formula="P = \sigma A T^4" display={false} /> (potência radiada) exige T em Kelvin. Usar Celsius daria resultados completamente errados!</p>
                   </div>
                 </div>
               </div>

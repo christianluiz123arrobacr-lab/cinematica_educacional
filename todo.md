@@ -180,3 +180,26 @@
   - [ ] Exemplos resolvidos ITA/IME (próxima fase)
   - [x] Aplicações práticas (meteorologia, medicina, indústria, culinária, física, astronomia)
 - [ ] Validar renderização (próxima fase)
+
+## Temperaturas - Aprofundar Explicações das Escalas
+- [x] Aprofundar Escala Celsius:
+  - [x] Dedução da escolha dos pontos de referência (0°C e 100°C)
+  - [x] Relação com propriedades da água (fusão e ebulição)
+  - [x] Por que 100 divisões (escala decimal)
+  - [x] Vantagens e limitações da escala (4 pontos)
+  - [ ] Exemplos numéricos detalhados (próxima fase)
+- [x] Aprofundar Escala Fahrenheit:
+  - [x] Dedução histórica dos pontos de referência (0°F, 32°F, 96°F, 212°F)
+  - [x] Por que 180 divisões entre fusão e ebulição
+  - [x] Relação matemática com Celsius (dedução completa da fórmula 9/5)
+  - [x] Vantagens práticas (mais divisões = maior precisão sem decimais)
+  - [ ] Exemplos numéricos detalhados (próxima fase)
+- [x] Aprofundar Escala Kelvin:
+  - [x] Conceito de zero absoluto (terceira lei da termodinâmica de Nernst-Planck)
+  - [x] Relação com energia cinética molecular (E_c = 3/2 k_B T com termo-a-termo)
+  - [x] Por que Kelvin é escala absoluta (sem valores negativos, energia cinética ≥ 0)
+  - [x] Dedução da relação com Celsius (273,15 via lei dos gases)
+  - [x] Importância em física (lei dos gases, entropia, radiação de corpo negro)
+  - [ ] Exemplos numéricos detalhados (próxima fase)
+- [x] Adicionar dedução completa das fórmulas de conversão
+- [ ] Validar renderização (próxima fase)
