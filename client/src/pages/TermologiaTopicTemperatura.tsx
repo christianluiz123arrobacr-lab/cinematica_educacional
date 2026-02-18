@@ -502,6 +502,117 @@ export default function TermologiaTopicTemperatura() {
                     </ul>
                   </div>
                 </div>
+
+                {/* Dedução Matemática Completa */}
+                <div className="mt-6 pt-6 border-t border-slate-700">
+                  <h5 className="font-semibold text-orange-400 mb-4">📐 Dedução Matemática Completa</h5>
+                  <div className="space-y-4 text-sm text-slate-300">
+                    <p className="leading-relaxed">
+                      Vamos deduzir a fórmula <MathFormula formula="T_F = \frac{9}{5} T_C + 32" display={false} /> do zero, usando apenas os pontos de referência das duas escalas.
+                    </p>
+                    
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 1: Estabelecer Pontos de Referência</strong></p>
+                      <p>Sabemos que:</p>
+                      <ul className="list-disc list-inside space-y-1 ml-4">
+                        <li>Fusão do gelo: 0°C = 32°F</li>
+                        <li>Ebulição da água: 100°C = 212°F</li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 2: Calcular a Razão entre as Escalas</strong></p>
+                      <p>O intervalo entre fusão e ebulição em cada escala:</p>
+                      <ul className="list-disc list-inside space-y-1 ml-4">
+                        <li>Celsius: ΔT<sub>C</sub> = 100 - 0 = 100 divisões</li>
+                        <li>Fahrenheit: ΔT<sub>F</sub> = 212 - 32 = 180 divisões</li>
+                      </ul>
+                      <p className="mt-2">A razão entre as escalas é:</p>
+                      <MathFormula formula="\frac{\Delta T_F}{\Delta T_C} = \frac{180}{100} = \frac{9}{5} = 1{,}8" display={true} />
+                    </div>
+
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 3: Construir a Equação Linear</strong></p>
+                      <p>Uma conversão entre escalas lineares tem a forma geral:</p>
+                      <MathFormula formula="T_F = a \cdot T_C + b" display={true} />
+                      <p>Onde <strong>a</strong> é a inclinação (razão) e <strong>b</strong> é o deslocamento.</p>
+                      <p className="mt-2">Já sabemos que a = 9/5. Agora precisamos encontrar b.</p>
+                    </div>
+
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 4: Determinar o Deslocamento (b)</strong></p>
+                      <p>Usamos o ponto de referência 0°C = 32°F:</p>
+                      <MathFormula formula="32 = \frac{9}{5} \cdot 0 + b" display={true} />
+                      <MathFormula formula="32 = 0 + b" display={true} />
+                      <MathFormula formula="b = 32" display={true} />
+                    </div>
+
+                    <div className="bg-orange-900/30 p-4 rounded-lg border border-orange-700">
+                      <p><strong>Resultado Final:</strong></p>
+                      <MathFormula formula="T_F = \frac{9}{5} T_C + 32" display={true} className="text-xl" />
+                      <p className="mt-2">Esta fórmula funciona para <strong>qualquer</strong> temperatura, não apenas para os pontos de referência!</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Exemplo Numérico Detalhado */}
+                <div className="mt-6 pt-6 border-t border-slate-700">
+                  <h5 className="font-semibold text-orange-400 mb-4">🔢 Exemplo Numérico Detalhado</h5>
+                  <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-4 space-y-3 text-sm text-slate-300">
+                    <p><strong>Problema:</strong> Converter 25°C para Fahrenheit.</p>
+                    
+                    <div className="space-y-2">
+                      <p><strong>Solução:</strong></p>
+                      <p><strong>Passo 1:</strong> Identificar a fórmula correta</p>
+                      <MathFormula formula="T_F = \frac{9}{5} T_C + 32" display={true} />
+                      
+                      <p><strong>Passo 2:</strong> Substituir T<sub>C</sub> = 25°C</p>
+                      <MathFormula formula="T_F = \frac{9}{5} \cdot 25 + 32" display={true} />
+                      
+                      <p><strong>Passo 3:</strong> Calcular a multiplicação</p>
+                      <MathFormula formula="T_F = \frac{9 \times 25}{5} + 32 = \frac{225}{5} + 32 = 45 + 32" display={true} />
+                      
+                      <p><strong>Passo 4:</strong> Somar o deslocamento</p>
+                      <MathFormula formula="T_F = 45 + 32 = 77 \text{ °F}" display={true} />
+                      
+                      <div className="bg-green-900/30 p-3 rounded border border-green-700 mt-3">
+                        <p><strong>Resposta:</strong> 25°C = <strong>77°F</strong></p>
+                        <p className="text-xs mt-1">Verificação: 77°F é uma temperatura agradável, típica de um dia quente de primavera. Faz sentido!</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Caso Especial: -40°C = -40°F */}
+                <div className="mt-6 pt-6 border-t border-slate-700">
+                  <h5 className="font-semibold text-orange-400 mb-4">🎯 Caso Especial: O Ponto de Igualdade</h5>
+                  <div className="bg-purple-900/20 border border-purple-700 rounded-lg p-4 space-y-3 text-sm text-slate-300">
+                    <p className="leading-relaxed">
+                      Existe <strong>um único ponto</strong> onde Celsius e Fahrenheit têm o mesmo valor numérico. Vamos encontrá-lo!
+                    </p>
+                    
+                    <div className="space-y-2">
+                      <p><strong>Condição:</strong> T<sub>C</sub> = T<sub>F</sub> = x (queremos encontrar x)</p>
+                      
+                      <p><strong>Passo 1:</strong> Substituir na fórmula</p>
+                      <MathFormula formula="x = \frac{9}{5} x + 32" display={true} />
+                      
+                      <p><strong>Passo 2:</strong> Isolar x</p>
+                      <MathFormula formula="x - \frac{9}{5} x = 32" display={true} />
+                      <MathFormula formula="\frac{5x - 9x}{5} = 32" display={true} />
+                      <MathFormula formula="\frac{-4x}{5} = 32" display={true} />
+                      
+                      <p><strong>Passo 3:</strong> Resolver para x</p>
+                      <MathFormula formula="-4x = 32 \times 5 = 160" display={true} />
+                      <MathFormula formula="x = -\frac{160}{4} = -40" display={true} />
+                      
+                      <div className="bg-purple-900/50 p-3 rounded border border-purple-600 mt-3">
+                        <p><strong>Resultado:</strong> <MathFormula formula="-40 \text{ °C} = -40 \text{ °F}" display={false} /></p>
+                        <p className="text-xs mt-1">Este é o único ponto onde as duas escalas se encontram! Temperatura extremamente fria, típica do Ártico ou da Antártida.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Celsius ↔ Kelvin */}
@@ -525,6 +636,96 @@ export default function TermologiaTopicTemperatura() {
                     <li><MathFormula formula="T_C" display={false} />: <strong>Temperatura em Celsius</strong> (°C)</li>
                     <li><MathFormula formula="273{,}15" display={false} />: <strong>Zero absoluto em Celsius</strong> (-273,15°C = 0 K)</li>
                   </ul>
+                </div>
+
+                {/* Dedução Física da Constante 273,15 */}
+                <div className="mt-6 pt-6 border-t border-slate-700">
+                  <h5 className="font-semibold text-orange-400 mb-4">📐 Dedução Física da Constante 273,15</h5>
+                  <div className="space-y-4 text-sm text-slate-300">
+                    <p className="leading-relaxed">
+                      A constante 273,15 não foi escolhida arbitrariamente! Ela representa a <strong>temperatura do zero absoluto em Celsius</strong>. Vamos deduzir seu valor usando a lei dos gases ideais.
+                    </p>
+                    
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 1: Lei dos Gases Ideais</strong></p>
+                      <p>A lei dos gases ideais relaciona pressão, volume e temperatura:</p>
+                      <MathFormula formula="PV = nRT" display={true} />
+                      <p className="mt-2">Onde <strong>T</strong> deve estar em Kelvin (escala absoluta). Para um gás a volume constante:</p>
+                      <MathFormula formula="P \propto T" display={true} />
+                      <p>A pressão é diretamente proporcional à temperatura absoluta.</p>
+                    </div>
+
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 2: Encontrar o Zero Absoluto</strong></p>
+                      <p>Se extrapolarmos a pressão de um gás até zero (P → 0), encontramos a temperatura mais baixa possível:</p>
+                      <MathFormula formula="P \to 0 \implies T \to 0 \text{ K}" display={true} />
+                      <p className="mt-2">Experimentalmente, medindo a pressão de gases em diferentes temperaturas e extrapolando até P = 0, encontramos:</p>
+                      <MathFormula formula="T_{\text{zero absoluto}} \approx -273{,}15 \text{ °C}" display={true} />
+                    </div>
+
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 3: Definir a Escala Kelvin</strong></p>
+                      <p>Lord Kelvin definiu sua escala de modo que:</p>
+                      <ul className="list-disc list-inside space-y-1 ml-4">
+                        <li><strong>0 K</strong> = zero absoluto = -273,15°C</li>
+                        <li><strong>1 K</strong> = mesma divisão que 1°C (mesmo tamanho de grau)</li>
+                      </ul>
+                      <p className="mt-2">Portanto, a relação é simplesmente um <strong>deslocamento</strong>:</p>
+                      <MathFormula formula="T_K = T_C + 273{,}15" display={true} />
+                    </div>
+
+                    <div className="bg-orange-900/30 p-4 rounded-lg border border-orange-700">
+                      <p><strong>Por Que Não Há Fator Multiplicativo?</strong></p>
+                      <p className="mt-2 leading-relaxed">
+                        Diferente de Celsius ↔ Fahrenheit (que tem o fator 9/5), a conversão Celsius ↔ Kelvin <strong>não tem fator multiplicativo</strong> porque ambas as escalas usam a <strong>mesma divisão</strong>: 1°C = 1 K. A única diferença é o ponto zero!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Exemplo Numérico Detalhado */}
+                <div className="mt-6 pt-6 border-t border-slate-700">
+                  <h5 className="font-semibold text-orange-400 mb-4">🔢 Exemplo Numérico Detalhado</h5>
+                  <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-4 space-y-3 text-sm text-slate-300">
+                    <p><strong>Problema:</strong> Converter 300 K para Celsius.</p>
+                    
+                    <div className="space-y-2">
+                      <p><strong>Solução:</strong></p>
+                      <p><strong>Passo 1:</strong> Identificar a fórmula correta</p>
+                      <MathFormula formula="T_C = T_K - 273{,}15" display={true} />
+                      
+                      <p><strong>Passo 2:</strong> Substituir T<sub>K</sub> = 300 K</p>
+                      <MathFormula formula="T_C = 300 - 273{,}15" display={true} />
+                      
+                      <p><strong>Passo 3:</strong> Calcular a subtração</p>
+                      <MathFormula formula="T_C = 26{,}85 \text{ °C}" display={true} />
+                      
+                      <div className="bg-green-900/30 p-3 rounded border border-green-700 mt-3">
+                        <p><strong>Resposta:</strong> 300 K = <strong>26,85°C</strong></p>
+                        <p className="text-xs mt-1">Verificação: ~27°C é uma temperatura ambiente agradável. Faz sentido!</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Curiosidade: Temperatura Corporal */}
+                <div className="mt-6 pt-6 border-t border-slate-700">
+                  <h5 className="font-semibold text-orange-400 mb-4">🎯 Curiosidade: Temperatura Corporal Humana</h5>
+                  <div className="bg-purple-900/20 border border-purple-700 rounded-lg p-4 space-y-3 text-sm text-slate-300">
+                    <p className="leading-relaxed">
+                      A temperatura corporal normal é aproximadamente <strong>37°C</strong>. Vamos convertê-la para Kelvin:
+                    </p>
+                    
+                    <div className="space-y-2">
+                      <p><strong>Cálculo:</strong></p>
+                      <MathFormula formula="T_K = 37 + 273{,}15 = 310{,}15 \text{ K}" display={true} />
+                      
+                      <div className="bg-purple-900/50 p-3 rounded border border-purple-600 mt-3">
+                        <p><strong>Resultado:</strong> Temperatura corporal ≈ <strong>310 K</strong></p>
+                        <p className="text-xs mt-1">Em física e medicina, é comum usar "310 K" como referência para temperatura corporal. Memorize este valor!</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -550,17 +751,130 @@ export default function TermologiaTopicTemperatura() {
                 </div>
               </div>
 
-              <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg">
-                <h4 className="font-bold text-yellow-800 flex items-center gap-2 mb-2">
-                  <AlertTriangle className="w-4 h-4" />
-                  Atenção: Variação de Temperatura
+              {/* Seção Especial: Variação de Temperatura */}
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-400 rounded-xl p-6 mb-6">
+                <h4 className="font-bold text-amber-900 flex items-center gap-2 mb-4 text-xl">
+                  <AlertTriangle className="w-6 h-6" />
+                  Atenção: Conversão de VARIAÇÕES de Temperatura (ΔT)
                 </h4>
-                <p className="text-slate-700 text-sm mb-2">
-                  Quando falamos de <strong>variação de temperatura</strong> (ΔT), as conversões são diferentes! Uma variação de 1°C é igual a uma variação de 1 K, mas é igual a uma variação de 1,8°F.
-                </p>
-                <p className="text-slate-700 text-sm">
-                  <strong>Exemplo:</strong> Se a temperatura aumenta 10°C, isso é equivalente a um aumento de 10 K ou 18°F. Não confunda variação com valor absoluto!
-                </p>
+                
+                <div className="space-y-4">
+                  <p className="text-slate-800 leading-relaxed">
+                    Quando falamos de <strong>variação de temperatura</strong> (ΔT), as conversões são <strong>diferentes</strong> das conversões de valores absolutos! Este é um dos erros mais comuns em física.
+                  </p>
+
+                  {/* Regras para Variações */}
+                  <div className="bg-white rounded-lg p-4 border border-amber-300">
+                    <h5 className="font-bold text-amber-900 mb-3">📜 Regras para Variações de Temperatura</h5>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl">✅</span>
+                        <div>
+                          <p className="font-semibold text-slate-900">Celsius ↔ Kelvin: <MathFormula formula="\Delta T_C = \Delta T_K" display={false} /></p>
+                          <p className="text-slate-700">Uma variação de 1°C é <strong>exatamente igual</strong> a uma variação de 1 K (mesmo tamanho de grau).</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl">⚠️</span>
+                        <div>
+                          <p className="font-semibold text-slate-900">Celsius ↔ Fahrenheit: <MathFormula formula="\Delta T_F = \frac{9}{5} \Delta T_C" display={false} /></p>
+                          <p className="text-slate-700">Uma variação de 1°C é equivalente a uma variação de 1,8°F (graus Fahrenheit são menores).</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl">❌</span>
+                        <div>
+                          <p className="font-semibold text-red-900">ERRO COMUM: NÃO somar 32 ou 273,15 em variações!</p>
+                          <p className="text-slate-700">Os deslocamentos (32 e 273,15) <strong>só se aplicam a valores absolutos</strong>, nunca a variações.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Por Que É Diferente? */}
+                  <div className="bg-white rounded-lg p-4 border border-amber-300">
+                    <h5 className="font-bold text-amber-900 mb-3">🧠 Por Que Variações São Diferentes?</h5>
+                    <div className="space-y-3 text-sm text-slate-800">
+                      <p className="leading-relaxed">
+                        A diferença está na <strong>natureza do deslocamento</strong>. Quando convertemos <strong>valores absolutos</strong>, precisamos ajustar o ponto zero (adicionar 32 ou 273,15). Mas quando convertemos <strong>variações</strong>, só importa o <strong>tamanho do grau</strong>, não o ponto zero!
+                      </p>
+                      
+                      <div className="bg-slate-100 p-3 rounded">
+                        <p className="font-semibold mb-2">Analogia:</p>
+                        <p className="text-xs">
+                          Imagine duas réguas: uma começa em 0 cm, outra começa em 10 cm. Se você mede um objeto de <strong>5 cm de comprimento</strong>, ele terá 5 cm em ambas as réguas! A variação (comprimento) não depende do ponto zero, apenas da <strong>escala de divisão</strong>.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Exemplos Numéricos */}
+                  <div className="bg-white rounded-lg p-4 border border-amber-300">
+                    <h5 className="font-bold text-amber-900 mb-3">🔢 Exemplos Numéricos de Variações</h5>
+                    
+                    {/* Exemplo 1 */}
+                    <div className="bg-blue-50 p-3 rounded mb-3">
+                      <p className="font-semibold text-blue-900 mb-2">Exemplo 1: Aquecimento de água</p>
+                      <p className="text-sm text-slate-700 mb-2">
+                        A temperatura de um copo de água aumenta de 20°C para 30°C. Qual foi a variação em Kelvin e Fahrenheit?
+                      </p>
+                      <div className="space-y-1 text-sm">
+                        <p><strong>Variação em Celsius:</strong> ΔT<sub>C</sub> = 30 - 20 = 10°C</p>
+                        <p><strong>Variação em Kelvin:</strong> ΔT<sub>K</sub> = ΔT<sub>C</sub> = <strong>10 K</strong></p>
+                        <p><strong>Variação em Fahrenheit:</strong> ΔT<sub>F</sub> = (9/5) × 10 = <strong>18°F</strong></p>
+                        <p className="text-green-700 font-semibold mt-2">✅ Resposta: 10°C = 10 K = 18°F (variação)</p>
+                      </div>
+                    </div>
+
+                    {/* Exemplo 2 */}
+                    <div className="bg-purple-50 p-3 rounded">
+                      <p className="font-semibold text-purple-900 mb-2">Exemplo 2: Resfriamento</p>
+                      <p className="text-sm text-slate-700 mb-2">
+                        Um metal esfria 50 K. Qual foi a variação em Celsius e Fahrenheit?
+                      </p>
+                      <div className="space-y-1 text-sm">
+                        <p><strong>Variação em Kelvin:</strong> ΔT<sub>K</sub> = -50 K (negativo = resfriamento)</p>
+                        <p><strong>Variação em Celsius:</strong> ΔT<sub>C</sub> = ΔT<sub>K</sub> = <strong>-50°C</strong></p>
+                        <p><strong>Variação em Fahrenheit:</strong> ΔT<sub>F</sub> = (9/5) × (-50) = <strong>-90°F</strong></p>
+                        <p className="text-green-700 font-semibold mt-2">✅ Resposta: -50 K = -50°C = -90°F (resfriamento)</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Comparação: Valor Absoluto vs Variação */}
+                  <div className="bg-red-50 border-2 border-red-400 rounded-lg p-4">
+                    <h5 className="font-bold text-red-900 mb-3 flex items-center gap-2">
+                      <AlertTriangle className="w-5 h-5" />
+                      Comparação: Valor Absoluto vs Variação
+                    </h5>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm border-collapse">
+                        <thead>
+                          <tr className="bg-red-100">
+                            <th className="border border-red-300 px-3 py-2 text-left">Situação</th>
+                            <th className="border border-red-300 px-3 py-2 text-center">Fórmula Correta</th>
+                            <th className="border border-red-300 px-3 py-2 text-center">Exemplo</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="bg-white">
+                            <td className="border border-red-300 px-3 py-2 font-semibold">Valor Absoluto (T)</td>
+                            <td className="border border-red-300 px-3 py-2 text-center"><MathFormula formula="T_F = \frac{9}{5} T_C + 32" display={false} /></td>
+                            <td className="border border-red-300 px-3 py-2 text-center">25°C = 77°F</td>
+                          </tr>
+                          <tr className="bg-red-50">
+                            <td className="border border-red-300 px-3 py-2 font-semibold">Variação (ΔT)</td>
+                            <td className="border border-red-300 px-3 py-2 text-center"><MathFormula formula="\Delta T_F = \frac{9}{5} \Delta T_C" display={false} /></td>
+                            <td className="border border-red-300 px-3 py-2 text-center">ΔT = 10°C = 18°F</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p className="text-xs text-red-800 mt-3 font-semibold">
+                      ⚠️ Note que na variação NÃO aparece o "+32"! Este é o erro mais comum em provas!
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 

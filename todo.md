@@ -203,3 +203,32 @@
   - [ ] Exemplos numéricos detalhados (próxima fase)
 - [x] Adicionar dedução completa das fórmulas de conversão
 - [ ] Validar renderização (próxima fase)
+
+
+## Conversão entre Escalas - Aprofundar Explicações
+- [x] Aprofundar Celsius ↔ Fahrenheit:
+  - [x] Dedução completa da fórmula T_F = 9/5 T_C + 32 (4 passos matemáticos)
+  - [x] Dedução da fórmula inversa T_C = 5/9 (T_F - 32)
+  - [x] Explicação física de cada termo (9/5 = razão, 32 = deslocamento)
+  - [x] Exemplo numérico detalhado (25°C → 77°F)
+  - [x] Caso especial: -40°C = -40°F (dedução completa)
+- [x] Aprofundar Celsius ↔ Kelvin:
+  - [x] Dedução da constante 273,15 (via lei dos gases ideais PV=nRT)
+  - [x] Explicação física do deslocamento (zero absoluto)
+  - [x] Exemplo numérico detalhado (300 K → 26,85°C)
+  - [x] Por que não há fator multiplicativo (mesma divisão: 1°C = 1 K)
+- [x] Aprofundar Fahrenheit ↔ Kelvin:
+  - [x] Dedução combinada das fórmulas (via Celsius intermediário)
+  - [ ] Exemplo numérico detalhado (500 K → °F) (próxima fase)
+- [x] Adicionar seção especial sobre conversão de VARIAÇÕES (ΔT):
+  - [x] ΔT_C = ΔT_K (mesmo tamanho de grau)
+  - [x] ΔT_F = 9/5 ΔT_C (graus Fahrenheit menores)
+  - [x] Alerta sobre erro comum (não somar 32 ou 273,15 em variações)
+  - [x] Exemplos numéricos de variações (aquecimento + resfriamento)
+  - [x] Tabela comparativa: valor absoluto vs variação
+  - [x] Analogia das réguas (por que variação é diferente)
+- [x] Adicionar casos especiais e curiosidades:
+  - [x] -40°C = -40°F (único ponto de igualdade - dedução completa)
+  - [x] Temperatura corporal (37°C = 310 K)
+  - [ ] Zero absoluto em todas as escalas (próxima fase)
+- [ ] Validar renderização (próxima fase)
