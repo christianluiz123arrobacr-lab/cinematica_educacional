@@ -253,3 +253,20 @@
   - [ ] Exemplos resolvidos ITA/IME (próxima fase)
   - [x] Aplicações práticas (6 aplicações: oceanos, radiadores, panelas, praia, motores, termômetros)
 - [ ] Validar renderização (próxima fase)
+
+
+## Diferença entre Calor e Temperatura - Criar/Aprofundar com Padrão Eletromagnetismo
+- [x] Verificar se a seção já existe em alguma página de Termologia (não existia)
+- [x] Criar ou aprofundar seção seguindo padrão Eletromagnetismo:
+  - [x] Seção 0 (antes das outras) com badge laranja
+  - [x] Card amber com contexto histórico (Joseph Black 1760, calórico, distinção revolucionária)
+  - [x] Explicação simples com 3 analogias práticas (salão de baile, oceano vs xícara, conta bancária)
+  - [x] Tabela comparativa completa: Calor vs Temperatura (8 características: definição, natureza, unidades, dependência da massa, medida, direção de fluxo, equilíbrio, exemplo)
+  - [x] Card slate-900 com exemplo numérico detalhado (iceberg vs fósforo com cálculos)
+  - [x] Card azul para analogias práticas (diferenças conceituais)
+  - [x] Card amarelo para alertas (4 erros comuns de confusão)
+  - [x] Card verde com passo-a-passo de 4 etapas para identificar calor vs temperatura
+  - [x] Exemplo numérico detalhado (iceberg 10⁶ kg a 0°C vs fósforo 0,001 kg a 600°C)
+  - [ ] Exemplos resolvidos ITA/IME (próxima fase)
+  - [ ] Aplicações práticas (isolamento térmico, refrigeração, etc.) (próxima fase)
+- [ ] Validar renderização (próxima fase)

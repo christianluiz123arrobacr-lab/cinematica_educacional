@@ -75,8 +75,206 @@ export default function TermologiaTopicCalor() {
           </div>
         </div>
 
-        {/* Contexto Histórico */}
+        {/* Seção 0: Diferença entre Calor e Temperatura */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-gradient-to-br from-orange-600 to-red-600 text-white text-sm font-bold px-3 py-1 rounded-full">0</div>
+            <h2 className="text-3xl font-bold text-slate-900">Diferença entre Calor e Temperatura</h2>
+          </div>
+
+          {/* Contexto Histórico */}
+          <div className="bg-amber-50 border-l-4 border-amber-500 rounded p-6 mb-8">
+            <h3 className="text-xl font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <Lightbulb className="w-5 h-5 text-amber-600" />
+              Contexto Histórico: A Grande Confusão
+            </h3>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              Durante séculos, cientistas confundiram **calor** e **temperatura**, tratando-os como sinônimos. Acreditava-se que "calor" era uma substância material chamada **calórico** que fluia entre objetos.
+            </p>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              Foi **Joseph Black** (1728-1799), médico e químico escocês, quem primeiro distinguiu claramente os dois conceitos em 1760. Ele percebeu que:
+            </p>
+            <ul className="list-disc list-inside text-slate-700 space-y-2 mb-4">
+              <li>Dois objetos podem ter a **mesma temperatura** mas conter **quantidades diferentes de calor**</li>
+              <li>Um iceberg (0°C) contém **muito mais energia térmica** que um fósforo aceso (600°C), apesar da temperatura menor</li>
+              <li>Calor é **energia em trânsito**, não uma propriedade intrínseca</li>
+            </ul>
+            <p className="text-slate-700 leading-relaxed">
+              Essa distinção foi revolucionária e pavimentou o caminho para a termodinâmica moderna. Hoje sabemos que **temperatura** mede a energia cinética média das moléculas, enquanto **calor** é a energia térmica transferida entre sistemas.
+            </p>
+          </div>
+
+          {/* Explicação Simples com Analogias */}
+          <div className="bg-blue-50 border border-blue-200 rounded p-6 mb-8">
+            <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <Info className="w-5 h-5 text-blue-600" />
+              Três Analogias Práticas
+            </h4>
+            
+            <div className="space-y-4">
+              <div className="bg-white rounded p-4 border border-blue-100">
+                <h5 className="font-bold text-slate-900 mb-2">1. Salão de Baile vs Velocidade Média</h5>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  <strong>Temperatura</strong> é como a **velocidade média** dos dançarinos em um salão. Dois salões podem ter a mesma velocidade média, mas um salão com 1000 pessoas tem **muito mais energia total** que um com 10 pessoas. <strong>Calor</strong> é a energia que flui quando um salão "rápido" faz um salão "lento" acelerar.
+                </p>
+              </div>
+
+              <div className="bg-white rounded p-4 border border-blue-100">
+                <h5 className="font-bold text-slate-900 mb-2">2. Oceano vs Xícara de Café</h5>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  Uma **xícara de café** a 90°C tem temperatura muito maior que o **oceano** a 20°C. Mas o oceano contém trilhões de vezes mais energia térmica total. Se você jogar a xícara no oceano, o oceano não esquenta — a xícara esfria. <strong>Calor</strong> é a energia que flui da xícara para o oceano.
+                </p>
+              </div>
+
+              <div className="bg-white rounded p-4 border border-blue-100">
+                <h5 className="font-bold text-slate-900 mb-2">3. Conta Bancária vs Transação</h5>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  <strong>Temperatura</strong> é como o **saldo médio por pessoa** em uma conta conjunta. <strong>Energia térmica</strong> é o **saldo total** da conta. <strong>Calor</strong> é a **transferência de dinheiro** entre contas — só existe durante a transação, não é uma propriedade da conta.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Tabela Comparativa */}
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold text-slate-900 mb-4">Tabela Comparativa: Calor vs Temperatura</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-slate-300">
+                <thead>
+                  <tr className="bg-slate-100">
+                    <th className="border border-slate-300 px-4 py-3 text-left font-bold text-slate-900">Característica</th>
+                    <th className="border border-slate-300 px-4 py-3 text-left font-bold text-slate-900">Temperatura (T)</th>
+                    <th className="border border-slate-300 px-4 py-3 text-left font-bold text-slate-900">Calor (Q)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-slate-300 px-4 py-3 font-bold text-slate-900">Definição</td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700">Medida da energia cinética <strong>média</strong> das moléculas</td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700">Energia térmica em <strong>trânsito</strong> entre sistemas</td>
+                  </tr>
+                  <tr className="bg-slate-50">
+                    <td className="border border-slate-300 px-4 py-3 font-bold text-slate-900">Natureza</td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700">Propriedade <strong>intrínseca</strong> do sistema (estado)</td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700">Processo de <strong>transferência</strong> (não é propriedade)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-slate-300 px-4 py-3 font-bold text-slate-900">Unidades (SI)</td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700">Kelvin (K), Celsius (°C), Fahrenheit (°F)</td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700">Joule (J), caloria (cal), quilocaloria (kcal)</td>
+                  </tr>
+                  <tr className="bg-slate-50">
+                    <td className="border border-slate-300 px-4 py-3 font-bold text-slate-900">Dependência da massa</td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700"><strong>Não</strong> depende da massa (propriedade intensiva)</td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700"><strong>Sim</strong>, depende da massa (propriedade extensiva)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-slate-300 px-4 py-3 font-bold text-slate-900">Medida</td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700">Termômetro</td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700">Calorímetro</td>
+                  </tr>
+                  <tr className="bg-slate-50">
+                    <td className="border border-slate-300 px-4 py-3 font-bold text-slate-900">Direção de fluxo</td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700">N/A (não flui)</td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700">Sempre do <strong>quente</strong> para o <strong>frio</strong></td>
+                  </tr>
+                  <tr>
+                    <td className="border border-slate-300 px-4 py-3 font-bold text-slate-900">Equilíbrio</td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700">Dois sistemas em contato têm a <strong>mesma temperatura</strong></td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700">Fluxo de calor <strong>cessa</strong> no equilíbrio térmico</td>
+                  </tr>
+                  <tr className="bg-slate-50">
+                    <td className="border border-slate-300 px-4 py-3 font-bold text-slate-900">Exemplo</td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700">"A água está a 25°C"</td>
+                    <td className="border border-slate-300 px-4 py-3 text-slate-700">"A água absorveu 5000 J de calor"</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Exemplo Numérico Detalhado */}
+          <div className="bg-slate-900 text-white rounded-lg p-6 mb-8">
+            <h3 className="text-2xl font-bold mb-4">Exemplo Numérico: Iceberg vs Fósforo</h3>
+            <p className="text-slate-300 leading-relaxed mb-4">
+              Considere:
+            </p>
+            <ul className="list-disc list-inside text-slate-300 space-y-2 mb-4">
+              <li><strong>Iceberg:</strong> massa m = 10⁶ kg (1000 toneladas), temperatura T = 0°C = 273 K</li>
+              <li><strong>Fósforo aceso:</strong> massa m = 0,001 kg (1 grama), temperatura T = 600°C = 873 K</li>
+            </ul>
+            <p className="text-slate-300 leading-relaxed mb-4">
+              Energia térmica total (aproximando como gases ideais, U = (3/2) nRT):
+            </p>
+            <div className="bg-slate-800 rounded p-4 mb-4">
+              <p className="text-slate-300 mb-2"><strong>Iceberg:</strong></p>
+              <MathFormula formula="U_{\text{iceberg}} \approx \frac{3}{2} \cdot \frac{m}{M} \cdot R \cdot T = \frac{3}{2} \cdot \frac{10^6 \text{ kg}}{0.018 \text{ kg/mol}} \cdot 8.314 \text{ J/(mol·K)} \cdot 273 \text{ K}" />
+              <p className="text-slate-300 mt-2">U_iceberg ≈ <strong>1.9 × 10¹³ J</strong> (19 trilhões de joules)</p>
+            </div>
+            <div className="bg-slate-800 rounded p-4 mb-4">
+              <p className="text-slate-300 mb-2"><strong>Fósforo:</strong></p>
+              <MathFormula formula="U_{\text{fósforo}} \approx \frac{3}{2} \cdot \frac{0.001 \text{ kg}}{0.03 \text{ kg/mol}} \cdot 8.314 \text{ J/(mol·K)} \cdot 873 \text{ K}" />
+              <p className="text-slate-300 mt-2">U_fósforo ≈ <strong>360 J</strong></p>
+            </div>
+            <p className="text-slate-300 leading-relaxed">
+              <strong>Conclusão:</strong> O iceberg (0°C) contém <strong>50 bilhões de vezes</strong> mais energia térmica que o fósforo (600°C), apesar da temperatura muito menor. <strong>Temperatura</strong> mede energia <em>média</em> por molécula; <strong>energia térmica total</strong> depende da massa.
+            </p>
+          </div>
+
+          {/* Alerta sobre Erros Comuns */}
+          <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded p-6 mb-8">
+            <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-yellow-600" />
+              Erros Comuns ao Confundir Calor e Temperatura
+            </h4>
+            <ul className="list-disc list-inside text-slate-700 space-y-2">
+              <li><strong>Erro 1:</strong> "O objeto contém muito calor" → <strong>Correto:</strong> "O objeto tem alta temperatura" ou "contém muita energia térmica"</li>
+              <li><strong>Erro 2:</strong> "Calor flui do objeto A para o B" quando A e B estão em equilíbrio → <strong>Correto:</strong> "Não há fluxo de calor no equilíbrio térmico"</li>
+              <li><strong>Erro 3:</strong> "Temperatura é a quantidade de calor" → <strong>Correto:</strong> "Temperatura mede energia cinética média; calor é energia transferida"</li>
+              <li><strong>Erro 4:</strong> Usar "calor" e "temperatura" como sinônimos → <strong>Correto:</strong> São conceitos distintos e complementares</li>
+            </ul>
+          </div>
+
+          {/* Passo-a-Passo para Identificar */}
+          <div className="bg-green-50 border-l-4 border-green-500 rounded p-6">
+            <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-green-600" />
+              Passo-a-Passo: Como Identificar Calor vs Temperatura
+            </h4>
+            <div className="space-y-4">
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                <div>
+                  <p className="font-bold text-slate-900">Pergunte: É uma propriedade do sistema ou uma transferência?</p>
+                  <p className="text-slate-700 text-sm">Se é propriedade ("o objeto está a X graus") → <strong>Temperatura</strong>. Se é transferência ("absorveu X joules") → <strong>Calor</strong>.</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                <div>
+                  <p className="font-bold text-slate-900">Verifique a unidade</p>
+                  <p className="text-slate-700 text-sm">K, °C, °F → <strong>Temperatura</strong>. J, cal, kcal → <strong>Calor</strong> ou energia térmica.</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                <div>
+                  <p className="font-bold text-slate-900">Depende da massa?</p>
+                  <p className="text-slate-700 text-sm">Se <strong>não</strong> depende da massa → <strong>Temperatura</strong> (intensiva). Se <strong>sim</strong> → <strong>Calor</strong> ou energia térmica (extensiva).</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">4</div>
+                <div>
+                  <p className="font-bold text-slate-900">Há dois sistemas interagindo?</p>
+                  <p className="text-slate-700 text-sm">Se <strong>sim</strong> e há diferença de temperatura → <strong>Calor</strong> flui entre eles. Se estão em equilíbrio → <strong>mesma temperatura</strong>, sem fluxo de calor.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Seção 1: Contexto Histórico */}      <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
           <div className="bg-amber-50 border-l-4 border-amber-500 rounded p-6">
             <h3 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
               <Info className="w-6 h-6 text-amber-600" />
