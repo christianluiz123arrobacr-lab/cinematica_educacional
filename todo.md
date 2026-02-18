@@ -232,3 +232,24 @@
   - [x] Temperatura corporal (37°C = 310 K)
   - [ ] Zero absoluto em todas as escalas (próxima fase)
 - [ ] Validar renderização (próxima fase)
+
+
+## Energia Térmica e Movimento Molecular - Refazer com Padrão Eletromagnetismo
+- [x] Ler página atual de Energia Térmica (TermologiaTopicCalor.tsx)
+- [x] Identificar conteúdo existente e estrutura
+- [x] Reescrever completamente seguindo padrão Eletromagnetismo:
+  - [x] Seções numeradas (1-7) com badges laranjas
+  - [x] Card amber com contexto histórico (Bernoulli 1738, Joule 1843, Maxwell 1859, Boltzmann 1872)
+  - [x] Cards slate-900 para fórmulas com termo-a-termo em grid (E_c, ⟨E_c⟩, U, Q)
+  - [x] Cards azuis para interpretação física (proporcionalidade, zero absoluto, graus de liberdade)
+  - [x] Cards amarelos para alertas importantes (sempre Kelvin, gases ideais, energia média)
+  - [x] Card verde com passo-a-passo de 7 etapas (resolver problemas de calor)
+  - [x] Explicação simples antes de cada fórmula (analogias: salão de baile, bolas de bilhar, multidão)
+  - [x] Dedução completa da energia cinética média (⟨E_c⟩ = 3/2 k_B T) em 4 passos
+  - [x] Relação com teoria cinética dos gases (PV=NkBT)
+  - [x] Energia térmica total (U = 3/2 nRT)
+  - [x] Calor sensível (Q = mcΔT) com termo-a-termo
+  - [x] Tabela de calores específicos (6 materiais)
+  - [ ] Exemplos resolvidos ITA/IME (próxima fase)
+  - [x] Aplicações práticas (6 aplicações: oceanos, radiadores, panelas, praia, motores, termômetros)
+- [ ] Validar renderização (próxima fase)
