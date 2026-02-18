@@ -270,3 +270,13 @@
   - [ ] Exemplos resolvidos ITA/IME (próxima fase)
   - [ ] Aplicações práticas (isolamento térmico, refrigeração, etc.) (próxima fase)
 - [ ] Validar renderização (próxima fase)
+
+
+## MathJax Mobile Error - Investigação e Correção Definitiva
+- [x] Investigar erro "NotFoundError: insertBefore" que ainda ocorre no mobile
+- [x] Verificar se todas as páginas estão usando o componente MathFormula corrigido
+- [x] Identificar se há múltiplas instâncias do MathJax tentando renderizar simultaneamente (SIM - causa raiz identificada)
+- [x] Verificar se há race conditions na renderização (SIM - múltiplas fórmulas renderizando ao mesmo tempo)
+- [x] Aplicar correção definitiva (implementado sistema de fila global MathJaxQueue)
+- [ ] Testar em múltiplas páginas no desktop (próxima fase)
+- [x] Documentar solução (fila global processa fórmulas uma por vez com delay de 50ms entre cada)

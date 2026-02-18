@@ -8,6 +8,49 @@ interface MathFormulaProps {
   className?: string;
 }
 
+// Global rendering queue to prevent race conditions
+class MathJaxQueue {
+  private queue: Array<() => Promise<void>> = [];
+  private isProcessing = false;
+
+  async add(renderFn: () => Promise<void>) {
+    this.queue.push(renderFn);
+    if (!this.isProcessing) {
+      await this.process();
+    }
+  }
+
+  private async process() {
+    if (this.queue.length === 0) {
+      this.isProcessing = false;
+      return;
+    }
+
+    this.isProcessing = true;
+    const renderFn = this.queue.shift();
+    
+    if (renderFn) {
+      try {
+        await renderFn();
+      } catch (error) {
+        // Silently ignore errors in production
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('MathJax render warning:', error);
+        }
+      }
+    }
+
+    // Small delay between renders for mobile stability
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    // Process next item
+    await this.process();
+  }
+}
+
+// Global singleton queue
+const mathJaxQueue = new MathJaxQueue();
+
 export function MathFormula({ children, formula, inline, display, className = '' }: MathFormulaProps) {
   // Determine display mode: inline prop takes precedence, then display prop, default to true
   const isDisplay = inline !== undefined ? !inline : (display !== undefined ? display : true);
@@ -21,20 +64,20 @@ export function MathFormula({ children, formula, inline, display, className = ''
   // Track if component is mounted
   const [isMounted, setIsMounted] = useState(false);
   
-  // Track rendering state to prevent multiple renders
-  const isRenderingRef = useRef(false);
+  // Track if this instance has been rendered
+  const hasRenderedRef = useRef(false);
 
   useEffect(() => {
     setIsMounted(true);
     return () => {
       setIsMounted(false);
-      isRenderingRef.current = false;
+      hasRenderedRef.current = false;
     };
   }, []);
 
   useEffect(() => {
     // Safety checks before rendering
-    if (!isMounted || !ref.current || isRenderingRef.current) return;
+    if (!isMounted || !ref.current || hasRenderedRef.current) return;
     
     // Check if element is still in the DOM
     if (!document.body.contains(ref.current)) return;
@@ -45,9 +88,6 @@ export function MathFormula({ children, formula, inline, display, className = ''
       
       // Check again if component is still mounted and element exists
       if (!isMounted || !ref.current || !document.body.contains(ref.current)) return;
-      
-      // Mark as rendering to prevent concurrent renders
-      isRenderingRef.current = true;
       
       try {
         // Clear any existing MathJax content first
@@ -65,28 +105,20 @@ export function MathFormula({ children, formula, inline, display, className = ''
         // Render the element with safety checks
         if (ref.current && document.body.contains(ref.current)) {
           await (window as any).MathJax.typesetPromise?.([ref.current]);
+          hasRenderedRef.current = true;
         }
       } catch (error) {
         // Only log in development
         if (process.env.NODE_ENV === 'development') {
           console.warn('MathJax render warning:', error);
         }
-      } finally {
-        isRenderingRef.current = false;
       }
     };
 
-    // Use requestAnimationFrame for better mobile performance
-    const rafId = requestAnimationFrame(() => {
-      // Add small delay to ensure DOM is ready
-      const timer = setTimeout(renderMath, 100);
-      return () => clearTimeout(timer);
-    });
+    // Add to global queue instead of rendering immediately
+    // This prevents race conditions when multiple formulas render simultaneously
+    mathJaxQueue.add(renderMath);
 
-    return () => {
-      cancelAnimationFrame(rafId);
-      isRenderingRef.current = false;
-    };
   }, [content, isDisplay, isMounted]);
 
   // Delimitadores corretos: $$ para display, $ para inline
