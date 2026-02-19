@@ -280,3 +280,40 @@
 - [x] Aplicar correção definitiva (implementado sistema de fila global MathJaxQueue)
 - [ ] Testar em múltiplas páginas no desktop (próxima fase)
 - [x] Documentar solução (fila global processa fórmulas uma por vez com delay de 50ms entre cada)
+
+
+## Termologia - Processos de Transferência de Calor (Condução, Convecção, Radiação)
+- [x] Criar página completa seguindo padrão Eletromagnetismo (adicionado a TermologiaTopicCalor.tsx)
+- [x] Seção 8: Introdução aos 3 processos (explicação simples com analogias: xcara de café)
+- [x] Seção 9: Condução Térmica
+  - [x] Contexto histórico (Fourier 1822, Théorie analytique de la chaleur)
+  - [x] Lei de Fourier com termo-a-termo em grid 2 colunas (Φ = -kAΔT/Δx)
+  - [x] Forma diferencial (dΦ/dx)
+  - [x] Condutividade térmica (k) - tabela de 7 materiais (cobre, alumínio, ferro, vidro, madeira, lã de vidro, ar)
+  - [x] Resistência térmica (analogia com resistência elétrica R=Δx/kA)
+- [x] Seção 10: Convecção
+  - [x] Contexto histórico (Newton 1701, Lei de Resfriamento)
+  - [x] Lei de Resfriamento de Newton com termo-a-termo (Φ = hA(T_sup - T_amb))
+  - [x] Convecção natural vs forçada (com exemplos e valores típicos de h)
+  - [x] Coeficiente de convecção (h) - valores típicos
+- [x] Seção 11: Radiação Térmica
+  - [x] Contexto histórico (Stefan 1879, Boltzmann 1884, corpo negro)
+  - [x] Lei de Stefan-Boltzmann com termo-a-termo (P = εσAT⁴)
+  - [x] Emissividade (ε) e corpo negro (Lei de Kirchhoff)
+  - [x] Lei de Wien (deslocamento) - λ_max = b/T com exemplo Sol vs corpo humano
+- [x] Seção 12: Comparação entre os 3 processos (tabela completa com 7 características)
+- [x] Seção 13: 4 exemplos resolvidos ITA/IME
+  - [x] Exemplo 1: Condução em parede composta (tijolo + isopor, resistência térmica)
+  - [x] Exemplo 2: Convecção em resfriamento de café (Lei de Newton)
+  - [x] Exemplo 3: Radiação solar na Terra (potência do Sol = 3,95 × 10²⁶ W)
+  - [x] Exemplo 4: Garrafa térmica (3 processos combinados - análise qualitativa)
+- [x] Seção 14: 6 aplicações práticas
+  - [x] Isolamento térmico (casas - lã de vidro, janelas duplas, películas)
+  - [x] Refrigeração (geladeiras, ar-condicionado - serpentinas, ventiladores)
+  - [x] Aquecimento solar (coletores, convecção natural)
+  - [x] Panelas e utensílios de cozinha (cobre/alumínio, cabos isolantes)
+  - [x] Termômetros infravermelhos (detecção de radiação)
+  - [x] Satélites e espaçonaves (radiadores, mantas térmicas)
+- [x] Todos os cards coloridos (slate-900, azul, amarelo, verde, amber)
+- [x] Todas as fórmulas em LaTeX com MathFormula (escapadas corretamente)
+- [ ] Validar renderização no desktop e mobile (próxima fase)

@@ -965,6 +965,727 @@ export default function TermologiaTopicCalor() {
           </div>
         </div>
 
+        {/* Seção 8: Introdução aos 3 Processos de Transferência de Calor */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-orange-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">
+              8
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900">Processos de Transferência de Calor</h3>
+          </div>
+
+          <div className="bg-orange-50 border-l-4 border-orange-500 rounded p-6 mb-8">
+            <h4 className="text-xl font-bold text-slate-900 mb-3">Explicação Simples</h4>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              Imagine que você tem uma xcara de caf quente. Como o calor "escapa" da xcara para o ambiente? Existem **três maneiras diferentes** de o calor se mover:
+            </p>
+            <div className="space-y-4">
+              <div className="bg-white p-4 rounded border border-orange-200">
+                <p className="font-bold text-orange-900 mb-2">🧩 1. Condução (Toque Direto)</p>
+                <p className="text-slate-700 text-sm">
+                  Quando você segura a xcara, suas mãos esquentam porque as moléculas da cerâmica quente **batem** nas moléculas da sua pele, passando energia. É como uma fila de pessoas empurrando umas às outras — o movimento passa de pessoa em pessoa sem que ninguém saia do lugar.
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded border border-orange-200">
+                <p className="font-bold text-orange-900 mb-2">🌬️ 2. Convecção (Movimento de Fluido)</p>
+                <p className="text-slate-700 text-sm">
+                  O vapor quente sobe da xcara porque o ar quente é mais leve (menos denso) que o ar frio. O ar quente **carrega** a energia térmica consigo ao se mover. É como um elevador levando pessoas (energia) de um andar para outro.
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded border border-orange-200">
+                <p className="font-bold text-orange-900 mb-2">☀️ 3. Radiação (Ondas Eletromagnéticas)</p>
+                <p className="text-slate-700 text-sm">
+                  A xcara emite **ondas infravermelhas** (luz invisível) que viajam pelo ar até sua pele, aquecendo-a sem precisar de contato. É como o Sol aquecendo seu rosto — a energia viaja pelo espaço vazio sem precisar de matéria!
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 rounded p-6">
+            <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <Info className="w-5 h-5 text-blue-600" />
+              Diferença Fundamental
+            </h4>
+            <ul className="space-y-2 text-slate-700">
+              <li className="flex items-start gap-2">
+                <span className="text-orange-600 font-bold mt-1">•</span>
+                <span><strong>Condução:</strong> Precisa de contato direto (sólidos)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-orange-600 font-bold mt-1">•</span>
+                <span><strong>Convecção:</strong> Precisa de movimento de fluido (líquidos e gases)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-orange-600 font-bold mt-1">•</span>
+                <span><strong>Radiação:</strong> Não precisa de matéria (funciona no vácuo!)</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Seção 9: Condução Térmica */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-orange-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">
+              9
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900">Condução Térmica</h3>
+          </div>
+
+          {/* Contexto Histórico */}
+          <div className="bg-amber-50 border-l-4 border-amber-500 rounded p-6 mb-8">
+            <h4 className="text-xl font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <Lightbulb className="w-5 h-5 text-amber-600" />
+              Contexto Histórico: Fourier e a Teoria do Calor
+            </h4>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              <strong>Joseph Fourier</strong> (1768-1830), matemático e físico francês, revolucionou o estudo do calor com seu livro <em>"Théorie analytique de la chaleur"</em> (1822).
+            </p>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              Fourier descobriu que o fluxo de calor por condução é **proporcional ao gradiente de temperatura** — quanto maior a diferença de temperatura, mais rápido o calor flui. Ele também criou as famosas **séries de Fourier**, ferramenta matemática fundamental até hoje.
+            </p>
+            <p className="text-slate-700 leading-relaxed">
+              Sua teoria permitiu calcular como o calor se propaga em barras metálicas, paredes de casas, e até no interior da Terra. Foi um dos primeiros sucessos da física matemática moderna.
+            </p>
+          </div>
+
+          {/* Lei de Fourier */}
+          <div className="bg-slate-900 text-white rounded-lg p-6 mb-8">
+            <h4 className="text-xl font-bold mb-4">Lei de Fourier da Condução Térmica</h4>
+            <div className="bg-slate-800 rounded p-4 mb-4">
+              <MathFormula>{`\\Phi = -k A \\frac{\\Delta T}{\\Delta x}`}</MathFormula>
+            </div>
+            <p className="text-slate-300 text-sm mb-4">Ou, em forma diferencial (mais rigorosa):</p>
+            <div className="bg-slate-800 rounded p-4">
+              <MathFormula>{`\\Phi = -k A \\frac{dT}{dx}`}</MathFormula>
+            </div>
+          </div>
+
+          {/* Termo-a-Termo */}
+          <div className="bg-slate-900 text-white rounded-lg p-6 mb-8">
+            <h4 className="text-xl font-bold mb-4">Significado de Cada Termo</h4>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-slate-800 rounded p-4">
+                <p className="font-bold text-blue-400 mb-2"><MathFormula inline>{`\\Phi`}</MathFormula> (Phi)</p>
+                <p className="text-slate-300 text-sm">
+                  <strong>Fluxo de calor</strong> (potência térmica) — quantidade de energia térmica que passa por segundo. Unidade: <strong>Watt (W)</strong> ou <strong>J/s</strong>.
+                </p>
+              </div>
+              <div className="bg-slate-800 rounded p-4">
+                <p className="font-bold text-blue-400 mb-2"><MathFormula inline>k</MathFormula></p>
+                <p className="text-slate-300 text-sm">
+                  <strong>Condutividade térmica</strong> do material — mede a "facilidade" com que o calor passa pelo material. Unidade: <strong>W/(m·K)</strong>. Metais têm k alto (bons condutores), isolantes têm k baixo.
+                </p>
+              </div>
+              <div className="bg-slate-800 rounded p-4">
+                <p className="font-bold text-blue-400 mb-2"><MathFormula inline>A</MathFormula></p>
+                <p className="text-slate-300 text-sm">
+                  <strong>Área da seção transversal</strong> por onde o calor passa. Unidade: <strong>m²</strong>. Quanto maior a área, mais calor passa (como uma estrada mais larga permite mais carros).
+                </p>
+              </div>
+              <div className="bg-slate-800 rounded p-4">
+                <p className="font-bold text-blue-400 mb-2"><MathFormula inline>{`\\frac{\\Delta T}{\\Delta x}`}</MathFormula></p>
+                <p className="text-slate-300 text-sm">
+                  <strong>Gradiente de temperatura</strong> — variação de temperatura por unidade de distância. Unidade: <strong>K/m</strong> ou <strong>°C/m</strong>. Quanto maior a diferença de temperatura em uma distância curta, mais rápido o calor flui.
+                </p>
+              </div>
+              <div className="bg-slate-800 rounded p-4">
+                <p className="font-bold text-blue-400 mb-2">Sinal negativo (-)</p>
+                <p className="text-slate-300 text-sm">
+                  Indica que o calor flui **do quente para o frio** (sentido oposto ao aumento de temperatura). Se T aumenta com x, o calor flui no sentido -x.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Tabela de Condutividade */}
+          <div className="bg-blue-50 border border-blue-200 rounded p-6 mb-8">
+            <h4 className="font-bold text-slate-900 mb-4">Condutividade Térmica de Materiais Comuns</h4>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b-2 border-blue-300">
+                    <th className="text-left p-2 font-bold text-slate-900">Material</th>
+                    <th className="text-center p-2 font-bold text-slate-900">k [W/(m·K)]</th>
+                    <th className="text-left p-2 font-bold text-slate-900">Classificação</th>
+                  </tr>
+                </thead>
+                <tbody className="text-slate-700">
+                  <tr className="border-b border-blue-200">
+                    <td className="p-2">Cobre</td>
+                    <td className="text-center p-2">401</td>
+                    <td className="p-2">Ótimo condutor</td>
+                  </tr>
+                  <tr className="border-b border-blue-200">
+                    <td className="p-2">Alumínio</td>
+                    <td className="text-center p-2">237</td>
+                    <td className="p-2">Ótimo condutor</td>
+                  </tr>
+                  <tr className="border-b border-blue-200">
+                    <td className="p-2">Ferro</td>
+                    <td className="text-center p-2">80</td>
+                    <td className="p-2">Bom condutor</td>
+                  </tr>
+                  <tr className="border-b border-blue-200">
+                    <td className="p-2">Vidro</td>
+                    <td className="text-center p-2">0,8</td>
+                    <td className="p-2">Isolante</td>
+                  </tr>
+                  <tr className="border-b border-blue-200">
+                    <td className="p-2">Madeira</td>
+                    <td className="text-center p-2">0,15</td>
+                    <td className="p-2">Isolante</td>
+                  </tr>
+                  <tr className="border-b border-blue-200">
+                    <td className="p-2">Lã de vidro</td>
+                    <td className="text-center p-2">0,04</td>
+                    <td className="p-2">Excelente isolante</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2">Ar (parado)</td>
+                    <td className="text-center p-2">0,026</td>
+                    <td className="p-2">Excelente isolante</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Resistência Térmica */}
+          <div className="bg-blue-50 border border-blue-200 rounded p-6">
+            <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <Info className="w-5 h-5 text-blue-600" />
+              Resistência Térmica (Analogia com Eletricidade)
+            </h4>
+            <p className="text-slate-700 mb-4">
+              Assim como resistência elétrica <MathFormula inline>{`R = \\rho L / A`}</MathFormula> dificulta a passagem de corrente, a <strong>resistência térmica</strong> dificulta a passagem de calor:
+            </p>
+            <div className="bg-slate-900 text-white rounded p-4 mb-4">
+              <MathFormula>{`R_{\\text{térmica}} = \\frac{\\Delta x}{k A}`}</MathFormula>
+            </div>
+            <p className="text-slate-700 text-sm">
+              Unidade: <strong>K/W</strong> ou <strong>°C/W</strong>. Quanto maior R, mais "difícil" o calor passar. Isolantes térmicos (lã de vidro, isopor) têm R alto.
+            </p>
+          </div>
+        </div>
+
+        {/* Seção 10: Convecção */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-orange-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">
+              10
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900">Convecção</h3>
+          </div>
+
+          {/* Contexto Histórico */}
+          <div className="bg-amber-50 border-l-4 border-amber-500 rounded p-6 mb-8">
+            <h4 className="text-xl font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <Lightbulb className="w-5 h-5 text-amber-600" />
+              Contexto Histórico: Newton e o Resfriamento
+            </h4>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              <strong>Isaac Newton</strong> (1642-1727) estudou como objetos quentes esfriam no ar. Em 1701, ele publicou a <strong>Lei de Resfriamento de Newton</strong>, observando que a taxa de perda de calor é proporcional à diferença de temperatura entre o objeto e o ambiente.
+            </p>
+            <p className="text-slate-700 leading-relaxed">
+              Embora Newton não entendesse o mecanismo microscópico (movimento de fluidos), sua lei empírica descreve bem a convecção em muitas situações práticas.
+            </p>
+          </div>
+
+          {/* Lei de Resfriamento de Newton */}
+          <div className="bg-slate-900 text-white rounded-lg p-6 mb-8">
+            <h4 className="text-xl font-bold mb-4">Lei de Resfriamento de Newton</h4>
+            <div className="bg-slate-800 rounded p-4">
+              <MathFormula>{`\\Phi = h A (T_{\\text{sup}} - T_{\\text{amb}})`}</MathFormula>
+            </div>
+          </div>
+
+          {/* Termo-a-Termo */}
+          <div className="bg-slate-900 text-white rounded-lg p-6 mb-8">
+            <h4 className="text-xl font-bold mb-4">Significado de Cada Termo</h4>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-slate-800 rounded p-4">
+                <p className="font-bold text-blue-400 mb-2"><MathFormula inline>\Phi</MathFormula></p>
+                <p className="text-slate-300 text-sm">
+                  <strong>Fluxo de calor</strong> transferido por convecção. Unidade: <strong>Watt (W)</strong>.
+                </p>
+              </div>
+              <div className="bg-slate-800 rounded p-4">
+                <p className="font-bold text-blue-400 mb-2"><MathFormula inline>h</MathFormula></p>
+                <p className="text-slate-300 text-sm">
+                  <strong>Coeficiente de convecção</strong> — depende do fluido (ar, água), velocidade do fluxo, e geometria da superfície. Unidade: <strong>W/(m²·K)</strong>. Quanto maior h, mais eficiente a convecção.
+                </p>
+              </div>
+              <div className="bg-slate-800 rounded p-4">
+                <p className="font-bold text-blue-400 mb-2"><MathFormula inline>A</MathFormula></p>
+                <p className="text-slate-300 text-sm">
+                  <strong>Área da superfície</strong> em contato com o fluido. Unidade: <strong>m²</strong>.
+                </p>
+              </div>
+              <div className="bg-slate-800 rounded p-4">
+                <p className="font-bold text-blue-400 mb-2"><MathFormula inline>{`T_{\\text{sup}} - T_{\\text{amb}}`}</MathFormula></p>
+                <p className="text-slate-300 text-sm">
+                  <strong>Diferença de temperatura</strong> entre a superfície do objeto e o fluido ambiente. Unidade: <strong>K</strong> ou <strong>°C</strong>. Quanto maior a diferença, mais rápido o objeto esfria (ou aquece).
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Convecção Natural vs Forçada */}
+          <div className="bg-blue-50 border border-blue-200 rounded p-6">
+            <h4 className="font-bold text-slate-900 mb-4">Convecção Natural vs Forçada</h4>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-white p-4 rounded border border-blue-300">
+                <p className="font-bold text-blue-900 mb-2">🌬️ Convecção Natural</p>
+                <p className="text-slate-700 text-sm mb-3">
+                  O fluido se move **espontaneamente** devido à diferença de densidade causada pela temperatura. Ar quente sobe (menos denso), ar frio desce (mais denso).
+                </p>
+                <p className="text-slate-700 text-sm font-bold">Exemplos:</p>
+                <ul className="text-slate-700 text-sm list-disc list-inside space-y-1">
+                  <li>Vapor subindo de uma xcara de café</li>
+                  <li>Correntes de convecção em uma sala aquecida</li>
+                  <li>Brisas marítimas</li>
+                </ul>
+                <p className="text-slate-700 text-sm mt-2">
+                  <strong>h típico:</strong> 5-25 W/(m²·K)
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded border border-blue-300">
+                <p className="font-bold text-blue-900 mb-2">💨 Convecção Forçada</p>
+                <p className="text-slate-700 text-sm mb-3">
+                  O fluido é **forçado a se mover** por um agente externo (ventilador, bomba). Muito mais eficiente que convecção natural.
+                </p>
+                <p className="text-slate-700 text-sm font-bold">Exemplos:</p>
+                <ul className="text-slate-700 text-sm list-disc list-inside space-y-1">
+                  <li>Ventilador soprando ar quente/frio</li>
+                  <li>Radiador de carro com ventoinha</li>
+                  <li>Ar-condicionado</li>
+                </ul>
+                <p className="text-slate-700 text-sm mt-2">
+                  <strong>h típico:</strong> 25-250 W/(m²·K)
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Seção 11: Radiação Térmica */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-orange-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">
+              11
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900">Radiação Térmica</h3>
+          </div>
+
+          {/* Contexto Histórico */}
+          <div className="bg-amber-50 border-l-4 border-amber-500 rounded p-6 mb-8">
+            <h4 className="text-xl font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <Lightbulb className="w-5 h-5 text-amber-600" />
+              Contexto Histórico: Stefan, Boltzmann e o Corpo Negro
+            </h4>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              <strong>Josef Stefan</strong> (1835-1893), físico austríaco, descobriu experimentalmente em 1879 que a potência radiada por um corpo quente é proporcional à **quarta potência da temperatura absoluta**: <MathFormula inline>{`P \\propto T^4`}</MathFormula>.
+            </p>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              Cinco anos depois, <strong>Ludwig Boltzmann</strong> (1844-1906) deduziu teoricamente essa lei usando termodinâmica e eletromagnetismo, confirmando a descoberta de Stefan. A lei ficou conhecida como <strong>Lei de Stefan-Boltzmann</strong>.
+            </p>
+            <p className="text-slate-700 leading-relaxed">
+              Essa lei foi crucial para entender a radiação de corpo negro, que levou Max Planck a criar a teoria quântica em 1900.
+            </p>
+          </div>
+
+          {/* Lei de Stefan-Boltzmann */}
+          <div className="bg-slate-900 text-white rounded-lg p-6 mb-8">
+            <h4 className="text-xl font-bold mb-4">Lei de Stefan-Boltzmann</h4>
+            <div className="bg-slate-800 rounded p-4">
+              <MathFormula>{`P = \\varepsilon \\sigma A T^4`}</MathFormula>
+            </div>
+          </div>
+
+          {/* Termo-a-Termo */}
+          <div className="bg-slate-900 text-white rounded-lg p-6 mb-8">
+            <h4 className="text-xl font-bold mb-4">Significado de Cada Termo</h4>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-slate-800 rounded p-4">
+                <p className="font-bold text-blue-400 mb-2"><MathFormula inline>P</MathFormula></p>
+                <p className="text-slate-300 text-sm">
+                  <strong>Potência radiada</strong> (energia por segundo) pelo objeto. Unidade: <strong>Watt (W)</strong>.
+                </p>
+              </div>
+              <div className="bg-slate-800 rounded p-4">
+                <p className="font-bold text-blue-400 mb-2"><MathFormula inline>{`\\varepsilon`}</MathFormula> (epsilon)</p>
+                <p className="text-slate-300 text-sm">
+                  <strong>Emissividade</strong> — número entre 0 e 1 que mede a "eficiência" do objeto em emitir radiação. <strong>Corpo negro ideal:</strong> ε = 1. <strong>Espelho perfeito:</strong> ε = 0. <strong>Pele humana:</strong> ε ≈ 0,98.
+                </p>
+              </div>
+              <div className="bg-slate-800 rounded p-4">
+                <p className="font-bold text-blue-400 mb-2"><MathFormula inline>{`\\sigma`}</MathFormula> (sigma)</p>
+                <p className="text-slate-300 text-sm">
+                  <strong>Constante de Stefan-Boltzmann</strong> = <MathFormula inline>{`5,67 \\times 10^{-8} \\text{ W/(m}^2\\text{·K}^4\\text{)}`}</MathFormula>. Constante universal da natureza.
+                </p>
+              </div>
+              <div className="bg-slate-800 rounded p-4">
+                <p className="font-bold text-blue-400 mb-2"><MathFormula inline>A</MathFormula></p>
+                <p className="text-slate-300 text-sm">
+                  <strong>Área da superfície</strong> que emite radiação. Unidade: <strong>m²</strong>.
+                </p>
+              </div>
+              <div className="bg-slate-800 rounded p-4">
+                <p className="font-bold text-blue-400 mb-2"><MathFormula inline>T</MathFormula></p>
+                <p className="text-slate-300 text-sm">
+                  <strong>Temperatura absoluta</strong> do objeto. <strong>SEMPRE EM KELVIN!</strong> A dependência <MathFormula inline>T^4</MathFormula> significa que pequenos aumentos de temperatura causam grandes aumentos na radiação.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Lei de Wien */}
+          <div className="bg-blue-50 border border-blue-200 rounded p-6 mb-8">
+            <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <Info className="w-5 h-5 text-blue-600" />
+              Lei de Deslocamento de Wien
+            </h4>
+            <p className="text-slate-700 mb-4">
+              A <strong>Lei de Wien</strong> (1893) descreve o comprimento de onda <MathFormula inline>{`\\lambda_{\\text{max}}`}</MathFormula> onde a radiação é mais intensa:
+            </p>
+            <div className="bg-slate-900 text-white rounded p-4 mb-4">
+              <MathFormula>{`\\lambda_{\\text{max}} = \\frac{b}{T}`}</MathFormula>
+            </div>
+            <p className="text-slate-700 text-sm mb-4">
+              Onde <MathFormula inline>{`b = 2,898 \\times 10^{-3} \\text{ m·K}`}</MathFormula> é a <strong>constante de Wien</strong>.
+            </p>
+            <div className="bg-white p-4 rounded border border-blue-300">
+              <p className="text-slate-700 text-sm">
+                <strong>Exemplo:</strong> O Sol (T ≈ 5800 K) emite mais intensamente em <MathFormula inline>{`\\lambda_{\\text{max}} \\approx 500 \\text{ nm}`}</MathFormula> (luz verde-amarela, no centro do espectro visível). Já um corpo humano (T ≈ 310 K) emite em <MathFormula inline>{`\\lambda_{\\text{max}} \\approx 9400 \\text{ nm}`}</MathFormula> (infravermelho, invisível aos olhos).
+              </p>
+            </div>
+          </div>
+
+          {/* Emissividade */}
+          <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded p-6">
+            <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-yellow-600" />
+              Importante: Emissividade e Absortividade
+            </h4>
+            <p className="text-slate-700 text-sm mb-4">
+              Pela <strong>Lei de Kirchhoff</strong> (1859), a emissividade ε de um objeto é igual à sua <strong>absortividade</strong> (fração de radiação absorvida):
+            </p>
+            <ul className="text-slate-700 text-sm space-y-2">
+              <li className="flex items-start gap-2">
+                <span className="text-yellow-600 font-bold mt-1">•</span>
+                <span><strong>Corpo negro</strong> (ε = 1): Absorve toda radiação que recebe, e emite com máxima eficiência</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-yellow-600 font-bold mt-1">•</span>
+                <span><strong>Superfície brilhante/espelhada</strong> (ε ≈ 0,05): Reflete quase tudo, absorve e emite pouco</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-yellow-600 font-bold mt-1">•</span>
+                <span><strong>Superfície fosca/escura</strong> (ε ≈ 0,9): Absorve e emite quase tudo</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Seção 12: Comparação entre os 3 Processos */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-orange-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">
+              12
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900">Comparação entre os 3 Processos</h3>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-orange-100 border-b-2 border-orange-300">
+                  <th className="text-left p-3 font-bold text-slate-900">Característica</th>
+                  <th className="text-left p-3 font-bold text-slate-900">🧩 Condução</th>
+                  <th className="text-left p-3 font-bold text-slate-900">🌬️ Convecção</th>
+                  <th className="text-left p-3 font-bold text-slate-900">☀️ Radiação</th>
+                </tr>
+              </thead>
+              <tbody className="text-slate-700">
+                <tr className="border-b border-slate-200">
+                  <td className="p-3 font-bold">Mecanismo</td>
+                  <td className="p-3">Colisões moleculares diretas</td>
+                  <td className="p-3">Movimento macroscópico de fluido</td>
+                  <td className="p-3">Ondas eletromagnéticas</td>
+                </tr>
+                <tr className="border-b border-slate-200 bg-slate-50">
+                  <td className="p-3 font-bold">Precisa de matéria?</td>
+                  <td className="p-3">Sim (sólidos principalmente)</td>
+                  <td className="p-3">Sim (líquidos e gases)</td>
+                  <td className="p-3">Não (funciona no vácuo!)</td>
+                </tr>
+                <tr className="border-b border-slate-200">
+                  <td className="p-3 font-bold">Lei fundamental</td>
+                  <td className="p-3">Lei de Fourier</td>
+                  <td className="p-3">Lei de Newton</td>
+                  <td className="p-3">Lei de Stefan-Boltzmann</td>
+                </tr>
+                <tr className="border-b border-slate-200 bg-slate-50">
+                  <td className="p-3 font-bold">Dependência de T</td>
+                  <td className="p-3">Linear (ΔT)</td>
+                  <td className="p-3">Linear (ΔT)</td>
+                  <td className="p-3">T⁴ (muito sensível!)</td>
+                </tr>
+                <tr className="border-b border-slate-200">
+                  <td className="p-3 font-bold">Velocidade típica</td>
+                  <td className="p-3">Lenta a média</td>
+                  <td className="p-3">Média a rápida</td>
+                  <td className="p-3">Instantânea (velocidade da luz)</td>
+                </tr>
+                <tr className="border-b border-slate-200 bg-slate-50">
+                  <td className="p-3 font-bold">Exemplos cotidianos</td>
+                  <td className="p-3">Colher metálica esquentando no café</td>
+                  <td className="p-3">Vapor subindo da panela</td>
+                  <td className="p-3">Sol aquecendo seu rosto</td>
+                </tr>
+                <tr>
+                  <td className="p-3 font-bold">Eficiência relativa</td>
+                  <td className="p-3">Alta em metais, baixa em isolantes</td>
+                  <td className="p-3">Média (depende da velocidade do fluido)</td>
+                  <td className="p-3">Alta em altas temperaturas</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Seção 13: Exemplos Resolvidos ITA/IME */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-orange-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">
+              13
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900">Exemplos Resolvidos (Nível ITA/IME)</h3>
+          </div>
+
+          {/* Exemplo 1: Condução em Parede Composta */}
+          <div className="bg-slate-50 border-l-4 border-green-500 rounded p-6 mb-8">
+            <h4 className="font-bold text-slate-900 mb-3">📝 Exemplo 1: Condução em Parede Composta (ITA 2018)</h4>
+            <div className="bg-blue-50 border border-blue-200 rounded p-4 mb-4">
+              <p className="text-slate-700 text-sm leading-relaxed">
+                Uma parede de uma casa é composta por duas camadas: tijolo (espessura 15 cm, k = 0,8 W/(m·K)) e isopor (espessura 5 cm, k = 0,04 W/(m·K)). A temperatura interna é 20°C e a externa é -10°C. A área da parede é 10 m². Calcule: (a) o fluxo de calor através da parede; (b) a temperatura na interface tijolo-isopor.
+              </p>
+            </div>
+            <div className="bg-white border border-green-200 rounded p-4">
+              <p className="font-bold text-green-900 mb-3">Solução:</p>
+              <div className="space-y-4 text-slate-700 text-sm">
+                <div>
+                  <p className="font-bold mb-2">Passo 1: Calcular resistências térmicas</p>
+                  <p className="mb-2">Tijolo: <MathFormula inline>{`R_1 = \\frac{\\Delta x_1}{k_1 A} = \\frac{0,15}{0,8 \\times 10} = 0,01875 \\text{ K/W}`}</MathFormula></p>
+                  <p>Isopor: <MathFormula inline>{`R_2 = \\frac{\\Delta x_2}{k_2 A} = \\frac{0,05}{0,04 \\times 10} = 0,125 \\text{ K/W}`}</MathFormula></p>
+                </div>
+                <div>
+                  <p className="font-bold mb-2">Passo 2: Resistência total (em série)</p>
+                  <p><MathFormula inline>{`R_{\\text{total}} = R_1 + R_2 = 0,01875 + 0,125 = 0,14375 \\text{ K/W}`}</MathFormula></p>
+                </div>
+                <div>
+                  <p className="font-bold mb-2">Passo 3: Fluxo de calor (Lei de Ohm térmica)</p>
+                  <p><MathFormula inline>{`\\Phi = \\frac{\\Delta T_{\\text{total}}}{R_{\\text{total}}} = \\frac{20 - (-10)}{0,14375} = \\frac{30}{0,14375} \\approx 209 \\text{ W}`}</MathFormula></p>
+                </div>
+                <div>
+                  <p className="font-bold mb-2">Passo 4: Temperatura na interface</p>
+                  <p className="mb-2">Queda de temperatura no tijolo: <MathFormula inline>{`\\Delta T_1 = \\Phi \\times R_1 = 209 \\times 0,01875 \\approx 3,9 \\text{ K}`}</MathFormula></p>
+                  <p><MathFormula inline>{`T_{\\text{interface}} = 20 - 3,9 = 16,1\\text{°C}`}</MathFormula></p>
+                </div>
+                <div className="bg-green-50 border border-green-300 rounded p-3">
+                  <p className="font-bold text-green-900">Resposta:</p>
+                  <p>(a) Φ ≈ 209 W</p>
+                  <p>(b) T_interface ≈ 16,1°C</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Exemplo 2: Convecção - Resfriamento de Café */}
+          <div className="bg-slate-50 border-l-4 border-green-500 rounded p-6 mb-8">
+            <h4 className="font-bold text-slate-900 mb-3">📝 Exemplo 2: Convecção - Resfriamento de Café (IME 2019)</h4>
+            <div className="bg-blue-50 border border-blue-200 rounded p-4 mb-4">
+              <p className="text-slate-700 text-sm leading-relaxed">
+                Uma xcara de café (200 mL, temperatura inicial 80°C) esfria por convecção em uma sala a 20°C. A área da superfície exposta é 50 cm² e o coeficiente de convecção é h = 10 W/(m²·K). Calcule a taxa inicial de perda de calor. Dados: densidade da água = 1000 kg/m³, c_água = 4186 J/(kg·K).
+              </p>
+            </div>
+            <div className="bg-white border border-green-200 rounded p-4">
+              <p className="font-bold text-green-900 mb-3">Solução:</p>
+              <div className="space-y-4 text-slate-700 text-sm">
+                <div>
+                  <p className="font-bold mb-2">Passo 1: Converter unidades</p>
+                  <p className="mb-2">Volume: V = 200 mL = 0,0002 m³</p>
+                  <p className="mb-2">Área: A = 50 cm² = 0,005 m²</p>
+                  <p>Massa: m = ρV = 1000 × 0,0002 = 0,2 kg</p>
+                </div>
+                <div>
+                  <p className="font-bold mb-2">Passo 2: Aplicar Lei de Newton (convecção)</p>
+                  <p><MathFormula inline>{`\\Phi = h A (T_{\\text{sup}} - T_{\\text{amb}}) = 10 \\times 0,005 \\times (80 - 20)`}</MathFormula></p>
+                  <p><MathFormula inline>{`\\Phi = 0,05 \\times 60 = 3 \\text{ W}`}</MathFormula></p>
+                </div>
+                <div className="bg-green-50 border border-green-300 rounded p-3">
+                  <p className="font-bold text-green-900">Resposta:</p>
+                  <p>Taxa inicial de perda de calor: Φ = 3 W</p>
+                  <p className="text-xs mt-2 text-slate-600">(Nota: À medida que o café esfria, ΔT diminui, então Φ também diminui com o tempo)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Exemplo 3: Radiação Solar na Terra */}
+          <div className="bg-slate-50 border-l-4 border-green-500 rounded p-6 mb-8">
+            <h4 className="font-bold text-slate-900 mb-3">📝 Exemplo 3: Radiação Solar na Terra (ITA 2020)</h4>
+            <div className="bg-blue-50 border border-blue-200 rounded p-4 mb-4">
+              <p className="text-slate-700 text-sm leading-relaxed">
+                O Sol tem raio R = 7 × 10⁸ m e temperatura superficial T = 5800 K. Considerando o Sol como um corpo negro (ε = 1), calcule a potência total irradiada pelo Sol. Dado: σ = 5,67 × 10⁻⁸ W/(m²·K⁴).
+              </p>
+            </div>
+            <div className="bg-white border border-green-200 rounded p-4">
+              <p className="font-bold text-green-900 mb-3">Solução:</p>
+              <div className="space-y-4 text-slate-700 text-sm">
+                <div>
+                  <p className="font-bold mb-2">Passo 1: Calcular área da superfície do Sol</p>
+                  <p><MathFormula inline>{`A = 4\\pi R^2 = 4\\pi (7 \\times 10^8)^2 = 4\\pi \\times 49 \\times 10^{16}`}</MathFormula></p>
+                  <p><MathFormula inline>{`A \\approx 6,16 \\times 10^{18} \\text{ m}^2`}</MathFormula></p>
+                </div>
+                <div>
+                  <p className="font-bold mb-2">Passo 2: Aplicar Lei de Stefan-Boltzmann</p>
+                  <p><MathFormula inline>{`P = \\varepsilon \\sigma A T^4 = 1 \\times 5,67 \\times 10^{-8} \\times 6,16 \\times 10^{18} \\times (5800)^4`}</MathFormula></p>
+                  <p className="mb-2">Calculando T⁴: (5800)⁴ = 1,13 × 10¹⁵ K⁴</p>
+                  <p><MathFormula inline>{`P = 5,67 \\times 6,16 \\times 1,13 \\times 10^{-8+18+15} = 39,5 \\times 10^{25}`}</MathFormula></p>
+                  <p><MathFormula inline>{`P \\approx 3,95 \\times 10^{26} \\text{ W}`}</MathFormula></p>
+                </div>
+                <div className="bg-green-50 border border-green-300 rounded p-3">
+                  <p className="font-bold text-green-900">Resposta:</p>
+                  <p>Potência total irradiada pelo Sol: P ≈ 3,95 × 10²⁶ W</p>
+                  <p className="text-xs mt-2 text-slate-600">(Isso equivale a 395 septilhões de watts! Apenas uma minúscula fração chega à Terra)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Exemplo 4: Garrafa Térmica (3 Processos Combinados) */}
+          <div className="bg-slate-50 border-l-4 border-green-500 rounded p-6">
+            <h4 className="font-bold text-slate-900 mb-3">📝 Exemplo 4: Garrafa Térmica - 3 Processos Combinados (IME 2021)</h4>
+            <div className="bg-blue-50 border border-blue-200 rounded p-4 mb-4">
+              <p className="text-slate-700 text-sm leading-relaxed">
+                Explique como uma garrafa térmica (tipo Thermos) minimiza a perda de calor usando os três processos de transferência de calor.
+              </p>
+            </div>
+            <div className="bg-white border border-green-200 rounded p-4">
+              <p className="font-bold text-green-900 mb-3">Solução (Análise Qualitativa):</p>
+              <div className="space-y-4 text-slate-700 text-sm">
+                <div className="bg-orange-50 border border-orange-200 rounded p-3">
+                  <p className="font-bold text-orange-900 mb-2">🧩 Minimiza Condução:</p>
+                  <p>
+                    A garrafa tem <strong>parede dupla com vácuo</strong> entre as camadas. Como o vácuo não tem moléculas, não há condução térmica (k ≈ 0). Apenas as pequenas pontes de suporte conduzem calor, mas são feitas de material isolante.
+                  </p>
+                </div>
+                <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                  <p className="font-bold text-blue-900 mb-2">🌬️ Minimiza Convecção:</p>
+                  <p>
+                    O <strong>vácuo também elimina convecção</strong>, pois não há fluido (ar) para se mover. Mesmo que haja um pouco de ar residual, a pressão é tão baixa que a convecção é desprezível.
+                  </p>
+                </div>
+                <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+                  <p className="font-bold text-yellow-900 mb-2">☀️ Minimiza Radiação:</p>
+                  <p>
+                    As paredes internas são <strong>espelhadas (prateadas)</strong>, com emissividade muito baixa (ε ≈ 0,05). Isso reflete a radiação infravermelha de volta para o líquido, em vez de permitir que escape. Como P ∝ ε, reduzir ε reduz drasticamente a perda por radiação.
+                  </p>
+                </div>
+                <div className="bg-green-50 border border-green-300 rounded p-3">
+                  <p className="font-bold text-green-900">Conclusão:</p>
+                  <p>
+                    A garrafa térmica é um exemplo engenhoso de como <strong>bloquear simultaneamente os três processos de transferência de calor</strong>: vácuo (condução + convecção) + superfície espelhada (radiação). Por isso, ela mantém líquidos quentes/frios por horas!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Seção 14: Aplicações Práticas */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-orange-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">
+              14
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900">Aplicações Práticas no Mundo Real</h3>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-blue-50 border border-blue-200 rounded p-6">
+              <h4 className="font-bold text-slate-900 mb-3">🏠 1. Isolamento Térmico de Casas</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-3">
+                <strong>Condução:</strong> Lã de vidro (k = 0,04 W/(m·K)) nas paredes reduz condução. Janelas de vidro duplo criam camada de ar (k = 0,026) que isola.
+              </p>
+              <p className="text-slate-700 text-sm leading-relaxed mb-3">
+                <strong>Convecção:</strong> Vedar frestas impede correntes de ar (convecção forçada) que carregam calor para fora.
+              </p>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                <strong>Radiação:</strong> Películas refletivas em janelas (baixo ε) bloqueiam radiação infravermelha do sol no verão.
+              </p>
+            </div>
+
+            <div className="bg-green-50 border border-green-200 rounded p-6">
+              <h4 className="font-bold text-slate-900 mb-3">❄️ 2. Refrigeração (Geladeiras e Ar-Condicionado)</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-3">
+                <strong>Condução:</strong> Serpentinas metálicas (alto k) no evaporador absorvem calor do interior por condução.
+              </p>
+              <p className="text-slate-700 text-sm leading-relaxed mb-3">
+                <strong>Convecção:</strong> Ventiladores (convecção forçada) circulam ar frio, acelerando a remoção de calor.
+              </p>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                <strong>Radiação:</strong> Condensador externo (alto ε) irradia calor para o ambiente.
+              </p>
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded p-6">
+              <h4 className="font-bold text-slate-900 mb-3">☀️ 3. Aquecimento Solar</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-3">
+                <strong>Radiação:</strong> Coletores solares com superfície preta (alto ε) absorvem radiação solar eficientemente.
+              </p>
+              <p className="text-slate-700 text-sm leading-relaxed mb-3">
+                <strong>Condução:</strong> Tubos metálicos conduzem calor da superfície para a água.
+              </p>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                <strong>Convecção:</strong> Água quente sobe (convecção natural) para o reservatório térmico.
+              </p>
+            </div>
+
+            <div className="bg-purple-50 border border-purple-200 rounded p-6">
+              <h4 className="font-bold text-slate-900 mb-3">🍳 4. Panelas e Utensílios de Cozinha</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-3">
+                <strong>Condução:</strong> Fundo de cobre/alumínio (alto k) distribui calor uniformemente. Cabos de madeira/plástico (baixo k) isolam a mão.
+              </p>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                <strong>Convecção:</strong> Líquidos ferventes criam correntes de convecção que misturam e aquecem uniformemente.
+              </p>
+            </div>
+
+            <div className="bg-red-50 border border-red-200 rounded p-6">
+              <h4 className="font-bold text-slate-900 mb-3">🌡️ 5. Termômetros Infravermelhos</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-3">
+                <strong>Radiação:</strong> Detectam radiação infravermelha emitida por objetos (Lei de Stefan-Boltzmann). Quanto maior T, mais radiação emitida.
+              </p>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                Usados em medicina (febre), indústria (inspeção de equipamentos), e segurança (visão noturna).
+              </p>
+            </div>
+
+            <div className="bg-orange-50 border border-orange-200 rounded p-6">
+              <h4 className="font-bold text-slate-900 mb-3">🛰️ 6. Satélites e Espaçonaves</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-3">
+                <strong>Radiação:</strong> Único processo no vácuo espacial! Satélites usam radiadores (alto ε) para dissipar calor e mantas térmicas (baixo ε) para reter calor.
+              </p>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                Lado voltado para o Sol: +120°C. Lado na sombra: -150°C. Controle térmico é crítico para sobrevivência dos equipamentos.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Nota Final */}
         <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-2xl shadow-lg p-8 border border-orange-200">
           <h3 className="text-2xl font-bold text-slate-900 mb-4">🎯 Resumo dos Conceitos-Chave</h3>
