@@ -1205,7 +1205,7 @@ export default function TermologiaTopicCalor() {
             <h4 className="text-xl font-bold mb-4">Significado de Cada Termo</h4>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="bg-slate-800 rounded p-4">
-                <p className="font-bold text-blue-400 mb-2"><MathFormula inline>\Phi</MathFormula></p>
+                <p className="font-bold text-blue-400 mb-2"><MathFormula inline>{`\\Phi`}</MathFormula></p>
                 <p className="text-slate-300 text-sm">
                   <strong>Fluxo de calor</strong> transferido por convecção. Unidade: <strong>Watt (W)</strong>.
                 </p>
@@ -1334,7 +1334,7 @@ export default function TermologiaTopicCalor() {
               <div className="bg-slate-800 rounded p-4">
                 <p className="font-bold text-blue-400 mb-2"><MathFormula inline>T</MathFormula></p>
                 <p className="text-slate-300 text-sm">
-                  <strong>Temperatura absoluta</strong> do objeto. <strong>SEMPRE EM KELVIN!</strong> A dependência <MathFormula inline>T^4</MathFormula> significa que pequenos aumentos de temperatura causam grandes aumentos na radiação.
+                  <strong>Temperatura absoluta</strong> do objeto. <strong>SEMPRE EM KELVIN!</strong> A dependência <MathFormula inline>{`T^4`}</MathFormula> significa que pequenos aumentos de temperatura causam grandes aumentos na radiação.
                 </p>
               </div>
             </div>

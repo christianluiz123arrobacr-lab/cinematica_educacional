@@ -317,3 +317,51 @@
 - [x] Todos os cards coloridos (slate-900, azul, amarelo, verde, amber)
 - [x] Todas as fórmulas em LaTeX com MathFormula (escapadas corretamente)
 - [ ] Validar renderização no desktop e mobile (próxima fase)
+
+
+## Termologia - Conversão entre Escalas Termométricas (Celsius, Fahrenheit, Kelvin)
+- [x] Criar conteúdo completo seguindo padrão Eletromagnetismo (adicionado a TermologiaTopicTemperatura.tsx)
+- [x] Identificar arquivo correto (TermologiaTopicTemperatura.tsx)
+- [x] Seção 7: Introdução às conversões (3 analogias: idiomas, réguas, moedas, fusos horários)
+- [x] Seção 8: Dedução Celsius ↔ Fahrenheit
+  - [x] Contexto histórico (por que 32 e 180 divisões vs 100 divisões)
+  - [x] Dedução matemática completa da fórmula T_F = 9/5 T_C + 32 (4 passos)
+  - [x] Dedução da fórmula inversa T_C = 5/9 (T_F - 32)
+  - [x] Termo-a-termo completo em grid 2 colunas (T_F, T_C, 9/5, 32)
+  - [x] Exemplo numérico: 25°C → 77°F
+- [x] Seção 9: Dedução Celsius ↔ Kelvin
+  - [x] Por que 273,15? (zero absoluto via lei dos gases PV=nRT)
+  - [x] Dedução matemática T_K = T_C + 273,15 (3 passos)
+  - [x] Por que não há fator multiplicativo (mesma divisão: 1°C = 1 K)
+  - [x] Termo-a-termo completo em grid 2 colunas (T_K, T_C, 273,15, sem fator)
+  - [x] Exemplo numérico: 300 K → 26,85°C
+- [x] Seção 10: Dedução Fahrenheit ↔ Kelvin
+  - [x] Dedução combinada (via Celsius intermediário)
+  - [x] Fórmulas diretas e inversas
+  - [x] Exemplo numérico: 98,6°F → 310,15 K (2 métodos)
+- [x] Seção 11: Conversão de VARIAÇÕES (ΔT)
+  - [x] ΔT_C = ΔT_K (mesmo tamanho de grau)
+  - [x] ΔT_F = 9/5 ΔT_C (graus Fahrenheit menores)
+  - [x] Alerta amarelo: não somar 32 ou 273,15 em variações
+  - [x] Analogia das réguas (por que variação é diferente)
+  - [x] Tabela comparativa: valor absoluto vs variação
+  - [x] 2 exemplos numéricos (aquecimento 50°C, resfriamento 100 K)
+- [x] Seção 12: Caso especial -40°C = -40°F
+  - [x] Dedução matemática completa (7 passos)
+  - [x] Contexto prático (Sibéria, Antártida, mercúrio congela)
+- [x] Seção 13: 5 exemplos resolvidos ITA/IME
+  - [x] Exemplo 1 (ITA 2019): Conversão múltipla (500 K → C → F)
+  - [x] Exemplo 2 (IME 2020): Variação de temperatura (15°C → 85°C em K e F)
+  - [x] Exemplo 3 (ITA 2021): Escala desconhecida (0°X-80°X, encontrar 40°X em C)
+  - [x] Exemplo 4 (IME 2018): Temperatura negativa (-15°F → C → K)
+  - [x] Exemplo 5 (ITA 2017): Comparação de variações (50°C vs 50°F)
+- [x] Seção 14: 6 aplicações práticas
+  - [x] Meteorologia (previsão do tempo internacional, -40°C Sibéria)
+  - [x] Medicina (febre >38°C, hipotermia <35°C, conversões)
+  - [x] Culinária (receitas americanas 350°F = 177°C)
+  - [x] Ciência (PV=nRT exige Kelvin, zero absoluto, Sol 5778 K)
+  - [x] Aviação (-56°C a 10 km altitude, densidade do ar)
+  - [x] Indústria (forno 500 K, processos térmicos)
+- [x] Todos os cards coloridos (slate-900, azul, amarelo, verde, amber, roxo)
+- [x] Todas as fórmulas em LaTeX com MathFormula (escapadas corretamente)
+- [ ] Validar renderização no desktop e mobile (próxima fase)
