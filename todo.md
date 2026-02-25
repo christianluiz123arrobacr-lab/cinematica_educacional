@@ -365,3 +365,46 @@
 - [x] Todos os cards coloridos (slate-900, azul, amarelo, verde, amber, roxo)
 - [x] Todas as fórmulas em LaTeX com MathFormula (escapadas corretamente)
 - [ ] Validar renderização no desktop e mobile (próxima fase)
+
+
+## Correção de Texto - Home.tsx
+- [ ] Corrigir "Ezone" para "Estática" no card de Física I
+
+
+## Termologia - Calor Sensível e Calor Latente (Calorimetria) - CONCLUÍDO
+- [x] Criar conteúdo completo seguindo padrão Eletromagnetismo
+- [x] Identificar arquivo correto (TermologiaTopicCalorimetria.tsx)
+- [x] Seção 0: Introdução aos 2 tipos de calor (analogia: aquecimento da água)
+- [x] Seção 1: Calor Sensível (Q = mcΔT)
+  - [ ] Contexto histórico (Black 1760, conceito de capacidade térmica)
+  - [ ] Dedução matemática completa da fórmula
+  - [ ] Termo-a-termo em grid 2 colunas (Q, m, c, ΔT)
+  - [ ] Capacidade térmica (C = mc) vs calor específico (c)
+  - [ ] Tabela de calores específicos (água, ferro, cobre, vidro, alumínio, ouro, chumbo)
+- [x] Seção 2: Calor Latente (Q = mL)
+  - [ ] Conceito de mudança de estado (fusão, vaporização, sublimação)
+  - [ ] Por que a temperatura não muda durante mudança de estado
+  - [ ] Dedução matemática completa da fórmula
+  - [ ] Termo-a-termo em grid 2 colunas (Q, m, L)
+  - [ ] Tabela de calores latentes (água: fusão e vaporização, outros materiais)
+- [x] Seção 3: Comparação Calor Sensível vs Latente (tabela 6 características)
+- [x] Seção 4: Curva de Aquecimento/Resfriamento
+  - [ ] Gráfico T vs Q para água (5 fases: sólido, fusão, líquido, vaporização, vapor)
+  - [ ] Explicação de cada segmento
+- [x] Seção 5: Passo-a-passo prático em 6 etapas
+- [x] Seção 6: 5+ exemplos resolvidos ITA/IME
+  - [ ] Exemplo 1: Aquecimento de água (sensível)
+  - [ ] Exemplo 2: Fusão de gelo (latente)
+  - [ ] Exemplo 3: Vaporização (latente)
+  - [ ] Exemplo 4: Processo completo (sensível + latente)
+  - [ ] Exemplo 5: Mistura de temperaturas diferentes
+- [x] Seção 7: 6+ aplicações práticas
+  - [ ] Aquecimento de água (chuveiro, panela)
+  - [ ] Mudança de estado (gelo, vapor, sublimação)
+  - [ ] Calorimetria em laboratório
+  - [ ] Isolamento térmico
+  - [ ] Refrigeração (ar-condicionado)
+  - [ ] Aquecimento solar
+- [x] Todos os cards coloridos (slate-900, azul, amarelo, verde, amber)
+- [x] Todas as fórmulas em LaTeX com MathFormula
+- [x] Validar renderização no desktop e mobile
