@@ -128,6 +128,98 @@ export default function TermologiaTopicCalorimetria() {
             </div>
           </div>
 
+          {/* Aprofundamento: Capacidade Térmica vs Calor Específico */}
+          <div className="bg-purple-50 border-l-4 border-purple-600 p-6 rounded-lg mb-6">
+            <h4 className="font-bold text-purple-900 mb-4">🔬 Aprofundamento: Capacidade Térmica (C) vs Calor Específico (c)</h4>
+            <p className="text-purple-900 text-sm mb-4">
+              Esses dois conceitos são frequentemente confundidos, mas são <strong>fundamentalmente diferentes</strong>. Vamos entender a distinção:
+            </p>
+            
+            <div className="space-y-4">
+              <div className="bg-white p-4 rounded border-l-4 border-blue-500">
+                <p className="text-sm text-slate-700 mb-2"><strong>Calor Específico (c):</strong> Quantidade de calor necessária para elevar a temperatura de <strong>1 kg</strong> de uma substância em <strong>1°C</strong>.</p>
+                <p className="text-xs text-slate-600">Unidade: J/(kg·°C) ou J/(kg·K)</p>
+                <p className="text-xs text-slate-600 mt-1"><strong>Propriedade do material:</strong> Cada material tem seu próprio c. A água sempre tem c = 4.186 J/(kg·°C), independentemente da quantidade.</p>
+              </div>
+              
+              <div className="bg-white p-4 rounded border-l-4 border-green-500">
+                <p className="text-sm text-slate-700 mb-2"><strong>Capacidade Térmica (C):</strong> Quantidade de calor necessária para elevar a temperatura de <strong>um objeto específico</strong> em <strong>1°C</strong>.</p>
+                <p className="text-xs text-slate-600">Unidade: J/°C ou J/K</p>
+                <p className="text-xs text-slate-600 mt-1"><strong>Propriedade do objeto:</strong> Depende da massa E do material. 1 litro de água tem C diferente de 2 litros de água.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Relação Matemática */}
+          <div className="bg-slate-900 text-white rounded-lg p-6 mb-6">
+            <h4 className="font-bold text-white mb-4">📐 Relação Matemática entre C e c</h4>
+            <MathFormula formula={String.raw`$$C = m \cdot c$$`} className="text-center text-2xl mb-4" />
+            
+            <div className="grid grid-cols-3 gap-3 text-sm">
+              <div className="bg-slate-800 p-3 rounded">
+                <p className="text-slate-300">C: Capacidade Térmica</p>
+                <p className="text-slate-400">J/°C</p>
+              </div>
+              <div className="bg-slate-800 p-3 rounded">
+                <p className="text-slate-300">m: Massa</p>
+                <p className="text-slate-400">kg</p>
+              </div>
+              <div className="bg-slate-800 p-3 rounded">
+                <p className="text-slate-300">c: Calor Específico</p>
+                <p className="text-slate-400">J/(kg·°C)</p>
+              </div>
+            </div>
+            
+            <p className="text-slate-300 text-sm mt-4 text-center">
+              <strong>Interpretação:</strong> A capacidade térmica é o calor específico multiplicado pela massa. Quanto mais massa, maior a capacidade térmica.
+            </p>
+          </div>
+
+          {/* Exemplos Práticos de Distinção */}
+          <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mb-6">
+            <h4 className="font-bold text-blue-900 mb-3">💡 Exemplos Práticos da Distinção</h4>
+            <div className="space-y-3 text-blue-900 text-sm">
+              <div className="bg-white p-3 rounded">
+                <p className="font-bold">Exemplo 1: Dois copos de água</p>
+                <p>• Copo A: 100 mL de água → c = 4.186 J/(kg·°C), C ≈ 418,6 J/°C</p>
+                <p>• Copo B: 200 mL de água → c = 4.186 J/(kg·°C), C ≈ 837,2 J/°C</p>
+                <p className="text-xs mt-1"><strong>Conclusão:</strong> O calor específico é igual, mas a capacidade térmica é diferente! O copo B precisa de mais calor para aumentar 1°C.</p>
+              </div>
+              
+              <div className="bg-white p-3 rounded">
+                <p className="font-bold">Exemplo 2: Água vs Ferro (mesma massa)</p>
+                <p>• 1 kg de água → c = 4.186 J/(kg·°C), C = 4.186 J/°C</p>
+                <p>• 1 kg de ferro → c = 450 J/(kg·°C), C = 450 J/°C</p>
+                <p className="text-xs mt-1"><strong>Conclusão:</strong> A capacidade térmica é diferente porque o calor específico é diferente! A água precisa de muito mais calor para aumentar 1°C.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Fórmulas Equivalentes */}
+          <div className="bg-green-50 border-l-4 border-green-600 p-6 rounded-lg mb-6">
+            <h4 className="font-bold text-green-900 mb-4">🔄 Fórmulas Equivalentes para Calor Sensível</h4>
+            <p className="text-green-900 text-sm mb-3">Existem duas formas de calcular o calor sensível, dependendo se você conhece c ou C:</p>
+            
+            <div className="space-y-3">
+              <div className="bg-white p-3 rounded">
+                <p className="text-sm text-slate-700 mb-1"><strong>Forma 1 (usando calor específico):</strong></p>
+                <MathFormula formula={String.raw`$Q = m \cdot c \cdot \Delta T$`} className="text-center" />
+              </div>
+              
+              <div className="bg-white p-3 rounded">
+                <p className="text-sm text-slate-700 mb-1"><strong>Forma 2 (usando capacidade térmica):</strong></p>
+                <MathFormula formula={String.raw`$Q = C \cdot \Delta T$`} className="text-center" />
+              </div>
+              
+              <div className="bg-white p-3 rounded">
+                <p className="text-sm text-slate-700 mb-1"><strong>Demonstração que são equivalentes:</strong></p>
+                <p className="text-xs text-slate-600">Substituindo <MathFormula formula={String.raw`$C = m \cdot c$`} /> na Forma 2:</p>
+                <MathFormula formula={String.raw`$Q = (m \cdot c) \cdot \Delta T = m \cdot c \cdot \Delta T$`} className="text-center" />
+                <p className="text-xs text-slate-600 mt-1">Obtemos a Forma 1! ✓</p>
+              </div>
+            </div>
+          </div>
+
           {/* Tabela de Calores Específicos */}
           <div className="bg-slate-50 rounded-lg p-6 mb-6">
             <h4 className="font-bold text-slate-900 mb-4">📊 Calores Específicos de Materiais Comuns</h4>
@@ -136,7 +228,8 @@ export default function TermologiaTopicCalorimetria() {
                 <thead>
                   <tr className="bg-slate-200">
                     <th className="text-left p-3 font-bold text-slate-900">Material</th>
-                    <th className="text-center p-3 font-bold text-slate-900">Calor Específico (J/kg·°C)</th>
+                    <th className="text-center p-3 font-bold text-slate-900">c (J/kg·°C)</th>
+                    <th className="text-center p-3 font-bold text-slate-900">C para 1 kg (J/°C)</th>
                     <th className="text-left p-3 font-bold text-slate-900">Observação</th>
                   </tr>
                 </thead>
@@ -144,40 +237,53 @@ export default function TermologiaTopicCalorimetria() {
                   <tr className="bg-white border-b">
                     <td className="p-3 text-slate-700"><strong>Água</strong></td>
                     <td className="text-center p-3 text-slate-700">4.186</td>
+                    <td className="text-center p-3 text-slate-700">4.186</td>
                     <td className="p-3 text-slate-600">Maior entre comuns - por isso aquece lentamente</td>
                   </tr>
                   <tr className="bg-blue-50 border-b">
                     <td className="p-3 text-slate-700"><strong>Ferro</strong></td>
+                    <td className="text-center p-3 text-slate-700">450</td>
                     <td className="text-center p-3 text-slate-700">450</td>
                     <td className="p-3 text-slate-600">Aquece rápido - por isso panelas de ferro são eficientes</td>
                   </tr>
                   <tr className="bg-white border-b">
                     <td className="p-3 text-slate-700"><strong>Cobre</strong></td>
                     <td className="text-center p-3 text-slate-700">385</td>
+                    <td className="text-center p-3 text-slate-700">385</td>
                     <td className="p-3 text-slate-600">Excelente condutor térmico</td>
                   </tr>
                   <tr className="bg-blue-50 border-b">
                     <td className="p-3 text-slate-700"><strong>Vidro</strong></td>
+                    <td className="text-center p-3 text-slate-700">840</td>
                     <td className="text-center p-3 text-slate-700">840</td>
                     <td className="p-3 text-slate-600">Isolante térmico moderado</td>
                   </tr>
                   <tr className="bg-white border-b">
                     <td className="p-3 text-slate-700"><strong>Alumínio</strong></td>
                     <td className="text-center p-3 text-slate-700">897</td>
+                    <td className="text-center p-3 text-slate-700">897</td>
                     <td className="p-3 text-slate-600">Bom condutor, usado em panelas</td>
                   </tr>
                   <tr className="bg-blue-50 border-b">
                     <td className="p-3 text-slate-700"><strong>Ouro</strong></td>
+                    <td className="text-center p-3 text-slate-700">129</td>
                     <td className="text-center p-3 text-slate-700">129</td>
                     <td className="p-3 text-slate-600">Aquece muito rápido</td>
                   </tr>
                   <tr className="bg-white">
                     <td className="p-3 text-slate-700"><strong>Chumbo</strong></td>
                     <td className="text-center p-3 text-slate-700">130</td>
+                    <td className="text-center p-3 text-slate-700">130</td>
                     <td className="p-3 text-slate-600">Aquece muito rápido</td>
                   </tr>
                 </tbody>
               </table>
+            </div>
+            
+            <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded mt-4">
+              <p className="text-yellow-900 text-sm">
+                <strong>Nota:</strong> A coluna "C para 1 kg" mostra a capacidade térmica se você tiver exatamente 1 kg do material. Para outras massas, multiplique c pela massa desejada.
+              </p>
             </div>
           </div>
 
