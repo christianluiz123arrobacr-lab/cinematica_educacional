@@ -21,7 +21,7 @@ import CinematicaSimulator from "./pages/CinematicaSimulator";
 import CinematicaGraphs from "./pages/CinematicaGraphs";
 import CinematicaQuiz from "./pages/CinematicaQuiz";
 import CinematicaTopicBases from "./pages/CinematicaTopicBases";
-import CinematicaTopicPontoMaterial from "./pages/CinematicaTopicPontoMaterial";
+
 import CinematicaTopicVelocidade from "./pages/CinematicaTopicVelocidade";
 import CinematicaTopicMRU from "./pages/CinematicaTopicMRU";
 import CinematicaTopicMRUV from "./pages/CinematicaTopicMRUV";
@@ -122,7 +122,7 @@ function Router() {
       <Route path="/cinematica/quiz-new" component={CinematicaQuiz} />
       <Route path="/cinematica/simulator" component={CinematicaSimulator} />
       <Route path="/cinematica/topic/bases" component={CinematicaTopicBases} />
-      <Route path="/cinematica/topic/ponto-material" component={CinematicaTopicPontoMaterial} />
+      
       <Route path="/cinematica/topic/velocidade" component={CinematicaTopicVelocidade} />
       <Route path="/cinematica/topic/mru" component={CinematicaTopicMRU} />
       <Route path="/cinematica/topic/mruv" component={CinematicaTopicMRUV} />
