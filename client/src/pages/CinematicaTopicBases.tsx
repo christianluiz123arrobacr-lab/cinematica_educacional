@@ -539,6 +539,108 @@ export default function CinematicaTopicBases() {
           </div>
         </div>
 
+                {/* ===================== ESPAÇO, DESLOCAMENTO E TRAJETÓRIA ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">📍 Espaço, Deslocamento e Trajetória</h2>
+          <div className="space-y-6">
+            <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">A Tríade Fundamental</h3>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                Três conceitos frequentemente confundidos — mas absolutamente distintos — formam a base para descrever qualquer movimento: <strong>trajetória</strong>, <strong>espaço</strong> e <strong>deslocamento</strong>. O ITA e o IME adoram explorar essas diferenças, especialmente em problemas onde um móvel se move "para frente e para trás".
+              </p>
+              <div className="bg-indigo-50 border border-indigo-200 rounded p-4">
+                <p className="text-slate-700 text-sm"><strong>Regra de Ouro:</strong> A <em>trajetória</em> é o caminho. O <em>deslocamento</em> é a variação de posição (pode ser negativo). A <em>distância</em> é o comprimento total (sempre positiva).</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Trajetória */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h3 className="text-2xl font-bold text-slate-900 mb-6">🔄 Trajetória</h3>
+          <div className="space-y-6">
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-6">
+              <h4 className="font-bold text-slate-800 mb-3">Definição Precisa</h4>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                A <strong>trajetória</strong> é o <em>conjunto de todas as posições ocupadas por um ponto material ao longo do tempo</em>.
+              </p>
+              <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg mb-4">
+                <p className="text-slate-700 text-sm"><strong>Propriedade Fundamental:</strong> A trajetória <strong>depende do referencial</strong> escolhido.</p>
+              </div>
+              <div className="space-y-3">
+                <p className="text-slate-700 font-semibold">Tipos de trajetória:</p>
+                <div className="grid md:grid-cols-3 gap-3">
+                  <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                    <p className="font-bold text-blue-900 text-sm">Retilínea</p>
+                    <p className="text-xs text-slate-600">Linha reta</p>
+                  </div>
+                  <div className="bg-purple-50 border border-purple-200 rounded p-3">
+                    <p className="font-bold text-purple-900 text-sm">Circular</p>
+                    <p className="text-xs text-slate-600">Circunferência</p>
+                  </div>
+                  <div className="bg-orange-50 border border-orange-200 rounded p-3">
+                    <p className="font-bold text-orange-900 text-sm">Curvilínea</p>
+                    <p className="text-xs text-slate-600">Curva qualquer</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Espaço, Deslocamento e Distância */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h3 className="text-2xl font-bold text-slate-900 mb-6">📏 Espaço, Deslocamento e Distância</h3>
+          <div className="grid md:grid-cols-3 gap-4 mb-8">
+            <div className="bg-gradient-to-br from-blue-900 to-indigo-900 rounded-xl p-5 text-white">
+              <h4 className="text-lg font-bold text-blue-200 mb-3">Espaço (s)</h4>
+              <p className="text-slate-300 text-sm leading-relaxed mb-3">
+                A <strong>posição</strong> do móvel na trajetória em relação a uma origem.
+              </p>
+              <div className="bg-blue-800/50 rounded-lg p-3 mb-3">
+                <p className="text-xs text-blue-200 font-semibold mb-2">Fórmula:</p>
+                <MathFormula formula="s = \text{posição}" />
+              </div>
+              <p className="text-xs text-slate-400">Pode ser positivo ou negativo.</p>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-900 to-pink-900 rounded-xl p-5 text-white">
+              <h4 className="text-lg font-bold text-purple-200 mb-3">Deslocamento (Δs)</h4>
+              <p className="text-slate-300 text-sm leading-relaxed mb-3">
+                A <strong>variação de posição</strong>: diferença entre final e inicial.
+              </p>
+              <div className="bg-purple-800/50 rounded-lg p-3 mb-3">
+                <p className="text-xs text-purple-200 font-semibold mb-2">Fórmula:</p>
+                <MathFormula formula="\Delta s = s_f - s_i" />
+              </div>
+              <p className="text-xs text-slate-400">Pode ser negativo!</p>
+            </div>
+
+            <div className="bg-gradient-to-br from-orange-900 to-red-900 rounded-xl p-5 text-white">
+              <h4 className="text-lg font-bold text-orange-200 mb-3">Distância (d)</h4>
+              <p className="text-slate-300 text-sm leading-relaxed mb-3">
+                O <strong>comprimento total do caminho</strong> percorrido.
+              </p>
+              <div className="bg-orange-800/50 rounded-lg p-3 mb-3">
+                <p className="text-xs text-orange-200 font-semibold mb-2">Fórmula:</p>
+                <MathFormula formula="d = \sum |\Delta s_i|" />
+              </div>
+              <p className="text-xs text-slate-400">Sempre ≥ 0!</p>
+            </div>
+          </div>
+
+          <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-xl">
+            <h4 className="font-bold text-red-900 mb-2 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5" />
+              ⚠️ Erro Comum em Provas
+            </h4>
+            <p className="text-slate-700 text-sm">
+              Muitos alunos confundem <strong>deslocamento com distância</strong>. Quando um móvel "vai e vem", o deslocamento é menor que a distância.
+            </p>
+          </div>
+        </div>
+
+
         {/* ===================== APLICAÇÕES PRÁTICAS ===================== */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
           <h2 className="text-3xl font-bold text-slate-900 mb-6">🌍 Aplicações Práticas</h2>
