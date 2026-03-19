@@ -763,6 +763,402 @@ export default function CinematicaTopicVelocidade() {
           </div>
         </div>
 
+
+        {/* ============================================================
+            BLOCO 3: MOVIMENTO ACELERADO E RETARDADO
+            ============================================================ */}
+        <div className="my-8 border-t-2 border-orange-100" />
+
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+              <TrendingUp className="w-6 h-6 text-orange-600" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold text-slate-900">Movimento Acelerado e Retardado</h2>
+              <p className="text-slate-500 mt-1">A classificação do movimento variado segundo a variação do módulo da velocidade</p>
+            </div>
+          </div>
+
+          {/* 1. Contexto Histórico */}
+          <div className="mb-10">
+            <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <span className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
+              Contexto Histórico e Conceitual
+            </h3>
+            <div className="space-y-4 text-slate-700 leading-relaxed">
+              <p>
+                A necessidade de classificar os movimentos variados surgiu dos estudos sistemáticos de <strong>Galileu Galilei</strong> (1564–1642) sobre a queda dos corpos. Ao observar que os objetos não caem com velocidade constante, mas sim com velocidade crescente, Galileu percebeu que era necessário distinguir entre diferentes tipos de variação de velocidade.
+              </p>
+              <p>
+                Antes de Galileu, Aristóteles acreditava que corpos mais pesados caíam mais rapidamente, sem se preocupar com a variação da velocidade ao longo da queda. Foi Galileu quem, por meio de experimentos com planos inclinados, demonstrou que todos os corpos sofrem a mesma aceleração gravitacional — e que essa aceleração é constante.
+              </p>
+              <p>
+                Newton, posteriormente, formalizou esses conceitos ao estabelecer a relação entre força e aceleração, tornando a classificação do movimento em acelerado, retardado e uniforme uma ferramenta fundamental da mecânica clássica. O <em>Tópicos de Física</em> ressalta que essa classificação é essencial para a análise correta do movimento antes de se aplicar qualquer equação horária.
+              </p>
+              <div className="bg-orange-50 p-5 rounded-xl border-l-4 border-orange-500 italic">
+                "É importante salientar que o conceito de aceleração escalar diz respeito não apenas aos casos em que o corpo ganha velocidade, mas também aos casos em que ele perde velocidade. O sinal da aceleração, por si só, não determina se o movimento é acelerado ou retardado." — <em>Tópicos de Física, Vol. 1.</em>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. Definições Precisas */}
+          <div className="mb-10">
+            <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <span className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+              Definições Precisas
+            </h3>
+
+            <div className="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-xl mb-6">
+              <p className="text-amber-800 font-semibold mb-1">Movimento Variado</p>
+              <p className="text-amber-700 leading-relaxed">O movimento de uma partícula é dito <strong>variado</strong> quando sua velocidade escalar instantânea varia no decorrer do tempo, ou seja, quando a aceleração escalar instantânea é diferente de zero em algum instante do intervalo considerado.</p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 mb-6">
+              <div className="bg-green-50 rounded-xl border border-green-200 p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <TrendingUp className="w-5 h-5 text-green-600" />
+                  <h4 className="font-bold text-green-800 text-lg">Acelerado</h4>
+                </div>
+                <p className="text-green-700 text-sm leading-relaxed mb-3">
+                  Um movimento é <strong>acelerado</strong> quando o módulo da velocidade escalar instantânea é sempre <strong>crescente</strong> com o passar do tempo. Isso ocorre quando v e α têm o <strong>mesmo sinal</strong>.
+                </p>
+                <div className="bg-green-100 rounded-lg p-3 text-center">
+                  <MathFormula formula="|v(t_2)| > |v(t_1)|" inline={false} />
+                  <p className="text-green-600 text-xs mt-1">para todo t₂ &gt; t₁</p>
+                </div>
+                <div className="mt-3 space-y-1">
+                  <p className="text-green-700 text-xs font-medium">Casos possíveis:</p>
+                  <p className="text-green-700 text-xs">• v &gt; 0 e α &gt; 0 → acelerado progressivo</p>
+                  <p className="text-green-700 text-xs">• v &lt; 0 e α &lt; 0 → acelerado retrógrado</p>
+                </div>
+              </div>
+
+              <div className="bg-red-50 rounded-xl border border-red-200 p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <TrendingDown className="w-5 h-5 text-red-600" />
+                  <h4 className="font-bold text-red-800 text-lg">Retardado</h4>
+                </div>
+                <p className="text-red-700 text-sm leading-relaxed mb-3">
+                  Um movimento é <strong>retardado</strong> quando o módulo da velocidade escalar instantânea é sempre <strong>decrescente</strong> com o passar do tempo. Isso ocorre quando v e α têm <strong>sinais opostos</strong>.
+                </p>
+                <div className="bg-red-100 rounded-lg p-3 text-center">
+                  <MathFormula formula="|v(t_2)| < |v(t_1)|" inline={false} />
+                  <p className="text-red-600 text-xs mt-1">para todo t₂ &gt; t₁</p>
+                </div>
+                <div className="mt-3 space-y-1">
+                  <p className="text-red-700 text-xs font-medium">Casos possíveis:</p>
+                  <p className="text-red-700 text-xs">• v &gt; 0 e α &lt; 0 → retardado progressivo</p>
+                  <p className="text-red-700 text-xs">• v &lt; 0 e α &gt; 0 → retardado retrógrado</p>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 rounded-xl border border-blue-200 p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Minus className="w-5 h-5 text-blue-600" />
+                  <h4 className="font-bold text-blue-800 text-lg">Uniforme</h4>
+                </div>
+                <p className="text-blue-700 text-sm leading-relaxed mb-3">
+                  Um movimento é <strong>uniforme</strong> quando a velocidade escalar instantânea é <strong>constante e diferente de zero</strong>. A aceleração é nula.
+                </p>
+                <div className="bg-blue-100 rounded-lg p-3 text-center">
+                  <MathFormula formula="\alpha = 0 \;\text{e}\; v \neq 0" inline={false} />
+                  <p className="text-blue-600 text-xs mt-1">aceleração nula</p>
+                </div>
+                <div className="mt-3 space-y-1">
+                  <p className="text-blue-700 text-xs font-medium">Características:</p>
+                  <p className="text-blue-700 text-xs">• v = constante ≠ 0</p>
+                  <p className="text-blue-700 text-xs">• Espaços iguais em tempos iguais</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-5">
+              <p className="text-yellow-800 font-semibold mb-2 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4" />
+                Observação Importante — O Erro Mais Comum
+              </p>
+              <p className="text-yellow-700 text-sm leading-relaxed">
+                Um carro freando tem aceleração escalar diferente de zero — ela é apenas contrária ao sentido do movimento. Portanto, "movimento retardado" <strong>não significa "aceleração negativa"</strong>. O que determina a classificação é a relação entre os sinais de v e α, não o sinal isolado de α. Um objeto com v &lt; 0 e α &lt; 0 está em movimento <strong>acelerado</strong> (retrógrado), pois o módulo de v cresce.
+              </p>
+            </div>
+          </div>
+
+          {/* 3. Deduções Matemáticas */}
+          <div className="mb-10">
+            <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <span className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+              Deduções Matemáticas Completas
+            </h3>
+
+            <div className="bg-slate-900 rounded-xl p-6 text-white mb-4">
+              <p className="text-slate-300 text-sm mb-4 leading-relaxed">A aceleração escalar média é definida como a variação da velocidade escalar por unidade de tempo. Partindo da definição operacional:</p>
+              <div className="text-center mb-4">
+                <MathFormula formula="\alpha_m = \frac{\Delta v}{\Delta t} = \frac{v_f - v_i}{t_f - t_i}" inline={false} />
+              </div>
+              <p className="text-slate-300 text-sm mb-4 leading-relaxed">Para determinar se o movimento é acelerado ou retardado em um dado instante, analisamos o produto <strong>v · α</strong>. Esse critério é derivado diretamente da definição de módulo crescente ou decrescente:</p>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="bg-green-900/50 rounded-lg p-4 text-center">
+                  <MathFormula formula="v \cdot \alpha > 0 \Rightarrow \text{Acelerado}" inline={false} />
+                  <p className="text-green-300 text-xs mt-2">Mesmo sinal: módulo de v cresce</p>
+                </div>
+                <div className="bg-red-900/50 rounded-lg p-4 text-center">
+                  <MathFormula formula="v \cdot \alpha < 0 \Rightarrow \text{Retardado}" inline={false} />
+                  <p className="text-red-300 text-xs mt-2">Sinais opostos: módulo de v decresce</p>
+                </div>
+              </div>
+              <p className="text-slate-300 text-sm mt-4 leading-relaxed">A unidade de aceleração no SI é derivada diretamente da razão entre as unidades de velocidade e tempo:</p>
+              <div className="text-center mt-2">
+                <MathFormula formula="\text{unid}(\alpha) = \frac{\text{unid}(v)}{\text{unid}(t)} = \frac{\text{m/s}}{\text{s}} = \text{m/s}^2" inline={false} />
+              </div>
+            </div>
+
+            <div className="bg-orange-50 rounded-xl border border-orange-200 p-5">
+              <p className="font-semibold text-orange-800 mb-3">Legenda — O que cada termo representa:</p>
+              <div className="grid md:grid-cols-2 gap-3">
+                <div className="flex items-start gap-2">
+                  <span className="bg-orange-200 text-orange-800 text-xs font-bold px-2 py-1 rounded whitespace-nowrap">α_m</span>
+                  <span className="text-slate-700 text-sm">Aceleração escalar média — taxa de variação da velocidade no intervalo Δt. Unidade: m/s². Pode ser positiva ou negativa.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="bg-orange-200 text-orange-800 text-xs font-bold px-2 py-1 rounded whitespace-nowrap">Δv</span>
+                  <span className="text-slate-700 text-sm">Variação da velocidade escalar: Δv = v_f − v_i. Positiva se v aumentou, negativa se v diminuiu. Unidade: m/s.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="bg-orange-200 text-orange-800 text-xs font-bold px-2 py-1 rounded whitespace-nowrap">v_i, v_f</span>
+                  <span className="text-slate-700 text-sm">Velocidades escalares instantâneas inicial e final. Podem ser positivas (sentido positivo) ou negativas (sentido negativo). Unidade: m/s.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="bg-orange-200 text-orange-800 text-xs font-bold px-2 py-1 rounded whitespace-nowrap">Δt</span>
+                  <span className="text-slate-700 text-sm">Intervalo de tempo: Δt = t_f − t_i. É sempre positivo, pois o tempo flui em um único sentido. Unidade: s.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="bg-orange-200 text-orange-800 text-xs font-bold px-2 py-1 rounded whitespace-nowrap">v · α</span>
+                  <span className="text-slate-700 text-sm">Produto entre velocidade e aceleração escalar — o critério fundamental para classificar o movimento. Analisa apenas o sinal do produto.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 4. Termo-a-Termo em Grid */}
+          <div className="mb-10">
+            <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <span className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
+              Análise Termo-a-Termo: O Critério dos Sinais
+            </h3>
+
+            <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
+              <div className="grid grid-cols-4 bg-slate-800 text-white text-sm font-semibold">
+                <div className="p-3 text-center">Sinal de v</div>
+                <div className="p-3 text-center">Sinal de α</div>
+                <div className="p-3 text-center">Produto v·α</div>
+                <div className="p-3 text-center">Classificação</div>
+              </div>
+              <div className="grid grid-cols-4 border-b border-slate-100 text-sm">
+                <div className="p-3 text-center font-semibold text-green-600">v &gt; 0</div>
+                <div className="p-3 text-center font-semibold text-green-600">α &gt; 0</div>
+                <div className="p-3 text-center font-semibold text-green-600">v·α &gt; 0</div>
+                <div className="p-3 text-center"><span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-semibold">Acelerado Progressivo</span></div>
+              </div>
+              <div className="grid grid-cols-4 border-b border-slate-100 text-sm bg-slate-50">
+                <div className="p-3 text-center font-semibold text-green-600">v &lt; 0</div>
+                <div className="p-3 text-center font-semibold text-green-600">α &lt; 0</div>
+                <div className="p-3 text-center font-semibold text-green-600">v·α &gt; 0</div>
+                <div className="p-3 text-center"><span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-semibold">Acelerado Retrógrado</span></div>
+              </div>
+              <div className="grid grid-cols-4 border-b border-slate-100 text-sm">
+                <div className="p-3 text-center font-semibold text-red-600">v &gt; 0</div>
+                <div className="p-3 text-center font-semibold text-red-600">α &lt; 0</div>
+                <div className="p-3 text-center font-semibold text-red-600">v·α &lt; 0</div>
+                <div className="p-3 text-center"><span className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-semibold">Retardado Progressivo</span></div>
+              </div>
+              <div className="grid grid-cols-4 border-b border-slate-100 text-sm bg-slate-50">
+                <div className="p-3 text-center font-semibold text-red-600">v &lt; 0</div>
+                <div className="p-3 text-center font-semibold text-red-600">α &gt; 0</div>
+                <div className="p-3 text-center font-semibold text-red-600">v·α &lt; 0</div>
+                <div className="p-3 text-center"><span className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-semibold">Retardado Retrógrado</span></div>
+              </div>
+              <div className="grid grid-cols-4 text-sm">
+                <div className="p-3 text-center font-semibold text-blue-600">v ≠ 0</div>
+                <div className="p-3 text-center font-semibold text-blue-600">α = 0</div>
+                <div className="p-3 text-center font-semibold text-blue-600">v·α = 0</div>
+                <div className="p-3 text-center"><span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">Uniforme</span></div>
+              </div>
+            </div>
+          </div>
+
+          {/* 5. Relação Matemática */}
+          <div className="mb-10">
+            <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <span className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">5</span>
+              Relação Matemática: Aceleração e Variação de Velocidade
+            </h3>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+                <h4 className="font-bold text-slate-800 mb-3">Aceleração Escalar Média</h4>
+                <div className="text-center mb-3">
+                  <MathFormula formula="\alpha_m = \frac{v_f - v_i}{\Delta t}" inline={false} />
+                </div>
+                <p className="text-slate-600 text-sm leading-relaxed">A aceleração média é a razão entre a variação da velocidade escalar e o intervalo de tempo. Seu sinal depende exclusivamente da diferença v_f − v_i, não do sinal isolado de v_f ou v_i.</p>
+              </div>
+              <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+                <h4 className="font-bold text-slate-800 mb-3">Critério de Classificação</h4>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></span>
+                    <MathFormula formula="v \cdot \alpha_m > 0 \Rightarrow \text{Acelerado}" inline={true} />
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="w-3 h-3 bg-red-500 rounded-full flex-shrink-0"></span>
+                    <MathFormula formula="v \cdot \alpha_m < 0 \Rightarrow \text{Retardado}" inline={true} />
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></span>
+                    <MathFormula formula="\alpha_m = 0 \Rightarrow \text{Uniforme}" inline={true} />
+                  </div>
+                </div>
+                <p className="text-slate-600 text-sm mt-3">Este critério é válido para qualquer instante do movimento, não apenas para a média do intervalo.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 6. Tabela Comparativa */}
+          <div className="mb-10">
+            <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <span className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">6</span>
+              Tabela Comparativa
+            </h3>
+
+            <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
+              <div className="grid grid-cols-4 bg-slate-800 text-white text-sm font-semibold">
+                <div className="p-3">Propriedade</div>
+                <div className="p-3 text-center text-green-300">Acelerado</div>
+                <div className="p-3 text-center text-red-300">Retardado</div>
+                <div className="p-3 text-center text-blue-300">Uniforme</div>
+              </div>
+              <div className="grid grid-cols-4 border-b border-slate-100 text-sm">
+                <div className="p-3 font-medium text-slate-700">Módulo de v</div>
+                <div className="p-3 text-center text-green-700">Crescente com o tempo</div>
+                <div className="p-3 text-center text-red-700">Decrescente com o tempo</div>
+                <div className="p-3 text-center text-blue-700">Constante no tempo</div>
+              </div>
+              <div className="grid grid-cols-4 border-b border-slate-100 text-sm bg-slate-50">
+                <div className="p-3 font-medium text-slate-700">Aceleração α</div>
+                <div className="p-3 text-center text-green-700">α ≠ 0, mesmo sinal que v</div>
+                <div className="p-3 text-center text-red-700">α ≠ 0, sinal oposto a v</div>
+                <div className="p-3 text-center text-blue-700">α = 0</div>
+              </div>
+              <div className="grid grid-cols-4 border-b border-slate-100 text-sm">
+                <div className="p-3 font-medium text-slate-700">Produto v·α</div>
+                <div className="p-3 text-center text-green-700">&gt; 0 (positivo)</div>
+                <div className="p-3 text-center text-red-700">&lt; 0 (negativo)</div>
+                <div className="p-3 text-center text-blue-700">= 0</div>
+              </div>
+              <div className="grid grid-cols-4 border-b border-slate-100 text-sm bg-slate-50">
+                <div className="p-3 font-medium text-slate-700">Exemplo clássico</div>
+                <div className="p-3 text-center text-green-700">Queda livre</div>
+                <div className="p-3 text-center text-red-700">Freagem de carro</div>
+                <div className="p-3 text-center text-blue-700">Luz no vácuo</div>
+              </div>
+              <div className="grid grid-cols-4 text-sm">
+                <div className="p-3 font-medium text-slate-700">Gráfico |v|(t)</div>
+                <div className="p-3 text-center text-green-700">Crescente (sobe)</div>
+                <div className="p-3 text-center text-red-700">Decrescente (desce)</div>
+                <div className="p-3 text-center text-blue-700">Constante (horizontal)</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 7. Exemplos Resolvidos */}
+          <div className="mb-10">
+            <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <span className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">7</span>
+              Exemplos Resolvidos
+            </h3>
+
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-6">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full">Exemplo 1</span>
+                <span className="text-slate-500 text-sm">Classificação por análise de sinais</span>
+              </div>
+              <p className="text-slate-700 mb-4">
+                Um automóvel se move numa rodovia com velocidade escalar de −20 m/s (sentido retrógrado). Ao acionar o freio, sua aceleração escalar é de +4 m/s². Classifique o movimento e determine em quanto tempo o carro para.
+              </p>
+              <div className="bg-slate-50 rounded-lg p-4">
+                <p className="font-semibold text-slate-800 mb-3">Resolução:</p>
+                <p className="text-slate-700 text-sm mb-2"><strong>Passo 1 — Classificação:</strong></p>
+                <div className="text-center mb-3">
+                  <MathFormula formula="v \cdot \alpha = (-20) \cdot (+4) = -80 < 0 \Rightarrow \textbf{Movimento Retardado}" inline={false} />
+                </div>
+                <p className="text-slate-700 text-sm mb-2 mt-3"><strong>Passo 2 — Tempo para parar (v_f = 0):</strong></p>
+                <div className="text-center mb-2">
+                  <MathFormula formula="\alpha_m = \frac{v_f - v_i}{\Delta t} \Rightarrow 4 = \frac{0 - (-20)}{\Delta t}" inline={false} />
+                </div>
+                <div className="text-center mb-2">
+                  <MathFormula formula="\Delta t = \frac{20}{4} = 5 \text{ s}" inline={false} />
+                </div>
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mt-3">
+                  <p className="text-orange-800 text-sm"><strong>Conclusão:</strong> O movimento é retardado (v e α têm sinais opostos). O carro para em 5 s. Note que a aceleração positiva com velocidade negativa significa desaceleração — um erro conceitual muito comum em provas.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full">Exemplo 2</span>
+                <span className="text-slate-500 text-sm">Pêndulo — alternância entre acelerado e retardado</span>
+              </div>
+              <p className="text-slate-700 mb-4">
+                Um pêndulo oscila entre os pontos A (extremo esquerdo) e B (extremo direito), passando pelo ponto O (equilíbrio). Considerando o sentido de A para B como positivo, classifique o movimento nas fases: (a) de A até O; (b) de O até B.
+              </p>
+              <div className="bg-slate-50 rounded-lg p-4">
+                <p className="font-semibold text-slate-800 mb-3">Resolução:</p>
+                <p className="text-slate-700 text-sm mb-2"><strong>(a) De A até O (descida):</strong></p>
+                <p className="text-slate-700 text-sm mb-2 leading-relaxed">O pêndulo parte do repouso em A (v = 0) e ganha velocidade até O (v máxima). A velocidade é positiva e crescente, portanto a aceleração é positiva.</p>
+                <div className="text-center mb-3">
+                  <MathFormula formula="v > 0,\; \alpha > 0 \Rightarrow v \cdot \alpha > 0 \Rightarrow \textbf{Acelerado}" inline={false} />
+                </div>
+                <p className="text-slate-700 text-sm mb-2 mt-3"><strong>(b) De O até B (subida):</strong></p>
+                <p className="text-slate-700 text-sm mb-2 leading-relaxed">O pêndulo parte de O com velocidade máxima e desacelera até parar em B. A velocidade ainda é positiva, mas decrescente, portanto a aceleração é negativa.</p>
+                <div className="text-center mb-3">
+                  <MathFormula formula="v > 0,\; \alpha < 0 \Rightarrow v \cdot \alpha < 0 \Rightarrow \textbf{Retardado}" inline={false} />
+                </div>
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mt-3">
+                  <p className="text-orange-800 text-sm"><strong>Conclusão:</strong> O mesmo objeto pode ter seu movimento classificado de formas diferentes em diferentes fases do trajeto. A classificação é sempre local, referente a um intervalo de tempo específico.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 8. Aplicações Práticas */}
+          <div className="mb-4">
+            <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <span className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">8</span>
+              Aplicações Práticas
+            </h3>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                <h4 className="font-bold text-slate-800 mb-2">Sistema ABS (Antilock Braking System)</h4>
+                <p className="text-slate-600 text-sm leading-relaxed">O ABS monitora a aceleração escalar das rodas em tempo real. Quando detecta que v·α &lt; 0 com |α| muito elevado (risco de travamento), libera e reaplica os freios ciclicamente, mantendo o movimento retardado sem travar as rodas.</p>
+              </div>
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                <h4 className="font-bold text-slate-800 mb-2">Decolagem e Pouso de Aeronaves</h4>
+                <p className="text-slate-600 text-sm leading-relaxed">Na decolagem, a aeronave realiza um movimento acelerado (v &gt; 0, α &gt; 0) até atingir a velocidade de sustentação. No pouso, realiza um movimento retardado (v &gt; 0, α &lt; 0) com uso de reversores de empuxo e freios.</p>
+              </div>
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                <h4 className="font-bold text-slate-800 mb-2">Acelerômetros em Smartphones</h4>
+                <p className="text-slate-600 text-sm leading-relaxed">Os acelerômetros medem a aceleração vetorial do dispositivo nos três eixos. Aplicativos de física usam esses dados para classificar o movimento em tempo real, demonstrando experimentalmente os conceitos de acelerado e retardado.</p>
+              </div>
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                <h4 className="font-bold text-slate-800 mb-2">Foguetes e Propulsão Espacial</h4>
+                <p className="text-slate-600 text-sm leading-relaxed">Durante o lançamento, um foguete realiza movimento acelerado. Ao desligar os motores no espaço (sem atmosfera), o movimento torna-se uniforme. Na reentrada atmosférica, o atrito causa movimento retardado.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </section>
 
       <footer className="bg-slate-900 text-white py-12 mt-12">
