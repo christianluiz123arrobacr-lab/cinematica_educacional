@@ -642,6 +642,395 @@ export default function CinematicaTopicBases() {
 
 
         {/* ===================== APLICAÇÕES PRÁTICAS ===================== */}
+
+        {/* ===================== INTERPRETAÇÃO GRÁFICA ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">Interpretação Gráfica</h2>
+
+          <p className="text-slate-700 leading-relaxed mb-6">
+            A análise gráfica é uma das ferramentas mais poderosas da Cinemática. Em provas de alto nível, muitas questões são resolvidas <strong>exclusivamente</strong> pela leitura e interpretação de gráficos, sem a necessidade de aplicar fórmulas diretamente. Dominar a linguagem gráfica é, portanto, tão importante quanto dominar as equações. Nesta seção, apresentamos os gráficos fundamentais que descrevem a posição de um móvel ao longo do tempo.
+          </p>
+
+          {/* Gráfico s x t */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+            <h3 className="text-xl font-bold text-blue-900 mb-4">Gráfico Posição × Tempo (s × t)</h3>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              O gráfico <strong>s × t</strong> (posição em função do tempo) é a representação mais básica e fundamental do movimento. Cada ponto do gráfico indica a posição do móvel em um determinado instante. A forma da curva revela a <em>natureza</em> do movimento.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="bg-white border border-blue-100 rounded-lg p-4">
+                <h4 className="font-bold text-blue-800 mb-2">Inclinação da Reta Tangente = Velocidade</h4>
+                <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                  A <strong>inclinação</strong> (coeficiente angular) da reta tangente à curva em qualquer ponto fornece a <strong>velocidade instantânea</strong> naquele instante. Se a curva é uma reta, a inclinação é constante e a velocidade é constante (MRU). Se a curva é uma parábola, a inclinação varia e a velocidade muda ao longo do tempo (MRUV).
+                </p>
+                <div className="bg-blue-100 rounded p-2 text-center">
+                  <MathFormula formula="v(t) = \\frac{ds}{dt} = \\text{inclinação da tangente ao gráfico } s \\times t" />
+                </div>
+              </div>
+              <div className="bg-white border border-blue-100 rounded-lg p-4">
+                <h4 className="font-bold text-blue-800 mb-2">Leitura Qualitativa</h4>
+                <ul className="text-slate-700 text-sm space-y-2">
+                  <li><strong>Reta horizontal:</strong> Móvel em repouso (v = 0). A posição não muda.</li>
+                  <li><strong>Reta inclinada para cima:</strong> Velocidade positiva constante (MRU progressivo).</li>
+                  <li><strong>Reta inclinada para baixo:</strong> Velocidade negativa constante (MRU retrógrado).</li>
+                  <li><strong>Parábola com concavidade para cima:</strong> Aceleração positiva (MRUV acelerado).</li>
+                  <li><strong>Parábola com concavidade para baixo:</strong> Aceleração negativa (MRUV retardado).</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Gráfico Deslocamento vs Distância */}
+          <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-6 mb-6">
+            <h3 className="text-xl font-bold text-indigo-900 mb-4">Deslocamento vs. Distância no Gráfico</h3>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              Uma das armadilhas gráficas mais exploradas em provas é a diferença entre <strong>deslocamento</strong> e <strong>distância percorrida</strong> a partir do gráfico s × t. O deslocamento é simplesmente a diferença entre a posição final e a inicial: <MathFormula formula="\\Delta s = s_f - s_i" inline={true} />. Já a distância percorrida exige a análise de <em>cada trecho</em> do movimento, somando os módulos dos deslocamentos parciais.
+            </p>
+            <div className="bg-white border border-indigo-100 rounded-lg p-4">
+              <h4 className="font-bold text-indigo-800 mb-2">Exemplo Visual</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                Considere um móvel que parte de s = 0, vai até s = 10 m e depois retorna até s = 4 m. No gráfico s × t, veríamos a curva subir até 10 e depois descer até 4. O deslocamento é <MathFormula formula="\\Delta s = 4 - 0 = 4 \\text{ m}" inline={true} />, mas a distância percorrida é <MathFormula formula="d = 10 + 6 = 16 \\text{ m}" inline={true} />. A curva "sobe e desce", mas o deslocamento só vê o ponto inicial e o final.
+              </p>
+            </div>
+          </div>
+
+          {/* Gráfico v x t para posição */}
+          <div className="bg-green-50 border border-green-200 rounded-xl p-6 mb-6">
+            <h3 className="text-xl font-bold text-green-900 mb-4">Área sob o Gráfico v × t = Deslocamento</h3>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              Embora o gráfico v × t seja estudado em profundidade no tópico de Velocidade, é fundamental já saber que a <strong>área</strong> entre a curva v(t) e o eixo do tempo fornece o <strong>deslocamento escalar</strong> do móvel naquele intervalo. Se a curva está acima do eixo t, a área é positiva (deslocamento no sentido positivo). Se está abaixo, a área é negativa (deslocamento no sentido negativo).
+            </p>
+            <div className="bg-white border border-green-100 rounded-lg p-4 text-center">
+              <MathFormula formula="\\Delta s = \\int_{t_1}^{t_2} v(t) \\, dt = \\text{área (com sinal) sob a curva } v \\times t" />
+              <div className="mt-3 grid grid-cols-2 gap-4 text-sm">
+                <div className="bg-green-100 rounded p-2">
+                  <p className="text-green-800 font-semibold">Área acima do eixo t</p>
+                  <p className="text-slate-700">Deslocamento positivo (avanço)</p>
+                </div>
+                <div className="bg-red-100 rounded p-2">
+                  <p className="text-red-800 font-semibold">Área abaixo do eixo t</p>
+                  <p className="text-slate-700">Deslocamento negativo (recuo)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===================== ARMADILHAS E ERROS CONCEITUAIS ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-red-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">Armadilhas e Erros Conceituais Clássicos</h2>
+
+          <p className="text-slate-700 leading-relaxed mb-6">
+            As provas de vestibulares de alto nível são projetadas para testar não apenas o conhecimento das fórmulas, mas a <strong>compreensão profunda dos conceitos</strong>. Muitos alunos bem preparados perdem pontos por cair em armadilhas conceituais que exploram confusões sutis. Conhecer esses erros de antemão é uma vantagem estratégica enorme.
+          </p>
+
+          <div className="space-y-4">
+            <div className="bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5">
+              <h4 className="font-bold text-red-800 mb-2">Erro 1: Confundir Deslocamento com Distância Percorrida</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                Este é o erro mais comum e mais explorado. O deslocamento (<MathFormula formula="\\Delta s = s_f - s_i" inline={true} />) pode ser zero mesmo que o móvel tenha percorrido quilômetros (basta voltar ao ponto de partida). A distância percorrida (<MathFormula formula="d" inline={true} />) é sempre positiva e cumulativa. Em problemas de "ida e volta", a distância é a soma dos trechos, enquanto o deslocamento é a diferença entre a posição final e a inicial.
+              </p>
+              <div className="bg-red-100 rounded p-3 text-sm">
+                <strong>Como evitar:</strong> Sempre pergunte: "O enunciado pede o deslocamento ou a distância?" Se houver inversão de sentido, calcule cada trecho separadamente.
+              </div>
+            </div>
+
+            <div className="bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5">
+              <h4 className="font-bold text-red-800 mb-2">Erro 2: Esquecer que a Trajetória Depende do Referencial</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                A trajetória <strong>não é uma propriedade intrínseca do movimento</strong>. Ela depende do referencial adotado. Uma gota de chuva que cai verticalmente para um observador parado descreve uma trajetória oblíqua (ou parabólica) para um observador dentro de um carro em movimento. Muitos alunos assumem que a trajetória é "fixa", o que é um erro grave.
+              </p>
+              <div className="bg-red-100 rounded p-3 text-sm">
+                <strong>Como evitar:</strong> Antes de descrever qualquer trajetória, identifique explicitamente o referencial. Se o problema não especifica, assuma o referencial do solo (inercial).
+              </div>
+            </div>
+
+            <div className="bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5">
+              <h4 className="font-bold text-red-800 mb-2">Erro 3: Usar Ponto Material Quando o Tamanho Importa</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                O modelo de ponto material simplifica enormemente os cálculos, mas <strong>não pode ser usado quando as dimensões do corpo são relevantes</strong> para o problema. O exemplo clássico é o trem passando por um túnel: se o enunciado menciona o comprimento do trem e do túnel, o corpo extenso é essencial. Tratar o trem como ponto material nesse caso leva a respostas erradas.
+              </p>
+              <div className="bg-red-100 rounded p-3 text-sm">
+                <strong>Como evitar:</strong> Se o enunciado fornece as dimensões do corpo (comprimento, raio, diâmetro), é um sinal claro de que o modelo de corpo extenso deve ser usado.
+              </div>
+            </div>
+
+            <div className="bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5">
+              <h4 className="font-bold text-red-800 mb-2">Erro 4: Confundir Posição (s) com Deslocamento (Δs)</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                A posição <MathFormula formula="s" inline={true} /> é a coordenada do móvel em relação à origem da trajetória em um dado instante. O deslocamento <MathFormula formula="\\Delta s" inline={true} /> é a <em>variação</em> dessa posição entre dois instantes. Um móvel pode estar na posição s = -5 m (atrás da origem) e ter um deslocamento positivo (se estiver se movendo para frente). Posição e deslocamento são conceitos distintos.
+              </p>
+              <div className="bg-red-100 rounded p-3 text-sm">
+                <strong>Como evitar:</strong> Lembre-se: posição é um "endereço" na trajetória; deslocamento é a "mudança de endereço". Um é absoluto (depende da origem), o outro é relativo (depende dos dois instantes).
+              </div>
+            </div>
+
+            <div className="bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5">
+              <h4 className="font-bold text-red-800 mb-2">Erro 5: Assumir que Repouso é Absoluto</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                Na física clássica, <strong>não existe repouso absoluto</strong>. Todo repouso é relativo a um referencial. Um passageiro sentado em um avião está em repouso em relação ao avião, mas em movimento a 900 km/h em relação ao solo. Dizer que algo "está parado" sem especificar o referencial é fisicamente impreciso.
+              </p>
+              <div className="bg-red-100 rounded p-3 text-sm">
+                <strong>Como evitar:</strong> Sempre complete a frase: "O corpo está em repouso <em>em relação a...</em>". Isso elimina a ambiguidade e demonstra domínio conceitual.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===================== CONEXÃO VETORIAL ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">Conexão Vetorial — Posição, Deslocamento e Trajetória</h2>
+
+          <p className="text-slate-700 leading-relaxed mb-6">
+            Embora a Cinemática Escalar (unidimensional) seja suficiente para muitos problemas, a visão vetorial é indispensável para compreender fenômenos em duas ou três dimensões. A conexão entre a descrição escalar e a vetorial é um dos pontos mais cobrados em provas de alto nível, pois exige que o aluno transite fluentemente entre as duas linguagens.
+          </p>
+
+          <div className="bg-purple-50 border border-purple-200 rounded-xl p-6 mb-6">
+            <h3 className="text-xl font-bold text-purple-900 mb-4">Vetor Posição e Vetor Deslocamento</h3>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              No espaço tridimensional, a posição de um ponto material é descrita pelo <strong>vetor posição</strong> <MathFormula formula="\\vec{r}(t)" inline={true} />, que liga a origem do sistema de coordenadas ao ponto onde o móvel se encontra no instante t. O <strong>vetor deslocamento</strong> é a diferença entre dois vetores posição:
+            </p>
+            <div className="bg-white border border-purple-100 rounded-lg p-4 text-center mb-4">
+              <MathFormula formula="\\Delta \\vec{r} = \\vec{r}(t_2) - \\vec{r}(t_1) = (x_2 - x_1)\\hat{i} + (y_2 - y_1)\\hat{j} + (z_2 - z_1)\\hat{k}" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+              <div className="bg-white border border-purple-100 rounded p-3 text-center">
+                <p className="font-bold text-purple-800 mb-1"><MathFormula formula="\\vec{r}(t)" inline={true} /></p>
+                <p className="text-slate-600">Vetor posição: liga a origem ao móvel. Depende do sistema de coordenadas escolhido.</p>
+              </div>
+              <div className="bg-white border border-purple-100 rounded p-3 text-center">
+                <p className="font-bold text-purple-800 mb-1"><MathFormula formula="\\Delta \\vec{r}" inline={true} /></p>
+                <p className="text-slate-600">Vetor deslocamento: liga a posição inicial à final. Independe da trajetória.</p>
+              </div>
+              <div className="bg-white border border-purple-100 rounded p-3 text-center">
+                <p className="font-bold text-purple-800 mb-1"><MathFormula formula="|\\Delta \\vec{r}| \\leq d" inline={true} /></p>
+                <p className="text-slate-600">O módulo do deslocamento é sempre menor ou igual à distância percorrida.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-6 mb-6">
+            <h3 className="text-xl font-bold text-indigo-900 mb-4">Relação Geométrica: Corda vs. Arco</h3>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              A relação <MathFormula formula="|\\Delta \\vec{r}| \\leq d" inline={true} /> tem uma interpretação geométrica elegante. O módulo do vetor deslocamento é o comprimento da <strong>corda</strong> que liga o ponto inicial ao ponto final da trajetória. A distância percorrida é o comprimento do <strong>arco</strong> (o caminho real). Como a corda é sempre menor ou igual ao arco (pela desigualdade triangular generalizada), temos a relação acima.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white border border-indigo-100 rounded-lg p-4">
+                <h4 className="font-bold text-indigo-800 mb-2">Igualdade: Movimento Retilíneo Sem Inversão</h4>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  Se o móvel se move em linha reta e <strong>não inverte o sentido</strong>, a corda coincide com o arco. Nesse caso, <MathFormula formula="|\\Delta \\vec{r}| = d" inline={true} />. Este é o único caso em que o módulo do deslocamento é igual à distância percorrida.
+                </p>
+              </div>
+              <div className="bg-white border border-indigo-100 rounded-lg p-4">
+                <h4 className="font-bold text-indigo-800 mb-2">Desigualdade Estrita: Curva ou Inversão</h4>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  Se a trajetória é curva (a corda "corta por dentro") ou se há inversão de sentido (o móvel "vai e volta"), então <MathFormula formula="|\\Delta \\vec{r}| < d" inline={true} />. No caso extremo de uma volta completa, o deslocamento é zero mas a distância é o perímetro inteiro.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+            <h3 className="text-xl font-bold text-amber-900 mb-4">Composição de Movimentos e Referencial</h3>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              Quando analisamos o movimento de um corpo em relação a diferentes referenciais, a <strong>composição vetorial</strong> de velocidades é essencial. Se um barco navega em um rio, sua velocidade em relação ao solo é a soma vetorial da velocidade do barco em relação à água e da velocidade da água em relação ao solo:
+            </p>
+            <div className="bg-white border border-amber-100 rounded-lg p-4 text-center mb-4">
+              <MathFormula formula="\\vec{v}_{B/S} = \\vec{v}_{B/A} + \\vec{v}_{A/S}" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+              <div className="bg-white border border-amber-100 rounded p-3 text-center">
+                <p className="font-bold text-amber-800 mb-1"><MathFormula formula="\\vec{v}_{B/S}" inline={true} /></p>
+                <p className="text-slate-600">Velocidade do barco em relação ao solo (referencial "absoluto").</p>
+              </div>
+              <div className="bg-white border border-amber-100 rounded p-3 text-center">
+                <p className="font-bold text-amber-800 mb-1"><MathFormula formula="\\vec{v}_{B/A}" inline={true} /></p>
+                <p className="text-slate-600">Velocidade do barco em relação à água (o que o velocímetro do barco marca).</p>
+              </div>
+              <div className="bg-white border border-amber-100 rounded p-3 text-center">
+                <p className="font-bold text-amber-800 mb-1"><MathFormula formula="\\vec{v}_{A/S}" inline={true} /></p>
+                <p className="text-slate-600">Velocidade da água em relação ao solo (velocidade da correnteza).</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===================== EXERCÍCIOS PROGRESSIVOS ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">Exercícios Progressivos</h2>
+
+          <p className="text-slate-700 leading-relaxed mb-6">
+            A prática é o caminho para a maestria. Os exercícios abaixo estão organizados em ordem crescente de dificuldade, partindo de questões conceituais básicas até problemas que exigem raciocínio avançado e integração de múltiplos conceitos. Tente resolver cada um antes de consultar a resposta.
+          </p>
+
+          {/* Exercício 1 - Básico */}
+          <div className="bg-green-50 border border-green-200 rounded-xl p-6 mb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full">Nível 1 — Conceitual</span>
+            </div>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              <strong>Exercício 1:</strong> Um passageiro está sentado em um trem que se move com velocidade constante de 80 km/h em relação ao solo. Ele joga uma bola verticalmente para cima. Descreva a trajetória da bola: (a) no referencial do passageiro; (b) no referencial de uma pessoa parada na plataforma da estação.
+            </p>
+            <details className="bg-white border border-green-100 rounded-lg p-4">
+              <summary className="font-bold text-green-800 cursor-pointer">Ver Resposta</summary>
+              <div className="mt-3 text-slate-700 text-sm leading-relaxed">
+                <p className="mb-2"><strong>(a)</strong> No referencial do passageiro (que se move junto com o trem), a bola sobe e desce verticalmente. A trajetória é uma <strong>reta vertical</strong>.</p>
+                <p><strong>(b)</strong> No referencial da plataforma, a bola possui velocidade horizontal (80 km/h, a mesma do trem) e velocidade vertical (variável, devido à gravidade). A trajetória é uma <strong>parábola</strong>. Este é um exemplo clássico de como a trajetória depende do referencial.</p>
+              </div>
+            </details>
+          </div>
+
+          {/* Exercício 2 - Intermediário */}
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="bg-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full">Nível 2 — Aplicação</span>
+            </div>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              <strong>Exercício 2:</strong> Um ciclista percorre uma pista retilínea. Ele parte da posição s = 2 m, avança até s = 14 m, depois retorna até s = 6 m. Determine: (a) o deslocamento escalar total; (b) a distância total percorrida.
+            </p>
+            <details className="bg-white border border-yellow-100 rounded-lg p-4">
+              <summary className="font-bold text-yellow-800 cursor-pointer">Ver Resposta</summary>
+              <div className="mt-3 text-slate-700 text-sm leading-relaxed space-y-2">
+                <p><strong>(a) Deslocamento escalar:</strong></p>
+                <div className="bg-yellow-100 rounded p-2 text-center">
+                  <MathFormula formula="\\Delta s = s_f - s_i = 6 - 2 = 4 \\text{ m}" />
+                </div>
+                <p><strong>(b) Distância percorrida:</strong></p>
+                <p>Trecho 1 (ida): de 2 m até 14 m → <MathFormula formula="d_1 = |14 - 2| = 12 \\text{ m}" inline={true} /></p>
+                <p>Trecho 2 (volta): de 14 m até 6 m → <MathFormula formula="d_2 = |6 - 14| = 8 \\text{ m}" inline={true} /></p>
+                <div className="bg-yellow-100 rounded p-2 text-center">
+                  <MathFormula formula="d_{total} = d_1 + d_2 = 12 + 8 = 20 \\text{ m}" />
+                </div>
+                <p>Note que a distância (20 m) é muito maior que o deslocamento (4 m), pois houve inversão de sentido.</p>
+              </div>
+            </details>
+          </div>
+
+          {/* Exercício 3 - Avançado */}
+          <div className="bg-orange-50 border border-orange-200 rounded-xl p-6 mb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="bg-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full">Nível 3 — Avançado</span>
+            </div>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              <strong>Exercício 3:</strong> Um trem de comprimento L = 200 m move-se com velocidade constante v = 72 km/h. Ele precisa atravessar completamente uma ponte de comprimento D = 300 m. Determine: (a) a distância total percorrida pela locomotiva desde o instante em que ela entra na ponte até o instante em que o último vagão sai da ponte; (b) o tempo total de travessia.
+            </p>
+            <details className="bg-white border border-orange-100 rounded-lg p-4">
+              <summary className="font-bold text-orange-800 cursor-pointer">Ver Resposta</summary>
+              <div className="mt-3 text-slate-700 text-sm leading-relaxed space-y-2">
+                <p>Este é um problema clássico de <strong>corpo extenso</strong>. O trem não pode ser tratado como ponto material porque seu comprimento é relevante.</p>
+                <p><strong>(a)</strong> A locomotiva precisa percorrer o comprimento da ponte <strong>mais</strong> o comprimento do próprio trem para que o último vagão saia completamente:</p>
+                <div className="bg-orange-100 rounded p-2 text-center">
+                  <MathFormula formula="d = L + D = 200 + 300 = 500 \\text{ m}" />
+                </div>
+                <p><strong>(b)</strong> Convertendo a velocidade: <MathFormula formula="v = 72 \\text{ km/h} = 20 \\text{ m/s}" inline={true} /></p>
+                <div className="bg-orange-100 rounded p-2 text-center">
+                  <MathFormula formula="t = \\frac{d}{v} = \\frac{500}{20} = 25 \\text{ s}" />
+                </div>
+                <p><strong>Observação:</strong> Se o problema pedisse apenas o tempo para a locomotiva cruzar a ponte (sem considerar o resto do trem), a distância seria apenas D = 300 m e o tempo seria 15 s. A diferença entre essas duas interpretações é exatamente o que separa ponto material de corpo extenso.</p>
+              </div>
+            </details>
+          </div>
+
+          {/* Exercício 4 - Desafio */}
+          <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">Nível 4 — Desafio</span>
+            </div>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              <strong>Exercício 4:</strong> Dois trens, A e B, movem-se em sentidos opostos em trilhos paralelos. O trem A tem comprimento <MathFormula formula="L_A = 150 \\text{ m}" inline={true} /> e velocidade <MathFormula formula="v_A = 90 \\text{ km/h}" inline={true} />. O trem B tem comprimento <MathFormula formula="L_B = 250 \\text{ m}" inline={true} /> e velocidade <MathFormula formula="v_B = 54 \\text{ km/h}" inline={true} />. Determine o tempo que um passageiro no trem A leva para ver o trem B passar completamente pela sua janela.
+            </p>
+            <details className="bg-white border border-red-100 rounded-lg p-4">
+              <summary className="font-bold text-red-800 cursor-pointer">Ver Resposta</summary>
+              <div className="mt-3 text-slate-700 text-sm leading-relaxed space-y-2">
+                <p>O passageiro no trem A é um <strong>ponto material</strong> (observador). O trem B é um <strong>corpo extenso</strong> que precisa passar completamente por ele. A distância que o trem B precisa percorrer em relação ao passageiro é o comprimento do próprio trem B.</p>
+                <p><strong>Velocidade relativa:</strong> Como os trens se movem em sentidos opostos, as velocidades se somam:</p>
+                <div className="bg-red-100 rounded p-2 text-center">
+                  <MathFormula formula="v_{rel} = v_A + v_B = 90 + 54 = 144 \\text{ km/h} = 40 \\text{ m/s}" />
+                </div>
+                <p><strong>Tempo:</strong> O trem B precisa percorrer seu próprio comprimento em relação ao passageiro:</p>
+                <div className="bg-red-100 rounded p-2 text-center">
+                  <MathFormula formula="t = \\frac{L_B}{v_{rel}} = \\frac{250}{40} = 6{,}25 \\text{ s}" />
+                </div>
+                <p><strong>Observação crucial:</strong> Note que usamos apenas <MathFormula formula="L_B" inline={true} /> (e não <MathFormula formula="L_A + L_B" inline={true} />) porque o passageiro é um ponto. Se o problema pedisse o tempo para os dois trens se cruzarem completamente, aí sim usaríamos <MathFormula formula="L_A + L_B = 400 \\text{ m}" inline={true} /> e o tempo seria 10 s.</p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        {/* ===================== SÍNTESE E CONEXÃO ENTRE CONCEITOS ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">Síntese — Conexão Entre os Conceitos</h2>
+
+          <p className="text-slate-700 leading-relaxed mb-6">
+            Antes de avançar para os tópicos de Velocidade e Aceleração, é fundamental consolidar como todos os conceitos desta seção se conectam. A Cinemática é uma construção lógica onde cada conceito depende dos anteriores.
+          </p>
+
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 mb-6">
+            <h3 className="text-xl font-bold text-slate-900 mb-4">Cadeia Lógica da Cinemática</h3>
+            <div className="space-y-4">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">1</div>
+                <div>
+                  <p className="font-bold text-slate-900">Referencial</p>
+                  <p className="text-slate-700 text-sm">Sem referencial, não há como definir movimento ou repouso. É o ponto de partida absoluto.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">2</div>
+                <div>
+                  <p className="font-bold text-slate-900">Ponto Material ou Corpo Extenso</p>
+                  <p className="text-slate-700 text-sm">Decidimos se as dimensões do corpo importam. Isso define a complexidade do problema.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">3</div>
+                <div>
+                  <p className="font-bold text-slate-900">Trajetória</p>
+                  <p className="text-slate-700 text-sm">Definido o referencial, a trajetória é determinada. Ela é o "palco" onde o movimento acontece.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">4</div>
+                <div>
+                  <p className="font-bold text-slate-900">Posição (s) e Deslocamento (Δs)</p>
+                  <p className="text-slate-700 text-sm">Com a trajetória definida, localizamos o móvel (posição) e medimos quanto ele se moveu (deslocamento).</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">5</div>
+                <div>
+                  <p className="font-bold text-slate-900">Velocidade → Aceleração → Tipos de Movimento</p>
+                  <p className="text-slate-700 text-sm">Com posição e tempo, definimos velocidade. Com velocidade e tempo, definimos aceleração. Com aceleração, classificamos o movimento (MRU, MRUV, etc.).</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
+            <h4 className="font-bold text-amber-900 mb-3">Resumo das Relações Fundamentais</h4>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="bg-amber-100">
+                    <th className="border border-amber-300 p-2 text-left">Conceito</th>
+                    <th className="border border-amber-300 p-2 text-left">Depende de</th>
+                    <th className="border border-amber-300 p-2 text-left">Fornece base para</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td className="border border-amber-200 p-2">Referencial</td><td className="border border-amber-200 p-2">Nada (é o ponto de partida)</td><td className="border border-amber-200 p-2">Trajetória, Posição, Movimento</td></tr>
+                  <tr><td className="border border-amber-200 p-2">Ponto Material</td><td className="border border-amber-200 p-2">Dimensões do corpo vs. dimensões do problema</td><td className="border border-amber-200 p-2">Simplificação dos cálculos</td></tr>
+                  <tr><td className="border border-amber-200 p-2">Trajetória</td><td className="border border-amber-200 p-2">Referencial</td><td className="border border-amber-200 p-2">Posição, Deslocamento, Distância</td></tr>
+                  <tr><td className="border border-amber-200 p-2">Posição (s)</td><td className="border border-amber-200 p-2">Trajetória + Origem + Sentido</td><td className="border border-amber-200 p-2">Deslocamento, Velocidade</td></tr>
+                  <tr><td className="border border-amber-200 p-2">Deslocamento (Δs)</td><td className="border border-amber-200 p-2">Posição inicial e final</td><td className="border border-amber-200 p-2">Velocidade Média</td></tr>
+                  <tr><td className="border border-amber-200 p-2">Distância (d)</td><td className="border border-amber-200 p-2">Trajetória completa</td><td className="border border-amber-200 p-2">Velocidade Escalar Média</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
           <h2 className="text-3xl font-bold text-slate-900 mb-6">🌍 Aplicações Práticas</h2>
           <div className="grid grid-cols-2 gap-6">
