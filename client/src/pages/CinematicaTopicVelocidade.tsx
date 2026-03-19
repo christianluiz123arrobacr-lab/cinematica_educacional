@@ -28,154 +28,235 @@ export default function CinematicaTopicVelocidade() {
       </header>
 
       <section className="container py-6 md:py-12 space-y-6 md:space-y-12">
-                {/* ===================== VELOCIDADE MÉDIA E ESCALAR ===================== */}
+                {/* ===================== 1. CONTEXTO HISTÓRICO E CONCEITUAL ===================== */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">🚀 Velocidade Média e Velocidade Escalar</h2>
-          
-          <div className="space-y-6">
-            <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
-              <h3 className="text-xl font-bold text-slate-900 mb-3">A Essência do Movimento</h3>
-              <p className="text-slate-700 leading-relaxed mb-4">
-                A velocidade é a grandeza física que descreve a rapidez com que a posição de um móvel varia no tempo. No nível de elite (ITA/IME), a distinção entre <strong>velocidade escalar média</strong> e <strong>velocidade vetorial média</strong> é fundamental. Enquanto a primeira foca no caminho percorrido, a segunda foca apenas no deslocamento entre os pontos inicial e final.
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+              <Activity className="w-6 h-6 text-blue-600" />
+            </div>
+            <h2 className="text-3xl font-bold text-slate-900">1. Contexto Histórico e Conceitual</h2>
+          </div>
+          <div className="space-y-4 text-slate-700 leading-relaxed">
+            <p>
+              A ideia de "quão rápido" algo se move é intuitiva, mas sua formalização matemática levou séculos. Para <strong>Aristóteles</strong>, o movimento era uma "qualidade" do objeto. Foi apenas com <strong>Galileu Galilei</strong> que a velocidade passou a ser tratada como uma grandeza física mensurável, relacionando a distância percorrida com o tempo gasto.
+            </p>
+            <p>
+              Na física de elite, não basta saber "o valor" da velocidade. Precisamos entender se estamos medindo o caminho total (escalar) ou a mudança de posição líquida (vetorial). Essa distinção é o que separa um problema simples de um desafio de nível ITA/IME.
+            </p>
+          </div>
+        </div>
+
+        {/* ===================== 2. DEFINIÇÕES PRECISAS ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+              <Target className="w-6 h-6 text-indigo-600" />
+            </div>
+            <h2 className="text-3xl font-bold text-slate-900">2. Definições Precisas</h2>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+              <h3 className="text-xl font-bold text-blue-700 mb-3">Velocidade Escalar Média (<MathFormula formula="v_{em}" inline={true} />)</h3>
+              <p className="text-slate-600 text-sm mb-4">
+                É a grandeza escalar que mede a rapidez média com que um móvel percorre uma <strong>distância total</strong> ao longo de sua trajetória.
               </p>
-              <div className="bg-indigo-50 border border-indigo-200 rounded p-4">
-                <p className="text-slate-700 text-sm"><strong>Visão de Elite:</strong> A velocidade escalar média (<MathFormula formula="v_{em}" inline={true} />) é sempre maior ou igual ao módulo da velocidade vetorial média (<MathFormula formula="|\vec{v}_m|" inline={true} />). Elas só são iguais se o movimento for retilíneo e sem inversão de sentido.</p>
+              <div className="bg-blue-100/50 p-3 rounded-lg text-blue-900 font-mono text-sm">
+                Foco: Comprimento da trajetória (caminho real).
+              </div>
+            </div>
+            <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+              <h3 className="text-xl font-bold text-purple-700 mb-3">Velocidade Vetorial Média (<MathFormula formula="\vec{v}_m" inline={true} />)</h3>
+              <p className="text-slate-600 text-sm mb-4">
+                É a grandeza vetorial definida pela razão entre o <strong>vetor deslocamento</strong> e o intervalo de tempo correspondente.
+              </p>
+              <div className="bg-purple-100/50 p-3 rounded-lg text-purple-900 font-mono text-sm">
+                Foco: Mudança de posição (início ao fim).
               </div>
             </div>
           </div>
         </div>
 
-        {/* Definições Precisas */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h3 className="text-2xl font-bold text-slate-900 mb-6">📌 Definições Precisas</h3>
-          
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
-            {/* Velocidade Escalar Média */}
-            <div className="bg-gradient-to-br from-blue-900 to-indigo-900 rounded-xl p-6 text-white">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-blue-500/30 rounded-lg flex items-center justify-center">
-                  <Activity className="w-5 h-5 text-blue-300" />
-                </div>
-                <h3 className="text-lg font-bold text-blue-200">Velocidade Escalar Média</h3>
-              </div>
-              <p className="text-slate-300 text-sm leading-relaxed mb-4">
-                Razão entre a <strong>distância total percorrida</strong> (<MathFormula formula="d" inline={true} />) e o intervalo de tempo total (<MathFormula formula="\Delta t" inline={true} />).
-              </p>
-              <div className="bg-blue-800/50 rounded-lg p-3 mb-3">
-                <p className="text-xs text-blue-200 font-semibold mb-2">Fórmula:</p>
-                <MathFormula formula="v_{em} = \frac{d}{\Delta t}" />
-              </div>
-              <p className="text-xs text-slate-400">Leva em conta todo o caminho percorrido (ida e volta).</p>
+        {/* ===================== 3. DEDUÇÕES MATEMÁTICAS COMPLETAS ===================== */}
+        <div className="bg-slate-900 rounded-2xl shadow-xl p-8 mb-8 text-white">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+              <Zap className="w-6 h-6 text-blue-400" />
             </div>
-
-            {/* Velocidade Vetorial Média */}
-            <div className="bg-gradient-to-br from-purple-900 to-pink-900 rounded-xl p-6 text-white">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-purple-500/30 rounded-lg flex items-center justify-center">
-                  <Target className="w-5 h-5 text-purple-300" />
-                </div>
-                <h3 className="text-lg font-bold text-purple-200">Velocidade Vetorial Média</h3>
+            <h2 className="text-3xl font-bold">3. Deduções Matemáticas Completas</h2>
+          </div>
+          <div className="space-y-6">
+            <div>
+              <p className="text-blue-300 font-semibold mb-2">Partindo da definição de taxa de variação:</p>
+              <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                <p className="mb-4 text-slate-300">Para a velocidade escalar média, consideramos a distância total <MathFormula formula="d" inline={true} /> percorrida no tempo <MathFormula formula="\Delta t" inline={true} />:</p>
+                <MathFormula formula="v_{em} = \frac{d}{\Delta t} = \frac{\sum | \Delta s_i |}{t_f - t_i}" className="text-2xl" />
               </div>
-              <p className="text-slate-300 text-sm leading-relaxed mb-4">
-                Razão entre o <strong>vetor deslocamento</strong> (<MathFormula formula="\Delta \vec{r}" inline={true} />) e o intervalo de tempo total (<MathFormula formula="\Delta t" inline={true} />).
-              </p>
-              <div className="bg-purple-800/50 rounded-lg p-3 mb-3">
-                <p className="text-xs text-purple-200 font-semibold mb-2">Fórmula:</p>
-                <MathFormula formula="\vec{v}_m = \frac{\Delta \vec{r}}{\Delta t}" />
+            </div>
+            <div>
+              <p className="text-purple-300 font-semibold mb-2">Para a velocidade vetorial média:</p>
+              <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                <p className="mb-4 text-slate-300">Consideramos o vetor posição final <MathFormula formula="\vec{r}_f" inline={true} /> e inicial <MathFormula formula="\vec{r}_i" inline={true} />:</p>
+                <MathFormula formula="\vec{v}_m = \frac{\Delta \vec{r}}{\Delta t} = \frac{\vec{r}_f - \vec{r}_i}{t_f - t_i}" className="text-2xl" />
               </div>
-              <p className="text-xs text-slate-400">Depende apenas das posições inicial e final.</p>
             </div>
           </div>
+        </div>
 
-          {/* Tabela Comparativa */}
-          <div className="overflow-x-auto mb-8">
+        {/* ===================== 4. TERMO-A-TERMO EM GRID 2 COLUNAS ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
+              <Box className="w-6 h-6 text-slate-600" />
+            </div>
+            <h2 className="text-3xl font-bold text-slate-900">4. Termo-a-termo</h2>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-100">
+              <div className="text-2xl font-bold text-blue-600 w-12 text-center"><MathFormula formula="v_m" inline={true} /></div>
+              <div>
+                <p className="font-bold text-slate-800">Velocidade Média</p>
+                <p className="text-xs text-slate-500">Unidade SI: m/s (metros por segundo)</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-100">
+              <div className="text-2xl font-bold text-blue-600 w-12 text-center"><MathFormula formula="\Delta s" inline={true} /></div>
+              <div>
+                <p className="font-bold text-slate-800">Deslocamento Escalar</p>
+                <p className="text-xs text-slate-500">Variação da posição na trajetória</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-100">
+              <div className="text-2xl font-bold text-blue-600 w-12 text-center"><MathFormula formula="d" inline={true} /></div>
+              <div>
+                <p className="font-bold text-slate-800">Distância Percorrida</p>
+                <p className="text-xs text-slate-500">Soma dos módulos de todos os deslocamentos</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-100">
+              <div className="text-2xl font-bold text-blue-600 w-12 text-center"><MathFormula formula="\Delta t" inline={true} /></div>
+              <div>
+                <p className="font-bold text-slate-800">Intervalo de Tempo</p>
+                <p className="text-xs text-slate-500">Duração do evento (<MathFormula formula="t_{final} - t_{inicial}" inline={true} />)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===================== 5. RELAÇÃO MATEMÁTICA ===================== */}
+        <div className="bg-blue-50 border-l-4 border-blue-500 p-8 mb-8 rounded-r-2xl shadow-md">
+          <div className="flex items-center gap-3 mb-4">
+            <TrendingUp className="w-8 h-8 text-blue-600" />
+            <h3 className="text-2xl font-bold text-blue-900">5. Relação Matemática Fundamental</h3>
+          </div>
+          <div className="space-y-4 text-blue-900">
+            <p className="text-lg">
+              A relação entre a velocidade escalar e a vetorial é dada pela desigualdade:
+            </p>
+            <div className="bg-white/80 p-6 rounded-xl border border-blue-200 text-center">
+              <MathFormula formula="v_{em} \geq |\vec{v}_m|" className="text-3xl" />
+            </div>
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-600" />
+                <span><strong>Igualdade (=):</strong> Ocorre apenas em movimentos retilíneos e sem inversão de sentido.</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-600" />
+                <span><strong>Desigualdade (>):</strong> Ocorre se a trajetória for curva ou se houver "vai e vem" (inversão de sentido).</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* ===================== 6. TABELAS COMPARATIVAS ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
+              <Activity className="w-6 h-6 text-slate-600" />
+            </div>
+            <h2 className="text-3xl font-bold text-slate-900">6. Tabela Comparativa</h2>
+          </div>
+          <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-slate-800 text-white">
-                  <th className="p-3 text-left rounded-tl-lg">Característica</th>
-                  <th className="p-3 text-center text-blue-300">Escalar Média</th>
-                  <th className="p-3 text-center text-purple-300 rounded-tr-lg">Vetorial Média</th>
+                  <th className="p-4 text-left rounded-tl-lg">Critério</th>
+                  <th className="p-4 text-center">Velocidade Escalar Média</th>
+                  <th className="p-4 text-center rounded-tr-lg">Velocidade Vetorial Média</th>
                 </tr>
               </thead>
               <tbody>
-                <tr className="bg-slate-50 border-b border-slate-200">
-                  <td className="p-3 font-semibold text-slate-700">Natureza</td>
-                  <td className="p-3 text-center text-slate-600">Escalar (número)</td>
-                  <td className="p-3 text-center text-slate-600">Vetorial (módulo, dir, sent)</td>
+                <tr className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                  <td className="p-4 font-bold text-slate-700">O que mede?</td>
+                  <td className="p-4 text-center text-slate-600">Rapidez ao longo do caminho</td>
+                  <td className="p-4 text-center text-slate-600">Rapidez da mudança de posição</td>
                 </tr>
-                <tr className="bg-white border-b border-slate-200">
-                  <td className="p-3 font-semibold text-slate-700">Depende da Trajetória?</td>
-                  <td className="p-3 text-center text-slate-600">Sim (comprimento total)</td>
-                  <td className="p-3 text-center text-slate-600">Não (só início e fim)</td>
+                <tr className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                  <td className="p-4 font-bold text-slate-700">Cálculo</td>
+                  <td className="p-4 text-center text-slate-600"><MathFormula formula="d / \Delta t" inline={true} /></td>
+                  <td className="p-4 text-center text-slate-600"><MathFormula formula="\Delta \vec{r} / \Delta t" inline={true} /></td>
                 </tr>
-                <tr className="bg-slate-50 border-b border-slate-200">
-                  <td className="p-3 font-semibold text-slate-700">Pode ser zero?</td>
-                  <td className="p-3 text-center text-slate-600">Só se não houver movimento</td>
-                  <td className="p-3 text-center text-slate-600">Sim (se voltar ao início)</td>
+                <tr className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                  <td className="p-4 font-bold text-slate-700">Sinal</td>
+                  <td className="p-4 text-center text-slate-600">Sempre positiva (ou zero)</td>
+                  <td className="p-4 text-center text-slate-600">Pode ser positiva, negativa ou zero</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* O Pulo do Gato - Renato Brito */}
-        <div className="bg-yellow-50 border-l-4 border-yellow-500 p-8 mb-8 rounded-r-2xl shadow-md">
-          <div className="flex items-center gap-3 mb-4">
-            <Lightbulb className="w-8 h-8 text-yellow-600" />
-            <h3 className="text-2xl font-bold text-yellow-900">O Pulo do Gato (Visão Renato Brito)</h3>
+        {/* ===================== 7. EXEMPLOS RESOLVIDOS ITA/IME ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+              <CheckCircle2 className="w-6 h-6 text-green-600" />
+            </div>
+            <h2 className="text-3xl font-bold text-slate-900">7. Exemplos Resolvidos (ITA/IME)</h2>
           </div>
-          <div className="space-y-4 text-yellow-900">
-            <p className="font-semibold">Velocidade Média em Trechos Iguais:</p>
-            <p className="text-sm leading-relaxed">
-              Se um móvel percorre a primeira metade de uma distância com velocidade <MathFormula formula="v_1" inline={true} /> e a segunda metade com <MathFormula formula="v_2" inline={true} />, a velocidade média <strong>NÃO É</strong> a média aritmética <MathFormula formula="(v_1 + v_2)/2" inline={true} />.
-            </p>
-            <div className="bg-white/50 p-4 rounded-lg border border-yellow-200">
-              <p className="text-sm font-bold mb-2">A Média Harmônica:</p>
-              <MathFormula formula="v_m = \frac{2 \cdot v_1 \cdot v_2}{v_1 + v_2}" />
-              <p className="text-xs mt-2 italic">*Dica: Isso cai muito no ITA para testar quem faz a média simples por pressa.</p>
+          <div className="space-y-8">
+            <div className="bg-green-50/50 border border-green-100 rounded-2xl p-6">
+              <h4 className="text-xl font-bold text-green-900 mb-4">Exemplo 1: O Pulo do Gato (Renato Brito)</h4>
+              <p className="text-slate-700 mb-4">
+                Um carro percorre a primeira metade de uma estrada com velocidade <MathFormula formula="v_1 = 40 \text{ km/h}" inline={true} /> e a segunda metade com <MathFormula formula="v_2 = 60 \text{ km/h}" inline={true} />. Qual a velocidade média em todo o percurso?
+              </p>
+              <div className="bg-white p-6 rounded-xl border border-green-200">
+                <p className="font-bold text-slate-800 mb-4">Resolução Passo a Passo:</p>
+                <div className="space-y-3 text-slate-600 text-sm">
+                  <p>1. Seja <MathFormula formula="L" inline={true} /> a distância total. Cada trecho tem <MathFormula formula="L/2" inline={true} />.</p>
+                  <p>2. Tempo no trecho 1: <MathFormula formula="t_1 = \frac{L/2}{v_1} = \frac{L}{2v_1}" inline={true} />.</p>
+                  <p>3. Tempo no trecho 2: <MathFormula formula="t_2 = \frac{L/2}{v_2} = \frac{L}{2v_2}" inline={true} />.</p>
+                  <p>4. Velocidade Média: <MathFormula formula="v_m = \frac{L}{t_1 + t_2} = \frac{L}{\frac{L}{2v_1} + \frac{L}{2v_2}}" inline={true} />.</p>
+                  <p>5. Simplificando (Média Harmônica): <MathFormula formula="v_m = \frac{2 \cdot v_1 \cdot v_2}{v_1 + v_2}" inline={true} />.</p>
+                  <div className="bg-green-900 text-white p-4 rounded-lg mt-4 text-center">
+                    <MathFormula formula="v_m = \frac{2 \cdot 40 \cdot 60}{40 + 60} = \frac{4800}{100} = 48 \text{ km/h}" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Exemplos Resolvidos ITA/IME */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h3 className="text-2xl font-bold text-slate-900 mb-6">📝 Exemplos Resolvidos (Nível ITA/IME)</h3>
-          
-          <div className="space-y-8">
-            {/* Exemplo 1 */}
-            <div className="bg-green-50 border border-green-200 rounded-xl p-6">
-              <h4 className="font-bold text-green-900 mb-4">Exemplo 1: O Problema da Ida e Volta (ITA)</h4>
-              <p className="text-slate-700 mb-4">
-                Um nadador atravessa uma piscina de 50 m em 25 s e retorna ao ponto de partida em 35 s. Calcule: (a) a velocidade escalar média e (b) o módulo da velocidade vetorial média.
-              </p>
-              <div className="space-y-4">
-                <div className="bg-white rounded-lg p-4 border border-green-200">
-                  <p className="font-bold text-slate-800 mb-2">(a) Velocidade Escalar Média:</p>
-                  <MathFormula formula="d = 50 + 50 = 100 \text{ m}" />
-                  <MathFormula formula="\Delta t = 25 + 35 = 60 \text{ s}" />
-                  <MathFormula formula="v_{em} = \frac{100}{60} \approx 1{,}67 \text{ m/s}" />
-                </div>
-                <div className="bg-white rounded-lg p-4 border border-green-200">
-                  <p className="font-bold text-slate-800 mb-2">(b) Velocidade Vetorial Média:</p>
-                  <p className="text-sm text-slate-600 mb-2">Como o nadador voltou ao ponto de partida, o deslocamento é nulo.</p>
-                  <MathFormula formula="\Delta \vec{r} = 0 \implies \vec{v}_m = 0" />
-                </div>
-              </div>
+        {/* ===================== 8. APLICAÇÕES PRÁTICAS ===================== */}
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-lg p-8 mb-8 text-white">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+              <TrendingUp className="w-6 h-6 text-blue-400" />
             </div>
-
-            {/* Exemplo 2 */}
-            <div className="bg-green-50 border border-green-200 rounded-xl p-6">
-              <h4 className="font-bold text-green-900 mb-4">Exemplo 2: Velocidades em Trechos Iguais (IME)</h4>
-              <p className="text-slate-700 mb-4">
-                Um veículo percorre um terço de sua trajetória a 20 km/h, o segundo terço a 30 km/h e o último terço a 60 km/h. Qual a velocidade média em todo o percurso?
-              </p>
-              <div className="bg-white rounded-lg p-4 border border-green-200">
-                <p className="font-bold text-slate-800 mb-2">Resolução por Média Harmônica Generalizada:</p>
-                <MathFormula formula="\frac{1}{v_m} = \frac{1}{3} \left( \frac{1}{v_1} + \frac{1}{v_2} + \frac{1}{v_3} \right)" />
-                <MathFormula formula="\frac{1}{v_m} = \frac{1}{3} \left( \frac{1}{20} + \frac{1}{30} + \frac{1}{60} \right)" />
-                <MathFormula formula="\frac{1}{v_m} = \frac{1}{3} \left( \frac{3+2+1}{60} \right) = \frac{1}{3} \cdot \frac{6}{60} = \frac{1}{30}" />
-                <MathFormula formula="v_m = 30 \text{ km/h}" />
-              </div>
+            <h2 className="text-3xl font-bold">8. Aplicações Práticas</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-slate-700/50 p-6 rounded-xl border border-slate-600">
+              <h4 className="font-bold text-blue-300 mb-2">GPS e Navegação</h4>
+              <p className="text-xs text-slate-300">O GPS calcula sua velocidade vetorial instantânea via satélite para prever o tempo de chegada (ETA).</p>
+            </div>
+            <div className="bg-slate-700/50 p-6 rounded-xl border border-slate-600">
+              <h4 className="font-bold text-blue-300 mb-2">Tráfego Rodoviário</h4>
+              <p className="text-xs text-slate-300">Radares de velocidade média usam a definição escalar para multar veículos entre dois pontos.</p>
+            </div>
+            <div className="bg-slate-700/50 p-6 rounded-xl border border-slate-600">
+              <h4 className="font-bold text-blue-300 mb-2">Aeronáutica</h4>
+              <p className="text-xs text-slate-300">Pilotos diferenciam a velocidade em relação ao ar (escalar) da velocidade em relação ao solo (vetorial).</p>
             </div>
           </div>
         </div>
