@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { BookOpen, Zap, Target, Droplet, MessageCircle, ArrowLeft, Play, BarChart3, Calculator, HelpCircle, TrendingUp } from "lucide-react";
+import { BookOpen, Zap, Target, Droplet, MessageCircle, ArrowLeft, Play, BarChart3, Calculator, HelpCircle, TrendingUp, Activity, RotateCw, Compass } from "lucide-react";
 import { Link } from "wouter";
 import { MathFormula } from "@/components/MathFormula";
 
@@ -152,13 +152,45 @@ export default function Home() {
         <div className="mb-16">
           <h3 className="text-3xl font-bold text-slate-900 mb-8">Tópicos Principais</h3>
           <div className="grid md:grid-cols-2 gap-6">
+            {/* Bases da Cinemática */}
+            <Link href="/cinematica/topic/bases">
+              <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-blue-500 cursor-pointer hover:border-blue-700">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                    <Compass className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Bases da Cinemática</h4>
+                    <p className="text-slate-600 mb-4 text-sm">Os fundamentos essenciais: referencial, trajetória e a distinção entre deslocamento (<span className="font-mono text-blue-700">Δs</span>) e distância percorrida.</p>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Referencial e Movimento Relativo
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Ponto Material vs. Corpo Extenso
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        Espaço, Deslocamento e Trajetória
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            {/* Velocidade e Aceleração */}
             <Link href="/cinematica/topic/velocidade">
               <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-blue-500 cursor-pointer hover:border-blue-700">
                 <div className="flex items-start gap-4">
-                  <div className="text-4xl">⚡</div>
+                  <div className="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center">
+                    <Zap className="w-6 h-6 text-orange-500" />
+                  </div>
                   <div className="flex-1">
                     <h4 className="text-xl font-bold text-slate-900 mb-2">Velocidade e Aceleração</h4>
-                    <p className="text-slate-600 mb-4">Os conceitos fundamentais que descrevem como os objetos se movem e como seu movimento muda.</p>
+                    <p className="text-slate-600 mb-4 text-sm">Análise das taxas de variação: como a posição muda no tempo e como a velocidade evolui.</p>
                     <ul className="space-y-2 text-sm text-slate-700">
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
@@ -166,53 +198,61 @@ export default function Home() {
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                        Aceleração e Desaceleração
+                        Aceleração Escalar e Vetorial
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                        Relação entre Velocidade e Aceleração
+                        Movimentos Acelerados e Retardados
                       </li>
                     </ul>
                   </div>
                 </div>
               </Card>
             </Link>
+
+            {/* Movimento Retilíneo Uniforme */}
             <Link href="/cinematica/topic/mru">
               <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-blue-500 cursor-pointer hover:border-blue-700">
                 <div className="flex items-start gap-4">
-                  <div className="text-4xl">🚗</div>
+                  <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                    <Activity className="w-6 h-6 text-blue-600" />
+                  </div>
                   <div className="flex-1">
                     <h4 className="text-xl font-bold text-slate-900 mb-2">Movimento Retilíneo Uniforme</h4>
-                    <p className="text-slate-600 mb-4">O movimento mais simples: em linha reta com velocidade constante.</p>
+                    <p className="text-slate-600 mb-4 text-sm">O movimento com velocidade constante, descrito pela função horária <span className="font-mono text-blue-700">s = s₀ + vt</span> e suas propriedades gráficas.</p>
                     <ul className="space-y-2 text-sm text-slate-700">
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                        Equação Horária
+                        Equação Horária do Espaço
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                        Gráficos do MRU
+                        Gráficos e Interpretação de Áreas
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                        Aplicações Práticas
+                        Problemas de Encontro e Perseguição
                       </li>
                     </ul>
                   </div>
                 </div>
               </Card>
             </Link>
+
+            {/* Movimento Uniformemente Variado */}
             <Link href="/cinematica/topic/mruv">
               <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-blue-500 cursor-pointer hover:border-blue-700">
                 <div className="flex items-start gap-4">
-                  <div className="text-4xl">📈</div>
+                  <div className="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-indigo-600" />
+                  </div>
                   <div className="flex-1">
                     <h4 className="text-xl font-bold text-slate-900 mb-2">Movimento Uniformemente Variado</h4>
-                    <p className="text-slate-600 mb-4">Movimento com aceleração constante, onde a velocidade muda linearmente.</p>
+                    <p className="text-slate-600 mb-4 text-sm">Aceleração constante e velocidade linear: de Torricelli à função horária do segundo grau.</p>
                     <ul className="space-y-2 text-sm text-slate-700">
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                        Equações Fundamentais
+                        Equações Fundamentais e Deduções
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
@@ -220,57 +260,65 @@ export default function Home() {
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                        Gráficos e Interpretação
+                        Gráficos e Propriedades da Parábola
                       </li>
                     </ul>
                   </div>
                 </div>
               </Card>
             </Link>
-            <Link href="/cinematica/topic/circular">
+
+            {/* Movimento Circular Uniforme */}
+            <Link href="/cinematica/topic/mcu">
               <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-blue-500 cursor-pointer hover:border-blue-700">
                 <div className="flex items-start gap-4">
-                  <div className="text-4xl">🔄</div>
+                  <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                    <RotateCw className="w-6 h-6 text-blue-600" />
+                  </div>
                   <div className="flex-1">
                     <h4 className="text-xl font-bold text-slate-900 mb-2">Movimento Circular Uniforme</h4>
-                    <p className="text-slate-600 mb-4">Movimento em trajetória circular com velocidade constante em módulo.</p>
+                    <p className="text-slate-600 mb-4 text-sm">Trajetórias curvas com velocidade constante em módulo: período, frequência e aceleração centrípeta.</p>
                     <ul className="space-y-2 text-sm text-slate-700">
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                        Período e Frequência
+                        Período (T) e Frequência (f)
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                        Velocidade Angular
+                        Velocidade Angular (ω) e Tangencial
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                        Aceleração Centrípeta
+                        Aceleração Centrípeta e Transmissão
                       </li>
                     </ul>
                   </div>
                 </div>
               </Card>
             </Link>
-            <Link href="/cinematica/topic/queda-livre">
+
+            {/* Cinemática Vetorial e Relativa */}
+            <Link href="/cinematica/topic/vetorial">
               <Card className="p-8 hover:shadow-lg transition-all border-l-4 border-blue-500 cursor-pointer hover:border-blue-700">
                 <div className="flex items-start gap-4">
-                  <div className="text-4xl">⬇️</div>
+                  <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center">
+                    <Target className="w-6 h-6 text-purple-600" />
+                  </div>
                   <div className="flex-1">
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">Queda Livre</h4>
-                    <p className="text-slate-600 mb-4">Movimento sob ação exclusiva da gravidade, sem resistência do ar.</p>
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">Cinemática Vetorial e Relativa</h4>
+                    <p className="text-slate-600 mb-4 text-sm">A visão de elite: composição de movimentos, vetores posição e o Princípio de Galileu.</p>
                     <ul className="space-y-2 text-sm text-slate-700">
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                        Aceleração da Gravidade
+                        Vetores Velocidade e Aceleração
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                        Lançamento Vertical
+                        Composição de Movimentos
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                        Problemas Práticos
+                        Movimento Relativo e Vínculos
                       </li>
                     </ul>
                   </div>
@@ -280,77 +328,6 @@ export default function Home() {
           </div>
         </div>
       </main>
-
-      {/* Formula Reference Section */}
-      <section className="bg-gradient-to-r from-blue-600/10 to-purple-600/10 border-y border-slate-200/50 py-16">
-        <div className="container">
-          <div className="flex items-center justify-between mb-12">
-            <h2 className="text-3xl font-bold text-slate-900">Fórmulas Principais</h2>
-            <a href="/cinematica/formulas">
-              <Button className="bg-blue-600 hover:bg-blue-700">Ver Explicação Completa</Button>
-            </a>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { title: "Velocidade Média", formula: "v_m = \\frac{\\Delta s}{\\Delta t}" },
-              { title: "Aceleração", formula: "a = \\frac{\\Delta v}{\\Delta t}" },
-              { title: "MRU - Posição", formula: "s = s_0 + v \\cdot t" },
-              { title: "MRUV - Velocidade", formula: "V = V_0 + a \\cdot t" },
-              { title: "MRUV - Posição", formula: "S = S_0 + V_0 \\cdot t + \\frac{a \\cdot t^2}{2}" },
-              { title: "MCU - Velocidade", formula: "v = \\frac{2\\pi r}{T}" },
-            ].map((item, idx) => (
-              <a key={idx} href="/cinematica/formulas">
-                <Card className="p-6 hover:shadow-lg transition-all cursor-pointer hover:scale-105">
-                  <p className="text-sm font-semibold text-slate-600 mb-2">{item.title}</p>
-                  <div className="text-lg font-bold">
-                    <MathFormula formula={item.formula} className="text-center" />
-                  </div>
-                </Card>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-slate-900 text-slate-400 py-12">
-        <div className="container">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <h3 className="text-white font-bold mb-4">Cinemática</h3>
-              <p className="text-sm">Guia completo e interativo para entender o movimento dos corpos.</p>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Tópicos</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition">Velocidade e Aceleração</a></li>
-                <li><a href="#" className="hover:text-white transition">MRU</a></li>
-                <li><a href="#" className="hover:text-white transition">MRUV</a></li>
-                <li><a href="#" className="hover:text-white transition">Queda Livre</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Recursos</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition">Fórmulas</a></li>
-                <li><a href="#" className="hover:text-white transition">Exemplos</a></li>
-                <li><a href="#" className="hover:text-white transition">Exercícios</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Sobre</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition">Contato</a></li>
-                <li><a href="#" className="hover:text-white transition">Privacidade</a></li>
-                <li><a href="#" className="hover:text-white transition">Termos</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-slate-800 pt-8 text-center text-sm">
-            <p>&copy; 2024 Cinemática Educacional. Todos os direitos reservados.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
