@@ -1207,7 +1207,7 @@ export default function CinematicaTopicVelocidade() {
               <ul className="text-slate-700 text-sm space-y-2">
                 <li><strong>Reta horizontal (v = constante):</strong> MRU. Aceleração zero. Área = retângulo.</li>
                 <li><strong>Reta inclinada para cima:</strong> MRUV acelerado. Aceleração positiva constante. Área = trapézio.</li>
-                <li><strong>Reta inclinada para baixo:</strong> MRUV retardado (se v > 0) ou acelerado retrógrado (se v cruza o zero). Aceleração negativa constante.</li>
+                <li><strong>Reta inclinada para baixo:</strong> MRUV retardado (se v &gt; 0) ou acelerado retrógrado (se v cruza o zero). Aceleração negativa constante.</li>
                 <li><strong>Curva v(t) cruzando o eixo t:</strong> O móvel inverte o sentido do movimento. A velocidade muda de sinal. A distância percorrida exige calcular as áreas separadamente (acima e abaixo).</li>
                 <li><strong>Reta passando pela origem:</strong> Velocidade proporcional ao tempo. Aceleração constante e o móvel parte do repouso.</li>
               </ul>
@@ -1601,7 +1601,7 @@ export default function CinematicaTopicVelocidade() {
                 <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">3</div>
                 <div>
                   <p className="font-bold text-slate-900">Classificação: Acelerado, Retardado, Uniforme</p>
-                  <p className="text-slate-700 text-sm">Com base no produto v·a, classificamos o movimento. Se v·a > 0, acelerado. Se v·a &lt; 0, retardado. Se a = 0, uniforme.</p>
+                  <p className="text-slate-700 text-sm">Com base no produto v·a, classificamos o movimento. Se v·a &gt; 0, acelerado. Se v·a &lt; 0, retardado. Se a = 0, uniforme.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
