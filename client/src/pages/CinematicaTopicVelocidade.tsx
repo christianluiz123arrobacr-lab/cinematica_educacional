@@ -96,8 +96,29 @@ export default function CinematicaTopicVelocidade() {
               <p className="text-slate-400 mb-6 leading-relaxed">
                 Considere um móvel que percorre sucessivos trechos <MathFormula formula="\Delta s_1, \Delta s_2, \dots, \Delta s_n" inline={true} /> em intervalos <MathFormula formula="\Delta t_1, \Delta t_2, \dots, \Delta t_n" inline={true} />. A distância total <MathFormula formula="d" inline={true} /> é a soma dos módulos desses deslocamentos:
               </p>
-              <div className="bg-slate-800/80 p-8 rounded-2xl border border-slate-700 text-center shadow-inner">
+              <div className="bg-slate-800/80 p-8 rounded-2xl border border-slate-700 text-center shadow-inner mb-6">
                 <MathFormula formula="v_{em} = \frac{\sum_{i=1}^{n} |\Delta s_i|}{\sum_{i=1}^{n} \Delta t_i} = \frac{d_{total}}{\Delta t_{total}}" className="text-3xl" />
+              </div>
+              <div className="bg-slate-700/40 p-6 rounded-xl border border-slate-600 text-sm space-y-3">
+                <p className="text-slate-300 font-semibold mb-3">Legenda dos Termos:</p>
+                <div className="grid md:grid-cols-2 gap-4 text-slate-400">
+                  <div className="flex items-start gap-3">
+                    <span className="text-blue-400 font-bold min-w-fit"><MathFormula formula="v_{em}" inline={true} /></span>
+                    <span>Velocidade escalar média (m/s)</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-blue-400 font-bold min-w-fit"><MathFormula formula="\sum_{i=1}^{n} |\Delta s_i|" inline={true} /></span>
+                    <span>Soma dos módulos de todos os deslocamentos parciais (m)</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-blue-400 font-bold min-w-fit"><MathFormula formula="d_{total}" inline={true} /></span>
+                    <span>Distância total percorrida (m)</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-blue-400 font-bold min-w-fit"><MathFormula formula="\Delta t_{total}" inline={true} /></span>
+                    <span>Intervalo de tempo total (s)</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -107,8 +128,37 @@ export default function CinematicaTopicVelocidade() {
               <p className="text-slate-400 mb-6 leading-relaxed">
                 No espaço tridimensional, a posição é dada pelo vetor <MathFormula formula="\vec{r}(t) = x(t)\hat{i} + y(t)\hat{j} + z(t)\hat{k}" inline={true} />. O deslocamento entre <MathFormula formula="t_1" inline={true} /> e <MathFormula formula="t_2" inline={true} /> é a diferença vetorial:
               </p>
-              <div className="bg-slate-800/80 p-8 rounded-2xl border border-slate-700 text-center shadow-inner">
+              <div className="bg-slate-800/80 p-8 rounded-2xl border border-slate-700 text-center shadow-inner mb-6">
                 <MathFormula formula="\vec{v}_m = \frac{\vec{r}(t_2) - \vec{r}(t_1)}{t_2 - t_1} = \frac{\Delta \vec{r}}{\Delta t}" className="text-3xl" />
+              </div>
+              <div className="bg-slate-700/40 p-6 rounded-xl border border-slate-600 text-sm space-y-3">
+                <p className="text-slate-300 font-semibold mb-3">Legenda dos Termos:</p>
+                <div className="grid md:grid-cols-2 gap-4 text-slate-400">
+                  <div className="flex items-start gap-3">
+                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\vec{v}_m" inline={true} /></span>
+                    <span>Velocidade vetorial média (m/s) - Vetor!</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\vec{r}(t_2)" inline={true} /></span>
+                    <span>Vetor posição final no instante <MathFormula formula="t_2" inline={true} /> (m)</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\vec{r}(t_1)" inline={true} /></span>
+                    <span>Vetor posição inicial no instante <MathFormula formula="t_1" inline={true} /> (m)</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\Delta \vec{r}" inline={true} /></span>
+                    <span>Vetor deslocamento (m) - sempre aponta de inicial para final</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\Delta t" inline={true} /></span>
+                    <span>Intervalo de tempo (s)</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\hat{i}, \hat{j}, \hat{k}" inline={true} /></span>
+                    <span>Versores unitários nas direções x, y, z</span>
+                  </div>
+                </div>
               </div>
               <p className="mt-6 text-sm text-slate-500 italic">
                 *Observe que o módulo da velocidade vetorial média <MathFormula formula="|\vec{v}_m|" inline={true} /> NÃO é necessariamente igual à velocidade escalar média <MathFormula formula="v_{em}" inline={true} />.
