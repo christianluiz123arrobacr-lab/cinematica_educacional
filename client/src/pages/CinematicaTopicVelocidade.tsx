@@ -1159,6 +1159,486 @@ export default function CinematicaTopicVelocidade() {
           </div>
         </div>
 
+
+        {/* ===================== INTERPRETAÇÃO GRÁFICA — VELOCIDADE E ACELERAÇÃO ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">Interpretação Gráfica — Velocidade e Aceleração</h2>
+
+          <p className="text-slate-700 leading-relaxed mb-6">
+            A análise gráfica é uma das ferramentas mais poderosas para resolver problemas de Cinemática. Em provas de alto nível, muitas questões são resolvidas <strong>exclusivamente</strong> pela leitura de gráficos, sem aplicar fórmulas. Dominar a linguagem gráfica é tão importante quanto dominar as equações. Aqui, analisamos os três gráficos fundamentais e as informações que cada um fornece.
+          </p>
+
+          {/* Gráfico v x t */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+            <h3 className="text-xl font-bold text-blue-900 mb-4">Gráfico Velocidade × Tempo (v × t)</h3>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              O gráfico <strong>v × t</strong> é, sem dúvida, o mais importante da Cinemática. Ele concentra duas informações fundamentais em uma única representação: a <strong>inclinação</strong> da curva fornece a aceleração, e a <strong>área</strong> sob a curva fornece o deslocamento.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="bg-white border border-blue-100 rounded-lg p-4">
+                <h4 className="font-bold text-blue-800 mb-2">Inclinação = Aceleração</h4>
+                <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                  A inclinação (coeficiente angular) da reta tangente à curva v(t) em qualquer ponto fornece a <strong>aceleração instantânea</strong> naquele instante. Se o gráfico é uma reta, a aceleração é constante (MRUV). Se é uma curva, a aceleração varia com o tempo.
+                </p>
+                <div className="bg-blue-100 rounded p-2 text-center">
+                  <MathFormula formula="a(t) = \\frac{dv}{dt} = \\text{inclinação da tangente ao gráfico } v \\times t" />
+                </div>
+                <div className="mt-2 text-xs text-slate-600">
+                  <p><strong>Legenda:</strong> <MathFormula formula="a(t)" inline={true} /> = aceleração instantânea (m/s²); <MathFormula formula="dv/dt" inline={true} /> = derivada da velocidade em relação ao tempo.</p>
+                </div>
+              </div>
+              <div className="bg-white border border-blue-100 rounded-lg p-4">
+                <h4 className="font-bold text-blue-800 mb-2">Área = Deslocamento</h4>
+                <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                  A área entre a curva v(t) e o eixo do tempo, no intervalo de <MathFormula formula="t_1" inline={true} /> a <MathFormula formula="t_2" inline={true} />, fornece o <strong>deslocamento escalar</strong> do móvel nesse intervalo. Áreas acima do eixo t são positivas (avanço); áreas abaixo são negativas (recuo).
+                </p>
+                <div className="bg-blue-100 rounded p-2 text-center">
+                  <MathFormula formula="\\Delta s = \\int_{t_1}^{t_2} v(t) \\, dt = \\text{área (com sinal) sob } v \\times t" />
+                </div>
+                <div className="mt-2 text-xs text-slate-600">
+                  <p><strong>Legenda:</strong> <MathFormula formula="\\Delta s" inline={true} /> = deslocamento escalar (m); a integral representa a soma das áreas com sinal.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white border border-blue-100 rounded-lg p-4">
+              <h4 className="font-bold text-blue-800 mb-2">Leitura Qualitativa do Gráfico v × t</h4>
+              <ul className="text-slate-700 text-sm space-y-2">
+                <li><strong>Reta horizontal (v = constante):</strong> MRU. Aceleração zero. Área = retângulo.</li>
+                <li><strong>Reta inclinada para cima:</strong> MRUV acelerado. Aceleração positiva constante. Área = trapézio.</li>
+                <li><strong>Reta inclinada para baixo:</strong> MRUV retardado (se v > 0) ou acelerado retrógrado (se v cruza o zero). Aceleração negativa constante.</li>
+                <li><strong>Curva v(t) cruzando o eixo t:</strong> O móvel inverte o sentido do movimento. A velocidade muda de sinal. A distância percorrida exige calcular as áreas separadamente (acima e abaixo).</li>
+                <li><strong>Reta passando pela origem:</strong> Velocidade proporcional ao tempo. Aceleração constante e o móvel parte do repouso.</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Gráfico s x t */}
+          <div className="bg-green-50 border border-green-200 rounded-xl p-6 mb-6">
+            <h3 className="text-xl font-bold text-green-900 mb-4">Gráfico Posição × Tempo (s × t)</h3>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              O gráfico <strong>s × t</strong> mostra a posição do móvel em cada instante. Sua principal informação está na <strong>inclinação</strong>, que fornece a velocidade. A forma da curva revela a natureza do movimento.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="bg-white border border-green-100 rounded-lg p-4">
+                <h4 className="font-bold text-green-800 mb-2">Inclinação = Velocidade</h4>
+                <div className="bg-green-100 rounded p-2 text-center mb-2">
+                  <MathFormula formula="v(t) = \\frac{ds}{dt} = \\text{inclinação da tangente ao gráfico } s \\times t" />
+                </div>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  Se o gráfico s × t é uma <strong>reta</strong>, a inclinação é constante e o movimento é uniforme (MRU). Se é uma <strong>parábola</strong>, a inclinação varia linearmente e o movimento é uniformemente variado (MRUV). A concavidade da parábola indica o sinal da aceleração.
+                </p>
+              </div>
+              <div className="bg-white border border-green-100 rounded-lg p-4">
+                <h4 className="font-bold text-green-800 mb-2">Concavidade = Sinal da Aceleração</h4>
+                <ul className="text-slate-700 text-sm space-y-2">
+                  <li><strong>Concavidade para cima (∪):</strong> Aceleração positiva (<MathFormula formula="a > 0" inline={true} />).</li>
+                  <li><strong>Concavidade para baixo (∩):</strong> Aceleração negativa (<MathFormula formula="a < 0" inline={true} />).</li>
+                  <li><strong>Sem concavidade (reta):</strong> Aceleração nula (<MathFormula formula="a = 0" inline={true} />).</li>
+                  <li><strong>Ponto de inflexão:</strong> A aceleração muda de sinal naquele instante.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Gráfico a x t */}
+          <div className="bg-orange-50 border border-orange-200 rounded-xl p-6 mb-6">
+            <h3 className="text-xl font-bold text-orange-900 mb-4">Gráfico Aceleração × Tempo (a × t)</h3>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              O gráfico <strong>a × t</strong> mostra como a aceleração varia ao longo do tempo. Sua principal informação está na <strong>área</strong>, que fornece a variação de velocidade.
+            </p>
+
+            <div className="bg-white border border-orange-100 rounded-lg p-4 mb-4">
+              <h4 className="font-bold text-orange-800 mb-2">Área = Variação de Velocidade</h4>
+              <div className="bg-orange-100 rounded p-2 text-center mb-2">
+                <MathFormula formula="\\Delta v = \\int_{t_1}^{t_2} a(t) \\, dt = \\text{área (com sinal) sob } a \\times t" />
+              </div>
+              <div className="text-xs text-slate-600 mb-2">
+                <p><strong>Legenda:</strong> <MathFormula formula="\\Delta v = v_f - v_i" inline={true} /> = variação da velocidade (m/s); a integral representa a soma das áreas com sinal sob a curva a(t).</p>
+              </div>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                Se a aceleração é constante, o gráfico a × t é uma <strong>reta horizontal</strong> e a área é um retângulo: <MathFormula formula="\\Delta v = a \\cdot \\Delta t" inline={true} />. Se a aceleração varia, a área pode ser um triângulo, trapézio ou figura irregular, exigindo cálculo integral ou decomposição geométrica.
+              </p>
+            </div>
+
+            <div className="bg-white border border-orange-100 rounded-lg p-4">
+              <h4 className="font-bold text-orange-800 mb-2">Resumo das Relações Gráficas</h4>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="bg-orange-100">
+                      <th className="border border-orange-300 p-2 text-left">Gráfico</th>
+                      <th className="border border-orange-300 p-2 text-left">Inclinação fornece</th>
+                      <th className="border border-orange-300 p-2 text-left">Área fornece</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td className="border border-orange-200 p-2">s × t</td><td className="border border-orange-200 p-2">Velocidade (v)</td><td className="border border-orange-200 p-2">—</td></tr>
+                    <tr><td className="border border-orange-200 p-2">v × t</td><td className="border border-orange-200 p-2">Aceleração (a)</td><td className="border border-orange-200 p-2">Deslocamento (Δs)</td></tr>
+                    <tr><td className="border border-orange-200 p-2">a × t</td><td className="border border-orange-200 p-2">—</td><td className="border border-orange-200 p-2">Variação de velocidade (Δv)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===================== ARMADILHAS — VELOCIDADE E ACELERAÇÃO ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-red-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">Armadilhas e Erros Conceituais Clássicos</h2>
+
+          <p className="text-slate-700 leading-relaxed mb-6">
+            Os conceitos de velocidade e aceleração são terreno fértil para armadilhas conceituais. Muitas dessas confusões são tão comuns que os elaboradores de provas as exploram deliberadamente. Conhecer esses erros é uma vantagem estratégica decisiva.
+          </p>
+
+          <div className="space-y-4">
+            <div className="bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5">
+              <h4 className="font-bold text-red-800 mb-2">Erro 1: Confundir Velocidade Negativa com "Desaceleração"</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                Este é o erro mais perigoso e mais explorado. Uma velocidade negativa (<MathFormula formula="v < 0" inline={true} />) significa apenas que o móvel se move no <strong>sentido oposto</strong> ao adotado como positivo. Não tem nada a ver com "frear" ou "desacelerar". Um carro andando de ré com velocidade crescente (em módulo) tem velocidade negativa e está <strong>acelerando</strong> (no sentido negativo). Desaceleração (retardamento) ocorre quando <MathFormula formula="v \\cdot a < 0" inline={true} />, ou seja, quando a aceleração se opõe à velocidade.
+              </p>
+              <div className="bg-red-100 rounded p-3 text-sm">
+                <strong>Como evitar:</strong> Nunca associe o sinal da velocidade ao conceito de "acelerado" ou "retardado". O critério correto é o produto <MathFormula formula="v \\cdot a" inline={true} />: positivo = acelerado; negativo = retardado.
+              </div>
+            </div>
+
+            <div className="bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5">
+              <h4 className="font-bold text-red-800 mb-2">Erro 2: Achar que Aceleração Zero Implica Repouso</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                Aceleração zero (<MathFormula formula="a = 0" inline={true} />) significa que a velocidade <strong>não está mudando</strong>. Isso pode significar que o corpo está em repouso (v = 0 e a = 0), mas também pode significar que ele está em <strong>Movimento Retilíneo Uniforme</strong> (v = constante ≠ 0 e a = 0). Um avião voando a 900 km/h em linha reta e altitude constante tem aceleração zero, mas está muito longe do repouso.
+              </p>
+              <div className="bg-red-100 rounded p-3 text-sm">
+                <strong>Como evitar:</strong> Aceleração zero → velocidade constante. Velocidade constante pode ser zero (repouso) ou diferente de zero (MRU). São dois casos distintos.
+              </div>
+            </div>
+
+            <div className="bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5">
+              <h4 className="font-bold text-red-800 mb-2">Erro 3: Usar Média Aritmética para Velocidade Média</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                A velocidade média <strong>não é</strong> a média aritmética das velocidades, exceto em um caso muito específico (MRUV, onde <MathFormula formula="v_m = (v_i + v_f)/2" inline={true} /> vale apenas porque a velocidade varia linearmente). No caso geral, a velocidade média é <MathFormula formula="v_m = d_{total} / \\Delta t_{total}" inline={true} />. O exemplo clássico: um carro percorre metade do caminho a 60 km/h e a outra metade a 120 km/h. A média aritmética daria 90 km/h, mas a velocidade média real é 80 km/h (média harmônica).
+              </p>
+              <div className="bg-red-100 rounded p-3 text-sm">
+                <strong>Como evitar:</strong> Sempre volte à definição fundamental: <MathFormula formula="v_m = d_{total} / \\Delta t_{total}" inline={true} />. Calcule o tempo de cada trecho separadamente e some.
+              </div>
+            </div>
+
+            <div className="bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5">
+              <h4 className="font-bold text-red-800 mb-2">Erro 4: Confundir Aceleração Escalar com Vetorial</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                A aceleração escalar (<MathFormula formula="\\alpha" inline={true} />) mede como o módulo da velocidade muda ao longo da trajetória. A aceleração vetorial (<MathFormula formula="\\vec{a}" inline={true} />) mede como o vetor velocidade muda no espaço. Em um movimento circular uniforme, a aceleração escalar é <strong>zero</strong> (o módulo da velocidade não muda), mas a aceleração vetorial é <strong>não-nula</strong> (a direção da velocidade muda constantemente). Esse é um dos conceitos mais confusos e mais cobrados.
+              </p>
+              <div className="bg-red-100 rounded p-3 text-sm">
+                <strong>Como evitar:</strong> Lembre-se: a aceleração escalar se preocupa com "mais rápido ou mais devagar"; a vetorial se preocupa com "mudança de direção também". No MCU, o módulo não muda, mas a direção sim.
+              </div>
+            </div>
+
+            <div className="bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5">
+              <h4 className="font-bold text-red-800 mb-2">Erro 5: Achar que Velocidade Instantânea = Velocidade Média</h4>
+              <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                A velocidade instantânea é o valor da velocidade em um <strong>instante específico</strong>. A velocidade média é a razão entre deslocamento e tempo para um <strong>intervalo</strong>. Elas só coincidem no MRU (velocidade constante). Em qualquer outro tipo de movimento, a velocidade instantânea varia ao longo do tempo e a média é apenas um "resumo" do intervalo. Graficamente, a velocidade média é a inclinação da <strong>secante</strong> (reta que liga dois pontos), enquanto a instantânea é a inclinação da <strong>tangente</strong> (reta que toca um único ponto).
+              </p>
+              <div className="bg-red-100 rounded p-3 text-sm">
+                <strong>Como evitar:</strong> Se o problema pede velocidade em um instante (ex: "em t = 3 s"), é instantânea. Se pede velocidade "entre t = 0 e t = 5 s", é média. A distinção está no "quando" vs. "durante quanto tempo".
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===================== CONEXÃO VETORIAL — VELOCIDADE E ACELERAÇÃO ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">Conexão Vetorial — Relação Geométrica entre Velocidade e Aceleração</h2>
+
+          <p className="text-slate-700 leading-relaxed mb-6">
+            A relação geométrica entre os vetores <MathFormula formula="\\vec{v}" inline={true} /> e <MathFormula formula="\\vec{a}" inline={true} /> é um dos conceitos mais profundos e elegantes da Cinemática. Ela revela que a aceleração não apenas muda a "rapidez" do móvel, mas também pode mudar a <strong>direção</strong> do seu movimento. Essa análise vetorial é indispensável para compreender movimentos em duas ou três dimensões.
+          </p>
+
+          <div className="bg-purple-50 border border-purple-200 rounded-xl p-6 mb-6">
+            <h3 className="text-xl font-bold text-purple-900 mb-4">Decomposição da Aceleração: Tangencial e Centrípeta</h3>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              Em qualquer movimento curvilíneo, o vetor aceleração pode ser decomposto em duas componentes perpendiculares entre si: a <strong>aceleração tangencial</strong> (<MathFormula formula="\\vec{a}_T" inline={true} />) e a <strong>aceleração centrípeta</strong> (<MathFormula formula="\\vec{a}_C" inline={true} />). Cada uma tem um papel físico distinto e fundamental.
+            </p>
+            <div className="bg-white border border-purple-100 rounded-lg p-4 text-center mb-4">
+              <MathFormula formula="\\vec{a} = \\vec{a}_T + \\vec{a}_C" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white border border-purple-100 rounded-lg p-4">
+                <h4 className="font-bold text-purple-800 mb-2">Aceleração Tangencial (<MathFormula formula="\\vec{a}_T" inline={true} />)</h4>
+                <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                  É a componente da aceleração na <strong>direção da velocidade</strong> (tangente à trajetória). Ela é responsável por alterar o <strong>módulo</strong> da velocidade (fazer o móvel "acelerar" ou "frear"). Se <MathFormula formula="\\vec{a}_T" inline={true} /> tem o mesmo sentido de <MathFormula formula="\\vec{v}" inline={true} />, o módulo da velocidade aumenta. Se tem sentido oposto, o módulo diminui.
+                </p>
+                <div className="bg-purple-100 rounded p-2 text-center">
+                  <MathFormula formula="a_T = \\frac{dv}{dt}" />
+                </div>
+                <div className="mt-2 text-xs text-slate-600">
+                  <p><strong>Legenda:</strong> <MathFormula formula="a_T" inline={true} /> = módulo da aceleração tangencial (m/s²); <MathFormula formula="dv/dt" inline={true} /> = taxa de variação do módulo da velocidade.</p>
+                </div>
+              </div>
+              <div className="bg-white border border-purple-100 rounded-lg p-4">
+                <h4 className="font-bold text-purple-800 mb-2">Aceleração Centrípeta (<MathFormula formula="\\vec{a}_C" inline={true} />)</h4>
+                <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                  É a componente da aceleração <strong>perpendicular à velocidade</strong>, apontando sempre para o centro de curvatura da trajetória. Ela é responsável por alterar a <strong>direção</strong> da velocidade (fazer o móvel "curvar"). Mesmo que o módulo da velocidade não mude (como no MCU), a aceleração centrípeta é não-nula se a trajetória é curva.
+                </p>
+                <div className="bg-purple-100 rounded p-2 text-center">
+                  <MathFormula formula="a_C = \\frac{v^2}{R}" />
+                </div>
+                <div className="mt-2 text-xs text-slate-600">
+                  <p><strong>Legenda:</strong> <MathFormula formula="a_C" inline={true} /> = módulo da aceleração centrípeta (m/s²); <MathFormula formula="v" inline={true} /> = módulo da velocidade (m/s); <MathFormula formula="R" inline={true} /> = raio de curvatura da trajetória (m).</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-6 mb-6">
+            <h3 className="text-xl font-bold text-indigo-900 mb-4">Casos Fundamentais da Relação entre Velocidade e Aceleração</h3>
+
+            <div className="space-y-4">
+              <div className="bg-white border border-indigo-100 rounded-lg p-4">
+                <h4 className="font-bold text-indigo-800 mb-2">Caso 1: Aceleração paralela à velocidade (mesmo sentido)</h4>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  <MathFormula formula="\\vec{a} \\parallel \\vec{v}" inline={true} /> e mesmo sentido → Movimento <strong>retilíneo acelerado</strong>. O módulo da velocidade aumenta. A aceleração centrípeta é zero (trajetória reta). Toda a aceleração é tangencial.
+                </p>
+              </div>
+              <div className="bg-white border border-indigo-100 rounded-lg p-4">
+                <h4 className="font-bold text-indigo-800 mb-2">Caso 2: Aceleração paralela à velocidade (sentido oposto)</h4>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  <MathFormula formula="\\vec{a} \\parallel \\vec{v}" inline={true} /> e sentido oposto → Movimento <strong>retilíneo retardado</strong>. O módulo da velocidade diminui. A aceleração centrípeta é zero. Toda a aceleração é tangencial (mas oposta a v).
+                </p>
+              </div>
+              <div className="bg-white border border-indigo-100 rounded-lg p-4">
+                <h4 className="font-bold text-indigo-800 mb-2">Caso 3: Aceleração perpendicular à velocidade</h4>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  <MathFormula formula="\\vec{a} \\perp \\vec{v}" inline={true} /> → Movimento <strong>circular uniforme</strong> (MCU). O módulo da velocidade <strong>não muda</strong> (a tangencial é zero), mas a direção muda constantemente. Toda a aceleração é centrípeta. Este é o caso mais contra-intuitivo: há aceleração, mas a "rapidez" não muda.
+                </p>
+              </div>
+              <div className="bg-white border border-indigo-100 rounded-lg p-4">
+                <h4 className="font-bold text-indigo-800 mb-2">Caso 4: Aceleração oblíqua à velocidade</h4>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  <MathFormula formula="\\vec{a}" inline={true} /> forma um ângulo com <MathFormula formula="\\vec{v}" inline={true} /> → Movimento <strong>curvilíneo não-uniforme</strong>. Tanto o módulo quanto a direção da velocidade mudam simultaneamente. A aceleração tem componente tangencial (muda o módulo) e centrípeta (muda a direção). Exemplo: um carro acelerando em uma curva.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+            <h3 className="text-xl font-bold text-amber-900 mb-4">Módulo da Aceleração Total</h3>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              Como as componentes tangencial e centrípeta são sempre perpendiculares entre si, o módulo da aceleração total é obtido pelo Teorema de Pitágoras:
+            </p>
+            <div className="bg-white border border-amber-100 rounded-lg p-4 text-center mb-4">
+              <MathFormula formula="a = \\sqrt{a_T^2 + a_C^2} = \\sqrt{\\left(\\frac{dv}{dt}\\right)^2 + \\left(\\frac{v^2}{R}\\right)^2}" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-sm">
+              <div className="bg-white border border-amber-100 rounded p-3 text-center">
+                <p className="font-bold text-amber-800 mb-1"><MathFormula formula="a" inline={true} /></p>
+                <p className="text-slate-600">Módulo da aceleração total (m/s²)</p>
+              </div>
+              <div className="bg-white border border-amber-100 rounded p-3 text-center">
+                <p className="font-bold text-amber-800 mb-1"><MathFormula formula="a_T" inline={true} /></p>
+                <p className="text-slate-600">Aceleração tangencial (m/s²)</p>
+              </div>
+              <div className="bg-white border border-amber-100 rounded p-3 text-center">
+                <p className="font-bold text-amber-800 mb-1"><MathFormula formula="a_C" inline={true} /></p>
+                <p className="text-slate-600">Aceleração centrípeta (m/s²)</p>
+              </div>
+              <div className="bg-white border border-amber-100 rounded p-3 text-center">
+                <p className="font-bold text-amber-800 mb-1"><MathFormula formula="R" inline={true} /></p>
+                <p className="text-slate-600">Raio de curvatura da trajetória (m)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===================== EXERCÍCIOS PROGRESSIVOS — VELOCIDADE E ACELERAÇÃO ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">Exercícios Progressivos</h2>
+
+          <p className="text-slate-700 leading-relaxed mb-6">
+            A prática é o caminho para a maestria. Os exercícios abaixo estão organizados em ordem crescente de dificuldade, integrando os conceitos de velocidade média, aceleração e classificação de movimentos. Tente resolver cada um antes de consultar a resposta.
+          </p>
+
+          {/* Exercício 1 - Básico */}
+          <div className="bg-green-50 border border-green-200 rounded-xl p-6 mb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full">Nível 1 — Conceitual</span>
+            </div>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              <strong>Exercício 1:</strong> Um carro se move em linha reta. Em um dado instante, sua velocidade é <MathFormula formula="v = -20 \\text{ m/s}" inline={true} /> e sua aceleração é <MathFormula formula="a = -5 \\text{ m/s}^2" inline={true} />. Classifique o movimento como acelerado ou retardado. O módulo da velocidade está aumentando ou diminuindo?
+            </p>
+            <details className="bg-white border border-green-100 rounded-lg p-4">
+              <summary className="font-bold text-green-800 cursor-pointer">Ver Resposta</summary>
+              <div className="mt-3 text-slate-700 text-sm leading-relaxed space-y-2">
+                <p>Calculamos o produto <MathFormula formula="v \\cdot a" inline={true} />:</p>
+                <div className="bg-green-100 rounded p-2 text-center">
+                  <MathFormula formula="v \\cdot a = (-20) \\cdot (-5) = +100 > 0" />
+                </div>
+                <p>Como <MathFormula formula="v \\cdot a > 0" inline={true} />, o movimento é <strong>acelerado</strong>. O módulo da velocidade está <strong>aumentando</strong>.</p>
+                <p><strong>Interpretação física:</strong> O carro se move no sentido negativo (ré) e a aceleração também aponta no sentido negativo. Como ambos apontam na mesma direção, o carro está "ganhando velocidade" no sentido da ré. Cuidado: muitos alunos veem o sinal negativo da aceleração e concluem erroneamente que é retardado.</p>
+              </div>
+            </details>
+          </div>
+
+          {/* Exercício 2 - Intermediário */}
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="bg-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full">Nível 2 — Aplicação</span>
+            </div>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              <strong>Exercício 2:</strong> Um motorista percorre 120 km de uma cidade A até uma cidade B a 60 km/h. No retorno, de B para A, ele percorre o mesmo trajeto a 40 km/h. Determine: (a) a velocidade escalar média para a viagem completa (ida e volta); (b) a velocidade vetorial média para a viagem completa.
+            </p>
+            <details className="bg-white border border-yellow-100 rounded-lg p-4">
+              <summary className="font-bold text-yellow-800 cursor-pointer">Ver Resposta</summary>
+              <div className="mt-3 text-slate-700 text-sm leading-relaxed space-y-2">
+                <p><strong>(a) Velocidade escalar média:</strong></p>
+                <p>Distância total: <MathFormula formula="d = 120 + 120 = 240 \\text{ km}" inline={true} /></p>
+                <p>Tempo de ida: <MathFormula formula="t_1 = 120/60 = 2 \\text{ h}" inline={true} /></p>
+                <p>Tempo de volta: <MathFormula formula="t_2 = 120/40 = 3 \\text{ h}" inline={true} /></p>
+                <div className="bg-yellow-100 rounded p-2 text-center">
+                  <MathFormula formula="v_{em} = \\frac{d}{\\Delta t} = \\frac{240}{2 + 3} = \\frac{240}{5} = 48 \\text{ km/h}" />
+                </div>
+                <p>Note que 48 km/h é a <strong>média harmônica</strong> de 60 e 40: <MathFormula formula="v_m = \\frac{2 \\cdot 60 \\cdot 40}{60 + 40} = \\frac{4800}{100} = 48" inline={true} /></p>
+                <p><strong>(b) Velocidade vetorial média:</strong></p>
+                <div className="bg-yellow-100 rounded p-2 text-center">
+                  <MathFormula formula="\\vec{v}_m = \\frac{\\Delta \\vec{r}}{\\Delta t} = \\frac{0}{5} = 0 \\text{ km/h}" />
+                </div>
+                <p>O deslocamento é zero porque o motorista voltou ao ponto de partida. A velocidade vetorial média é <strong>zero</strong>, apesar de ter percorrido 240 km.</p>
+              </div>
+            </details>
+          </div>
+
+          {/* Exercício 3 - Avançado */}
+          <div className="bg-orange-50 border border-orange-200 rounded-xl p-6 mb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="bg-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full">Nível 3 — Avançado</span>
+            </div>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              <strong>Exercício 3:</strong> O gráfico v × t de um móvel em trajetória retilínea mostra uma reta que parte de <MathFormula formula="v = 10 \\text{ m/s}" inline={true} /> em <MathFormula formula="t = 0" inline={true} /> e atinge <MathFormula formula="v = -5 \\text{ m/s}" inline={true} /> em <MathFormula formula="t = 6 \\text{ s}" inline={true} />. Determine: (a) a aceleração; (b) o instante em que o móvel inverte o sentido; (c) o deslocamento total entre t = 0 e t = 6 s; (d) a distância total percorrida.
+            </p>
+            <details className="bg-white border border-orange-100 rounded-lg p-4">
+              <summary className="font-bold text-orange-800 cursor-pointer">Ver Resposta</summary>
+              <div className="mt-3 text-slate-700 text-sm leading-relaxed space-y-2">
+                <p><strong>(a) Aceleração:</strong> Como o gráfico é uma reta, a aceleração é constante:</p>
+                <div className="bg-orange-100 rounded p-2 text-center">
+                  <MathFormula formula="a = \\frac{\\Delta v}{\\Delta t} = \\frac{-5 - 10}{6 - 0} = \\frac{-15}{6} = -2{,}5 \\text{ m/s}^2" />
+                </div>
+                <p><strong>(b) Inversão de sentido:</strong> Ocorre quando v = 0:</p>
+                <div className="bg-orange-100 rounded p-2 text-center">
+                  <MathFormula formula="0 = 10 + (-2{,}5) \\cdot t \\implies t = \\frac{10}{2{,}5} = 4 \\text{ s}" />
+                </div>
+                <p><strong>(c) Deslocamento (área com sinal):</strong></p>
+                <p>De t = 0 a t = 4 s (triângulo acima do eixo): <MathFormula formula="A_1 = \\frac{10 \\cdot 4}{2} = +20 \\text{ m}" inline={true} /></p>
+                <p>De t = 4 s a t = 6 s (triângulo abaixo do eixo): <MathFormula formula="A_2 = \\frac{5 \\cdot 2}{2} = -5 \\text{ m}" inline={true} /></p>
+                <div className="bg-orange-100 rounded p-2 text-center">
+                  <MathFormula formula="\\Delta s = A_1 + A_2 = 20 + (-5) = 15 \\text{ m}" />
+                </div>
+                <p><strong>(d) Distância percorrida (soma dos módulos):</strong></p>
+                <div className="bg-orange-100 rounded p-2 text-center">
+                  <MathFormula formula="d = |A_1| + |A_2| = 20 + 5 = 25 \\text{ m}" />
+                </div>
+                <p><strong>Conclusão:</strong> O deslocamento (15 m) é menor que a distância (25 m) porque houve inversão de sentido em t = 4 s. Este é um exemplo perfeito de como a área "com sinal" e "sem sinal" do gráfico v × t fornecem informações diferentes.</p>
+              </div>
+            </details>
+          </div>
+
+          {/* Exercício 4 - Desafio */}
+          <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">Nível 4 — Desafio</span>
+            </div>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              <strong>Exercício 4:</strong> Uma partícula descreve uma circunferência de raio <MathFormula formula="R = 5 \\text{ m}" inline={true} /> com velocidade escalar que varia segundo <MathFormula formula="v(t) = 3t \\text{ (m/s)}" inline={true} />. No instante <MathFormula formula="t = 2 \\text{ s}" inline={true} />, determine: (a) a aceleração tangencial; (b) a aceleração centrípeta; (c) o módulo da aceleração total.
+            </p>
+            <details className="bg-white border border-red-100 rounded-lg p-4">
+              <summary className="font-bold text-red-800 cursor-pointer">Ver Resposta</summary>
+              <div className="mt-3 text-slate-700 text-sm leading-relaxed space-y-2">
+                <p>Em <MathFormula formula="t = 2 \\text{ s}" inline={true} />: <MathFormula formula="v = 3 \\cdot 2 = 6 \\text{ m/s}" inline={true} /></p>
+                <p><strong>(a) Aceleração tangencial:</strong></p>
+                <div className="bg-red-100 rounded p-2 text-center">
+                  <MathFormula formula="a_T = \\frac{dv}{dt} = \\frac{d(3t)}{dt} = 3 \\text{ m/s}^2" />
+                </div>
+                <p><strong>(b) Aceleração centrípeta:</strong></p>
+                <div className="bg-red-100 rounded p-2 text-center">
+                  <MathFormula formula="a_C = \\frac{v^2}{R} = \\frac{6^2}{5} = \\frac{36}{5} = 7{,}2 \\text{ m/s}^2" />
+                </div>
+                <p><strong>(c) Módulo da aceleração total:</strong></p>
+                <div className="bg-red-100 rounded p-2 text-center">
+                  <MathFormula formula="a = \\sqrt{a_T^2 + a_C^2} = \\sqrt{3^2 + 7{,}2^2} = \\sqrt{9 + 51{,}84} = \\sqrt{60{,}84} \\approx 7{,}8 \\text{ m/s}^2" />
+                </div>
+                <p><strong>Observação:</strong> Note que a aceleração centrípeta (7,2 m/s²) é muito maior que a tangencial (3 m/s²). Isso significa que, neste instante, a maior parte da aceleração está sendo "usada" para mudar a direção do movimento, não para aumentar a rapidez. O ângulo entre <MathFormula formula="\\vec{a}" inline={true} /> e <MathFormula formula="\\vec{v}" inline={true} /> é <MathFormula formula="\\theta = \\arctan(a_C / a_T) = \\arctan(7{,}2 / 3) \\approx 67°" inline={true} />.</p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        {/* ===================== SÍNTESE — VELOCIDADE E ACELERAÇÃO ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">Síntese — Conexão Entre os Conceitos</h2>
+
+          <p className="text-slate-700 leading-relaxed mb-6">
+            Os conceitos de velocidade e aceleração formam uma cadeia lógica inseparável. Cada conceito se constrói sobre o anterior, e dominá-los em conjunto é o que permite resolver problemas complexos com clareza e eficiência.
+          </p>
+
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 mb-6">
+            <h3 className="text-xl font-bold text-slate-900 mb-4">Cadeia Lógica: Velocidade → Aceleração → Classificação</h3>
+            <div className="space-y-4">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">1</div>
+                <div>
+                  <p className="font-bold text-slate-900">Velocidade Média e Escalar</p>
+                  <p className="text-slate-700 text-sm">Definimos como o móvel se desloca ao longo do tempo. A escalar mede o "rastro"; a vetorial mede a "eficácia" do deslocamento.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">2</div>
+                <div>
+                  <p className="font-bold text-slate-900">Aceleração Escalar e Vetorial</p>
+                  <p className="text-slate-700 text-sm">Definimos como a velocidade muda ao longo do tempo. A escalar mede se o móvel fica "mais rápido ou mais lento"; a vetorial inclui mudanças de direção.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">3</div>
+                <div>
+                  <p className="font-bold text-slate-900">Classificação: Acelerado, Retardado, Uniforme</p>
+                  <p className="text-slate-700 text-sm">Com base no produto v·a, classificamos o movimento. Se v·a > 0, acelerado. Se v·a &lt; 0, retardado. Se a = 0, uniforme.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">4</div>
+                <div>
+                  <p className="font-bold text-slate-900">Próximo Passo: MRU e MRUV</p>
+                  <p className="text-slate-700 text-sm">Com esses conceitos dominados, estamos prontos para estudar os dois modelos fundamentais: o Movimento Retilíneo Uniforme (a = 0) e o Uniformemente Variado (a = constante).</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
+            <h4 className="font-bold text-amber-900 mb-3">Mapa de Relações</h4>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="bg-amber-100">
+                    <th className="border border-amber-300 p-2 text-left">Conceito</th>
+                    <th className="border border-amber-300 p-2 text-left">Fórmula Fundamental</th>
+                    <th className="border border-amber-300 p-2 text-left">O que mede</th>
+                    <th className="border border-amber-300 p-2 text-left">Unidade SI</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td className="border border-amber-200 p-2">Velocidade Escalar Média</td><td className="border border-amber-200 p-2">d / Δt</td><td className="border border-amber-200 p-2">Rapidez média ao longo da trajetória</td><td className="border border-amber-200 p-2">m/s</td></tr>
+                  <tr><td className="border border-amber-200 p-2">Velocidade Vetorial Média</td><td className="border border-amber-200 p-2">Δr / Δt</td><td className="border border-amber-200 p-2">Taxa média de mudança de posição</td><td className="border border-amber-200 p-2">m/s</td></tr>
+                  <tr><td className="border border-amber-200 p-2">Aceleração Escalar Média</td><td className="border border-amber-200 p-2">Δv / Δt</td><td className="border border-amber-200 p-2">Taxa de variação do módulo da velocidade</td><td className="border border-amber-200 p-2">m/s²</td></tr>
+                  <tr><td className="border border-amber-200 p-2">Aceleração Vetorial</td><td className="border border-amber-200 p-2">Δv⃗ / Δt</td><td className="border border-amber-200 p-2">Taxa de variação do vetor velocidade</td><td className="border border-amber-200 p-2">m/s²</td></tr>
+                  <tr><td className="border border-amber-200 p-2">Aceleração Tangencial</td><td className="border border-amber-200 p-2">dv/dt</td><td className="border border-amber-200 p-2">Mudança do módulo da velocidade</td><td className="border border-amber-200 p-2">m/s²</td></tr>
+                  <tr><td className="border border-amber-200 p-2">Aceleração Centrípeta</td><td className="border border-amber-200 p-2">v²/R</td><td className="border border-amber-200 p-2">Mudança da direção da velocidade</td><td className="border border-amber-200 p-2">m/s²</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
       </section>
 
       <footer className="bg-slate-900 text-white py-12 mt-12">
