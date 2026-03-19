@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, AlertCircle, Lightbulb, Activity, Target, Zap, TrendingUp, Box, CheckCircle2, AlertTriangle } from "lucide-react";
+import { ArrowLeft, AlertCircle, Lightbulb, Activity, Target, Zap, TrendingUp, TrendingDown, Minus, Box, CheckCircle2, AlertTriangle } from "lucide-react";
 import { Link } from "wouter";
 import { MathFormula } from "@/components/MathFormula";
 
