@@ -69,12 +69,12 @@ export default function CinematicaTopicVelocidade() {
                 </div>
               </div>
               <div className="bg-slate-50 p-8 rounded-2xl border border-slate-200 shadow-sm">
-                <h3 className="text-2xl font-bold text-purple-700 mb-4">Velocidade Vetorial Média (<MathFormula formula="\vec{v}_m" inline={true} />)</h3>
+                <h3 className="text-2xl font-bold text-purple-700 mb-4">Velocidade Vetorial Média (<MathFormula formula="\\vec{v}_m" inline={true} />)</h3>
                 <p className="text-slate-600 mb-6 leading-relaxed">
-                  É a grandeza vetorial definida pela razão entre o <strong>vetor deslocamento</strong> (<MathFormula formula="\Delta \vec{r}" inline={true} />) e o intervalo de tempo. Ela aponta sempre na mesma direção e sentido do vetor deslocamento (da posição inicial para a final).
+                  É a grandeza vetorial definida pela razão entre o <strong>vetor deslocamento</strong> (<MathFormula formula="\\Delta \\vec{r}" inline={true} />) e o intervalo de tempo. Ela aponta sempre na mesma direção e sentido do vetor deslocamento (da posição inicial para a final).
                 </p>
                 <div className="bg-purple-100/50 p-4 rounded-xl text-purple-900 font-medium text-sm border border-purple-200">
-                  <strong>Observação Importante:</strong> Se um móvel completa uma volta e retorna ao ponto de partida, seu deslocamento é nulo (<MathFormula formula="\Delta \vec{r} = \vec{0}" inline={true} />), logo sua velocidade vetorial média é <strong>zero</strong>, mesmo que ele tenha corrido a 100 km/h.
+                  <strong>Observação Importante:</strong> Se um móvel completa uma volta e retorna ao ponto de partida, seu deslocamento é nulo (<MathFormula formula="\\Delta \\vec{r} = \\vec{0}" inline={true} />), logo sua velocidade vetorial média é <strong>zero</strong>, mesmo que ele tenha corrido a 100 km/h.
                 </div>
               </div>
             </div>
@@ -94,10 +94,10 @@ export default function CinematicaTopicVelocidade() {
               <div className="absolute -left-[9px] top-0 w-4 h-4 bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
               <h4 className="text-xl font-semibold text-blue-300 mb-4">A Abstração da Velocidade Escalar</h4>
               <p className="text-slate-400 mb-6 leading-relaxed">
-                Considere um móvel que percorre sucessivos trechos <MathFormula formula="\Delta s_1, \Delta s_2, \dots, \Delta s_n" inline={true} /> em intervalos <MathFormula formula="\Delta t_1, \Delta t_2, \dots, \Delta t_n" inline={true} />. A distância total <MathFormula formula="d" inline={true} /> é a soma dos módulos desses deslocamentos:
+                Considere um móvel que percorre sucessivos trechos <MathFormula formula="\\Delta s_1, \\Delta s_2, \\dots, \\Delta s_n" inline={true} /> em intervalos <MathFormula formula="\\Delta t_1, \\Delta t_2, \\dots, \\Delta t_n" inline={true} />. A distância total <MathFormula formula="d" inline={true} /> é a soma dos módulos desses deslocamentos:
               </p>
               <div className="bg-slate-800/80 p-8 rounded-2xl border border-slate-700 text-center shadow-inner mb-6">
-                <MathFormula formula="v_{em} = \frac{\sum_{i=1}^{n} |\Delta s_i|}{\sum_{i=1}^{n} \Delta t_i} = \frac{d_{total}}{\Delta t_{total}}" className="text-3xl" />
+                <MathFormula formula="v_{em} = \\frac{\\sum_{i=1}^{n} |\\Delta s_i|}{\\sum_{i=1}^{n} \\Delta t_i} = \\frac{d_{total}}{\\Delta t_{total}}" className="text-3xl" />
               </div>
               <div className="bg-slate-700/40 p-6 rounded-xl border border-slate-600 text-sm space-y-3">
                 <p className="text-slate-300 font-semibold mb-3">Legenda dos Termos:</p>
@@ -107,7 +107,7 @@ export default function CinematicaTopicVelocidade() {
                     <span>Velocidade escalar média (m/s)</span>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="text-blue-400 font-bold min-w-fit"><MathFormula formula="\sum_{i=1}^{n} |\Delta s_i|" inline={true} /></span>
+                    <span className="text-blue-400 font-bold min-w-fit"><MathFormula formula="\\sum_{i=1}^{n} |\\Delta s_i|" inline={true} /></span>
                     <span>Soma dos módulos de todos os deslocamentos parciais (m)</span>
                   </div>
                   <div className="flex items-start gap-3">
@@ -115,7 +115,7 @@ export default function CinematicaTopicVelocidade() {
                     <span>Distância total percorrida (m)</span>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="text-blue-400 font-bold min-w-fit"><MathFormula formula="\Delta t_{total}" inline={true} /></span>
+                    <span className="text-blue-400 font-bold min-w-fit"><MathFormula formula="\\Delta t_{total}" inline={true} /></span>
                     <span>Intervalo de tempo total (s)</span>
                   </div>
                 </div>
@@ -126,42 +126,42 @@ export default function CinematicaTopicVelocidade() {
               <div className="absolute -left-[9px] top-0 w-4 h-4 bg-purple-500 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
               <h4 className="text-xl font-semibold text-purple-300 mb-4">O Rigor do Vetor Deslocamento</h4>
               <p className="text-slate-400 mb-6 leading-relaxed">
-                No espaço tridimensional, a posição é dada pelo vetor <MathFormula formula="\vec{r}(t) = x(t)\hat{i} + y(t)\hat{j} + z(t)\hat{k}" inline={true} />. O deslocamento entre <MathFormula formula="t_1" inline={true} /> e <MathFormula formula="t_2" inline={true} /> é a diferença vetorial:
+                No espaço tridimensional, a posição é dada pelo vetor <MathFormula formula="\\vec{r}(t) = x(t)\\hat{i} + y(t)\\hat{j} + z(t)\\hat{k}" inline={true} />. O deslocamento entre <MathFormula formula="t_1" inline={true} /> e <MathFormula formula="t_2" inline={true} /> é a diferença vetorial:
               </p>
               <div className="bg-slate-800/80 p-8 rounded-2xl border border-slate-700 text-center shadow-inner mb-6">
-                <MathFormula formula="\vec{v}_m = \frac{\vec{r}(t_2) - \vec{r}(t_1)}{t_2 - t_1} = \frac{\Delta \vec{r}}{\Delta t}" className="text-3xl" />
+                <MathFormula formula="\\vec{v}_m = \\frac{\\vec{r}(t_2) - \\vec{r}(t_1)}{t_2 - t_1} = \\frac{\\Delta \\vec{r}}{\\Delta t}" className="text-3xl" />
               </div>
               <div className="bg-slate-700/40 p-6 rounded-xl border border-slate-600 text-sm space-y-3">
                 <p className="text-slate-300 font-semibold mb-3">Legenda dos Termos:</p>
                 <div className="grid md:grid-cols-2 gap-4 text-slate-400">
                   <div className="flex items-start gap-3">
-                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\vec{v}_m" inline={true} /></span>
+                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\\vec{v}_m" inline={true} /></span>
                     <span>Velocidade vetorial média (m/s) - Vetor!</span>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\vec{r}(t_2)" inline={true} /></span>
+                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\\vec{r}(t_2)" inline={true} /></span>
                     <span>Vetor posição final no instante <MathFormula formula="t_2" inline={true} /> (m)</span>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\vec{r}(t_1)" inline={true} /></span>
+                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\\vec{r}(t_1)" inline={true} /></span>
                     <span>Vetor posição inicial no instante <MathFormula formula="t_1" inline={true} /> (m)</span>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\Delta \vec{r}" inline={true} /></span>
+                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\\Delta \\vec{r}" inline={true} /></span>
                     <span>Vetor deslocamento (m) - sempre aponta de inicial para final</span>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\Delta t" inline={true} /></span>
+                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\\Delta t" inline={true} /></span>
                     <span>Intervalo de tempo (s)</span>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\hat{i}, \hat{j}, \hat{k}" inline={true} /></span>
+                    <span className="text-purple-400 font-bold min-w-fit"><MathFormula formula="\\hat{i}, \\hat{j}, \\hat{k}" inline={true} /></span>
                     <span>Versores unitários nas direções x, y, z</span>
                   </div>
                 </div>
               </div>
               <p className="mt-6 text-sm text-slate-500 italic">
-                *Observe que o módulo da velocidade vetorial média <MathFormula formula="|\vec{v}_m|" inline={true} /> NÃO é necessariamente igual à velocidade escalar média <MathFormula formula="v_{em}" inline={true} />.
+                *Observe que o módulo da velocidade vetorial média <MathFormula formula="|\\vec{v}_m|" inline={true} /> NÃO é necessariamente igual à velocidade escalar média <MathFormula formula="v_{em}" inline={true} />.
               </p>
             </div>
           </div>
@@ -187,7 +187,7 @@ export default function CinematicaTopicVelocidade() {
             </div>
             <div className="group p-6 bg-slate-50 rounded-2xl border border-slate-100 hover:border-blue-200 transition-all">
               <div className="flex items-start gap-4">
-                <div className="text-3xl font-black text-blue-600/20 group-hover:text-blue-600/40 transition-colors"><MathFormula formula="\Delta s" inline={true} /></div>
+                <div className="text-3xl font-black text-blue-600/20 group-hover:text-blue-600/40 transition-colors"><MathFormula formula="\\Delta s" inline={true} /></div>
                 <div>
                   <p className="font-bold text-slate-800 text-lg">Deslocamento Escalar</p>
                   <p className="text-sm text-slate-600 leading-relaxed">É a diferença entre a posição final e a inicial na trajetória (<MathFormula formula="s_f - s_i" inline={true} />). Pode ser negativo se o móvel se mover contra a orientação da trajetória.</p>
@@ -199,13 +199,13 @@ export default function CinematicaTopicVelocidade() {
                 <div className="text-3xl font-black text-blue-600/20 group-hover:text-blue-600/40 transition-colors"><MathFormula formula="d" inline={true} /></div>
                 <div>
                   <p className="font-bold text-slate-800 text-lg">Distância Percorrida</p>
-                  <p className="text-sm text-slate-600 leading-relaxed">É o comprimento real do caminho percorrido. É sempre maior ou igual ao módulo do deslocamento escalar (<MathFormula formula="d \geq |\Delta s|" inline={true} />).</p>
+                  <p className="text-sm text-slate-600 leading-relaxed">É o comprimento real do caminho percorrido. É sempre maior ou igual ao módulo do deslocamento escalar (<MathFormula formula="d \\geq |\\Delta s|" inline={true} />).</p>
                 </div>
               </div>
             </div>
             <div className="group p-6 bg-slate-50 rounded-2xl border border-slate-100 hover:border-blue-200 transition-all">
               <div className="flex items-start gap-4">
-                <div className="text-3xl font-black text-blue-600/20 group-hover:text-blue-600/40 transition-colors"><MathFormula formula="\Delta t" inline={true} /></div>
+                <div className="text-3xl font-black text-blue-600/20 group-hover:text-blue-600/40 transition-colors"><MathFormula formula="\\Delta t" inline={true} /></div>
                 <div>
                   <p className="font-bold text-slate-800 text-lg">Intervalo de Tempo</p>
                   <p className="text-sm text-slate-600 leading-relaxed">Duração do fenômeno observado. Na física clássica, o tempo é absoluto e flui uniformemente para todos os referenciais inerciais.</p>
@@ -226,7 +226,7 @@ export default function CinematicaTopicVelocidade() {
               A relação entre a velocidade escalar e a vetorial é uma das questões conceituais mais cobradas em provas de alto nível. A regra de ouro é:
             </p>
             <div className="bg-white/10 backdrop-blur-md p-8 rounded-2xl border border-white/20 text-center">
-              <MathFormula formula="v_{em} \geq |\vec{v}_m|" className="text-4xl font-bold" />
+              <MathFormula formula="v_{em} \\geq |\\vec{v}_m|" className="text-4xl font-bold" />
             </div>
             <div className="grid md:grid-cols-2 gap-6 mt-6">
               <div className="bg-white/5 p-6 rounded-xl border border-white/10">
@@ -275,7 +275,7 @@ export default function CinematicaTopicVelocidade() {
                 </tr>
                 <tr className="hover:bg-slate-50 transition-colors">
                   <td className="p-5 font-bold text-slate-800 bg-slate-50/50">Sinal Matemático</td>
-                  <td className="p-5 text-center text-green-700 font-semibold">Sempre <MathFormula formula="\geq 0" inline={true} /></td>
+                  <td className="p-5 text-center text-green-700 font-semibold">Sempre <MathFormula formula="\\geq 0" inline={true} /></td>
                   <td className="p-5 text-center text-slate-600">Pode ser <MathFormula formula="< 0" inline={true} /> (conforme o eixo)</td>
                 </tr>
                 <tr className="hover:bg-slate-50 transition-colors">
@@ -321,11 +321,11 @@ export default function CinematicaTopicVelocidade() {
                   </div>
                   <div className="flex gap-4 items-start">
                     <span className="bg-slate-100 text-slate-500 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-1">3</span>
-                    <p>O tempo total é <MathFormula formula="T = t_1 + t_2 = \frac{L}{v_1} + \frac{L}{v_2} = L \left( \frac{v_1 + v_2}{v_1 v_2} \right)" inline={true} />.</p>
+                    <p>O tempo total é <MathFormula formula="T = t_1 + t_2 = \\frac{L}{v_1} + \\frac{L}{v_2} = L \\left( \\frac{v_1 + v_2}{v_1 v_2} \\right)" inline={true} />.</p>
                   </div>
                   <div className="flex gap-4 items-start">
                     <span className="bg-slate-100 text-slate-500 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-1">4</span>
-                    <p>Aplicando a definição: <MathFormula formula="v_m = \frac{2L}{T} = \frac{2L}{L \frac{v_1 + v_2}{v_1 v_2}} = \frac{2 v_1 v_2}{v_1 + v_2}" inline={true} />.</p>
+                    <p>Aplicando a definição: <MathFormula formula="v_m = \\frac{2L}{T} = \\frac{2L}{L \\frac{v_1 + v_2}{v_1 v_2}} = \\frac{2 v_1 v_2}{v_1 + v_2}" inline={true} />.</p>
                   </div>
                   <div className="bg-green-900 text-white p-6 rounded-2xl mt-6 shadow-lg">
                     <p className="text-xs uppercase tracking-widest text-green-400 mb-2 font-bold">Conclusão:</p>
@@ -344,25 +344,25 @@ export default function CinematicaTopicVelocidade() {
                 <h4 className="text-xl font-bold text-blue-900">Velocidade Vetorial em Trajetória Curva</h4>
               </div>
               <p className="text-slate-700 mb-6 leading-relaxed text-lg">
-                Uma partícula percorre uma semicircunferência de raio <MathFormula formula="R = 10 \text{ m}" inline={true} /> em um intervalo de tempo <MathFormula formula="\Delta t = 5 \text{ s}" inline={true} /> com velocidade escalar constante. Determine a velocidade escalar média e o módulo da velocidade vetorial média. (Use <MathFormula formula="\pi = 3" inline={true} />).
+                Uma partícula percorre uma semicircunferência de raio <MathFormula formula="R = 10 \\text{ m}" inline={true} /> em um intervalo de tempo <MathFormula formula="\\Delta t = 5 \\text{ s}" inline={true} /> com velocidade escalar constante. Determine a velocidade escalar média e o módulo da velocidade vetorial média. (Use <MathFormula formula="\\pi = 3" inline={true} />).
               </p>
               <div className="bg-white p-8 rounded-2xl border border-blue-200 shadow-inner">
                 <p className="font-bold text-slate-900 mb-6 flex items-center gap-2">
                   <Lightbulb className="w-5 h-5 text-amber-500" /> Resolução:
                 </p>
                 <div className="space-y-6 text-slate-700">
-                  <p><strong>1. Velocidade Escalar Média:</strong> A distância percorrida é o comprimento do arco (metade da circunferência): <MathFormula formula="d = \pi R = 3 \cdot 10 = 30 \text{ m}" inline={true} />.</p>
+                  <p><strong>1. Velocidade Escalar Média:</strong> A distância percorrida é o comprimento do arco (metade da circunferência): <MathFormula formula="d = \\pi R = 3 \\cdot 10 = 30 \\text{ m}" inline={true} />.</p>
                   <div className="bg-slate-50 p-4 rounded-lg text-center font-mono">
-                    <MathFormula formula="v_{em} = \frac{30}{5} = 6 \text{ m/s}" />
+                    <MathFormula formula="v_{em} = \\frac{30}{5} = 6 \\text{ m/s}" />
                   </div>
-                  <p><strong>2. Velocidade Vetorial Média:</strong> O deslocamento é o vetor que liga o início ao fim do diâmetro: <MathFormula formula="|\Delta \vec{r}| = 2R = 20 \text{ m}" inline={true} />.</p>
+                  <p><strong>2. Velocidade Vetorial Média:</strong> O deslocamento é o vetor que liga o início ao fim do diâmetro: <MathFormula formula="|\\Delta \\vec{r}| = 2R = 20 \\text{ m}" inline={true} />.</p>
                   <div className="bg-slate-50 p-4 rounded-lg text-center font-mono">
-                    <MathFormula formula="|\vec{v}_m| = \frac{20}{5} = 4 \text{ m/s}" />
+                    <MathFormula formula="|\\vec{v}_m| = \\frac{20}{5} = 4 \\text{ m/s}" />
                   </div>
                   <div className="bg-blue-900 text-white p-6 rounded-2xl mt-6 shadow-lg">
                     <p className="text-xs uppercase tracking-widest text-blue-400 mb-2 font-bold">Análise:</p>
                     <p className="text-lg leading-relaxed">
-                      Note que <MathFormula formula="6 \text{ m/s} > 4 \text{ m/s}" inline={true} />, confirmando a relação <MathFormula formula="v_{em} > |\vec{v}_m|" inline={true} /> para trajetórias curvas. O vetor velocidade média "corta caminho" por dentro da curva!
+                      Note que <MathFormula formula="6 \\text{ m/s} > 4 \\text{ m/s}" inline={true} />, confirmando a relação <MathFormula formula="v_{em} > |\\vec{v}_m|" inline={true} /> para trajetórias curvas. O vetor velocidade média "corta caminho" por dentro da curva!
                     </p>
                   </div>
                 </div>
@@ -452,12 +452,12 @@ export default function CinematicaTopicVelocidade() {
                 </div>
               </div>
               <div className="bg-red-50 border border-red-200 rounded-2xl p-6">
-                <h4 className="text-xl font-bold text-red-700 mb-3">Aceleração Vetorial Média <MathFormula formula="\vec{a}_m" inline={true} /></h4>
+                <h4 className="text-xl font-bold text-red-700 mb-3">Aceleração Vetorial Média <MathFormula formula="\\vec{a}_m" inline={true} /></h4>
                 <p className="text-slate-700 leading-relaxed mb-4">
                   É a grandeza vetorial definida pela variação do <strong>vetor velocidade</strong> por unidade de tempo. Ela captura qualquer mudança no vetor velocidade: de módulo, de direção ou de sentido.
                 </p>
                 <p className="text-slate-700 leading-relaxed mb-4">
-                  O vetor aceleração média aponta na mesma direção e sentido da <em>variação</em> do vetor velocidade (<MathFormula formula="\Delta\vec{v} = \vec{v}_f - \vec{v}_i" inline={true} />), e não necessariamente na direção do movimento. Essa é uma das fontes de confusão mais comuns em problemas de física.
+                  O vetor aceleração média aponta na mesma direção e sentido da <em>variação</em> do vetor velocidade (<MathFormula formula="\\Delta\\vec{v} = \\vec{v}_f - \\vec{v}_i" inline={true} />), e não necessariamente na direção do movimento. Essa é uma das fontes de confusão mais comuns em problemas de física.
                 </p>
                 <div className="bg-red-100 border border-red-300 rounded-xl p-4 text-sm text-red-800">
                   <strong>Observação Importante:</strong> Em uma curva, mesmo que a rapidez seja constante, o vetor velocidade muda de direção, portanto há aceleração vetorial. Esse é o princípio do movimento circular uniforme.
@@ -479,10 +479,10 @@ export default function CinematicaTopicVelocidade() {
                 <div className="absolute -left-[9px] top-0 w-4 h-4 bg-orange-500 rounded-full shadow-[0_0_10px_rgba(249,115,22,0.5)]"></div>
                 <h4 className="text-xl font-semibold text-orange-300 mb-4">Aceleração Escalar Média</h4>
                 <p className="text-slate-400 mb-6 leading-relaxed">
-                  Considere um móvel com velocidade escalar <MathFormula formula="v_i" inline={true} /> no instante <MathFormula formula="t_i" inline={true} /> e velocidade escalar <MathFormula formula="v_f" inline={true} /> no instante <MathFormula formula="t_f" inline={true} />. A variação da velocidade escalar é <MathFormula formula="\Delta v = v_f - v_i" inline={true} /> e o intervalo de tempo é <MathFormula formula="\Delta t = t_f - t_i" inline={true} />. A aceleração escalar média é definida como:
+                  Considere um móvel com velocidade escalar <MathFormula formula="v_i" inline={true} /> no instante <MathFormula formula="t_i" inline={true} /> e velocidade escalar <MathFormula formula="v_f" inline={true} /> no instante <MathFormula formula="t_f" inline={true} />. A variação da velocidade escalar é <MathFormula formula="\\Delta v = v_f - v_i" inline={true} /> e o intervalo de tempo é <MathFormula formula="\\Delta t = t_f - t_i" inline={true} />. A aceleração escalar média é definida como:
                 </p>
                 <div className="bg-slate-800/80 p-8 rounded-2xl border border-slate-700 text-center shadow-inner mb-6">
-                  <MathFormula formula="a_m = \frac{\Delta v}{\Delta t} = \frac{v_f - v_i}{t_f - t_i}" className="text-3xl" />
+                  <MathFormula formula="a_m = \\frac{\\Delta v}{\\Delta t} = \\frac{v_f - v_i}{t_f - t_i}" className="text-3xl" />
                 </div>
                 <div className="bg-slate-700/40 p-6 rounded-xl border border-slate-600 text-sm">
                   <p className="text-slate-300 font-semibold mb-3">Legenda dos Termos:</p>
@@ -492,7 +492,7 @@ export default function CinematicaTopicVelocidade() {
                       <span>Aceleração escalar média (m/s²)</span>
                     </div>
                     <div className="flex items-start gap-3">
-                      <span className="text-orange-400 font-bold min-w-fit"><MathFormula formula="\Delta v" inline={true} /></span>
+                      <span className="text-orange-400 font-bold min-w-fit"><MathFormula formula="\\Delta v" inline={true} /></span>
                       <span>Variação da velocidade escalar (m/s) — pode ser positiva ou negativa</span>
                     </div>
                     <div className="flex items-start gap-3">
@@ -504,7 +504,7 @@ export default function CinematicaTopicVelocidade() {
                       <span>Velocidade escalar inicial (m/s)</span>
                     </div>
                     <div className="flex items-start gap-3">
-                      <span className="text-orange-400 font-bold min-w-fit"><MathFormula formula="\Delta t" inline={true} /></span>
+                      <span className="text-orange-400 font-bold min-w-fit"><MathFormula formula="\\Delta t" inline={true} /></span>
                       <span>Intervalo de tempo (s) — sempre positivo</span>
                     </div>
                   </div>
@@ -515,38 +515,38 @@ export default function CinematicaTopicVelocidade() {
                 <div className="absolute -left-[9px] top-0 w-4 h-4 bg-red-500 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div>
                 <h4 className="text-xl font-semibold text-red-300 mb-4">Aceleração Vetorial Média</h4>
                 <p className="text-slate-400 mb-6 leading-relaxed">
-                  No espaço tridimensional, o vetor velocidade é <MathFormula formula="\vec{v}(t) = v_x\hat{i} + v_y\hat{j} + v_z\hat{k}" inline={true} />. A variação do vetor velocidade entre dois instantes é a diferença vetorial <MathFormula formula="\Delta\vec{v} = \vec{v}_f - \vec{v}_i" inline={true} />. A aceleração vetorial média é:
+                  No espaço tridimensional, o vetor velocidade é <MathFormula formula="\\vec{v}(t) = v_x\\hat{i} + v_y\\hat{j} + v_z\\hat{k}" inline={true} />. A variação do vetor velocidade entre dois instantes é a diferença vetorial <MathFormula formula="\\Delta\\vec{v} = \\vec{v}_f - \\vec{v}_i" inline={true} />. A aceleração vetorial média é:
                 </p>
                 <div className="bg-slate-800/80 p-8 rounded-2xl border border-slate-700 text-center shadow-inner mb-6">
-                  <MathFormula formula="\vec{a}_m = \frac{\Delta\vec{v}}{\Delta t} = \frac{\vec{v}_f - \vec{v}_i}{t_f - t_i}" className="text-3xl" />
+                  <MathFormula formula="\\vec{a}_m = \\frac{\\Delta\\vec{v}}{\\Delta t} = \\frac{\\vec{v}_f - \\vec{v}_i}{t_f - t_i}" className="text-3xl" />
                 </div>
                 <div className="bg-slate-700/40 p-6 rounded-xl border border-slate-600 text-sm">
                   <p className="text-slate-300 font-semibold mb-3">Legenda dos Termos:</p>
                   <div className="grid md:grid-cols-2 gap-4 text-slate-400">
                     <div className="flex items-start gap-3">
-                      <span className="text-red-400 font-bold min-w-fit"><MathFormula formula="\vec{a}_m" inline={true} /></span>
+                      <span className="text-red-400 font-bold min-w-fit"><MathFormula formula="\\vec{a}_m" inline={true} /></span>
                       <span>Aceleração vetorial média (m/s²) — Vetor!</span>
                     </div>
                     <div className="flex items-start gap-3">
-                      <span className="text-red-400 font-bold min-w-fit"><MathFormula formula="\Delta\vec{v}" inline={true} /></span>
-                      <span>Variação do vetor velocidade (m/s) — aponta de <MathFormula formula="\vec{v}_i" inline={true} /> para <MathFormula formula="\vec{v}_f" inline={true} /></span>
+                      <span className="text-red-400 font-bold min-w-fit"><MathFormula formula="\\Delta\\vec{v}" inline={true} /></span>
+                      <span>Variação do vetor velocidade (m/s) — aponta de <MathFormula formula="\\vec{v}_i" inline={true} /> para <MathFormula formula="\\vec{v}_f" inline={true} /></span>
                     </div>
                     <div className="flex items-start gap-3">
-                      <span className="text-red-400 font-bold min-w-fit"><MathFormula formula="\vec{v}_f" inline={true} /></span>
+                      <span className="text-red-400 font-bold min-w-fit"><MathFormula formula="\\vec{v}_f" inline={true} /></span>
                       <span>Vetor velocidade final (m/s)</span>
                     </div>
                     <div className="flex items-start gap-3">
-                      <span className="text-red-400 font-bold min-w-fit"><MathFormula formula="\vec{v}_i" inline={true} /></span>
+                      <span className="text-red-400 font-bold min-w-fit"><MathFormula formula="\\vec{v}_i" inline={true} /></span>
                       <span>Vetor velocidade inicial (m/s)</span>
                     </div>
                     <div className="flex items-start gap-3">
-                      <span className="text-red-400 font-bold min-w-fit"><MathFormula formula="\hat{i}, \hat{j}, \hat{k}" inline={true} /></span>
+                      <span className="text-red-400 font-bold min-w-fit"><MathFormula formula="\\hat{i}, \\hat{j}, \\hat{k}" inline={true} /></span>
                       <span>Versores unitários nas direções x, y, z</span>
                     </div>
                   </div>
                 </div>
                 <p className="mt-6 text-sm text-slate-500 italic">
-                  *O vetor <MathFormula formula="\vec{a}_m" inline={true} /> aponta na direção de <MathFormula formula="\Delta\vec{v}" inline={true} />, que é a diferença vetorial <MathFormula formula="\vec{v}_f - \vec{v}_i" inline={true} />, e não necessariamente na direção do movimento.
+                  *O vetor <MathFormula formula="\\vec{a}_m" inline={true} /> aponta na direção de <MathFormula formula="\\Delta\\vec{v}" inline={true} />, que é a diferença vetorial <MathFormula formula="\\vec{v}_f - \\vec{v}_i" inline={true} />, e não necessariamente na direção do movimento.
                 </p>
               </div>
             </div>
@@ -594,7 +594,7 @@ export default function CinematicaTopicVelocidade() {
               Assim como na velocidade, existe uma relação fundamental entre a aceleração escalar e o módulo da aceleração vetorial. A aceleração vetorial captura <em>qualquer</em> variação no vetor velocidade, enquanto a escalar captura apenas a variação no módulo (rapidez). A regra geral é:
             </p>
             <div className="bg-slate-900 p-8 rounded-2xl text-center mb-6">
-              <MathFormula formula="|\vec{a}_m| \geq |a_m|" className="text-3xl text-white" />
+              <MathFormula formula="|\\vec{a}_m| \\geq |a_m|" className="text-3xl text-white" />
             </div>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-green-50 border border-green-200 rounded-2xl p-6">
@@ -613,7 +613,7 @@ export default function CinematicaTopicVelocidade() {
             <div className="mt-6 bg-blue-50 border border-blue-200 rounded-2xl p-6">
               <h4 className="font-bold text-blue-700 mb-3">O Caso Clássico: Movimento Circular Uniforme</h4>
               <p className="text-slate-700 leading-relaxed">
-                Um objeto em movimento circular uniforme tem <strong>rapidez constante</strong> (<MathFormula formula="a_m = 0" inline={true} />), mas o vetor velocidade muda de direção a cada instante. Portanto, <MathFormula formula="|\vec{a}_m| > 0" inline={true} />. Essa aceleração aponta para o centro da circunferência e é chamada de <strong>aceleração centrípeta</strong>. Esse é o exemplo mais poderoso para demonstrar a diferença entre aceleração escalar e vetorial.
+                Um objeto em movimento circular uniforme tem <strong>rapidez constante</strong> (<MathFormula formula="a_m = 0" inline={true} />), mas o vetor velocidade muda de direção a cada instante. Portanto, <MathFormula formula="|\\vec{a}_m| > 0" inline={true} />. Essa aceleração aponta para o centro da circunferência e é chamada de <strong>aceleração centrípeta</strong>. Esse é o exemplo mais poderoso para demonstrar a diferença entre aceleração escalar e vetorial.
               </p>
             </div>
           </div>
@@ -668,24 +668,24 @@ export default function CinematicaTopicVelocidade() {
                 <div className="bg-slate-800 p-5">
                   <h4 className="text-white font-bold text-lg">Exemplo 1 — Aceleração Escalar em Frenagem</h4>
                   <p className="text-slate-300 mt-2">
-                    Um automóvel trafega a <MathFormula formula="v_i = 72 \text{ km/h}" inline={true} /> e freia até parar completamente em <MathFormula formula="\Delta t = 5 \text{ s}" inline={true} />. Calcule a aceleração escalar média durante a frenagem.
+                    Um automóvel trafega a <MathFormula formula="v_i = 72 \\text{ km/h}" inline={true} /> e freia até parar completamente em <MathFormula formula="\\Delta t = 5 \\text{ s}" inline={true} />. Calcule a aceleração escalar média durante a frenagem.
                   </p>
                 </div>
                 <div className="p-6 space-y-4">
                   <div className="flex items-start gap-3">
                     <span className="bg-orange-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">1</span>
-                    <p className="text-slate-700">Converter a velocidade inicial para m/s: <MathFormula formula="v_i = \frac{72}{3{,}6} = 20 \text{ m/s}" inline={true} /></p>
+                    <p className="text-slate-700">Converter a velocidade inicial para m/s: <MathFormula formula="v_i = \\frac{72}{3{,}6} = 20 \\text{ m/s}" inline={true} /></p>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="bg-orange-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">2</span>
-                    <p className="text-slate-700">A velocidade final é <MathFormula formula="v_f = 0 \text{ m/s}" inline={true} /> (parado).</p>
+                    <p className="text-slate-700">A velocidade final é <MathFormula formula="v_f = 0 \\text{ m/s}" inline={true} /> (parado).</p>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="bg-orange-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">3</span>
                     <p className="text-slate-700">Aplicar a definição:</p>
                   </div>
                   <div className="bg-slate-900 p-6 rounded-xl text-center">
-                    <MathFormula formula="a_m = \frac{v_f - v_i}{\Delta t} = \frac{0 - 20}{5} = -4 \text{ m/s}^2" className="text-white" />
+                    <MathFormula formula="a_m = \\frac{v_f - v_i}{\\Delta t} = \\frac{0 - 20}{5} = -4 \\text{ m/s}^2" className="text-white" />
                   </div>
                   <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
                     <p className="text-orange-800 text-sm"><strong>Análise:</strong> O sinal negativo indica desaceleração — a aceleração é contrária ao sentido do movimento. O módulo de 4 m/s² significa que o carro perde 4 m/s de velocidade a cada segundo.</p>
@@ -698,34 +698,34 @@ export default function CinematicaTopicVelocidade() {
                 <div className="bg-slate-800 p-5">
                   <h4 className="text-white font-bold text-lg">Exemplo 2 — Aceleração Vetorial em Curva</h4>
                   <p className="text-slate-300 mt-2">
-                    Uma partícula percorre uma curva de 90° em <MathFormula formula="\Delta t = 2 \text{ s}" inline={true} /> mantendo rapidez constante de <MathFormula formula="v = 10 \text{ m/s}" inline={true} />. O vetor velocidade inicial aponta para o Leste (<MathFormula formula="+x" inline={true} />) e o final aponta para o Norte (<MathFormula formula="+y" inline={true} />). Determine o módulo da aceleração vetorial média.
+                    Uma partícula percorre uma curva de 90° em <MathFormula formula="\\Delta t = 2 \\text{ s}" inline={true} /> mantendo rapidez constante de <MathFormula formula="v = 10 \\text{ m/s}" inline={true} />. O vetor velocidade inicial aponta para o Leste (<MathFormula formula="+x" inline={true} />) e o final aponta para o Norte (<MathFormula formula="+y" inline={true} />). Determine o módulo da aceleração vetorial média.
                   </p>
                 </div>
                 <div className="p-6 space-y-4">
                   <div className="flex items-start gap-3">
                     <span className="bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">1</span>
-                    <p className="text-slate-700">Identificar os vetores velocidade: <MathFormula formula="\vec{v}_i = 10\hat{i} \text{ m/s}" inline={true} /> e <MathFormula formula="\vec{v}_f = 10\hat{j} \text{ m/s}" inline={true} /></p>
+                    <p className="text-slate-700">Identificar os vetores velocidade: <MathFormula formula="\\vec{v}_i = 10\\hat{i} \\text{ m/s}" inline={true} /> e <MathFormula formula="\\vec{v}_f = 10\\hat{j} \\text{ m/s}" inline={true} /></p>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">2</span>
-                    <p className="text-slate-700">Calcular a variação vetorial: <MathFormula formula="\Delta\vec{v} = \vec{v}_f - \vec{v}_i = 10\hat{j} - 10\hat{i} = (-10\hat{i} + 10\hat{j}) \text{ m/s}" inline={true} /></p>
+                    <p className="text-slate-700">Calcular a variação vetorial: <MathFormula formula="\\Delta\\vec{v} = \\vec{v}_f - \\vec{v}_i = 10\\hat{j} - 10\\hat{i} = (-10\\hat{i} + 10\\hat{j}) \\text{ m/s}" inline={true} /></p>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">3</span>
-                    <p className="text-slate-700">Calcular o módulo de <MathFormula formula="\Delta\vec{v}" inline={true} />:</p>
+                    <p className="text-slate-700">Calcular o módulo de <MathFormula formula="\\Delta\\vec{v}" inline={true} />:</p>
                   </div>
                   <div className="bg-slate-900 p-6 rounded-xl text-center">
-                    <MathFormula formula="|\Delta\vec{v}| = \sqrt{(-10)^2 + 10^2} = \sqrt{200} = 10\sqrt{2} \text{ m/s}" className="text-white" />
+                    <MathFormula formula="|\\Delta\\vec{v}| = \\sqrt{(-10)^2 + 10^2} = \\sqrt{200} = 10\\sqrt{2} \\text{ m/s}" className="text-white" />
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">4</span>
                     <p className="text-slate-700">Calcular a aceleração vetorial média:</p>
                   </div>
                   <div className="bg-slate-900 p-6 rounded-xl text-center">
-                    <MathFormula formula="|\vec{a}_m| = \frac{|\Delta\vec{v}|}{\Delta t} = \frac{10\sqrt{2}}{2} = 5\sqrt{2} \approx 7{,}07 \text{ m/s}^2" className="text-white" />
+                    <MathFormula formula="|\\vec{a}_m| = \\frac{|\\Delta\\vec{v}|}{\\Delta t} = \\frac{10\\sqrt{2}}{2} = 5\\sqrt{2} \\approx 7{,}07 \\text{ m/s}^2" className="text-white" />
                   </div>
                   <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-                    <p className="text-red-800 text-sm"><strong>Análise:</strong> A aceleração escalar média é zero (rapidez constante), mas a aceleração vetorial média é <MathFormula formula="5\sqrt{2} \text{ m/s}^2" inline={true} />. Isso demonstra que a aceleração vetorial captura mudanças de direção que a escalar ignora completamente.</p>
+                    <p className="text-red-800 text-sm"><strong>Análise:</strong> A aceleração escalar média é zero (rapidez constante), mas a aceleração vetorial média é <MathFormula formula="5\\sqrt{2} \\text{ m/s}^2" inline={true} />. Isso demonstra que a aceleração vetorial captura mudanças de direção que a escalar ignora completamente.</p>
                   </div>
                 </div>
               </div>
@@ -862,7 +862,7 @@ export default function CinematicaTopicVelocidade() {
                   Um movimento é <strong>uniforme</strong> quando a velocidade escalar instantânea é <strong>constante e diferente de zero</strong>. A aceleração é nula.
                 </p>
                 <div className="bg-blue-100 rounded-lg p-3 text-center">
-                  <MathFormula formula="\alpha = 0 \;\text{e}\; v \neq 0" inline={false} />
+                  <MathFormula formula="\\alpha = 0 \\;\\text{e}\\; v \\neq 0" inline={false} />
                   <p className="text-blue-600 text-xs mt-1">aceleração nula</p>
                 </div>
                 <div className="mt-3 space-y-1">
@@ -894,22 +894,22 @@ export default function CinematicaTopicVelocidade() {
             <div className="bg-slate-900 rounded-xl p-6 text-white mb-4">
               <p className="text-slate-300 text-sm mb-4 leading-relaxed">A aceleração escalar média é definida como a variação da velocidade escalar por unidade de tempo. Partindo da definição operacional:</p>
               <div className="text-center mb-4">
-                <MathFormula formula="\alpha_m = \frac{\Delta v}{\Delta t} = \frac{v_f - v_i}{t_f - t_i}" inline={false} />
+                <MathFormula formula="\\alpha_m = \\frac{\\Delta v}{\\Delta t} = \\frac{v_f - v_i}{t_f - t_i}" inline={false} />
               </div>
               <p className="text-slate-300 text-sm mb-4 leading-relaxed">Para determinar se o movimento é acelerado ou retardado em um dado instante, analisamos o produto <strong>v · α</strong>. Esse critério é derivado diretamente da definição de módulo crescente ou decrescente:</p>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="bg-green-900/50 rounded-lg p-4 text-center">
-                  <MathFormula formula="v \cdot \alpha > 0 \Rightarrow \text{Acelerado}" inline={false} />
+                  <MathFormula formula="v \\cdot \\alpha > 0 \\Rightarrow \\text{Acelerado}" inline={false} />
                   <p className="text-green-300 text-xs mt-2">Mesmo sinal: módulo de v cresce</p>
                 </div>
                 <div className="bg-red-900/50 rounded-lg p-4 text-center">
-                  <MathFormula formula="v \cdot \alpha < 0 \Rightarrow \text{Retardado}" inline={false} />
+                  <MathFormula formula="v \\cdot \\alpha < 0 \\Rightarrow \\text{Retardado}" inline={false} />
                   <p className="text-red-300 text-xs mt-2">Sinais opostos: módulo de v decresce</p>
                 </div>
               </div>
               <p className="text-slate-300 text-sm mt-4 leading-relaxed">A unidade de aceleração no SI é derivada diretamente da razão entre as unidades de velocidade e tempo:</p>
               <div className="text-center mt-2">
-                <MathFormula formula="\text{unid}(\alpha) = \frac{\text{unid}(v)}{\text{unid}(t)} = \frac{\text{m/s}}{\text{s}} = \text{m/s}^2" inline={false} />
+                <MathFormula formula="\\text{unid}(\\alpha) = \\frac{\\text{unid}(v)}{\\text{unid}(t)} = \\frac{\\text{m/s}}{\\text{s}} = \\text{m/s}^2" inline={false} />
               </div>
             </div>
 
@@ -998,7 +998,7 @@ export default function CinematicaTopicVelocidade() {
               <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
                 <h4 className="font-bold text-slate-800 mb-3">Aceleração Escalar Média</h4>
                 <div className="text-center mb-3">
-                  <MathFormula formula="\alpha_m = \frac{v_f - v_i}{\Delta t}" inline={false} />
+                  <MathFormula formula="\\alpha_m = \\frac{v_f - v_i}{\\Delta t}" inline={false} />
                 </div>
                 <p className="text-slate-600 text-sm leading-relaxed">A aceleração média é a razão entre a variação da velocidade escalar e o intervalo de tempo. Seu sinal depende exclusivamente da diferença v_f − v_i, não do sinal isolado de v_f ou v_i.</p>
               </div>
@@ -1007,15 +1007,15 @@ export default function CinematicaTopicVelocidade() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm">
                     <span className="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></span>
-                    <MathFormula formula="v \cdot \alpha_m > 0 \Rightarrow \text{Acelerado}" inline={true} />
+                    <MathFormula formula="v \\cdot \\alpha_m > 0 \\Rightarrow \\text{Acelerado}" inline={true} />
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <span className="w-3 h-3 bg-red-500 rounded-full flex-shrink-0"></span>
-                    <MathFormula formula="v \cdot \alpha_m < 0 \Rightarrow \text{Retardado}" inline={true} />
+                    <MathFormula formula="v \\cdot \\alpha_m < 0 \\Rightarrow \\text{Retardado}" inline={true} />
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <span className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></span>
-                    <MathFormula formula="\alpha_m = 0 \Rightarrow \text{Uniforme}" inline={true} />
+                    <MathFormula formula="\\alpha_m = 0 \\Rightarrow \\text{Uniforme}" inline={true} />
                   </div>
                 </div>
                 <p className="text-slate-600 text-sm mt-3">Este critério é válido para qualquer instante do movimento, não apenas para a média do intervalo.</p>
@@ -1089,14 +1089,14 @@ export default function CinematicaTopicVelocidade() {
                 <p className="font-semibold text-slate-800 mb-3">Resolução:</p>
                 <p className="text-slate-700 text-sm mb-2"><strong>Passo 1 — Classificação:</strong></p>
                 <div className="text-center mb-3">
-                  <MathFormula formula="v \cdot \alpha = (-20) \cdot (+4) = -80 < 0 \Rightarrow \textbf{Movimento Retardado}" inline={false} />
+                  <MathFormula formula="v \\cdot \\alpha = (-20) \\cdot (+4) = -80 < 0 \\Rightarrow \\textbf{Movimento Retardado}" inline={false} />
                 </div>
                 <p className="text-slate-700 text-sm mb-2 mt-3"><strong>Passo 2 — Tempo para parar (v_f = 0):</strong></p>
                 <div className="text-center mb-2">
-                  <MathFormula formula="\alpha_m = \frac{v_f - v_i}{\Delta t} \Rightarrow 4 = \frac{0 - (-20)}{\Delta t}" inline={false} />
+                  <MathFormula formula="\\alpha_m = \\frac{v_f - v_i}{\\Delta t} \\Rightarrow 4 = \\frac{0 - (-20)}{\\Delta t}" inline={false} />
                 </div>
                 <div className="text-center mb-2">
-                  <MathFormula formula="\Delta t = \frac{20}{4} = 5 \text{ s}" inline={false} />
+                  <MathFormula formula="\\Delta t = \\frac{20}{4} = 5 \\text{ s}" inline={false} />
                 </div>
                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mt-3">
                   <p className="text-orange-800 text-sm"><strong>Conclusão:</strong> O movimento é retardado (v e α têm sinais opostos). O carro para em 5 s. Note que a aceleração positiva com velocidade negativa significa desaceleração — um erro conceitual muito comum em provas.</p>
@@ -1117,12 +1117,12 @@ export default function CinematicaTopicVelocidade() {
                 <p className="text-slate-700 text-sm mb-2"><strong>(a) De A até O (descida):</strong></p>
                 <p className="text-slate-700 text-sm mb-2 leading-relaxed">O pêndulo parte do repouso em A (v = 0) e ganha velocidade até O (v máxima). A velocidade é positiva e crescente, portanto a aceleração é positiva.</p>
                 <div className="text-center mb-3">
-                  <MathFormula formula="v > 0,\; \alpha > 0 \Rightarrow v \cdot \alpha > 0 \Rightarrow \textbf{Acelerado}" inline={false} />
+                  <MathFormula formula="v > 0,\\; \\alpha > 0 \\Rightarrow v \\cdot \\alpha > 0 \\Rightarrow \\textbf{Acelerado}" inline={false} />
                 </div>
                 <p className="text-slate-700 text-sm mb-2 mt-3"><strong>(b) De O até B (subida):</strong></p>
                 <p className="text-slate-700 text-sm mb-2 leading-relaxed">O pêndulo parte de O com velocidade máxima e desacelera até parar em B. A velocidade ainda é positiva, mas decrescente, portanto a aceleração é negativa.</p>
                 <div className="text-center mb-3">
-                  <MathFormula formula="v > 0,\; \alpha < 0 \Rightarrow v \cdot \alpha < 0 \Rightarrow \textbf{Retardado}" inline={false} />
+                  <MathFormula formula="v > 0,\\; \\alpha < 0 \\Rightarrow v \\cdot \\alpha < 0 \\Rightarrow \\textbf{Retardado}" inline={false} />
                 </div>
                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mt-3">
                   <p className="text-orange-800 text-sm"><strong>Conclusão:</strong> O mesmo objeto pode ter seu movimento classificado de formas diferentes em diferentes fases do trajeto. A classificação é sempre local, referente a um intervalo de tempo específico.</p>

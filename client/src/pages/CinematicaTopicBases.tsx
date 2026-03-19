@@ -173,7 +173,7 @@ export default function CinematicaTopicBases() {
                 <p className="text-slate-300 text-sm mt-1">
                   Problemas de "velocidade relativa" exploram exatamente esse princípio. A velocidade de A em relação a B é:
                 </p>
-                <MathFormula formula="\vec{v}_{A/B} = \vec{v}_A - \vec{v}_B" display={true} className="text-lg my-2" />
+                <MathFormula formula="\\vec{v}_{A/B} = \\vec{v}_A - \\vec{v}_B" display={true} className="text-lg my-2" />
               </div>
             </div>
           </div>
@@ -303,7 +303,7 @@ export default function CinematicaTopicBases() {
                 <p className="text-sm text-slate-300 leading-relaxed mb-3">
                   Posição do móvel na trajetória em relação à origem escolhida. Pode ser positivo ou negativo, dependendo do sentido adotado.
                 </p>
-                <MathFormula formula="s \in \mathbb{R}" display={true} className="text-base" />
+                <MathFormula formula="s \\in \\mathbb{R}" display={true} className="text-base" />
                 <p className="text-xs text-slate-400 mt-2">Unidade SI: metro (m)</p>
               </div>
               <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-5 shadow-xl">
@@ -311,7 +311,7 @@ export default function CinematicaTopicBases() {
                 <p className="text-sm text-slate-300 leading-relaxed mb-3">
                   Variação de posição entre dois instantes. É a diferença entre a posição final e a inicial. Pode ser negativo (retrocesso).
                 </p>
-                <MathFormula formula="\Delta s = s_f - s_i" display={true} className="text-base" />
+                <MathFormula formula="\\Delta s = s_f - s_i" display={true} className="text-base" />
                 <p className="text-xs text-slate-400 mt-2">Pode ser negativo!</p>
               </div>
               <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-5 shadow-xl">
@@ -319,7 +319,7 @@ export default function CinematicaTopicBases() {
                 <p className="text-sm text-slate-300 leading-relaxed mb-3">
                   Comprimento total do caminho percorrido pelo móvel. Sempre positiva ou nula, independentemente do sentido do movimento.
                 </p>
-                <MathFormula formula="d \geq 0" display={true} className="text-base" />
+                <MathFormula formula="d \\geq 0" display={true} className="text-base" />
                 <p className="text-xs text-slate-400 mt-2">Sempre não-negativa!</p>
               </div>
             </div>
@@ -328,24 +328,24 @@ export default function CinematicaTopicBases() {
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 shadow-xl">
               <h4 className="font-semibold text-blue-400 mb-4">📐 Exemplo Numérico — A Diferença que Cai no ITA</h4>
               <p className="text-slate-300 leading-relaxed mb-4">
-                Um atleta parte da posição <MathFormula formula="s_0 = 0" display={false} />, corre até a posição <MathFormula formula="s = 10 \text{ m}" display={false} /> e então retorna até a posição <MathFormula formula="s = 4 \text{ m}" display={false} />.
+                Um atleta parte da posição <MathFormula formula="s_0 = 0" display={false} />, corre até a posição <MathFormula formula="s = 10 \\text{ m}" display={false} /> e então retorna até a posição <MathFormula formula="s = 4 \\text{ m}" display={false} />.
               </p>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
                   <p className="font-semibold text-orange-400">Calculando o Deslocamento (Δs):</p>
-                  <MathFormula formula="\Delta s = s_f - s_i = 4 - 0 = 4 \text{ m}" display={true} />
+                  <MathFormula formula="\\Delta s = s_f - s_i = 4 - 0 = 4 \\text{ m}" display={true} />
                   <p className="text-sm text-slate-300">O deslocamento é <strong className="text-orange-300">+4 m</strong>. O sinal positivo indica que o atleta terminou à frente da posição inicial.</p>
                 </div>
                 <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
                   <p className="font-semibold text-green-400">Calculando a Distância Percorrida (d):</p>
-                  <MathFormula formula="d = 10 + (10 - 4) = 10 + 6 = 16 \text{ m}" display={true} />
+                  <MathFormula formula="d = 10 + (10 - 4) = 10 + 6 = 16 \\text{ m}" display={true} />
                   <p className="text-sm text-slate-300">A distância percorrida é <strong className="text-green-300">16 m</strong>. Somamos os trechos de ida (10 m) e de volta (6 m).</p>
                 </div>
               </div>
               <div className="mt-4 bg-blue-900/30 p-4 rounded-lg border border-blue-700">
                 <p className="text-blue-300 font-semibold text-sm">Conclusão:</p>
                 <p className="text-slate-300 text-sm mt-1">
-                  <MathFormula formula="\Delta s = 4 \text{ m} \neq d = 16 \text{ m}" display={false} />. Deslocamento e distância percorrida só são iguais quando o móvel <strong>nunca muda de sentido</strong>.
+                  <MathFormula formula="\\Delta s = 4 \\text{ m} \\neq d = 16 \\text{ m}" display={false} />. Deslocamento e distância percorrida só são iguais quando o móvel <strong>nunca muda de sentido</strong>.
                 </p>
               </div>
             </div>
@@ -400,9 +400,9 @@ export default function CinematicaTopicBases() {
               <p className="text-slate-700 leading-relaxed mb-4">
                 A <strong>velocidade relativa</strong> de um corpo A em relação a um corpo B é a velocidade que um observador posicionado em B (e em repouso em relação a B) mediria para o corpo A. Matematicamente, é simplesmente a diferença vetorial das velocidades:
               </p>
-              <MathFormula formula="\vec{v}_{A/B} = \vec{v}_A - \vec{v}_B" display={true} className="text-2xl" />
+              <MathFormula formula="\\vec{v}_{A/B} = \\vec{v}_A - \\vec{v}_B" display={true} className="text-2xl" />
               <p className="text-slate-700 leading-relaxed mt-4">
-                Onde <MathFormula formula="\vec{v}_A" display={false} /> e <MathFormula formula="\vec{v}_B" display={false} /> são as velocidades de A e B em relação a um referencial comum (geralmente a Terra).
+                Onde <MathFormula formula="\\vec{v}_A" display={false} /> e <MathFormula formula="\\vec{v}_B" display={false} /> são as velocidades de A e B em relação a um referencial comum (geralmente a Terra).
               </p>
             </div>
 
@@ -451,26 +451,26 @@ export default function CinematicaTopicBases() {
               </h4>
               <div className="space-y-3 text-slate-700">
                 <p className="text-sm leading-relaxed">
-                  <strong>Enunciado:</strong> Um carro parte da posição <MathFormula formula="s_0 = 20 \text{ m}" display={false} />, avança até <MathFormula formula="s = 80 \text{ m}" display={false} /> e então recua até <MathFormula formula="s = 35 \text{ m}" display={false} />. Determine: (a) o deslocamento total e (b) a distância percorrida.
+                  <strong>Enunciado:</strong> Um carro parte da posição <MathFormula formula="s_0 = 20 \\text{ m}" display={false} />, avança até <MathFormula formula="s = 80 \\text{ m}" display={false} /> e então recua até <MathFormula formula="s = 35 \\text{ m}" display={false} />. Determine: (a) o deslocamento total e (b) a distância percorrida.
                 </p>
                 <div className="bg-white rounded p-4 space-y-3">
                   <div>
                     <p className="font-bold text-slate-800 mb-2">Resolução (a) — Deslocamento:</p>
                     <div className="space-y-1">
-                      <MathFormula formula="\Delta s = s_f - s_i = 35 - 20 = +15 \text{ m}" display={true} />
+                      <MathFormula formula="\\Delta s = s_f - s_i = 35 - 20 = +15 \\text{ m}" display={true} />
                     </div>
                     <p className="text-sm text-slate-600 mt-1">O sinal positivo indica que o carro terminou à frente da posição inicial.</p>
                   </div>
                   <div>
                     <p className="font-bold text-slate-800 mb-2">Resolução (b) — Distância Percorrida:</p>
                     <div className="space-y-1">
-                      <MathFormula formula="d_1 = 80 - 20 = 60 \text{ m} \quad \text{(trecho de avanço)}" display={true} />
-                      <MathFormula formula="d_2 = 80 - 35 = 45 \text{ m} \quad \text{(trecho de recuo)}" display={true} />
-                      <MathFormula formula="d = d_1 + d_2 = 60 + 45 = 105 \text{ m}" display={true} />
+                      <MathFormula formula="d_1 = 80 - 20 = 60 \\text{ m} \\quad \\text{(trecho de avanço)}" display={true} />
+                      <MathFormula formula="d_2 = 80 - 35 = 45 \\text{ m} \\quad \\text{(trecho de recuo)}" display={true} />
+                      <MathFormula formula="d = d_1 + d_2 = 60 + 45 = 105 \\text{ m}" display={true} />
                     </div>
                   </div>
                   <div className="bg-green-100 p-3 rounded border border-green-300">
-                    <p className="font-bold text-green-900 text-sm">Resposta: <MathFormula formula="\Delta s = 15 \text{ m}" display={false} /> e <MathFormula formula="d = 105 \text{ m}" display={false} /></p>
+                    <p className="font-bold text-green-900 text-sm">Resposta: <MathFormula formula="\\Delta s = 15 \\text{ m}" display={false} /> e <MathFormula formula="d = 105 \\text{ m}" display={false} /></p>
                   </div>
                 </div>
               </div>
@@ -490,15 +490,15 @@ export default function CinematicaTopicBases() {
                   <div>
                     <p className="font-bold text-slate-800 mb-2">Passo 1: Calcular a velocidade de aproximação (relativa)</p>
                     <p className="text-sm text-slate-600 mb-2">Como os trens se movem em sentidos opostos:</p>
-                    <MathFormula formula="v_{rel} = v_A + v_B = 80 + 70 = 150 \text{ km/h}" display={true} />
+                    <MathFormula formula="v_{rel} = v_A + v_B = 80 + 70 = 150 \\text{ km/h}" display={true} />
                   </div>
                   <div>
                     <p className="font-bold text-slate-800 mb-2">Passo 2: Calcular o tempo de encontro</p>
-                    <MathFormula formula="t = \frac{d}{v_{rel}} = \frac{600}{150} = 4 \text{ h}" display={true} />
+                    <MathFormula formula="t = \\frac{d}{v_{rel}} = \\frac{600}{150} = 4 \\text{ h}" display={true} />
                   </div>
                   <div>
                     <p className="font-bold text-slate-800 mb-2">Passo 3: Calcular a distância percorrida por A</p>
-                    <MathFormula formula="d_A = v_A \cdot t = 80 \times 4 = 320 \text{ km}" display={true} />
+                    <MathFormula formula="d_A = v_A \\cdot t = 80 \\times 4 = 320 \\text{ km}" display={true} />
                   </div>
                   <div className="bg-green-100 p-3 rounded border border-green-300">
                     <p className="font-bold text-green-900 text-sm">Resposta: Os trens se encontram após <strong>4 horas</strong>, a <strong>320 km</strong> da estação de A.</p>
@@ -599,7 +599,7 @@ export default function CinematicaTopicBases() {
               </p>
               <div className="bg-blue-800/50 rounded-lg p-3 mb-3">
                 <p className="text-xs text-blue-200 font-semibold mb-2">Fórmula:</p>
-                <MathFormula formula="s = \text{posição}" />
+                <MathFormula formula="s = \\text{posição}" />
               </div>
               <p className="text-xs text-slate-400">Pode ser positivo ou negativo.</p>
             </div>
@@ -611,7 +611,7 @@ export default function CinematicaTopicBases() {
               </p>
               <div className="bg-purple-800/50 rounded-lg p-3 mb-3">
                 <p className="text-xs text-purple-200 font-semibold mb-2">Fórmula:</p>
-                <MathFormula formula="\Delta s = s_f - s_i" />
+                <MathFormula formula="\\Delta s = s_f - s_i" />
               </div>
               <p className="text-xs text-slate-400">Pode ser negativo!</p>
             </div>
@@ -623,7 +623,7 @@ export default function CinematicaTopicBases() {
               </p>
               <div className="bg-orange-800/50 rounded-lg p-3 mb-3">
                 <p className="text-xs text-orange-200 font-semibold mb-2">Fórmula:</p>
-                <MathFormula formula="d = \sum |\Delta s_i|" />
+                <MathFormula formula="d = \\sum |\\Delta s_i|" />
               </div>
               <p className="text-xs text-slate-400">Sempre ≥ 0!</p>
             </div>
