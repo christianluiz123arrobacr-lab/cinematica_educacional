@@ -162,7 +162,7 @@ export default function CinematicaTopicVelocidade() {
               </li>
               <li className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-amber-600" />
-                <span><strong>Desigualdade (>):</strong> Ocorre se a trajetória for curva ou se houver "vai e vem" (inversão de sentido).</span>
+                <span><strong>Desigualdade (&gt;):</strong> Ocorre se a trajetória for curva ou se houver "vai e vem" (inversão de sentido).</span>
               </li>
             </ul>
           </div>
