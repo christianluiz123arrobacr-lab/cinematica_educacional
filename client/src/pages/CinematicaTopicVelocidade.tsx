@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, AlertCircle, Lightbulb } from "lucide-react";
+import { ArrowLeft, AlertCircle, Lightbulb, Activity, Target, Zap, TrendingUp, Box, CheckCircle2, AlertTriangle } from "lucide-react";
 import { Link } from "wouter";
 import { MathFormula } from "@/components/MathFormula";
 
@@ -28,170 +28,158 @@ export default function CinematicaTopicVelocidade() {
       </header>
 
       <section className="container py-6 md:py-12 space-y-6 md:space-y-12">
-        {/* Introdução */}
-        <Card className="p-4 md:p-8 shadow-lg border-0 bg-gradient-to-r from-blue-50 to-purple-50">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Por Que Precisamos Entender Isso?</h2>
-          <div className="space-y-4 text-slate-700 leading-relaxed">
-            <p>Pense em um carro saindo de um sinal de trânsito. Ele não sai do repouso direto a 60 km/h. Ele <strong>acelera gradualmente</strong>. Velocidade e aceleração são conceitos que descrevem exatamente isso: como algo se move e como essa velocidade muda.</p>
-            <p>Você usa esses conceitos todos os dias: quando pisa no acelerador do carro, quando freia, quando faz uma curva. A física só está dando nomes e fórmulas para o que você já vê acontecendo!</p>
+                {/* ===================== VELOCIDADE MÉDIA E ESCALAR ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🚀 Velocidade Média e Velocidade Escalar</h2>
+          
+          <div className="space-y-6">
+            <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">A Essência do Movimento</h3>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                A velocidade é a grandeza física que descreve a rapidez com que a posição de um móvel varia no tempo. No nível de elite (ITA/IME), a distinção entre <strong>velocidade escalar média</strong> e <strong>velocidade vetorial média</strong> é fundamental. Enquanto a primeira foca no caminho percorrido, a segunda foca apenas no deslocamento entre os pontos inicial e final.
+              </p>
+              <div className="bg-indigo-50 border border-indigo-200 rounded p-4">
+                <p className="text-slate-700 text-sm"><strong>Visão de Elite:</strong> A velocidade escalar média (<MathFormula formula="v_{em}" inline={true} />) é sempre maior ou igual ao módulo da velocidade vetorial média (<MathFormula formula="|\vec{v}_m|" inline={true} />). Elas só são iguais se o movimento for retilíneo e sem inversão de sentido.</p>
+              </div>
+            </div>
           </div>
-        </Card>
+        </div>
 
-        {/* Velocidade - Explicação Simples */}
-        <Card className="p-4 md:p-8 shadow-lg border-0">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">O Que é Velocidade?</h2>
-          <div className="space-y-4 text-slate-700 leading-relaxed">
-            <p className="text-lg font-semibold text-slate-800">
-              <strong>Velocidade = Quão rápido você se move E em qual direção</strong>
+        {/* Definições Precisas */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h3 className="text-2xl font-bold text-slate-900 mb-6">📌 Definições Precisas</h3>
+          
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            {/* Velocidade Escalar Média */}
+            <div className="bg-gradient-to-br from-blue-900 to-indigo-900 rounded-xl p-6 text-white">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-blue-500/30 rounded-lg flex items-center justify-center">
+                  <Activity className="w-5 h-5 text-blue-300" />
+                </div>
+                <h3 className="text-lg font-bold text-blue-200">Velocidade Escalar Média</h3>
+              </div>
+              <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                Razão entre a <strong>distância total percorrida</strong> (<MathFormula formula="d" inline={true} />) e o intervalo de tempo total (<MathFormula formula="\Delta t" inline={true} />).
+              </p>
+              <div className="bg-blue-800/50 rounded-lg p-3 mb-3">
+                <p className="text-xs text-blue-200 font-semibold mb-2">Fórmula:</p>
+                <MathFormula formula="v_{em} = \frac{d}{\Delta t}" />
+              </div>
+              <p className="text-xs text-slate-400">Leva em conta todo o caminho percorrido (ida e volta).</p>
+            </div>
+
+            {/* Velocidade Vetorial Média */}
+            <div className="bg-gradient-to-br from-purple-900 to-pink-900 rounded-xl p-6 text-white">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-purple-500/30 rounded-lg flex items-center justify-center">
+                  <Target className="w-5 h-5 text-purple-300" />
+                </div>
+                <h3 className="text-lg font-bold text-purple-200">Velocidade Vetorial Média</h3>
+              </div>
+              <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                Razão entre o <strong>vetor deslocamento</strong> (<MathFormula formula="\Delta \vec{r}" inline={true} />) e o intervalo de tempo total (<MathFormula formula="\Delta t" inline={true} />).
+              </p>
+              <div className="bg-purple-800/50 rounded-lg p-3 mb-3">
+                <p className="text-xs text-purple-200 font-semibold mb-2">Fórmula:</p>
+                <MathFormula formula="\vec{v}_m = \frac{\Delta \vec{r}}{\Delta t}" />
+              </div>
+              <p className="text-xs text-slate-400">Depende apenas das posições inicial e final.</p>
+            </div>
+          </div>
+
+          {/* Tabela Comparativa */}
+          <div className="overflow-x-auto mb-8">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-slate-800 text-white">
+                  <th className="p-3 text-left rounded-tl-lg">Característica</th>
+                  <th className="p-3 text-center text-blue-300">Escalar Média</th>
+                  <th className="p-3 text-center text-purple-300 rounded-tr-lg">Vetorial Média</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <td className="p-3 font-semibold text-slate-700">Natureza</td>
+                  <td className="p-3 text-center text-slate-600">Escalar (número)</td>
+                  <td className="p-3 text-center text-slate-600">Vetorial (módulo, dir, sent)</td>
+                </tr>
+                <tr className="bg-white border-b border-slate-200">
+                  <td className="p-3 font-semibold text-slate-700">Depende da Trajetória?</td>
+                  <td className="p-3 text-center text-slate-600">Sim (comprimento total)</td>
+                  <td className="p-3 text-center text-slate-600">Não (só início e fim)</td>
+                </tr>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <td className="p-3 font-semibold text-slate-700">Pode ser zero?</td>
+                  <td className="p-3 text-center text-slate-600">Só se não houver movimento</td>
+                  <td className="p-3 text-center text-slate-600">Sim (se voltar ao início)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* O Pulo do Gato - Renato Brito */}
+        <div className="bg-yellow-50 border-l-4 border-yellow-500 p-8 mb-8 rounded-r-2xl shadow-md">
+          <div className="flex items-center gap-3 mb-4">
+            <Lightbulb className="w-8 h-8 text-yellow-600" />
+            <h3 className="text-2xl font-bold text-yellow-900">O Pulo do Gato (Visão Renato Brito)</h3>
+          </div>
+          <div className="space-y-4 text-yellow-900">
+            <p className="font-semibold">Velocidade Média em Trechos Iguais:</p>
+            <p className="text-sm leading-relaxed">
+              Se um móvel percorre a primeira metade de uma distância com velocidade <MathFormula formula="v_1" inline={true} /> e a segunda metade com <MathFormula formula="v_2" inline={true} />, a velocidade média <strong>NÃO É</strong> a média aritmética <MathFormula formula="(v_1 + v_2)/2" inline={true} />.
             </p>
-            
-            <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 my-4">
-              <p className="mb-2"><strong>Exemplo simples:</strong></p>
-              <p>Se você percorre 100 km em 2 horas, sua velocidade é 50 km/h. Mas se você vai para o norte a 50 km/h, isso é diferente de ir para o sul a 50 km/h!</p>
+            <div className="bg-white/50 p-4 rounded-lg border border-yellow-200">
+              <p className="text-sm font-bold mb-2">A Média Harmônica:</p>
+              <MathFormula formula="v_m = \frac{2 \cdot v_1 \cdot v_2}{v_1 + v_2}" />
+              <p className="text-xs mt-2 italic">*Dica: Isso cai muito no ITA para testar quem faz a média simples por pressa.</p>
             </div>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Velocidade Média (A Mais Fácil)</h3>
-            <p>É a velocidade que você teria se viajasse em linha reta sem parar, do ponto A ao ponto B. Tipo quando você diz: "Fiz 300 km em 3 horas, então viajei a 100 km/h em média".</p>
-            
-            <div className="bg-blue-50 p-3 md:p-6 rounded-lg border border-blue-200 overflow-x-auto my-4">
-              <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula da Velocidade Média:</p>
-              <MathFormula formula={String.raw`$$$$v_m = \\frac{\\text{distância total}}{\\text{tempo total}}$$$$`} className="text-center text-lg md:text-2xl mb-4" />
-              <p className="text-sm text-slate-600 text-center">Ou em letras: v_m = Δs / Δt</p>
-            </div>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Velocidade Instantânea (A Mais Realista)</h3>
-            <p>É a velocidade <strong>neste exato momento</strong>. Tipo o que o velocímetro do seu carro mostra agora. Pode ser diferente da velocidade média porque você pode estar acelerando ou freando.</p>
-            
-            <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 my-4">
-              <p className="mb-2"><strong>Na prática:</strong></p>
-              <p>Quando você viaja 300 km em 3 horas, sua velocidade média é 100 km/h. Mas em alguns momentos você estava a 80 km/h (em congestionamento), em outros a 120 km/h (na rodovia). Esses são seus valores de velocidade instantânea.</p>
-            </div>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Exemplos do Dia a Dia</h3>
-            <ul className="space-y-3 text-slate-700">
-              <li className="flex gap-3">
-                <span className="text-blue-600 font-bold">✓</span>
-                <span><strong>Corrida de 100 metros:</strong> Um atleta pode atingir 10 m/s no meio da corrida (velocidade instantânea), mas sua velocidade média é um pouco menor porque ele começa devagar.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-blue-600 font-bold">✓</span>
-                <span><strong>Viagem de carro:</strong> Você sai de São Paulo para o Rio. A velocidade média é 100 km/h, mas em São Paulo você estava a 30 km/h no trânsito, e na rodovia a 120 km/h.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-blue-600 font-bold">✓</span>
-                <span><strong>Bola de futebol:</strong> Quando o goleiro chuta a bola, ela sai com alta velocidade. Conforme voa, a velocidade diminui (por causa do ar).</span>
-              </li>
-            </ul>
           </div>
-        </Card>
+        </div>
 
-        {/* Aceleração - Explicação Simples */}
-        <Card className="p-4 md:p-8 shadow-lg border-0">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">O Que é Aceleração?</h2>
-          <div className="space-y-4 text-slate-700 leading-relaxed">
-            <p className="text-lg font-semibold text-slate-800">
-              <strong>Aceleração = Mudança de velocidade</strong>
-            </p>
-            
-            <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500 my-4">
-              <p className="mb-2"><strong>Exemplo simples:</strong></p>
-              <p>Quando você pisa no acelerador do carro, a velocidade aumenta. Quando você freia, a velocidade diminui. Nos dois casos, há <strong>aceleração</strong>!</p>
-            </div>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Três Tipos de Aceleração</h3>
-            <ul className="space-y-3 text-slate-700">
-              <li className="flex gap-3">
-                <span className="text-green-600 font-bold">1.</span>
-                <div>
-                  <strong>Aceleração Positiva (Aumentando velocidade):</strong> Quando você pisa no acelerador. A velocidade fica maior a cada segundo.
+        {/* Exemplos Resolvidos ITA/IME */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h3 className="text-2xl font-bold text-slate-900 mb-6">📝 Exemplos Resolvidos (Nível ITA/IME)</h3>
+          
+          <div className="space-y-8">
+            {/* Exemplo 1 */}
+            <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+              <h4 className="font-bold text-green-900 mb-4">Exemplo 1: O Problema da Ida e Volta (ITA)</h4>
+              <p className="text-slate-700 mb-4">
+                Um nadador atravessa uma piscina de 50 m em 25 s e retorna ao ponto de partida em 35 s. Calcule: (a) a velocidade escalar média e (b) o módulo da velocidade vetorial média.
+              </p>
+              <div className="space-y-4">
+                <div className="bg-white rounded-lg p-4 border border-green-200">
+                  <p className="font-bold text-slate-800 mb-2">(a) Velocidade Escalar Média:</p>
+                  <MathFormula formula="d = 50 + 50 = 100 \text{ m}" />
+                  <MathFormula formula="\Delta t = 25 + 35 = 60 \text{ s}" />
+                  <MathFormula formula="v_{em} = \frac{100}{60} \approx 1{,}67 \text{ m/s}" />
                 </div>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-green-600 font-bold">2.</span>
-                <div>
-                  <strong>Aceleração Negativa (Diminuindo velocidade):</strong> Quando você freia. A velocidade fica menor a cada segundo. Também chamada de <strong>desaceleração</strong>.
+                <div className="bg-white rounded-lg p-4 border border-green-200">
+                  <p className="font-bold text-slate-800 mb-2">(b) Velocidade Vetorial Média:</p>
+                  <p className="text-sm text-slate-600 mb-2">Como o nadador voltou ao ponto de partida, o deslocamento é nulo.</p>
+                  <MathFormula formula="\Delta \vec{r} = 0 \implies \vec{v}_m = 0" />
                 </div>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-green-600 font-bold">3.</span>
-                <div>
-                  <strong>Aceleração de Direção (Mudando de direção):</strong> Quando você faz uma curva, mesmo mantendo a mesma velocidade. A direção muda, então há aceleração!
-                </div>
-              </li>
-            </ul>
-
-            <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto my-4">
-              <p className="text-center text-sm md:text-lg font-semibold mb-3">Fórmula da Aceleração:</p>
-              <MathFormula formula={String.raw`$$$$a = \\frac{\\text{mudança de velocidade}}{\\text{tempo}}$$$$`} className="text-center text-lg md:text-2xl mb-4" />
-              <p className="text-sm text-slate-600 text-center">Ou em letras: a = Δv / Δt</p>
+              </div>
             </div>
 
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Exemplos do Dia a Dia</h3>
-            <ul className="space-y-3 text-slate-700">
-              <li className="flex gap-3">
-                <span className="text-green-600 font-bold">✓</span>
-                <span><strong>Carro acelerando:</strong> Sai de 0 a 100 km/h em 10 segundos. A aceleração é 10 km/h por segundo (ou 2,78 m/s²).</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-green-600 font-bold">✓</span>
-                <span><strong>Freio de emergência:</strong> De 100 km/h para 0 em 5 segundos. A aceleração é negativa: -20 km/h por segundo.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-green-600 font-bold">✓</span>
-                <span><strong>Curva em rodovia:</strong> Você mantém 80 km/h, mas faz uma curva. Há aceleração porque a direção muda!</span>
-              </li>
-            </ul>
-          </div>
-        </Card>
-
-        {/* Erros Comuns */}
-        <Card className="p-4 md:p-8 shadow-lg border-0 bg-red-50">
-          <div className="flex items-start gap-4">
-            <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
-            <div>
-              <h3 className="text-lg font-bold text-red-900 mb-4">⚠️ Erros Comuns</h3>
-              <ul className="space-y-3 text-red-900">
-                <li className="flex gap-3">
-                  <span className="font-bold">❌</span>
-                  <span><strong>Erro:</strong> "Aceleração é só quando aumenta velocidade"<br/><strong>Verdade:</strong> Aceleração é qualquer mudança de velocidade, incluindo diminuição ou mudança de direção.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="font-bold">❌</span>
-                  <span><strong>Erro:</strong> "Velocidade e rapidez são a mesma coisa"<br/><strong>Verdade:</strong> Velocidade tem direção (é um vetor), rapidez não. 100 km/h norte é diferente de 100 km/h sul!</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="font-bold">❌</span>
-                  <span><strong>Erro:</strong> "Se a aceleração é zero, o objeto não se move"<br/><strong>Verdade:</strong> Se a aceleração é zero, a velocidade é constante. O objeto pode estar se movendo muito rápido!</span>
-                </li>
-              </ul>
+            {/* Exemplo 2 */}
+            <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+              <h4 className="font-bold text-green-900 mb-4">Exemplo 2: Velocidades em Trechos Iguais (IME)</h4>
+              <p className="text-slate-700 mb-4">
+                Um veículo percorre um terço de sua trajetória a 20 km/h, o segundo terço a 30 km/h e o último terço a 60 km/h. Qual a velocidade média em todo o percurso?
+              </p>
+              <div className="bg-white rounded-lg p-4 border border-green-200">
+                <p className="font-bold text-slate-800 mb-2">Resolução por Média Harmônica Generalizada:</p>
+                <MathFormula formula="\frac{1}{v_m} = \frac{1}{3} \left( \frac{1}{v_1} + \frac{1}{v_2} + \frac{1}{v_3} \right)" />
+                <MathFormula formula="\frac{1}{v_m} = \frac{1}{3} \left( \frac{1}{20} + \frac{1}{30} + \frac{1}{60} \right)" />
+                <MathFormula formula="\frac{1}{v_m} = \frac{1}{3} \left( \frac{3+2+1}{60} \right) = \frac{1}{3} \cdot \frac{6}{60} = \frac{1}{30}" />
+                <MathFormula formula="v_m = 30 \text{ km/h}" />
+              </div>
             </div>
           </div>
-        </Card>
+        </div>
 
-        {/* Dicas Práticas */}
-        <Card className="p-4 md:p-8 shadow-lg border-0 bg-yellow-50">
-          <div className="flex items-start gap-4">
-            <Lightbulb className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
-            <div>
-              <h3 className="text-lg font-bold text-yellow-900 mb-4">💡 Dicas para Lembrar</h3>
-              <ul className="space-y-3 text-yellow-900">
-                <li><strong>Velocidade:</strong> Pense no velocímetro do carro. Ele mostra a velocidade instantânea.</li>
-                <li><strong>Aceleração:</strong> Pense na sensação que você sente quando pisa no acelerador ou no freio. É a aceleração!</li>
-                <li><strong>Unidades:</strong> Velocidade em m/s ou km/h. Aceleração em m/s² (metros por segundo ao quadrado).</li>
-              </ul>
-            </div>
-          </div>
-        </Card>
-
-        {/* Resumo */}
-        <Card className="p-4 md:p-8 shadow-lg border-0 bg-gradient-to-r from-blue-50 to-purple-50">
-          <h3 className="text-lg font-bold text-slate-900 mb-4">📌 Resumo Rápido</h3>
-          <div className="space-y-3 text-slate-700">
-            <p><strong>Velocidade:</strong> Quão rápido você se move e em qual direção</p>
-            <p><strong>Aceleração:</strong> Como sua velocidade está mudando (aumentando, diminuindo ou mudando de direção)</p>
-            <p><strong>Relação:</strong> Se você está acelerando, sua velocidade está mudando. Se sua velocidade é constante, a aceleração é zero.</p>
-          </div>
-        </Card>
       </section>
     </div>
   );
