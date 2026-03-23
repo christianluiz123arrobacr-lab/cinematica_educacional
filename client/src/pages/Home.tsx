@@ -1,24 +1,56 @@
+import { useEffect, useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { BookOpen, Zap, Target, Droplet, MessageCircle, ArrowLeft, Play, BarChart3, Calculator, HelpCircle, TrendingUp, Activity, RotateCw, Compass } from "lucide-react";
+import {
+  BookOpen,
+  Zap,
+  Target,
+  MessageCircle,
+  ArrowLeft,
+  Play,
+  BarChart3,
+  Calculator,
+  HelpCircle,
+  TrendingUp,
+  Activity,
+  RotateCw,
+  Compass,
+} from "lucide-react";
 import { Link } from "wouter";
-import { MathFormula } from "@/components/MathFormula";
+import { InteractiveQuiz } from "@/components/InteractiveQuiz";
+import { getQuestions } from "@/services/questions.service";
+import type { Question } from "@/types/question";
 
 export default function Home() {
-  // The userAuth hooks provides authentication state
-  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
   let { user, loading, error, isAuthenticated, logout } = useAuth();
+  const [questions, setQuestions] = useState<Question[]>([]);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getQuestions({
+        subject: "fisica",
+        topic: "cinematica",
+      });
+      setQuestions(data);
+    }
+
+    load();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
         <div className="container py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
+          >
             <ArrowLeft className="w-5 h-5" />
             Voltar
           </Link>
+
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center">
               <BookOpen className="w-6 h-6 text-white" />
@@ -28,15 +60,34 @@ export default function Home() {
               <p className="text-xs text-slate-500">Projeto ITA - Do Zero a Aprovação</p>
             </div>
           </div>
+
           <div className="flex items-center gap-2">
             <Link href="/progress">
-              <Button variant="outline" size="sm">Progresso</Button>
+              <Button variant="outline" size="sm">
+                Progresso
+              </Button>
             </Link>
-            <a href="https://youtube.com/@projetoita-z4x?si=dIghaQjMiHZzk4R5" target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="sm">Sobre</Button>
+
+            <a
+              href="https://youtube.com/@projetoita-z4x?si=dIghaQjMiHZzk4R5"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="outline" size="sm">
+                Sobre
+              </Button>
             </a>
-            <a href="https://chat.whatsapp.com/Grwi9hUFvFbA91gShvZGqI" target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="sm" className="bg-green-50 hover:bg-green-100 text-green-700 border-green-300">
+
+            <a
+              href="https://chat.whatsapp.com/Grwi9hUFvFbA91gShvZGqI"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-green-50 hover:bg-green-100 text-green-700 border-green-300"
+              >
                 <MessageCircle className="w-4 h-4 mr-2" />
                 WhatsApp
               </Button>
@@ -53,30 +104,44 @@ export default function Home() {
             <div className="space-y-6">
               <div className="space-y-4">
                 <h2 className="text-5xl md:text-6xl font-bold text-slate-900 leading-tight">
-                  Entenda o <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Movimento</span>
+                  Entenda o{" "}
+                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Movimento
+                  </span>
                 </h2>
                 <p className="text-xl text-slate-600">
-                  Explore a cinemática: como os objetos se movem, as fórmulas que descrevem o movimento e as aplicações práticas no mundo real.
+                  Explore a cinemática: como os objetos se movem, as fórmulas que
+                  descrevem o movimento e as aplicações práticas no mundo real.
                 </p>
               </div>
+
               <div className="flex gap-4 flex-wrap">
                 <Link href="/cinematica/learn">
-                  <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
+                  >
                     Começar a Aprender
                   </Button>
                 </Link>
+
                 <Link href="/cinematica/simulator">
-                  <Button size="lg" variant="outline" className="border-blue-300 hover:bg-blue-50">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-blue-300 hover:bg-blue-50"
+                  >
                     <Play className="w-4 h-4 mr-2" />
                     Simulador Visual
                   </Button>
                 </Link>
               </div>
             </div>
+
             <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl">
-              <img 
-                src="/images/hero_cinematica.png" 
-                alt="Cinemática" 
+              <img
+                src="/images/hero_cinematica.png"
+                alt="Cinemática"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent" />
@@ -89,7 +154,10 @@ export default function Home() {
       <main className="container py-12">
         {/* Ferramentas de Aprendizado - Navigation Cards */}
         <div className="mb-16">
-          <h3 className="text-3xl font-bold text-slate-900 mb-8">Ferramentas de Aprendizado</h3>
+          <h3 className="text-3xl font-bold text-slate-900 mb-8">
+            Ferramentas de Aprendizado
+          </h3>
+
           <div className="grid md:grid-cols-6 gap-4">
             <div className="group">
               <Link href="/cinematica/learn">
@@ -100,6 +168,7 @@ export default function Home() {
                 </Card>
               </Link>
             </div>
+
             <div className="group">
               <Link href="/cinematica/calculator">
                 <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-400">
@@ -109,6 +178,7 @@ export default function Home() {
                 </Card>
               </Link>
             </div>
+
             <div className="group">
               <Link href="/cinematica/formulas">
                 <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-400">
@@ -118,6 +188,7 @@ export default function Home() {
                 </Card>
               </Link>
             </div>
+
             <div className="group">
               <Link href="/cinematica/quiz-new">
                 <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-400">
@@ -127,6 +198,7 @@ export default function Home() {
                 </Card>
               </Link>
             </div>
+
             <div className="group">
               <Link href="/cinematica/graphs-new">
                 <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-400">
@@ -136,6 +208,7 @@ export default function Home() {
                 </Card>
               </Link>
             </div>
+
             <div className="group">
               <Link href="/cinematica/simulator">
                 <Card className="p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-400">
@@ -148,9 +221,20 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Banco de Questões */}
+        <div className="mb-16">
+          <h3 className="text-3xl font-bold text-slate-900 mb-8">
+            🔥 Pratique com Questões Reais
+          </h3>
+          <InteractiveQuiz questions={questions} />
+        </div>
+
         {/* Tópicos Principais */}
         <div className="mb-16">
-          <h3 className="text-3xl font-bold text-slate-900 mb-8">Tópicos Principais</h3>
+          <h3 className="text-3xl font-bold text-slate-900 mb-8">
+            Tópicos Principais
+          </h3>
+
           <div className="grid md:grid-cols-2 gap-6">
             {/* Bases da Cinemática */}
             <Link href="/cinematica/topic/bases">
@@ -160,8 +244,15 @@ export default function Home() {
                     <Compass className="w-6 h-6 text-blue-600" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">Bases da Cinemática</h4>
-                    <p className="text-slate-600 mb-4 text-sm">Os fundamentos essenciais: referencial, trajetória e a distinção entre deslocamento (<span className="font-mono text-blue-700">Δs</span>) e distância percorrida.</p>
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">
+                      Bases da Cinemática
+                    </h4>
+                    <p className="text-slate-600 mb-4 text-sm">
+                      Os fundamentos essenciais: referencial, trajetória e a distinção
+                      entre deslocamento (
+                      <span className="font-mono text-blue-700">Δs</span>) e distância
+                      percorrida.
+                    </p>
                     <ul className="space-y-2 text-sm text-slate-700">
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
@@ -189,8 +280,13 @@ export default function Home() {
                     <Zap className="w-6 h-6 text-orange-500" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">Velocidade e Aceleração</h4>
-                    <p className="text-slate-600 mb-4 text-sm">Análise das taxas de variação: como a posição muda no tempo e como a velocidade evolui.</p>
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">
+                      Velocidade e Aceleração
+                    </h4>
+                    <p className="text-slate-600 mb-4 text-sm">
+                      Análise das taxas de variação: como a posição muda no tempo e
+                      como a velocidade evolui.
+                    </p>
                     <ul className="space-y-2 text-sm text-slate-700">
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
@@ -218,8 +314,14 @@ export default function Home() {
                     <Activity className="w-6 h-6 text-blue-600" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">Movimento Retilíneo Uniforme</h4>
-                    <p className="text-slate-600 mb-4 text-sm">O movimento com velocidade constante, descrito pela função horária <span className="font-mono text-blue-700">s = s₀ + vt</span> e suas propriedades gráficas.</p>
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">
+                      Movimento Retilíneo Uniforme
+                    </h4>
+                    <p className="text-slate-600 mb-4 text-sm">
+                      O movimento com velocidade constante, descrito pela função
+                      horária <span className="font-mono text-blue-700">s = s₀ + vt</span>{" "}
+                      e suas propriedades gráficas.
+                    </p>
                     <ul className="space-y-2 text-sm text-slate-700">
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
@@ -247,8 +349,13 @@ export default function Home() {
                     <TrendingUp className="w-6 h-6 text-indigo-600" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">Movimento Uniformemente Variado</h4>
-                    <p className="text-slate-600 mb-4 text-sm">Aceleração constante e velocidade linear: de Torricelli à função horária do segundo grau.</p>
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">
+                      Movimento Uniformemente Variado
+                    </h4>
+                    <p className="text-slate-600 mb-4 text-sm">
+                      Aceleração constante e velocidade linear: de Torricelli à função
+                      horária do segundo grau.
+                    </p>
                     <ul className="space-y-2 text-sm text-slate-700">
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
@@ -276,8 +383,13 @@ export default function Home() {
                     <RotateCw className="w-6 h-6 text-blue-600" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">Movimento Circular Uniforme</h4>
-                    <p className="text-slate-600 mb-4 text-sm">Trajetórias curvas com velocidade constante em módulo: período, frequência e aceleração centrípeta.</p>
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">
+                      Movimento Circular Uniforme
+                    </h4>
+                    <p className="text-slate-600 mb-4 text-sm">
+                      Trajetórias curvas com velocidade constante em módulo: período,
+                      frequência e aceleração centrípeta.
+                    </p>
                     <ul className="space-y-2 text-sm text-slate-700">
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
@@ -305,8 +417,13 @@ export default function Home() {
                     <Target className="w-6 h-6 text-purple-600" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">Cinemática Vetorial e Relativa</h4>
-                    <p className="text-slate-600 mb-4 text-sm">A visão de elite: composição de movimentos, vetores posição e o Princípio de Galileu.</p>
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">
+                      Cinemática Vetorial e Relativa
+                    </h4>
+                    <p className="text-slate-600 mb-4 text-sm">
+                      A visão de elite: composição de movimentos, vetores posição e o
+                      Princípio de Galileu.
+                    </p>
                     <ul className="space-y-2 text-sm text-slate-700">
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
