@@ -123,6 +123,7 @@ function Router() {
       <Route path="/cinematica/simulator" component={CinematicaSimulator} />
       <Route path="/cinematica/topic/bases" component={CinematicaTopicBases} />
       
+      <Route path="/banco-questoes" component={QuestionBank} />
       <Route path="/cinematica/topic/velocidade" component={CinematicaTopicVelocidade} />
       <Route path="/cinematica/topic/mru" component={CinematicaTopicMRU} />
       <Route path="/cinematica/topic/mruv" component={CinematicaTopicMRUV} />
