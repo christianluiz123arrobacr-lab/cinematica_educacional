@@ -4,7 +4,7 @@ export type QuestionOption = {
   text: string;
 };
 
-export type QuestionDifficulty = "facil" | "medio" | "dificil";
+export type QuestionDifficulty = "I" | "II" | "III";
 
 export type QuestionSubject = "fisica" | "matematica" | "quimica";
 
