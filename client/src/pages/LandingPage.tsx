@@ -19,7 +19,7 @@ export default function LandingPage() {
         </p>
 
         <div className="flex gap-6 justify-center flex-wrap mb-16">
-          <Link href="/cinematica/learn">
+          <Link href="/fisica">
             <Button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full text-lg">
               Explorar disciplinas <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
@@ -65,7 +65,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="p-6">
-              <Link href="/cinematica/learn">
+              <Link href="/fisica">
                 <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2">
                   Explorar Física <ArrowRight className="w-4 h-4" />
                 </Button>

@@ -112,6 +112,7 @@ function Router() {
     <Switch>
       <Route path="/" component={LandingPage} />
       <Route path="/landing" component={Landing} />
+      <Route path="/fisica" component={FisicaSelector} />
       <Route path="/fisica-i" component={FisicaIHome} />
       <Route path="/fisica-ii" component={FisicaIIHome} />
       <Route path="/fisica-iii" component={FisicaIIIHome} />
