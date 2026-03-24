@@ -11,6 +11,7 @@ export const questionsMock: Question[] = [
     institution: "EsPCEx",
     statement:
       "Um móvel percorre 120 m em 6 s com velocidade constante. Qual é sua velocidade?",
+    formula: "v = \\frac{\\Delta s}{\\Delta t}",
     options: [
       { id: "a", label: "A", text: "10 m/s" },
       { id: "b", label: "B", text: "20 m/s" },
@@ -20,10 +21,13 @@ export const questionsMock: Question[] = [
     ],
     correctOptionId: "b",
     explanation:
-      "No MRU, v = Δs / Δt. Logo, v = 120 / 6 = 20 m/s.",
+      "No MRU, a velocidade é dada por v = Δs / Δt. Logo, v = 120 / 6 = 20 m/s.",
     difficulty: "facil",
-    tags: ["mru", "velocidade", "cinematica"],
+    tags: ["cinematica", "mru", "velocidade"],
     source: "EsPCEx 2022",
+    isPublished: true,
+    createdAt: "2026-03-23T00:00:00.000Z",
+    updatedAt: "2026-03-23T00:00:00.000Z",
   },
   {
     id: "epcar-fisica-2021-001",
@@ -35,6 +39,7 @@ export const questionsMock: Question[] = [
     institution: "EPCAR",
     statement:
       "Um corpo é abandonado do repouso e leva 4 s para atingir o solo. Adote g = 10 m/s². Qual a altura da queda?",
+    formula: "h = \\frac{g t^2}{2}",
     options: [
       { id: "a", label: "A", text: "20 m" },
       { id: "b", label: "B", text: "40 m" },
@@ -44,9 +49,66 @@ export const questionsMock: Question[] = [
     ],
     correctOptionId: "d",
     explanation:
-      "Na queda livre, h = g.t²/2 = 10 × 16 / 2 = 80 m.",
+      "Na queda livre, h = g·t²/2. Então h = 10 × 16 / 2 = 80 m.",
     difficulty: "medio",
-    tags: ["queda livre", "gravidade"],
+    tags: ["cinematica", "queda livre", "gravidade"],
     source: "EPCAR 2021",
+    isPublished: true,
+    createdAt: "2026-03-23T00:00:00.000Z",
+    updatedAt: "2026-03-23T00:00:00.000Z",
+  },
+  {
+    id: "ita-matematica-2020-001",
+    subject: "matematica",
+    topic: "algebra",
+    subtopic: "equacao-do-2-grau",
+    exam: "ITA",
+    year: 2020,
+    institution: "ITA",
+    statement:
+      "Se a soma das raízes de uma equação do 2º grau é 6 e o produto é 8, qual é a equação correspondente?",
+    options: [
+      { id: "a", label: "A", text: "x² - 6x + 8 = 0" },
+      { id: "b", label: "B", text: "x² + 6x + 8 = 0" },
+      { id: "c", label: "C", text: "x² - 8x + 6 = 0" },
+      { id: "d", label: "D", text: "x² + 8x - 6 = 0" },
+      { id: "e", label: "E", text: "x² - 6x - 8 = 0" },
+    ],
+    correctOptionId: "a",
+    explanation:
+      "Pela relação de Girard, x² - Sx + P = 0. Como S = 6 e P = 8, temos x² - 6x + 8 = 0.",
+    difficulty: "medio",
+    tags: ["matematica", "algebra", "equacao"],
+    source: "ITA 2020",
+    isPublished: true,
+    createdAt: "2026-03-23T00:00:00.000Z",
+    updatedAt: "2026-03-23T00:00:00.000Z",
+  },
+  {
+    id: "ime-quimica-2021-001",
+    subject: "quimica",
+    topic: "quimica-geral",
+    subtopic: "estequiometria",
+    exam: "IME",
+    year: 2021,
+    institution: "IME",
+    statement:
+      "Qual a massa de água produzida na combustão completa de 2 mol de H₂, considerando oxigênio em excesso?",
+    options: [
+      { id: "a", label: "A", text: "18 g" },
+      { id: "b", label: "B", text: "24 g" },
+      { id: "c", label: "C", text: "36 g" },
+      { id: "d", label: "D", text: "40 g" },
+      { id: "e", label: "E", text: "44 g" },
+    ],
+    correctOptionId: "c",
+    explanation:
+      "A reação é 2H₂ + O₂ → 2H₂O. Logo, 2 mol de H₂ produzem 2 mol de H₂O. Como a massa molar da água é 18 g/mol, temos 2 × 18 = 36 g.",
+    difficulty: "medio",
+    tags: ["quimica", "estequiometria", "combustao"],
+    source: "IME 2021",
+    isPublished: true,
+    createdAt: "2026-03-23T00:00:00.000Z",
+    updatedAt: "2026-03-23T00:00:00.000Z",
   },
 ];
