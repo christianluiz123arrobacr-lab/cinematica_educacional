@@ -6,9 +6,11 @@ export type QuestionOption = {
 
 export type QuestionDifficulty = "facil" | "medio" | "dificil";
 
+export type QuestionSubject = "fisica" | "matematica" | "quimica";
+
 export type Question = {
   id: string;
-  subject: "fisica" | "matematica";
+  subject: QuestionSubject;
   topic: string;
   subtopic?: string;
   exam: string;
@@ -22,4 +24,7 @@ export type Question = {
   difficulty: QuestionDifficulty;
   tags?: string[];
   source?: string;
+  isPublished?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 };
