@@ -113,11 +113,14 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
         <h4 className="text-lg font-bold text-slate-900 mb-3">{question.statement}</h4>
 
         {question.formula && (
-          <div className="mt-4 p-4 bg-white rounded border border-blue-200">
-            <p className="text-xs text-slate-600 mb-2">Fórmula útil:</p>
-            <MathFormula formula={question.formula} display={true} />
-          </div>
-        )}
+  <div className="mt-4 p-4 bg-white rounded border border-blue-200">
+    <p className="text-xs text-slate-600 mb-2">Fórmula útil:</p>
+    <MathFormula
+      formula={question.formula.replace(/^\$\$?|\$\$?$/g, "").trim()}
+      display={true}
+    />
+  </div>
+)}
       </div>
 
       <div className="space-y-3 mb-8">
