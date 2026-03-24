@@ -22,6 +22,7 @@ import CinematicaGraphs from "./pages/CinematicaGraphs";
 import CinematicaQuiz from "./pages/CinematicaQuiz";
 import CinematicaTopicBases from "./pages/CinematicaTopicBases";
 
+import QuestionBank from "./pages/QuestionBank";
 import CinematicaTopicVelocidade from "./pages/CinematicaTopicVelocidade";
 import CinematicaTopicMRU from "./pages/CinematicaTopicMRU";
 import CinematicaTopicMRUV from "./pages/CinematicaTopicMRUV";
