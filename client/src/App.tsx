@@ -23,6 +23,8 @@ import CinematicaQuiz from "./pages/CinematicaQuiz";
 import CinematicaTopicBases from "./pages/CinematicaTopicBases";
 
 import QuestionBank from "./pages/QuestionBank";
+import LandingPage from "./pages/LandingPage";
+import QuestionBankPage from "./pages/QuestionBankPage";
 import CinematicaTopicVelocidade from "./pages/CinematicaTopicVelocidade";
 import CinematicaTopicMRU from "./pages/CinematicaTopicMRU";
 import CinematicaTopicMRUV from "./pages/CinematicaTopicMRUV";
@@ -108,7 +110,7 @@ function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
-      <Route path="/" component={FisicaSelector} />
+      <Route path="/" component={LandingPage} />
       <Route path="/landing" component={Landing} />
       <Route path="/fisica-i" component={FisicaIHome} />
       <Route path="/fisica-ii" component={FisicaIIHome} />
@@ -125,6 +127,8 @@ function Router() {
       <Route path="/cinematica/topic/bases" component={CinematicaTopicBases} />
       
       <Route path="/banco-questoes" component={QuestionBank} />
+      <Route path="/banco-de-questoes" component={QuestionBankPage} />
+      <Route path="/disciplinas" component={LandingPage} />
       <Route path="/cinematica/topic/velocidade" component={CinematicaTopicVelocidade} />
       <Route path="/cinematica/topic/mru" component={CinematicaTopicMRU} />
       <Route path="/cinematica/topic/mruv" component={CinematicaTopicMRUV} />
