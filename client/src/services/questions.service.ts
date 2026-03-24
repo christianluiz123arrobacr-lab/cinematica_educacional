@@ -1,11 +1,15 @@
 import { questionsMock } from "@/data/questions";
-import type { Question } from "@/types/question";
+import type { Question, QuestionDifficulty, QuestionSubject } from "@/types/question";
 
-type QuestionFilters = {
-  subject?: string;
+export type QuestionFilters = {
+  subject?: QuestionSubject;
   topic?: string;
+  subtopic?: string;
   exam?: string;
   year?: number;
+  difficulty?: QuestionDifficulty;
+  institution?: string;
+  isPublished?: boolean;
 };
 
 export async function getQuestions(filters?: QuestionFilters): Promise<Question[]> {
@@ -19,12 +23,28 @@ export async function getQuestions(filters?: QuestionFilters): Promise<Question[
     result = result.filter((q) => q.topic === filters.topic);
   }
 
+  if (filters?.subtopic) {
+    result = result.filter((q) => q.subtopic === filters.subtopic);
+  }
+
   if (filters?.exam) {
     result = result.filter((q) => q.exam === filters.exam);
   }
 
   if (filters?.year) {
     result = result.filter((q) => q.year === filters.year);
+  }
+
+  if (filters?.difficulty) {
+    result = result.filter((q) => q.difficulty === filters.difficulty);
+  }
+
+  if (filters?.institution) {
+    result = result.filter((q) => q.institution === filters.institution);
+  }
+
+  if (filters?.isPublished !== undefined) {
+    result = result.filter((q) => q.isPublished === filters.isPublished);
   }
 
   return result;
