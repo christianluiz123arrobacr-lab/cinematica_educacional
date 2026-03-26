@@ -4,7 +4,7 @@ export type QuestionOption = {
   text: string;
 };
 
-export type QuestionDifficulty = "I" | "II" | "III";
+export type QuestionDifficulty = "facil" | "medio" | "dificil";
 
 export type QuestionSubject = "fisica" | "matematica" | "quimica";
 
@@ -18,6 +18,7 @@ export type Question = {
   institution?: string;
   statement: string;
   formula?: string;
+  imageUrl?: string;
   options: QuestionOption[];
   correctOptionId: string;
   explanation: string;
