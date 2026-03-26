@@ -111,6 +111,15 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
 
       <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-lg border border-blue-300 mb-8">
         <h4 className="text-lg font-bold text-slate-900 mb-3">{question.statement}</h4>
+        {question.imageUrl && (
+  <div className="mt-4">
+    <img
+      src={question.imageUrl}
+      alt="Imagem da questão"
+      className="max-w-full rounded-lg border border-slate-200"
+    />
+  </div>
+)}
 
         {question.formula && (
   <div className="mt-4 p-4 bg-white rounded border border-blue-200">
@@ -177,9 +186,9 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
               <p className={`font-bold mb-2 ${isCorrect ? "text-green-900" : "text-yellow-900"}`}>
                 {isCorrect ? "✅ Correto!" : "❌ Incorreto"}
               </p>
-              <p className={`text-sm ${isCorrect ? "text-green-800" : "text-yellow-800"}`}>
-                {question.explanation}
-              </p>
+              <p className={`text-sm whitespace-pre-line ${isCorrect ? "text-green-800" : "text-yellow-800"}`}>
+  {question.explanation}
+</p>
             </div>
           </div>
         </div>
