@@ -114,7 +114,18 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
       </div>
 
       <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-lg border border-blue-300 mb-8">
-        <h4 className="text-lg font-bold text-slate-900 mb-3">{question.statement}</h4>
+       <div className="text-lg font-bold text-slate-900 mb-3 leading-relaxed">
+  <ReactMarkdown
+    remarkPlugins={[remarkMath]}
+    rehypePlugins={[rehypeKatex]}
+    components={{
+      p: ({ children }) => <p className="mb-3">{children}</p>,
+      strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+    }}
+  >
+    {question.statement}
+  </ReactMarkdown>
+</div>
 
         {question.imageUrl && (
           <div className="mt-4">
