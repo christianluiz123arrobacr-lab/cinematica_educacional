@@ -8,6 +8,12 @@ export type QuestionDifficulty = "facil" | "medio" | "dificil";
 
 export type QuestionSubject = "fisica" | "matematica" | "quimica";
 
+export type ExplanationBlock = {
+  type: "texto" | "latex";
+  content: string;
+  order: number;
+};
+
 export type Question = {
   id: string;
   subject: QuestionSubject;
@@ -22,6 +28,7 @@ export type Question = {
   options: QuestionOption[];
   correctOptionId: string;
   explanation: string;
+  explanationBlocks: ExplanationBlock[];
   difficulty: QuestionDifficulty;
   tags?: string[];
   source?: string;
