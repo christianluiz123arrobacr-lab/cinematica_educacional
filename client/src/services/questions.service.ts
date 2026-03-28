@@ -66,12 +66,21 @@ function normalizarAlternativas(row: QuestaoRow) {
 }
 
 function mapQuestao(row: QuestaoRow): Question {
-  const resolucaoTexto =
+  const explanationBlocks =
     row.resolucoes
-      ?.filter((r) => r.tipo === "texto" && r.texto)
+      ?.filter((r) => r.texto)
       ?.sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0))
-      ?.map((r) => r.texto)
-      ?.join("\n\n") || "Sem resolução cadastrada.";
+      ?.map((r) => ({
+        type: r.tipo === "latex" ? "latex" : "texto",
+        content: r.texto ?? "",
+        order: r.ordem ?? 0,
+      })) || [];
+
+  const resolucaoTexto =
+    explanationBlocks
+      .filter((block) => block.type === "texto")
+      .map((block) => block.content)
+      .join("\n\n") || "Sem resolução cadastrada.";
 
   const disciplina = (row.disciplina ?? row.diciplina ?? "fisica").toLowerCase() as QuestionSubject;
 
@@ -89,6 +98,7 @@ function mapQuestao(row: QuestaoRow): Question {
     options: normalizarAlternativas(row),
     correctOptionId: row.alternativa_correta.toLowerCase().trim(),
     explanation: resolucaoTexto,
+    explanationBlocks,
     difficulty: row.dificuldade,
     tags: row.tag ? row.tag.split(",").map((t) => t.trim()) : [],
     source: row.fonte ?? undefined,
@@ -97,7 +107,6 @@ function mapQuestao(row: QuestaoRow): Question {
     updatedAt: row.created_at ?? undefined,
   };
 }
-
 export async function getQuestions(filters?: QuestionFilters): Promise<Question[]> {
   let query = supabase
     .from("questoes")
