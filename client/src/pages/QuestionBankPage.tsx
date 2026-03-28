@@ -12,34 +12,67 @@ export default function QuestionBankPage() {
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("todos");
   const [selectedSubject, setSelectedSubject] = useState<string>("todos");
+  const [selectedTopic, setSelectedTopic] = useState<string>("todos");
+  const [selectedYear, setSelectedYear] = useState<string>("todos");
+  const [selectedInstitution, setSelectedInstitution] = useState<string>("todos");
+
+  const availableTopics = Array.from(
+    new Set(questions.map((q) => q.topic).filter(Boolean))
+  ).sort();
+
+  const availableYears = Array.from(
+    new Set(questions.map((q) => String(q.year)).filter(Boolean))
+  ).sort((a, b) => Number(b) - Number(a));
+
+  const availableInstitutions = Array.from(
+    new Set(questions.map((q) => q.institution).filter(Boolean))
+  ).sort();
 
   useEffect(() => {
-  async function loadQuestions() {
-    const data = await getQuestions();
-    setQuestions(data);
-    setFilteredQuestions(data);
-  }
+    async function loadQuestions() {
+      const data = await getQuestions();
+      setQuestions(data);
+      setFilteredQuestions(data);
+    }
 
-  loadQuestions();
-}, []);
+    loadQuestions();
+  }, []);
 
   useEffect(() => {
-  let filtered = questions;
+    let filtered = questions;
 
-  if (selectedDifficulty !== "todos") {
-    filtered = filtered.filter(q => q.difficulty === selectedDifficulty);
-  }
+    if (selectedDifficulty !== "todos") {
+      filtered = filtered.filter((q) => q.difficulty === selectedDifficulty);
+    }
 
-  if (selectedSubject !== "todos") {
-    filtered = filtered.filter(q => q.subject === selectedSubject);
-  }
+    if (selectedSubject !== "todos") {
+      filtered = filtered.filter((q) => q.subject === selectedSubject);
+    }
 
-  setFilteredQuestions(filtered);
-}, [selectedDifficulty, selectedSubject, questions]);
+    if (selectedTopic !== "todos") {
+      filtered = filtered.filter((q) => q.topic === selectedTopic);
+    }
+
+    if (selectedYear !== "todos") {
+      filtered = filtered.filter((q) => String(q.year) === selectedYear);
+    }
+
+    if (selectedInstitution !== "todos") {
+      filtered = filtered.filter((q) => q.institution === selectedInstitution);
+    }
+
+    setFilteredQuestions(filtered);
+  }, [
+    selectedDifficulty,
+    selectedSubject,
+    selectedTopic,
+    selectedYear,
+    selectedInstitution,
+    questions,
+  ]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
         <div className="container py-4 flex items-center justify-between">
           <Link href="/">
@@ -60,13 +93,14 @@ export default function QuestionBankPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-slate-600">{filteredQuestions.length} questões</span>
+            <span className="text-sm font-semibold text-slate-600">
+              {filteredQuestions.length} questões
+            </span>
           </div>
         </div>
       </header>
 
       <main className="container py-12">
-        {/* Seção de Informações */}
         <section className="grid md:grid-cols-3 gap-6 mb-12">
           <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <div className="flex items-center gap-4">
@@ -105,7 +139,6 @@ export default function QuestionBankPage() {
           </Card>
         </section>
 
-        {/* Filtros */}
         <section className="mb-12">
           <Card className="p-6 bg-white border-slate-200">
             <div className="flex items-center gap-3 mb-6">
@@ -113,11 +146,13 @@ export default function QuestionBankPage() {
               <h3 className="text-lg font-bold text-slate-900">Filtros</h3>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-3">Dificuldade</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-3">
+                  Dificuldade
+                </label>
                 <div className="flex gap-2 flex-wrap">
-                  {["todos", "facil", "medio", "dificil"].map(diff => (
+                  {["todos", "facil", "medio", "dificil"].map((diff) => (
                     <button
                       key={diff}
                       onClick={() => setSelectedDifficulty(diff)}
@@ -126,36 +161,143 @@ export default function QuestionBankPage() {
                           ? diff === "facil"
                             ? "bg-green-500 text-white"
                             : diff === "medio"
-                            ? "bg-yellow-500 text-white"
-                            : diff === "dificil"
-                            ? "bg-red-500 text-white"
-                            : "bg-blue-600 text-white"
+                              ? "bg-yellow-500 text-white"
+                              : diff === "dificil"
+                                ? "bg-red-500 text-white"
+                                : "bg-blue-600 text-white"
                           : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                       }`}
                     >
-                      {diff === "todos" ? "Todas" : diff === "facil" ? "Fácil" : diff === "medio" ? "Médio" : "Difícil"}
+                      {diff === "todos"
+                        ? "Todas"
+                        : diff === "facil"
+                          ? "Fácil"
+                          : diff === "medio"
+                            ? "Médio"
+                            : "Difícil"}
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-3">Disciplina</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-3">
+                  Disciplina
+                </label>
                 <div className="flex gap-2 flex-wrap">
-                  {["todos", "fisica", "matematica", "quimica"].map(subj => (
+                  {["todos", "fisica", "matematica", "quimica"].map((subj) => (
                     <button
                       key={subj}
-                      disabled={subj !== "todos" && subj !== "fisica"}
                       onClick={() => setSelectedSubject(subj)}
                       className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                         selectedSubject === subj
                           ? "bg-blue-600 text-white"
-                          : subj !== "todos" && subj !== "fisica"
-                          ? "bg-slate-100 text-slate-400 cursor-not-allowed"
                           : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                       }`}
                     >
-                      {subj === "todos" ? "Todas" : subj === "fisica" ? "Física" : subj === "matematica" ? "Matemática" : "Química"}
+                      {subj === "todos"
+                        ? "Todas"
+                        : subj === "fisica"
+                          ? "Física"
+                          : subj === "matematica"
+                            ? "Matemática"
+                            : "Química"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-3">
+                  Conteúdo
+                </label>
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    onClick={() => setSelectedTopic("todos")}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      selectedTopic === "todos"
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    }`}
+                  >
+                    Todos
+                  </button>
+
+                  {availableTopics.map((topic) => (
+                    <button
+                      key={topic}
+                      onClick={() => setSelectedTopic(topic)}
+                      className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                        selectedTopic === topic
+                          ? "bg-blue-600 text-white"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`}
+                    >
+                      {topic}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-3">
+                  Ano
+                </label>
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    onClick={() => setSelectedYear("todos")}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      selectedYear === "todos"
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    }`}
+                  >
+                    Todos
+                  </button>
+
+                  {availableYears.map((year) => (
+                    <button
+                      key={year}
+                      onClick={() => setSelectedYear(year)}
+                      className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                        selectedYear === year
+                          ? "bg-blue-600 text-white"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`}
+                    >
+                      {year}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-3">
+                  Instituição
+                </label>
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    onClick={() => setSelectedInstitution("todos")}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      selectedInstitution === "todos"
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    }`}
+                  >
+                    Todas
+                  </button>
+
+                  {availableInstitutions.map((institution) => (
+                    <button
+                      key={institution}
+                      onClick={() => setSelectedInstitution(institution ?? "todos")}
+                      className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                        selectedInstitution === institution
+                          ? "bg-blue-600 text-white"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`}
+                    >
+                      {institution}
                     </button>
                   ))}
                 </div>
@@ -164,14 +306,23 @@ export default function QuestionBankPage() {
           </Card>
         </section>
 
-        {/* Quiz Interativo */}
         <section>
           {filteredQuestions.length > 0 ? (
             <InteractiveQuiz questions={filteredQuestions} />
           ) : (
             <Card className="p-12 text-center">
-              <p className="text-lg text-slate-600 mb-4">Nenhuma questão encontrada com os filtros selecionados.</p>
-              <Button onClick={() => { setSelectedDifficulty("todos"); setSelectedSubject("todos"); }}>
+              <p className="text-lg text-slate-600 mb-4">
+                Nenhuma questão encontrada com os filtros selecionados.
+              </p>
+              <Button
+                onClick={() => {
+                  setSelectedDifficulty("todos");
+                  setSelectedSubject("todos");
+                  setSelectedTopic("todos");
+                  setSelectedYear("todos");
+                  setSelectedInstitution("todos");
+                }}
+              >
                 Limpar Filtros
               </Button>
             </Card>
@@ -179,11 +330,12 @@ export default function QuestionBankPage() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-12 mt-20">
         <div className="container text-center">
           <p className="mb-4">© 2026 Domine Exatas. Banco de Questões Premium.</p>
-          <p className="text-sm text-slate-500">Questões comentadas, análise de desempenho e simulados estratégicos.</p>
+          <p className="text-sm text-slate-500">
+            Questões comentadas, análise de desempenho e simulados estratégicos.
+          </p>
         </div>
       </footer>
     </div>
