@@ -14,27 +14,28 @@ export default function QuestionBankPage() {
   const [selectedSubject, setSelectedSubject] = useState<string>("todos");
 
   useEffect(() => {
-    async function loadQuestions() {
-      const data = await getQuestions({
-        subject: "fisica",
-        topic: "cinematica",
-      });
-      setQuestions(data);
-      setFilteredQuestions(data);
-    }
+  async function loadQuestions() {
+    const data = await getQuestions();
+    setQuestions(data);
+    setFilteredQuestions(data);
+  }
 
-    loadQuestions();
-  }, []);
+  loadQuestions();
+}, []);
 
   useEffect(() => {
-    let filtered = questions;
+  let filtered = questions;
 
-    if (selectedDifficulty !== "todos") {
-      filtered = filtered.filter(q => q.difficulty === selectedDifficulty);
-    }
+  if (selectedDifficulty !== "todos") {
+    filtered = filtered.filter(q => q.difficulty === selectedDifficulty);
+  }
 
-    setFilteredQuestions(filtered);
-  }, [selectedDifficulty, questions]);
+  if (selectedSubject !== "todos") {
+    filtered = filtered.filter(q => q.subject === selectedSubject);
+  }
+
+  setFilteredQuestions(filtered);
+}, [selectedDifficulty, selectedSubject, questions]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
