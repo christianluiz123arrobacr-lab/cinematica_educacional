@@ -1,7 +1,8 @@
 export type QuestionOption = {
   id: string;
   label: string;
-  text: string;
+  text?: string;
+  imageUrl?: string;
 };
 
 export type QuestionDifficulty = "facil" | "medio" | "dificil";
