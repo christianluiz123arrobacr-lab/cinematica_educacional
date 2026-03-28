@@ -114,18 +114,18 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
       </div>
 
       <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-lg border border-blue-300 mb-8">
-       <div className="text-lg font-bold text-slate-900 mb-3 leading-relaxed">
-  <ReactMarkdown
-    remarkPlugins={[remarkMath]}
-    rehypePlugins={[rehypeKatex]}
-    components={{
-      p: ({ children }) => <p className="mb-3">{children}</p>,
-      strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-    }}
-  >
-    {question.statement}
-  </ReactMarkdown>
-</div>
+        <div className="text-lg font-bold text-slate-900 mb-3 leading-relaxed">
+          <ReactMarkdown
+            remarkPlugins={[remarkMath]}
+            rehypePlugins={[rehypeKatex]}
+            components={{
+              p: ({ children }) => <p className="mb-3">{children}</p>,
+              strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+            }}
+          >
+            {question.statement}
+          </ReactMarkdown>
+        </div>
 
         {question.imageUrl && (
           <div className="mt-4">
@@ -170,14 +170,25 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
                       : "border-slate-300 bg-slate-50 text-slate-600"
               }`}
             >
-              <div className="flex items-center justify-between">
-                <span>
-                  {option.label}) {option.text}
+              <div className="flex items-center justify-between gap-3">
+                <span className="block">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                    components={{
+                      p: ({ children }) => <span>{children}</span>,
+                      strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                    }}
+                  >
+                    {`${option.label}) ${option.text}`}
+                  </ReactMarkdown>
                 </span>
 
-                {answered && isCorrectOption && <CheckCircle className="w-5 h-5 text-green-600" />}
+                {answered && isCorrectOption && (
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                )}
                 {answered && isSelected && !isCorrectOption && (
-                  <XCircle className="w-5 h-5 text-red-600" />
+                  <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
                 )}
               </div>
             </button>
