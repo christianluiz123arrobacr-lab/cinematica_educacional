@@ -169,30 +169,59 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
         })}
       </div>
 
-      {showExplanation && (
-        <div
-          className={`p-6 rounded-lg border-2 mb-8 ${
-            isCorrect ? "bg-green-50 border-green-300" : "bg-yellow-50 border-yellow-300"
-          }`}
-        >
-          <div className="flex gap-3 items-start">
-            {isCorrect ? (
-              <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-            ) : (
-              <AlertCircle className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
-            )}
-
-            <div>
-              <p className={`font-bold mb-2 ${isCorrect ? "text-green-900" : "text-yellow-900"}`}>
-                {isCorrect ? "✅ Correto!" : "❌ Incorreto"}
-              </p>
-              <p className={`text-sm whitespace-pre-line ${isCorrect ? "text-green-800" : "text-yellow-800"}`}>
-  {question.explanation}
-</p>
-            </div>
-          </div>
-        </div>
+{showExplanation && (
+  <div
+    className={`p-6 rounded-lg border-2 mb-8 ${
+      isCorrect ? "bg-green-50 border-green-300" : "bg-yellow-50 border-yellow-300"
+    }`}
+  >
+    <div className="flex gap-3 items-start">
+      {isCorrect ? (
+        <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+      ) : (
+        <AlertCircle className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
       )}
+
+      <div className="w-full">
+        <p className={`font-bold mb-3 ${isCorrect ? "text-green-900" : "text-yellow-900"}`}>
+          {isCorrect ? "✅ Correto!" : "❌ Incorreto"}
+        </p>
+
+        <div className="space-y-3">
+          {question.explanationBlocks?.length ? (
+            question.explanationBlocks.map((block, index) =>
+              block.type === "latex" ? (
+                <div
+                  key={`${block.type}-${index}-${block.order}`}
+                  className="bg-white/70 rounded-lg px-3 py-2 border border-slate-200"
+                >
+                  <MathFormula formula={block.content} display={true} />
+                </div>
+              ) : (
+                <p
+                  key={`${block.type}-${index}-${block.order}`}
+                  className={`text-sm whitespace-pre-line ${
+                    isCorrect ? "text-green-800" : "text-yellow-800"
+                  }`}
+                >
+                  {block.content}
+                </p>
+              )
+            )
+          ) : (
+            <p
+              className={`text-sm whitespace-pre-line ${
+                isCorrect ? "text-green-800" : "text-yellow-800"
+              }`}
+            >
+              {question.explanation}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
 
       <div className="flex gap-4">
         {answered && !isQuizComplete && (
