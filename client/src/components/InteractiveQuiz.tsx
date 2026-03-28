@@ -152,6 +152,21 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
           </div>
         )}
 
+        {question.statementAfterImage && (
+          <div className="mt-4 text-lg font-bold text-slate-900 leading-relaxed">
+            <ReactMarkdown
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+              components={{
+                p: ({ children }) => <p className="mb-3">{children}</p>,
+                strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+              }}
+            >
+              {question.statementAfterImage}
+            </ReactMarkdown>
+          </div>
+        )}
+
         {question.formula && (
           <div className="mt-4 p-4 bg-white rounded border border-blue-200">
             <p className="text-xs text-slate-600 mb-2">Fórmula útil:</p>
