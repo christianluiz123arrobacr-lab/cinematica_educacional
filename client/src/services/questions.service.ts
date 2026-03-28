@@ -85,27 +85,27 @@ function mapQuestao(row: QuestaoRow): Question {
   const disciplina = (row.disciplina ?? row.diciplina ?? "fisica").toLowerCase() as QuestionSubject;
 
   return {
-    id: row.id,
-    subject: disciplina,
-    topic: (row.conteudo ?? row.assunto ?? "").toLowerCase(),
-    subtopic: row.assunto?.toLowerCase(),
-    exam: row.banca ?? "Sem banca",
-    year: row.ano,
-    institution: row.instituicao ?? row.intituição ?? undefined,
-    statement: row.enunciado ?? "Sem enunciado cadastrado.",
-    formula: row.formula ?? undefined,
-    imageUrl: row.url_imagem ?? undefined,
-    options: normalizarAlternativas(row),
-    correctOptionId: row.alternativa_correta.toLowerCase().trim(),
-    explanation: resolucaoTexto,
-    explanationBlocks,
-    difficulty: row.dificuldade,
-    tags: row.tag ? row.tag.split(",").map((t) => t.trim()) : [],
-    source: row.fonte ?? undefined,
-    isPublished: row.publicada ?? true,
-    createdAt: row.created_at ?? undefined,
-    updatedAt: row.created_at ?? undefined,
-  };
+  id: row.id,
+  subject: disciplina,
+  topic: (row.conteudo ?? row.assunto ?? "").toLowerCase(),
+  subtopic: row.assunto?.toLowerCase(),
+  exam: row.banca ?? "Sem banca",
+  year: row.ano,
+  institution: row.instituicao ?? row.intituição ?? undefined,
+  statement: row.enunciado ?? "Sem enunciado cadastrado.",
+  statementAfterImage: row.enunciado_pos_imagem ?? undefined,
+  formula: row.formula ?? undefined,
+  imageUrl: row.url_imagem ?? undefined,
+  options: normalizarAlternativas(row),
+  correctOptionId: row.alternativa_correta.toLowerCase().trim(),
+  explanation: resolucaoTexto,
+  difficulty: row.dificuldade,
+  tags: row.tag ? row.tag.split(",").map((t) => t.trim()) : [],
+  source: row.fonte ?? undefined,
+  isPublished: row.publicada ?? true,
+  createdAt: row.created_at ?? undefined,
+  updatedAt: row.created_at ?? undefined,
+};
 }
 export async function getQuestions(filters?: QuestionFilters): Promise<Question[]> {
   let query = supabase
