@@ -22,6 +22,7 @@ type QuestaoRow = {
   ano: number;
   dificuldade: QuestionDifficulty;
   enunciado?: string | null;
+  enunciado_pos_imagem?: string | null;
   url_imagem?: string | null;
   formula?: string | null;
   a?: string | null;
@@ -49,7 +50,7 @@ type QuestaoRow = {
   }[];
 };
 
-function normalizarAlternativas(row: QuestaoRow) {
+function normalizarAlternativas(row: QuestaoRow): Question["options"] {
   const altA = row.a ?? row.A ?? "";
   const altB = row.b ?? row.B ?? "";
   const altC = row.c ?? row.C ?? "";
@@ -69,44 +70,47 @@ function mapQuestao(row: QuestaoRow): Question {
   const explanationBlocks =
     row.resolucoes
       ?.filter((r) => r.texto)
-      ?.sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0))
-      ?.map((r) => ({
+      .sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0))
+      .map((r) => ({
         type: r.tipo === "latex" ? "latex" : "texto",
         content: r.texto ?? "",
         order: r.ordem ?? 0,
       })) || [];
 
   const resolucaoTexto =
-    explanationBlocks
-      .filter((block) => block.type === "texto")
-      .map((block) => block.content)
+    row.resolucoes
+      ?.filter((r) => r.texto)
+      .sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0))
+      .map((r) => r.texto ?? "")
       .join("\n\n") || "Sem resolução cadastrada.";
 
   const disciplina = (row.disciplina ?? row.diciplina ?? "fisica").toLowerCase() as QuestionSubject;
 
   return {
-  id: row.id,
-  subject: disciplina,
-  topic: (row.conteudo ?? row.assunto ?? "").toLowerCase(),
-  subtopic: row.assunto?.toLowerCase(),
-  exam: row.banca ?? "Sem banca",
-  year: row.ano,
-  institution: row.instituicao ?? row.intituição ?? undefined,
-  statement: row.enunciado ?? "Sem enunciado cadastrado.",
-  statementAfterImage: row.enunciado_pos_imagem ?? undefined,
-  formula: row.formula ?? undefined,
-  imageUrl: row.url_imagem ?? undefined,
-  options: normalizarAlternativas(row),
-  correctOptionId: row.alternativa_correta.toLowerCase().trim(),
-  explanation: resolucaoTexto,
-  difficulty: row.dificuldade,
-  tags: row.tag ? row.tag.split(",").map((t) => t.trim()) : [],
-  source: row.fonte ?? undefined,
-  isPublished: row.publicada ?? true,
-  createdAt: row.created_at ?? undefined,
-  updatedAt: row.created_at ?? undefined,
-};
+    id: row.id,
+    subject: disciplina,
+    topic: (row.conteudo ?? row.assunto ?? "").toLowerCase(),
+    subtopic: row.assunto?.toLowerCase(),
+    exam: row.banca ?? "Sem banca",
+    year: row.ano,
+    institution: row.instituicao ?? row.intituição ?? undefined,
+    statement: row.enunciado ?? "Sem enunciado cadastrado.",
+    statementAfterImage: row.enunciado_pos_imagem ?? undefined,
+    formula: row.formula ?? undefined,
+    imageUrl: row.url_imagem ?? undefined,
+    options: normalizarAlternativas(row),
+    correctOptionId: row.alternativa_correta.toLowerCase().trim(),
+    explanation: resolucaoTexto,
+    explanationBlocks,
+    difficulty: row.dificuldade,
+    tags: row.tag ? row.tag.split(",").map((t) => t.trim()) : [],
+    source: row.fonte ?? undefined,
+    isPublished: row.publicada ?? true,
+    createdAt: row.created_at ?? undefined,
+    updatedAt: row.created_at ?? undefined,
+  };
 }
+
 export async function getQuestions(filters?: QuestionFilters): Promise<Question[]> {
   let query = supabase
     .from("questoes")
@@ -125,11 +129,11 @@ export async function getQuestions(filters?: QuestionFilters): Promise<Question[
   }
 
   if (filters?.topic) {
-    query = query.ilike("conteudo", filters.topic);
+    query = query.ilike("conteudo", `%${filters.topic}%`);
   }
 
   if (filters?.subtopic) {
-    query = query.ilike("assunto", filters.subtopic);
+    query = query.ilike("assunto", `%${filters.subtopic}%`);
   }
 
   if (filters?.exam) {
