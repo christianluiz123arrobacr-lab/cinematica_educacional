@@ -36,4 +36,5 @@ export type Question = {
   isPublished?: boolean;
   createdAt?: string;
   updatedAt?: string;
+  statementAfterImage?: string;
 };
