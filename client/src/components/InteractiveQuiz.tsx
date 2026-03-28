@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
@@ -13,10 +13,8 @@ type InteractiveQuizProps = {
 
 export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [score, setScore] = useState(0);
-  const [answered, setAnswered] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [showExplanation, setShowExplanation] = useState(false);
+  const [answersByQuestion, setAnswersByQuestion] = useState<Record<number, string>>({});
+  const [showExplanationByQuestion, setShowExplanationByQuestion] = useState<Record<number, boolean>>({});
 
   if (!questions.length) {
     return (
@@ -28,37 +26,54 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
   }
 
   const question = questions[currentQuestion];
+  const selectedAnswer = answersByQuestion[currentQuestion] ?? null;
+  const answered = selectedAnswer !== null;
+  const showExplanation = showExplanationByQuestion[currentQuestion] ?? false;
   const isCorrect = selectedAnswer === question.correctOptionId;
 
+  const score = useMemo(() => {
+    return questions.reduce((total, q, index) => {
+      return answersByQuestion[index] === q.correctOptionId ? total + 1 : total;
+    }, 0);
+  }, [answersByQuestion, questions]);
+
+  const totalAnswered = useMemo(() => {
+    return Object.keys(answersByQuestion).length;
+  }, [answersByQuestion]);
+
+  const isQuizComplete = questions.length > 0 && totalAnswered === questions.length;
+
   const handleAnswer = (optionId: string) => {
-    setSelectedAnswer(optionId);
-    setAnswered(true);
+    if (answered) return;
 
-    if (optionId === question.correctOptionId) {
-      setScore((prev) => prev + 1);
-    }
+    setAnswersByQuestion((prev) => ({
+      ...prev,
+      [currentQuestion]: optionId,
+    }));
 
-    setShowExplanation(true);
+    setShowExplanationByQuestion((prev) => ({
+      ...prev,
+      [currentQuestion]: true,
+    }));
   };
 
   const handleNext = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
-      setAnswered(false);
-      setSelectedAnswer(null);
-      setShowExplanation(false);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion((prev) => prev - 1);
     }
   };
 
   const handleRestart = () => {
     setCurrentQuestion(0);
-    setScore(0);
-    setAnswered(false);
-    setSelectedAnswer(null);
-    setShowExplanation(false);
+    setAnswersByQuestion({});
+    setShowExplanationByQuestion({});
   };
-
-  const isQuizComplete = currentQuestion === questions.length - 1 && answered;
 
   const difficultyClass =
     question.difficulty === "facil"
@@ -170,26 +185,34 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
                       : "border-slate-300 bg-slate-50 text-slate-600"
               }`}
             >
-              <div className="flex items-center justify-between gap-3">
-                <span className="block">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1">
                   <ReactMarkdown
                     remarkPlugins={[remarkMath]}
                     rehypePlugins={[rehypeKatex]}
                     components={{
-                      p: ({ children }) => <span>{children}</span>,
+                      p: ({ children }) => <p className="mb-0">{children}</p>,
                       strong: ({ children }) => <strong className="font-bold">{children}</strong>,
                     }}
                   >
-                    {`${option.label}) ${option.text}`}
+                    {`${option.label}) ${option.text ?? ""}`}
                   </ReactMarkdown>
-                </span>
 
-                {answered && isCorrectOption && (
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                )}
-                {answered && isSelected && !isCorrectOption && (
-                  <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
-                )}
+                  {option.imageUrl && (
+                    <img
+                      src={option.imageUrl}
+                      alt={`Alternativa ${option.label}`}
+                      className="mt-3 max-h-48 max-w-full object-contain rounded border border-slate-200 bg-white"
+                    />
+                  )}
+                </div>
+
+                <div className="flex-shrink-0">
+                  {answered && isCorrectOption && <CheckCircle className="w-5 h-5 text-green-600" />}
+                  {answered && isSelected && !isCorrectOption && (
+                    <XCircle className="w-5 h-5 text-red-600" />
+                  )}
+                </div>
               </div>
             </button>
           );
@@ -235,7 +258,16 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
       )}
 
       <div className="flex gap-4">
-        {answered && !isQuizComplete && (
+        {currentQuestion > 0 && (
+          <button
+            onClick={handlePrevious}
+            className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-lg transition-all"
+          >
+            ← Questão Anterior
+          </button>
+        )}
+
+        {currentQuestion < questions.length - 1 && (
           <button
             onClick={handleNext}
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all"
@@ -244,7 +276,7 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
           </button>
         )}
 
-        {isQuizComplete && (
+        {isQuizComplete && currentQuestion === questions.length - 1 && (
           <button
             onClick={handleRestart}
             className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-all"
