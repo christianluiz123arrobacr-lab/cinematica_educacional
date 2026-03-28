@@ -24,6 +24,7 @@ export type Question = {
   year: number;
   institution?: string;
   statement: string;
+  statementAfterImage?: string;
   formula?: string;
   imageUrl?: string;
   options: QuestionOption[];
@@ -36,5 +37,4 @@ export type Question = {
   isPublished?: boolean;
   createdAt?: string;
   updatedAt?: string;
-  statementAfterImage?: string;
 };
