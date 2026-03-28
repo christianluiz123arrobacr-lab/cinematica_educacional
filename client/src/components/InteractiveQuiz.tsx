@@ -1,4 +1,8 @@
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 import { MathFormula } from "./MathFormula";
 import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import type { Question } from "@/types/question";
@@ -60,15 +64,15 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
     question.difficulty === "facil"
       ? "bg-green-100 text-green-900"
       : question.difficulty === "medio"
-      ? "bg-yellow-100 text-yellow-900"
-      : "bg-red-100 text-red-900";
+        ? "bg-yellow-100 text-yellow-900"
+        : "bg-red-100 text-red-900";
 
   const difficultyLabel =
     question.difficulty === "facil"
       ? "FÁCIL"
       : question.difficulty === "medio"
-      ? "MÉDIO"
-      : "DIFÍCIL";
+        ? "MÉDIO"
+        : "DIFÍCIL";
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
@@ -111,25 +115,26 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
 
       <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-lg border border-blue-300 mb-8">
         <h4 className="text-lg font-bold text-slate-900 mb-3">{question.statement}</h4>
+
         {question.imageUrl && (
-  <div className="mt-4">
-    <img
-      src={question.imageUrl}
-      alt="Imagem da questão"
-      className="max-w-full rounded-lg border border-slate-200"
-    />
-  </div>
-)}
+          <div className="mt-4">
+            <img
+              src={question.imageUrl}
+              alt="Imagem da questão"
+              className="max-w-full rounded-lg border border-slate-200"
+            />
+          </div>
+        )}
 
         {question.formula && (
-  <div className="mt-4 p-4 bg-white rounded border border-blue-200">
-    <p className="text-xs text-slate-600 mb-2">Fórmula útil:</p>
-    <MathFormula
-      formula={question.formula.replace(/^\$\$?|\$\$?$/g, "").trim()}
-      display={true}
-    />
-  </div>
-)}
+          <div className="mt-4 p-4 bg-white rounded border border-blue-200">
+            <p className="text-xs text-slate-600 mb-2">Fórmula útil:</p>
+            <MathFormula
+              formula={question.formula.replace(/^\$\$?|\$\$?$/g, "").trim()}
+              display={true}
+            />
+          </div>
+        )}
       </div>
 
       <div className="space-y-3 mb-8">
@@ -146,12 +151,12 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
                 !answered
                   ? "border-slate-300 bg-white hover:border-blue-500 hover:bg-blue-50 cursor-pointer"
                   : isSelected
-                  ? isCorrectOption
-                    ? "border-green-500 bg-green-50 text-green-900"
-                    : "border-red-500 bg-red-50 text-red-900"
-                  : isCorrectOption
-                  ? "border-green-500 bg-green-50 text-green-900"
-                  : "border-slate-300 bg-slate-50 text-slate-600"
+                    ? isCorrectOption
+                      ? "border-green-500 bg-green-50 text-green-900"
+                      : "border-red-500 bg-red-50 text-red-900"
+                    : isCorrectOption
+                      ? "border-green-500 bg-green-50 text-green-900"
+                      : "border-slate-300 bg-slate-50 text-slate-600"
               }`}
             >
               <div className="flex items-center justify-between">
@@ -169,59 +174,43 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
         })}
       </div>
 
-{showExplanation && (
-  <div
-    className={`p-6 rounded-lg border-2 mb-8 ${
-      isCorrect ? "bg-green-50 border-green-300" : "bg-yellow-50 border-yellow-300"
-    }`}
-  >
-    <div className="flex gap-3 items-start">
-      {isCorrect ? (
-        <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-      ) : (
-        <AlertCircle className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
-      )}
+      {showExplanation && (
+        <div
+          className={`p-6 rounded-lg border-2 mb-8 ${
+            isCorrect ? "bg-green-50 border-green-300" : "bg-yellow-50 border-yellow-300"
+          }`}
+        >
+          <div className="flex gap-3 items-start">
+            {isCorrect ? (
+              <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+            ) : (
+              <AlertCircle className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
+            )}
 
-      <div className="w-full">
-        <p className={`font-bold mb-3 ${isCorrect ? "text-green-900" : "text-yellow-900"}`}>
-          {isCorrect ? "✅ Correto!" : "❌ Incorreto"}
-        </p>
+            <div className="w-full">
+              <p className={`font-bold mb-3 ${isCorrect ? "text-green-900" : "text-yellow-900"}`}>
+                {isCorrect ? "✅ Correto!" : "❌ Incorreto"}
+              </p>
 
-        <div className="space-y-3">
-          {question.explanationBlocks?.length ? (
-            question.explanationBlocks.map((block, index) =>
-              block.type === "latex" ? (
-                <div
-                  key={`${block.type}-${index}-${block.order}`}
-                  className="bg-white/70 rounded-lg px-3 py-2 border border-slate-200"
+              <div className={`text-sm ${isCorrect ? "text-green-800" : "text-yellow-800"}`}>
+                <ReactMarkdown
+                  remarkPlugins={[remarkMath]}
+                  rehypePlugins={[rehypeKatex]}
+                  components={{
+                    p: ({ children }) => <p className="mb-3 whitespace-pre-line">{children}</p>,
+                    strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                    ul: ({ children }) => <ul className="list-disc pl-5 mb-3">{children}</ul>,
+                    ol: ({ children }) => <ol className="list-decimal pl-5 mb-3">{children}</ol>,
+                    li: ({ children }) => <li className="mb-1">{children}</li>,
+                  }}
                 >
-                  <MathFormula formula={block.content} display={true} />
-                </div>
-              ) : (
-                <p
-                  key={`${block.type}-${index}-${block.order}`}
-                  className={`text-sm whitespace-pre-line ${
-                    isCorrect ? "text-green-800" : "text-yellow-800"
-                  }`}
-                >
-                  {block.content}
-                </p>
-              )
-            )
-          ) : (
-            <p
-              className={`text-sm whitespace-pre-line ${
-                isCorrect ? "text-green-800" : "text-yellow-800"
-              }`}
-            >
-              {question.explanation}
-            </p>
-          )}
+                  {question.explanation || "Sem resolução cadastrada."}
+                </ReactMarkdown>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-)}
+      )}
 
       <div className="flex gap-4">
         {answered && !isQuizComplete && (
