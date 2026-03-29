@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
@@ -16,6 +16,17 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
   const [answersByQuestion, setAnswersByQuestion] = useState<Record<number, string>>({});
   const [showExplanationByQuestion, setShowExplanationByQuestion] = useState<Record<number, boolean>>({});
 
+  useEffect(() => {
+    if (!questions.length) {
+      setCurrentQuestion(0);
+      return;
+    }
+
+    if (currentQuestion > questions.length - 1) {
+      setCurrentQuestion(questions.length - 1);
+    }
+  }, [questions, currentQuestion]);
+
   if (!questions.length) {
     return (
       <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
@@ -26,6 +37,16 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
   }
 
   const question = questions[currentQuestion];
+
+  if (!question) {
+    return (
+      <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+        <h3 className="text-2xl font-bold text-slate-900 mb-6">📝 Exercícios Interativos</h3>
+        <p className="text-slate-600">Carregando questão...</p>
+      </div>
+    );
+  }
+
   const selectedAnswer = answersByQuestion[currentQuestion] ?? null;
   const answered = selectedAnswer !== null;
   const showExplanation = showExplanationByQuestion[currentQuestion] ?? false;
