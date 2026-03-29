@@ -408,7 +408,10 @@ export default function QuestionBankPage() {
 
         <section>
           {filteredQuestions.length > 0 ? (
-            <InteractiveQuiz questions={filteredQuestions} />
+            <InteractiveQuiz
+  key={`${selectedDifficulty}-${selectedSubject}-${selectedTopic}-${selectedYear}-${selectedInstitution}`}
+  questions={filteredQuestions}
+/>
           ) : (
             <Card className="p-12 text-center">
               <p className="text-lg text-slate-600 mb-4">
