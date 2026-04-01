@@ -90,7 +90,14 @@ export default function QuestionBankPage() {
 
   useEffect(() => {
     async function loadQuestions() {
-      const data = await getQuestions();
+      const data = await getQuestions({
+        exam: "EsPCEx",
+        year: 2017,
+      });
+
+      console.log("Questões carregadas:", data);
+      console.log("Quantidade:", data.length);
+
       setQuestions(data);
       setFilteredQuestions(data);
     }
@@ -258,18 +265,12 @@ export default function QuestionBankPage() {
                       onClick={() => setSelectedDifficulty(diff)}
                       className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                         selectedDifficulty === diff
-                          ? diff === "facil"
-                            ? "bg-green-500 text-white"
-                            : diff === "medio"
-                              ? "bg-yellow-500 text-white"
-                              : diff === "dificil"
-                                ? "bg-red-500 text-white"
-                                : "bg-blue-600 text-white"
+                          ? "bg-purple-600 text-white shadow-md"
                           : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                       }`}
                     >
                       {diff === "todos"
-                        ? "Todas"
+                        ? "Todos"
                         : diff === "facil"
                           ? "Fácil"
                           : diff === "medio"
@@ -285,137 +286,94 @@ export default function QuestionBankPage() {
                   Disciplina
                 </label>
                 <div className="flex gap-2 flex-wrap">
-                  {["todos", "fisica", "matematica", "quimica"].map((subj) => (
+                  {[
+                    { value: "todos", label: "Todas" },
+                    { value: "fisica", label: "Física" },
+                    { value: "matematica", label: "Matemática" },
+                    { value: "quimica", label: "Química" },
+                  ].map((subject) => (
                     <button
-                      key={subj}
-                      onClick={() => setSelectedSubject(subj)}
+                      key={subject.value}
+                      onClick={() => setSelectedSubject(subject.value)}
                       className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                        selectedSubject === subj
-                          ? "bg-blue-600 text-white"
+                        selectedSubject === subject.value
+                          ? "bg-blue-600 text-white shadow-md"
                           : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                       }`}
                     >
-                      {subj === "todos"
-                        ? "Todas"
-                        : subj === "fisica"
-                          ? "Física"
-                          : subj === "matematica"
-                            ? "Matemática"
-                            : "Química"}
+                      {subject.label}
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-3">
-                  Conteúdo
-                </label>
-                <div className="flex gap-2 flex-wrap">
-                  <button
-                    onClick={() => setSelectedTopic("todos")}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                      selectedTopic === "todos"
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                    }`}
-                  >
-                    Todos
-                  </button>
-
+                <label className="block text-sm font-semibold text-slate-700 mb-3">Conteúdo</label>
+                <select
+                  value={selectedTopic}
+                  onChange={(e) => setSelectedTopic(e.target.value)}
+                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="todos">Todos os conteúdos</option>
                   {availableTopics.map((topic) => (
-                    <button
-                      key={topic}
-                      onClick={() => setSelectedTopic(topic)}
-                      className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                        selectedTopic === topic
-                          ? "bg-blue-600 text-white"
-                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                      }`}
-                    >
+                    <option key={topic} value={topic}>
                       {topic}
-                    </button>
+                    </option>
                   ))}
-                </div>
+                </select>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-3">
-                  Ano
-                </label>
-                <div className="flex gap-2 flex-wrap">
-                  <button
-                    onClick={() => setSelectedYear("todos")}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                      selectedYear === "todos"
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                    }`}
-                  >
-                    Todos
-                  </button>
-
+                <label className="block text-sm font-semibold text-slate-700 mb-3">Ano</label>
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="todos">Todos os anos</option>
                   {availableYears.map((year) => (
-                    <button
-                      key={year}
-                      onClick={() => setSelectedYear(year)}
-                      className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                        selectedYear === year
-                          ? "bg-blue-600 text-white"
-                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                      }`}
-                    >
+                    <option key={year} value={year}>
                       {year}
-                    </button>
+                    </option>
                   ))}
-                </div>
+                </select>
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-3">
                   Instituição
                 </label>
-                <div className="flex gap-2 flex-wrap">
-                  <button
-                    onClick={() => setSelectedInstitution("todos")}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                      selectedInstitution === "todos"
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                    }`}
-                  >
-                    Todas
-                  </button>
-
+                <select
+                  value={selectedInstitution}
+                  onChange={(e) => setSelectedInstitution(e.target.value)}
+                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="todos">Todas as instituições</option>
                   {availableInstitutions.map((institution) => (
-                    <button
-                      key={institution}
-                      onClick={() => setSelectedInstitution(institution ?? "todos")}
-                      className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                        selectedInstitution === institution
-                          ? "bg-blue-600 text-white"
-                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                      }`}
-                    >
+                    <option key={institution} value={institution}>
                       {institution}
-                    </button>
+                    </option>
                   ))}
-                </div>
+                </select>
               </div>
             </div>
           </Card>
         </section>
 
-        <section>
+        <section className="space-y-8">
           {filteredQuestions.length > 0 ? (
-            <InteractiveQuiz
-  key={`${selectedDifficulty}-${selectedSubject}-${selectedTopic}-${selectedYear}-${selectedInstitution}`}
-  questions={filteredQuestions}
-/>
+            filteredQuestions.map((question) => (
+              <Card key={question.id} className="p-8 bg-white border-slate-200 shadow-sm">
+                <InteractiveQuiz question={question} />
+              </Card>
+            ))
           ) : (
-            <Card className="p-12 text-center">
-              <p className="text-lg text-slate-600 mb-4">
-                Nenhuma questão encontrada com os filtros selecionados.
+            <Card className="p-12 bg-white border-slate-200 text-center">
+              <h3 className="text-xl font-bold text-slate-900 mb-2">
+                Nenhuma questão encontrada
+              </h3>
+              <p className="text-slate-600 mb-6">
+                Tente ajustar os filtros para visualizar outras questões.
               </p>
               <Button
                 onClick={() => {
@@ -425,22 +383,14 @@ export default function QuestionBankPage() {
                   setSelectedYear("todos");
                   setSelectedInstitution("todos");
                 }}
+                className="bg-purple-600 hover:bg-purple-700"
               >
-                Limpar Filtros
+                Limpar filtros
               </Button>
             </Card>
           )}
         </section>
       </main>
-
-      <footer className="bg-slate-900 text-slate-300 py-12 mt-20">
-        <div className="container text-center">
-          <p className="mb-4">© 2026 Domine Exatas. Banco de Questões Premium.</p>
-          <p className="text-sm text-slate-500">
-            Questões comentadas, análise de desempenho e simulados estratégicos.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }
