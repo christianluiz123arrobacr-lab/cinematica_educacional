@@ -112,9 +112,7 @@ function mapQuestao(row: QuestaoRow): Question {
 }
 
 export async function getQuestions(filters?: QuestionFilters): Promise<Question[]> {
-  let query = supabase
-    .from("questoes")
-    .select(`
+  let query = supabase.from("questoes").select(`
       *,
       resolucoes (
         id,
