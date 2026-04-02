@@ -26,7 +26,8 @@ export default function QuestionBankPage() {
   ).sort();
 
   const questionsForSubtopics = questions.filter((q) => {
-    const matchesSubject = selectedSubject === "todos" || q.subject === selectedSubject;
+    const matchesSubject =
+      selectedSubject === "todos" || q.subject === selectedSubject;
     const matchesTopic = selectedTopic === "todos" || q.topic === selectedTopic;
 
     return matchesSubject && matchesTopic;
@@ -37,12 +38,20 @@ export default function QuestionBankPage() {
   ).sort();
 
   const questionsForYears = questions.filter((q) => {
-    const matchesDifficulty = selectedDifficulty === "todos" || q.difficulty === selectedDifficulty;
-    const matchesSubject = selectedSubject === "todos" || q.subject === selectedSubject;
+    const matchesDifficulty =
+      selectedDifficulty === "todos" || q.difficulty === selectedDifficulty;
+    const matchesSubject =
+      selectedSubject === "todos" || q.subject === selectedSubject;
     const matchesTopic = selectedTopic === "todos" || q.topic === selectedTopic;
-    const matchesSubtopic = selectedSubtopic === "todos" || q.subtopic === selectedSubtopic;
+    const matchesSubtopic =
+      selectedSubtopic === "todos" || q.subtopic === selectedSubtopic;
 
-    return matchesDifficulty && matchesSubject && matchesTopic && matchesSubtopic;
+    return (
+      matchesDifficulty &&
+      matchesSubject &&
+      matchesTopic &&
+      matchesSubtopic
+    );
   });
 
   const availableYears = Array.from(
@@ -50,11 +59,15 @@ export default function QuestionBankPage() {
   ).sort((a, b) => Number(b) - Number(a));
 
   const questionsForInstitutions = questions.filter((q) => {
-    const matchesDifficulty = selectedDifficulty === "todos" || q.difficulty === selectedDifficulty;
-    const matchesSubject = selectedSubject === "todos" || q.subject === selectedSubject;
+    const matchesDifficulty =
+      selectedDifficulty === "todos" || q.difficulty === selectedDifficulty;
+    const matchesSubject =
+      selectedSubject === "todos" || q.subject === selectedSubject;
     const matchesTopic = selectedTopic === "todos" || q.topic === selectedTopic;
-    const matchesSubtopic = selectedSubtopic === "todos" || q.subtopic === selectedSubtopic;
-    const matchesYear = selectedYear === "todos" || String(q.year) === selectedYear;
+    const matchesSubtopic =
+      selectedSubtopic === "todos" || q.subtopic === selectedSubtopic;
+    const matchesYear =
+      selectedYear === "todos" || String(q.year) === selectedYear;
 
     return (
       matchesDifficulty &&
@@ -202,8 +215,12 @@ export default function QuestionBankPage() {
               <Zap className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Banco de Questões</h1>
-              <p className="text-xs text-slate-500">Premium - Questões Comentadas</p>
+              <h1 className="text-2xl font-bold text-slate-900">
+                Banco de Questões
+              </h1>
+              <p className="text-xs text-slate-500">
+                Premium - Questões Comentadas
+              </p>
             </div>
           </div>
 
@@ -224,7 +241,9 @@ export default function QuestionBankPage() {
               </div>
               <div>
                 <p className="text-sm text-slate-600">Total de Questões</p>
-                <p className="text-3xl font-bold text-slate-900">{questions.length}</p>
+                <p className="text-3xl font-bold text-slate-900">
+                  {questions.length}
+                </p>
               </div>
             </div>
           </Card>
@@ -236,7 +255,9 @@ export default function QuestionBankPage() {
               </div>
               <div>
                 <p className="text-sm text-slate-600">Disciplinas</p>
-                <p className="text-3xl font-bold text-slate-900">{totalSubjects}</p>
+                <p className="text-3xl font-bold text-slate-900">
+                  {totalSubjects}
+                </p>
               </div>
             </div>
           </Card>
@@ -248,7 +269,9 @@ export default function QuestionBankPage() {
               </div>
               <div>
                 <p className="text-sm text-slate-600">Dificuldades</p>
-                <p className="text-3xl font-bold text-slate-900">{totalDifficulties}</p>
+                <p className="text-3xl font-bold text-slate-900">
+                  {totalDifficulties}
+                </p>
               </div>
             </div>
           </Card>
@@ -256,7 +279,9 @@ export default function QuestionBankPage() {
 
         <section className="grid lg:grid-cols-2 gap-6 mb-12">
           <Card className="p-6 bg-white border-slate-200">
-            <h3 className="text-lg font-bold text-slate-900 mb-4">Questões por disciplina</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-4">
+              Questões por disciplina
+            </h3>
             <div className="space-y-3">
               {subjectStats.length > 0 ? (
                 subjectStats.map((item) => (
@@ -264,18 +289,26 @@ export default function QuestionBankPage() {
                     key={item.key}
                     className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3"
                   >
-                    <span className="font-medium text-slate-700">{item.label}</span>
-                    <span className="text-sm font-bold text-slate-900">{item.count}</span>
+                    <span className="font-medium text-slate-700">
+                      {item.label}
+                    </span>
+                    <span className="text-sm font-bold text-slate-900">
+                      {item.count}
+                    </span>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-slate-500">Nenhuma disciplina cadastrada ainda.</p>
+                <p className="text-sm text-slate-500">
+                  Nenhuma disciplina cadastrada ainda.
+                </p>
               )}
             </div>
           </Card>
 
           <Card className="p-6 bg-white border-slate-200">
-            <h3 className="text-lg font-bold text-slate-900 mb-4">Questões por nível</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-4">
+              Questões por nível
+            </h3>
             <div className="space-y-3">
               {difficultyStats.length > 0 ? (
                 difficultyStats.map((item) => (
@@ -283,12 +316,18 @@ export default function QuestionBankPage() {
                     key={item.key}
                     className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3"
                   >
-                    <span className="font-medium text-slate-700">{item.label}</span>
-                    <span className="text-sm font-bold text-slate-900">{item.count}</span>
+                    <span className="font-medium text-slate-700">
+                      {item.label}
+                    </span>
+                    <span className="text-sm font-bold text-slate-900">
+                      {item.count}
+                    </span>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-slate-500">Nenhuma dificuldade cadastrada ainda.</p>
+                <p className="text-sm text-slate-500">
+                  Nenhuma dificuldade cadastrada ainda.
+                </p>
               )}
             </div>
           </Card>
@@ -366,96 +405,54 @@ export default function QuestionBankPage() {
                 <label className="block text-sm font-semibold text-slate-700 mb-3">
                   Conteúdo
                 </label>
-                <div className="flex gap-2 flex-wrap">
-                  <button
-                    onClick={() => setSelectedTopic("todos")}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                      selectedTopic === "todos"
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                    }`}
-                  >
-                    Todos
-                  </button>
-
+                <select
+                  value={selectedTopic}
+                  onChange={(e) => setSelectedTopic(e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="todos">Todos</option>
                   {availableTopics.map((topic) => (
-                    <button
-                      key={topic}
-                      onClick={() => setSelectedTopic(topic)}
-                      className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                        selectedTopic === topic
-                          ? "bg-blue-600 text-white"
-                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                      }`}
-                    >
+                    <option key={topic} value={topic}>
                       {topic}
-                    </button>
+                    </option>
                   ))}
-                </div>
+                </select>
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-3">
                   Assunto
                 </label>
-                <div className="flex gap-2 flex-wrap">
-                  <button
-                    onClick={() => setSelectedSubtopic("todos")}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                      selectedSubtopic === "todos"
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                    }`}
-                  >
-                    Todos
-                  </button>
-
+                <select
+                  value={selectedSubtopic}
+                  onChange={(e) => setSelectedSubtopic(e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="todos">Todos</option>
                   {availableSubtopics.map((subtopic) => (
-                    <button
-                      key={subtopic}
-                      onClick={() => setSelectedSubtopic(subtopic)}
-                      className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                        selectedSubtopic === subtopic
-                          ? "bg-blue-600 text-white"
-                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                      }`}
-                    >
+                    <option key={subtopic} value={subtopic}>
                       {subtopic}
-                    </button>
+                    </option>
                   ))}
-                </div>
+                </select>
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-3">
                   Ano
                 </label>
-                <div className="flex gap-2 flex-wrap">
-                  <button
-                    onClick={() => setSelectedYear("todos")}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                      selectedYear === "todos"
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                    }`}
-                  >
-                    Todos
-                  </button>
-
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="todos">Todos</option>
                   {availableYears.map((year) => (
-                    <button
-                      key={year}
-                      onClick={() => setSelectedYear(year)}
-                      className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                        selectedYear === year
-                          ? "bg-blue-600 text-white"
-                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                      }`}
-                    >
+                    <option key={year} value={year}>
                       {year}
-                    </button>
+                    </option>
                   ))}
-                </div>
+                </select>
               </div>
 
               <div>
@@ -477,7 +474,9 @@ export default function QuestionBankPage() {
                   {availableInstitutions.map((institution) => (
                     <button
                       key={institution}
-                      onClick={() => setSelectedInstitution(institution ?? "todos")}
+                      onClick={() =>
+                        setSelectedInstitution(institution ?? "todos")
+                      }
                       className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                         selectedInstitution === institution
                           ? "bg-blue-600 text-white"
@@ -523,7 +522,9 @@ export default function QuestionBankPage() {
 
       <footer className="bg-slate-900 text-slate-300 py-12 mt-20">
         <div className="container text-center">
-          <p className="mb-4">© 2026 Domine Exatas. Banco de Questões Premium.</p>
+          <p className="mb-4">
+            © 2026 Domine Exatas. Banco de Questões Premium.
+          </p>
           <p className="text-sm text-slate-500">
             Questões comentadas, análise de desempenho e simulados estratégicos.
           </p>
