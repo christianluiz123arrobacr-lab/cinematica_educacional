@@ -13,19 +13,60 @@ export default function QuestionBankPage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("todos");
   const [selectedSubject, setSelectedSubject] = useState<string>("todos");
   const [selectedTopic, setSelectedTopic] = useState<string>("todos");
+  const [selectedSubtopic, setSelectedSubtopic] = useState<string>("todos");
   const [selectedYear, setSelectedYear] = useState<string>("todos");
   const [selectedInstitution, setSelectedInstitution] = useState<string>("todos");
 
+  const questionsForTopics = questions.filter((q) => {
+    return selectedSubject === "todos" || q.subject === selectedSubject;
+  });
+
   const availableTopics = Array.from(
-    new Set(questions.map((q) => q.topic).filter(Boolean))
+    new Set(questionsForTopics.map((q) => q.topic).filter(Boolean))
   ).sort();
 
+  const questionsForSubtopics = questions.filter((q) => {
+    const matchesSubject = selectedSubject === "todos" || q.subject === selectedSubject;
+    const matchesTopic = selectedTopic === "todos" || q.topic === selectedTopic;
+
+    return matchesSubject && matchesTopic;
+  });
+
+  const availableSubtopics = Array.from(
+    new Set(questionsForSubtopics.map((q) => q.subtopic).filter(Boolean))
+  ).sort();
+
+  const questionsForYears = questions.filter((q) => {
+    const matchesDifficulty = selectedDifficulty === "todos" || q.difficulty === selectedDifficulty;
+    const matchesSubject = selectedSubject === "todos" || q.subject === selectedSubject;
+    const matchesTopic = selectedTopic === "todos" || q.topic === selectedTopic;
+    const matchesSubtopic = selectedSubtopic === "todos" || q.subtopic === selectedSubtopic;
+
+    return matchesDifficulty && matchesSubject && matchesTopic && matchesSubtopic;
+  });
+
   const availableYears = Array.from(
-    new Set(questions.map((q) => String(q.year)).filter(Boolean))
+    new Set(questionsForYears.map((q) => String(q.year)).filter(Boolean))
   ).sort((a, b) => Number(b) - Number(a));
 
+  const questionsForInstitutions = questions.filter((q) => {
+    const matchesDifficulty = selectedDifficulty === "todos" || q.difficulty === selectedDifficulty;
+    const matchesSubject = selectedSubject === "todos" || q.subject === selectedSubject;
+    const matchesTopic = selectedTopic === "todos" || q.topic === selectedTopic;
+    const matchesSubtopic = selectedSubtopic === "todos" || q.subtopic === selectedSubtopic;
+    const matchesYear = selectedYear === "todos" || String(q.year) === selectedYear;
+
+    return (
+      matchesDifficulty &&
+      matchesSubject &&
+      matchesTopic &&
+      matchesSubtopic &&
+      matchesYear
+    );
+  });
+
   const availableInstitutions = Array.from(
-    new Set(questions.map((q) => q.institution).filter(Boolean))
+    new Set(questionsForInstitutions.map((q) => q.institution).filter(Boolean))
   ).sort();
 
   const totalSubjects = useMemo(
@@ -99,6 +140,15 @@ export default function QuestionBankPage() {
   }, []);
 
   useEffect(() => {
+    setSelectedTopic("todos");
+    setSelectedSubtopic("todos");
+  }, [selectedSubject]);
+
+  useEffect(() => {
+    setSelectedSubtopic("todos");
+  }, [selectedTopic]);
+
+  useEffect(() => {
     let filtered = questions;
 
     if (selectedDifficulty !== "todos") {
@@ -111,6 +161,10 @@ export default function QuestionBankPage() {
 
     if (selectedTopic !== "todos") {
       filtered = filtered.filter((q) => q.topic === selectedTopic);
+    }
+
+    if (selectedSubtopic !== "todos") {
+      filtered = filtered.filter((q) => q.subtopic === selectedSubtopic);
     }
 
     if (selectedYear !== "todos") {
@@ -126,6 +180,7 @@ export default function QuestionBankPage() {
     selectedDifficulty,
     selectedSubject,
     selectedTopic,
+    selectedSubtopic,
     selectedYear,
     selectedInstitution,
     questions,
@@ -341,6 +396,38 @@ export default function QuestionBankPage() {
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-3">
+                  Assunto
+                </label>
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    onClick={() => setSelectedSubtopic("todos")}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      selectedSubtopic === "todos"
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    }`}
+                  >
+                    Todos
+                  </button>
+
+                  {availableSubtopics.map((subtopic) => (
+                    <button
+                      key={subtopic}
+                      onClick={() => setSelectedSubtopic(subtopic)}
+                      className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                        selectedSubtopic === subtopic
+                          ? "bg-blue-600 text-white"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`}
+                    >
+                      {subtopic}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-3">
                   Ano
                 </label>
                 <div className="flex gap-2 flex-wrap">
@@ -409,9 +496,9 @@ export default function QuestionBankPage() {
         <section>
           {filteredQuestions.length > 0 ? (
             <InteractiveQuiz
-  key={`${selectedDifficulty}-${selectedSubject}-${selectedTopic}-${selectedYear}-${selectedInstitution}`}
-  questions={filteredQuestions}
-/>
+              key={`${selectedDifficulty}-${selectedSubject}-${selectedTopic}-${selectedSubtopic}-${selectedYear}-${selectedInstitution}`}
+              questions={filteredQuestions}
+            />
           ) : (
             <Card className="p-12 text-center">
               <p className="text-lg text-slate-600 mb-4">
@@ -422,6 +509,7 @@ export default function QuestionBankPage() {
                   setSelectedDifficulty("todos");
                   setSelectedSubject("todos");
                   setSelectedTopic("todos");
+                  setSelectedSubtopic("todos");
                   setSelectedYear("todos");
                   setSelectedInstitution("todos");
                 }}
