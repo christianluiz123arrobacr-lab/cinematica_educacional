@@ -14,6 +14,7 @@ export type QuestionFilters = {
 
 type QuestaoRow = {
   id: string;
+  codigo?: string | null;
   diciplina?: string;
   disciplina?: string;
   assunto: string;
@@ -87,8 +88,9 @@ function mapQuestao(row: QuestaoRow): Question {
   const disciplina = (row.disciplina ?? row.diciplina ?? "fisica").toLowerCase() as QuestionSubject;
 
   return {
-    id: row.id,
-    subject: disciplina,
+  id: row.id,
+  codigo: row.codigo ?? undefined,
+  subject: disciplina,
     topic: (row.conteudo ?? row.assunto ?? "").toLowerCase(),
     subtopic: row.assunto?.toLowerCase(),
     exam: row.banca ?? "Sem banca",
