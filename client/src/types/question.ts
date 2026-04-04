@@ -17,6 +17,7 @@ export type ExplanationBlock = {
 
 export type Question = {
   id: string;
+  codigo?: string;
   subject: QuestionSubject;
   topic: string;
   subtopic?: string;
