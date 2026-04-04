@@ -135,12 +135,20 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
       </div>
 
       <div className="mb-8">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-bold text-slate-900">Progresso</span>
-          <span className="text-sm font-bold text-slate-600">
-            {currentQuestion + 1} de {questions.length}
-          </span>
-        </div>
+  <div className="flex justify-between items-start mb-2">
+    <span className="text-sm font-bold text-slate-900">Progresso</span>
+
+    <div className="flex flex-col items-end">
+      {question.codigo && (
+        <span className="text-xs font-bold text-slate-500 mb-1">
+          {question.codigo}
+        </span>
+      )}
+      <span className="text-sm font-bold text-slate-600">
+        {currentQuestion + 1} de {questions.length}
+      </span>
+    </div>
+  </div>
         <div className="w-full bg-slate-200 rounded-full h-2">
           <div
             className="bg-gradient-to-r from-blue-500 to-blue-700 h-2 rounded-full transition-all duration-300"
