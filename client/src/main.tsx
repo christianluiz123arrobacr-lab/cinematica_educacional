@@ -42,10 +42,19 @@ const trpcClient = trpc.createClient({
     httpBatchLink({
       url: "/api/trpc",
       transformer: superjson,
-      fetch(input, init) {
+      async fetch(input, init) {
+        const accessToken =
+          localStorage.getItem("supabase_access_token") ?? "";
+
+        const headers = new Headers(init?.headers ?? {});
+        if (accessToken) {
+          headers.set("Authorization", `Bearer ${accessToken}`);
+        }
+
         return globalThis.fetch(input, {
           ...(init ?? {}),
           credentials: "include",
+          headers,
         });
       },
     }),
