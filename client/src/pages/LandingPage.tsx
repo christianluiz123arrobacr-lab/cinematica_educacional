@@ -148,45 +148,84 @@ export default function LandingPage() {
               </div>
 
               {/* Right side - Visual */}
-              <div className="hidden md:flex items-center justify-center relative">
-                {/* Phone mockup */}
-                <div className="relative">
-                  {/* Tablet/Desktop screen */}
-                  <div className="absolute right-0 top-8 w-64 h-48 bg-white rounded-2xl shadow-2xl border-8 border-white overflow-hidden">
-                    <div className="bg-slate-100 h-full p-3 text-xs text-slate-700">
-                      <div className="font-bold mb-2 text-slate-900">Um móvel percorre 120 m em 6 s com velocidade constante. Qual é sua velocidade?</div>
+              <div className="hidden md:flex items-center justify-center relative h-80">
+                {/* Container para o efeito de profundidade */}
+                <div className="relative w-full h-full flex items-center justify-center">
+                  
+                  {/* Tablet/Desktop screen - Background */}
+                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-80 h-56 bg-white rounded-3xl shadow-2xl border-8 border-white overflow-hidden z-10">
+                    <div className="bg-slate-50 h-full p-6 text-sm text-slate-700 flex flex-col justify-between">
+                      {/* Header */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex gap-2">
+                          <div className="w-2 h-2 bg-slate-300 rounded-full"></div>
+                          <div className="w-2 h-2 bg-slate-300 rounded-full"></div>
+                          <div className="w-2 h-2 bg-slate-300 rounded-full"></div>
+                        </div>
+                        <div className="text-xs font-semibold text-slate-400">Questões</div>
+                        <div className="w-4 h-4 bg-slate-300 rounded"></div>
+                      </div>
+
+                      {/* Question */}
+                      <div className="mb-4">
+                        <div className="font-bold text-slate-900 text-sm mb-3">Um móvel percorre 120 m em 6 s com velocidade constante. Qual é sua velocidade?</div>
+                      </div>
+
+                      {/* Options */}
                       <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <input type="radio" id="opt1" className="w-3 h-3" />
-                          <label htmlFor="opt1" className="text-xs">A: 10 m/s</label>
+                        <div className="flex items-center gap-3">
+                          <input type="radio" id="opt1" className="w-4 h-4 cursor-pointer" />
+                          <label htmlFor="opt1" className="text-sm cursor-pointer">A: 10 m/s</label>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <input type="radio" id="opt2" className="w-3 h-3" defaultChecked />
-                          <label htmlFor="opt2" className="text-xs">B: 23 m/s</label>
+                        <div className="flex items-center gap-3">
+                          <input type="radio" id="opt2" className="w-4 h-4 cursor-pointer" defaultChecked />
+                          <label htmlFor="opt2" className="text-sm font-semibold cursor-pointer">B: 23 m/s</label>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <input type="radio" id="opt3" className="w-3 h-3" />
-                          <label htmlFor="opt3" className="text-xs">C: 80 m/s</label>
+                        <div className="flex items-center gap-3">
+                          <input type="radio" id="opt3" className="w-4 h-4 cursor-pointer" />
+                          <label htmlFor="opt3" className="text-sm cursor-pointer">C: 80 m/s</label>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <input type="radio" id="opt4" className="w-3 h-3" />
-                          <label htmlFor="opt4" className="text-xs">D: 40 m/s</label>
+                        <div className="flex items-center gap-3">
+                          <input type="radio" id="opt4" className="w-4 h-4 cursor-pointer" />
+                          <label htmlFor="opt4" className="text-sm cursor-pointer">D: 40 m/s</label>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Phone mockup */}
-                  <div className="w-40 h-56 bg-slate-800 rounded-3xl shadow-2xl border-8 border-slate-900 overflow-hidden relative">
-                    <div className="bg-gradient-to-b from-purple-600 to-purple-700 h-full p-3 flex flex-col justify-center items-center text-white text-xs">
-                      <div className="font-bold mb-2">Questões</div>
-                      <div className="text-center text-xs opacity-75">
-                        <div>Filtros avançados</div>
-                        <div>por prova</div>
+                  {/* Phone mockup - Foreground */}
+                  <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-20">
+                    {/* Phone body */}
+                    <div className="w-48 h-80 bg-slate-900 rounded-3xl shadow-2xl border-8 border-slate-900 overflow-hidden relative">
+                      {/* Notch */}
+                      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-8 bg-slate-950 rounded-b-3xl z-50"></div>
+
+                      {/* Screen content */}
+                      <div className="bg-gradient-to-b from-blue-600 via-purple-600 to-purple-700 h-full p-4 flex flex-col justify-between text-white">
+                        {/* Top bar */}
+                        <div className="flex justify-between items-center text-xs mt-3 px-2">
+                          <span className="font-bold text-sm">9:41</span>
+                          <div className="flex gap-1">
+                            <div className="w-1.5 h-2.5 bg-white rounded-sm"></div>
+                            <div className="w-1.5 h-2.5 bg-white rounded-sm"></div>
+                          </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
+                          <div className="text-3xl mb-3">📋</div>
+                          <div className="font-bold text-base mb-2">Questões</div>
+                          <div className="text-xs opacity-75 leading-tight">
+                            <div>Filtros</div>
+                            <div>avançados</div>
+                            <div>por prova</div>
+                          </div>
+                        </div>
+
+                        {/* Bottom indicator */}
+                        <div className="h-1 bg-white/30 rounded-full mb-3 mx-auto w-8"></div>
                       </div>
                     </div>
-                    {/* Notch */}
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-6 bg-slate-900 rounded-b-2xl"></div>
                   </div>
                 </div>
               </div>
