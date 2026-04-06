@@ -43,8 +43,33 @@ const trpcClient = trpc.createClient({
       url: "/api/trpc",
       transformer: superjson,
       async fetch(input, init) {
-        const accessToken =
-          localStorage.getItem("supabase_access_token") ?? "";
+        import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
+
+...
+
+async fetch(input, init) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const accessToken = session?.access_token ?? "";
+
+  const headers = new Headers(init?.headers ?? {});
+  if (accessToken) {
+    headers.set("Authorization", `Bearer ${accessToken}`);
+  }
+
+  return globalThis.fetch(input, {
+    ...(init ?? {}),
+    credentials: "include",
+    headers,
+  });
+}
 
         const headers = new Headers(init?.headers ?? {});
         if (accessToken) {
