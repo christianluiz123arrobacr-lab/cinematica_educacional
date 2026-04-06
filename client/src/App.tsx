@@ -6,6 +6,9 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Landing from "./pages/Landing";
 import Home from "./pages/Home";
+import LoginPage from "./pages/LoginPage";
+import AdminUsersPage from "./pages/AdminUsersPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 import DinamicaHome from "./pages/DinamicaHome";
 import Calculator from "./pages/Calculator";
 import Formulas from "./pages/Formulas";
@@ -113,6 +116,12 @@ function Router() {
       <Route path="/" component={LandingPage} />
       <Route path="/landing" component={Landing} />
       <Route path="/fisica" component={FisicaSelector} />
+      <Route path="/login" component={LoginPage} />
+
+       <Route path="/admin/usuarios"> <ProtectedRoute>
+    <AdminUsersPage />
+  </ProtectedRoute>
+</Route>
       <Route path="/fisica-i" component={FisicaIHome} />
       <Route path="/fisica-ii" component={FisicaIIHome} />
       <Route path="/fisica-iii" component={FisicaIIIHome} />
