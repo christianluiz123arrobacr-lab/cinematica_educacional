@@ -1,4 +1,4 @@
-import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
+import type { NodeHTTPCreateContextFnOptions } from "@trpc/server/adapters/node-http";
 import { supabaseAdmin } from "./supabaseAdmin";
 
 export type AuthUser = {
@@ -8,21 +8,22 @@ export type AuthUser = {
 };
 
 export type TrpcContext = {
-  req: CreateExpressContextOptions["req"];
-  res: CreateExpressContextOptions["res"];
+  req: NodeHTTPCreateContextFnOptions["req"];
+  res: NodeHTTPCreateContextFnOptions["res"];
   user: AuthUser | null;
 };
 
 export async function createContext(
-  opts: CreateExpressContextOptions
+  opts: NodeHTTPCreateContextFnOptions
 ): Promise<TrpcContext> {
   let user: AuthUser | null = null;
 
   try {
     const authHeader = opts.req.headers.authorization;
-    const token = authHeader?.startsWith("Bearer ")
-      ? authHeader.slice(7)
-      : null;
+    const token =
+      typeof authHeader === "string" && authHeader.startsWith("Bearer ")
+        ? authHeader.slice(7)
+        : null;
 
     if (token) {
       const { data, error } = await supabaseAdmin.auth.getUser(token);
@@ -30,11 +31,15 @@ export async function createContext(
       if (!error && data.user) {
         const email = data.user.email ?? null;
 
-        const { data: profile } = await supabaseAdmin
+        const { data: profile, error: profileError } = await supabaseAdmin
           .from("profiles")
           .select("role")
           .eq("id", data.user.id)
           .maybeSingle();
+
+        if (profileError) {
+          console.error("[createContext] erro ao buscar profile:", profileError);
+        }
 
         user = {
           id: data.user.id,
@@ -43,7 +48,8 @@ export async function createContext(
         };
       }
     }
-  } catch {
+  } catch (error) {
+    console.error("[createContext] erro ao autenticar usuário:", error);
     user = null;
   }
 
