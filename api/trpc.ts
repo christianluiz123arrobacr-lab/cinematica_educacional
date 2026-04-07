@@ -1,20 +1,12 @@
-import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
+import { createHTTPHandler } from "@trpc/server/adapters/node-http";
 import { appRouter } from "../server/routers";
 import { createContext } from "../server/_core/context";
 
-export const config = {
-  runtime: "edge",
-};
+const handler = createHTTPHandler({
+  router: appRouter,
+  createContext,
+});
 
-export default async function handler(req: Request) {
-  return fetchRequestHandler({
-    endpoint: "/api/trpc",
-    req,
-    router: appRouter,
-    createContext: () =>
-      createContext({
-        req: req as any,
-        res: {} as any,
-      }),
-  });
+export default function vercelTrpcHandler(req: any, res: any) {
+  return handler(req, res);
 }
