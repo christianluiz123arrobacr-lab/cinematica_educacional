@@ -1,18 +1,14 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import {
   Calculator,
   BookOpen,
   Beaker,
   ArrowRight,
-  CheckCircle2,
   BarChart3,
   BookMarked,
   Zap,
-  Lock,
   List,
-  Camera,
   LogIn,
 } from "lucide-react";
 
@@ -128,7 +124,6 @@ export default function LandingPage() {
       <section className="px-6 pb-16">
         <div className="max-w-6xl mx-auto">
           <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-purple-700 rounded-3xl p-12 text-white shadow-2xl overflow-hidden relative">
-            {/* Decorative circles */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -mr-48 -mt-48"></div>
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full -ml-48 -mb-48"></div>
 
@@ -180,12 +175,9 @@ export default function LandingPage() {
 
               {/* Right side - Visual */}
               <div className="hidden md:flex items-center justify-center relative h-80">
-                {/* Container para o efeito de profundidade */}
                 <div className="relative w-full h-full flex items-center justify-center">
-                  {/* Tablet/Desktop screen - Background */}
                   <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-80 h-56 bg-white rounded-3xl shadow-2xl border-8 border-white overflow-hidden z-10">
                     <div className="bg-slate-50 h-full p-6 text-sm text-slate-700 flex flex-col justify-between">
-                      {/* Header */}
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex gap-2">
                           <div className="w-2 h-2 bg-slate-300 rounded-full"></div>
@@ -196,14 +188,12 @@ export default function LandingPage() {
                         <div className="w-4 h-4 bg-slate-300 rounded"></div>
                       </div>
 
-                      {/* Question */}
                       <div className="mb-4">
                         <div className="font-bold text-slate-900 text-sm mb-3">
                           Um móvel percorre 120 m em 6 s com velocidade constante. Qual é sua velocidade?
                         </div>
                       </div>
 
-                      {/* Options */}
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">
                           <input type="radio" id="opt1" className="w-4 h-4 cursor-pointer" />
@@ -225,16 +215,11 @@ export default function LandingPage() {
                     </div>
                   </div>
 
-                  {/* Phone mockup - Foreground */}
                   <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-20">
-                    {/* Phone body */}
                     <div className="w-48 h-80 bg-slate-900 rounded-3xl shadow-2xl border-8 border-slate-900 overflow-hidden relative">
-                      {/* Notch */}
                       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-8 bg-slate-950 rounded-b-3xl z-50"></div>
 
-                      {/* Screen content */}
                       <div className="bg-gradient-to-b from-blue-600 via-purple-600 to-purple-700 h-full p-4 flex flex-col justify-between text-white">
-                        {/* Top bar */}
                         <div className="flex justify-between items-center text-xs mt-3 px-2">
                           <span className="font-bold text-sm">9:41</span>
                           <div className="flex gap-1">
@@ -243,7 +228,6 @@ export default function LandingPage() {
                           </div>
                         </div>
 
-                        {/* Content */}
                         <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
                           <div className="text-3xl mb-3">📋</div>
                           <div className="font-bold text-base mb-2">Questões</div>
@@ -254,5 +238,16 @@ export default function LandingPage() {
                           </div>
                         </div>
 
-                        {/* Bottom indicator */}
-                        <div className="h-1 bg-white/30 rounded-full mb-
+                        <div className="h-1 bg-white/30 rounded-full mb-3 mx-auto w-8"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
