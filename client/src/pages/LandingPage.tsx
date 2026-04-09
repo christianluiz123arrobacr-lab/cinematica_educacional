@@ -1,19 +1,44 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Calculator, BookOpen, Beaker, ArrowRight, CheckCircle2, BarChart3, BookMarked, Zap, Lock, List, Camera } from "lucide-react";
+import {
+  Calculator,
+  BookOpen,
+  Beaker,
+  ArrowRight,
+  CheckCircle2,
+  BarChart3,
+  BookMarked,
+  Zap,
+  Lock,
+  List,
+  Camera,
+  LogIn,
+} from "lucide-react";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white">
+      {/* Top Bar */}
+      <div className="w-full px-6 pt-6">
+        <div className="max-w-6xl mx-auto flex justify-end">
+          <Link href="/login">
+            <Button className="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-2 rounded-full flex items-center gap-2">
+              <LogIn className="w-4 h-4" />
+              Login
+            </Button>
+          </Link>
+        </div>
+      </div>
+
       {/* Hero Section */}
-      <section className="py-16 px-6 text-center">
+      <section className="py-10 px-6 text-center">
         <h1 className="text-5xl font-bold text-slate-900 mb-4">
           <span className="font-bold">Domine Exatas</span>
           <span className="text-slate-600 font-normal"> para vestibulares e </span>
           <span className="font-bold">concursos militares</span>
         </h1>
-        
+
         <p className="text-lg text-slate-600 mb-10 max-w-2xl mx-auto">
           Teoria, questões, simulados e resolução inteligente em um só lugar.
         </p>
@@ -47,7 +72,10 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="p-6">
-              <button disabled className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-full cursor-not-allowed flex items-center justify-center gap-2 transition-all">
+              <button
+                disabled
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-full cursor-not-allowed flex items-center justify-center gap-2 transition-all"
+              >
                 Explorar Matemática <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -85,7 +113,10 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="p-6">
-              <button disabled className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-full cursor-not-allowed flex items-center justify-center gap-2 transition-all">
+              <button
+                disabled
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-full cursor-not-allowed flex items-center justify-center gap-2 transition-all"
+              >
                 Explorar Química <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -151,7 +182,6 @@ export default function LandingPage() {
               <div className="hidden md:flex items-center justify-center relative h-80">
                 {/* Container para o efeito de profundidade */}
                 <div className="relative w-full h-full flex items-center justify-center">
-                  
                   {/* Tablet/Desktop screen - Background */}
                   <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-80 h-56 bg-white rounded-3xl shadow-2xl border-8 border-white overflow-hidden z-10">
                     <div className="bg-slate-50 h-full p-6 text-sm text-slate-700 flex flex-col justify-between">
@@ -168,7 +198,9 @@ export default function LandingPage() {
 
                       {/* Question */}
                       <div className="mb-4">
-                        <div className="font-bold text-slate-900 text-sm mb-3">Um móvel percorre 120 m em 6 s com velocidade constante. Qual é sua velocidade?</div>
+                        <div className="font-bold text-slate-900 text-sm mb-3">
+                          Um móvel percorre 120 m em 6 s com velocidade constante. Qual é sua velocidade?
+                        </div>
                       </div>
 
                       {/* Options */}
@@ -223,16 +255,4 @@ export default function LandingPage() {
                         </div>
 
                         {/* Bottom indicator */}
-                        <div className="h-1 bg-white/30 rounded-full mb-3 mx-auto w-8"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-}
+                        <div className="h-1 bg-white/30 rounded-full mb-
