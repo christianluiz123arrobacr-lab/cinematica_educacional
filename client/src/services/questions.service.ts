@@ -41,8 +41,7 @@ type QuestaoRow = {
   D?: string | null;
   E?: string | null;
   alternativa_correta: string;
-  intituição?: string | null;
-  instituicao?: string | null;
+  instituição?: string | null;
   fonte?: string | null;
   tag?: string | null;
   publicada?: boolean | null;
@@ -101,10 +100,6 @@ function mapQuestao(row: QuestaoRow): Question {
     "fisica"
   ).toLowerCase().trim() as QuestionSubject;
 
-  const institutionNormalizada =
-    normalizarTexto(row.instituicao) ??
-    normalizarTexto(row.intituição);
-
   return {
     id: row.id,
     codigo: row.codigo ?? undefined,
@@ -113,7 +108,7 @@ function mapQuestao(row: QuestaoRow): Question {
     subtopic: row.assunto?.toLowerCase().trim(),
     exam: normalizarTexto(row.banca) ?? "Sem banca",
     year: row.ano,
-    institution: institutionNormalizada,
+    institution: normalizarTexto(row.instituição),
     statement: row.enunciado ?? "Sem enunciado cadastrado.",
     statementAfterImage: row.enunciado_pos_imagem ?? undefined,
     formula: row.formula ?? undefined,
@@ -171,9 +166,7 @@ export async function getQuestions(
   }
 
   if (filters?.institution) {
-    query = query.or(
-      `instituicao.eq.${filters.institution},intituição.eq.${filters.institution}`
-    );
+    query = query.eq("instituição", filters.institution);
   }
 
   if (filters?.isPublished !== undefined) {
