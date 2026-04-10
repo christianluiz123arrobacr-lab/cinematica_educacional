@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Trophy, Target, Timer, TrendingUp, TrendingDown } from "lucide-react";
 import { Link } from "wouter";
 import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
@@ -68,6 +68,17 @@ function formatSeconds(seconds?: number | null) {
   return `${min}m ${sec}s`;
 }
 
+function ProgressBar({ value }: { value: number }) {
+  return (
+    <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+      <div
+        className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300"
+        style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
+      />
+    </div>
+  );
+}
+
 export default function Progress() {
   const { user, loading: authLoading } = useSupabaseAuth();
   const [attempts, setAttempts] = useState<AttemptRow[]>([]);
@@ -109,12 +120,22 @@ export default function Progress() {
   }, [user?.id, authLoading]);
 
   const totalAnswered = attempts.length;
+
   const totalCorrect = useMemo(
     () => attempts.filter((attempt) => attempt.is_correct).length,
     [attempts]
   );
+
   const totalWrong = totalAnswered - totalCorrect;
+
   const accuracy = totalAnswered > 0 ? (totalCorrect / totalAnswered) * 100 : 0;
+
+  const avgTimeSeconds = useMemo(() => {
+    const valid = attempts.filter((a) => typeof a.time_spent_seconds === "number");
+    if (!valid.length) return 0;
+    const total = valid.reduce((sum, a) => sum + (a.time_spent_seconds ?? 0), 0);
+    return total / valid.length;
+  }, [attempts]);
 
   const bySubject = useMemo(
     () => groupAttempts(attempts, (attempt) => attempt.subject),
@@ -131,7 +152,66 @@ export default function Progress() {
     [attempts]
   );
 
+  const byDifficulty = useMemo(
+    () => groupAttempts(attempts, (attempt) => attempt.difficulty),
+    [attempts]
+  );
+
   const recentAttempts = useMemo(() => attempts.slice(0, 12), [attempts]);
+
+  const bestSubject = useMemo(() => {
+    return bySubject
+      .filter((item) => item.total >= 2)
+      .sort((a, b) => b.accuracy - a.accuracy || b.total - a.total)[0];
+  }, [bySubject]);
+
+  const worstSubject = useMemo(() => {
+    return bySubject
+      .filter((item) => item.total >= 2)
+      .sort((a, b) => a.accuracy - b.accuracy || b.total - a.total)[0];
+  }, [bySubject]);
+
+  const mostWrongConteudo = useMemo(() => {
+    return [...byConteudo].sort((a, b) => b.wrong - a.wrong || b.total - a.total)[0];
+  }, [byConteudo]);
+
+  const bestAssunto = useMemo(() => {
+    return byAssunto
+      .filter((item) => item.total >= 2)
+      .sort((a, b) => b.accuracy - a.accuracy || b.total - a.total)[0];
+  }, [byAssunto]);
+
+  const recommendations = useMemo(() => {
+    const recs: string[] = [];
+
+    if (worstSubject) {
+      recs.push(
+        `Sua disciplina mais fraca no momento é ${worstSubject.label}, com ${worstSubject.accuracy.toFixed(
+          0
+        )}% de acerto.`
+      );
+    }
+
+    if (mostWrongConteudo && mostWrongConteudo.wrong > 0) {
+      recs.push(
+        `O conteúdo com mais erros até agora é ${mostWrongConteudo.label}. Vale revisar esse ponto primeiro.`
+      );
+    }
+
+    if (bestSubject) {
+      recs.push(
+        `Seu melhor desempenho está em ${bestSubject.label}. Isso é um ponto forte seu hoje.`
+      );
+    }
+
+    if (avgTimeSeconds > 0) {
+      recs.push(
+        `Seu tempo médio por questão está em ${formatSeconds(Math.round(avgTimeSeconds))}.`
+      );
+    }
+
+    return recs;
+  }, [worstSubject, mostWrongConteudo, bestSubject, avgTimeSeconds]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-50">
@@ -164,7 +244,7 @@ export default function Progress() {
           </Card>
         ) : (
           <>
-            <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-2 xl:grid-cols-5 gap-4">
               <Card className="p-6">
                 <p className="text-sm text-slate-500 mb-2">Respondidas</p>
                 <p className="text-3xl font-bold text-slate-900">{totalAnswered}</p>
@@ -186,29 +266,102 @@ export default function Progress() {
                   {accuracy.toFixed(1)}%
                 </p>
               </Card>
+
+              <Card className="p-6">
+                <p className="text-sm text-slate-500 mb-2">Tempo médio</p>
+                <p className="text-3xl font-bold text-purple-600">
+                  {formatSeconds(Math.round(avgTimeSeconds))}
+                </p>
+              </Card>
             </div>
 
-            <div className="grid xl:grid-cols-3 gap-6">
+            <div className="grid lg:grid-cols-2 xl:grid-cols-4 gap-4">
+              <Card className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Trophy className="w-5 h-5 text-yellow-500" />
+                  <h2 className="font-bold text-slate-900">Melhor disciplina</h2>
+                </div>
+                {bestSubject ? (
+                  <>
+                    <p className="text-lg font-bold text-slate-900">{bestSubject.label}</p>
+                    <p className="text-sm text-slate-500">
+                      {bestSubject.accuracy.toFixed(0)}% de acerto
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-slate-500">Dados insuficientes.</p>
+                )}
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <TrendingDown className="w-5 h-5 text-red-500" />
+                  <h2 className="font-bold text-slate-900">Disciplina mais fraca</h2>
+                </div>
+                {worstSubject ? (
+                  <>
+                    <p className="text-lg font-bold text-slate-900">{worstSubject.label}</p>
+                    <p className="text-sm text-slate-500">
+                      {worstSubject.accuracy.toFixed(0)}% de acerto
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-slate-500">Dados insuficientes.</p>
+                )}
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Target className="w-5 h-5 text-orange-500" />
+                  <h2 className="font-bold text-slate-900">Conteúdo mais crítico</h2>
+                </div>
+                {mostWrongConteudo ? (
+                  <>
+                    <p className="text-lg font-bold text-slate-900">{mostWrongConteudo.label}</p>
+                    <p className="text-sm text-slate-500">
+                      {mostWrongConteudo.wrong} erros acumulados
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-slate-500">Dados insuficientes.</p>
+                )}
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <TrendingUp className="w-5 h-5 text-green-500" />
+                  <h2 className="font-bold text-slate-900">Assunto destaque</h2>
+                </div>
+                {bestAssunto ? (
+                  <>
+                    <p className="text-lg font-bold text-slate-900">{bestAssunto.label}</p>
+                    <p className="text-sm text-slate-500">
+                      {bestAssunto.accuracy.toFixed(0)}% de acerto
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-slate-500">Dados insuficientes.</p>
+                )}
+              </Card>
+            </div>
+
+            <div className="grid xl:grid-cols-2 gap-6">
               <Card className="p-6">
                 <h2 className="text-xl font-bold text-slate-900 mb-4">
                   Desempenho por disciplina
                 </h2>
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {bySubject.length > 0 ? (
                     bySubject.map((item) => (
-                      <div
-                        key={item.label}
-                        className="rounded-xl border border-slate-200 p-4 bg-white"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-semibold text-slate-800">
-                            {item.label}
-                          </span>
+                      <div key={item.label} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-slate-800">{item.label}</span>
                           <span className="text-sm font-bold text-slate-600">
                             {item.accuracy.toFixed(0)}%
                           </span>
                         </div>
+                        <ProgressBar value={item.accuracy} />
                         <div className="text-sm text-slate-500">
                           {item.correct} acertos • {item.wrong} erros • {item.total} tentativas
                         </div>
@@ -220,6 +373,37 @@ export default function Progress() {
                 </div>
               </Card>
 
+              <Card className="p-6">
+                <h2 className="text-xl font-bold text-slate-900 mb-4">
+                  Desempenho por dificuldade
+                </h2>
+
+                <div className="space-y-4">
+                  {byDifficulty.length > 0 ? (
+                    byDifficulty.map((item) => (
+                      <div key={item.label} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-slate-800 capitalize">
+                            {item.label}
+                          </span>
+                          <span className="text-sm font-bold text-slate-600">
+                            {item.accuracy.toFixed(0)}%
+                          </span>
+                        </div>
+                        <ProgressBar value={item.accuracy} />
+                        <div className="text-sm text-slate-500">
+                          {item.correct} acertos • {item.wrong} erros • {item.total} tentativas
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-slate-500">Ainda não há dados por dificuldade.</p>
+                  )}
+                </div>
+              </Card>
+            </div>
+
+            <div className="grid xl:grid-cols-2 gap-6">
               <Card className="p-6">
                 <h2 className="text-xl font-bold text-slate-900 mb-4">
                   Top conteúdos
@@ -240,7 +424,8 @@ export default function Progress() {
                             {item.accuracy.toFixed(0)}%
                           </span>
                         </div>
-                        <div className="text-sm text-slate-500">
+                        <ProgressBar value={item.accuracy} />
+                        <div className="text-sm text-slate-500 mt-2">
                           {item.correct} acertos • {item.wrong} erros • {item.total} tentativas
                         </div>
                       </div>
@@ -271,7 +456,8 @@ export default function Progress() {
                             {item.accuracy.toFixed(0)}%
                           </span>
                         </div>
-                        <div className="text-sm text-slate-500">
+                        <ProgressBar value={item.accuracy} />
+                        <div className="text-sm text-slate-500 mt-2">
                           {item.correct} acertos • {item.wrong} erros • {item.total} tentativas
                         </div>
                       </div>
@@ -282,6 +468,30 @@ export default function Progress() {
                 </div>
               </Card>
             </div>
+
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Timer className="w-5 h-5 text-indigo-500" />
+                <h2 className="text-xl font-bold text-slate-900">Leitura estratégica</h2>
+              </div>
+
+              {recommendations.length > 0 ? (
+                <div className="space-y-3">
+                  {recommendations.map((rec, index) => (
+                    <div
+                      key={index}
+                      className="rounded-xl bg-indigo-50 border border-indigo-200 p-4 text-slate-700"
+                    >
+                      {rec}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-slate-500">
+                  Responda mais questões para receber recomendações mais úteis.
+                </p>
+              )}
+            </Card>
 
             <Card className="p-6">
               <h2 className="text-xl font-bold text-slate-900 mb-4">
@@ -307,7 +517,7 @@ export default function Progress() {
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-4 text-sm flex-wrap">
                         <span
                           className={`font-bold ${
                             attempt.is_correct ? "text-green-600" : "text-red-600"
@@ -326,14 +536,4 @@ export default function Progress() {
                   ))}
                 </div>
               ) : (
-                <p className="text-slate-500">
-                  Você ainda não respondeu nenhuma questão.
-                </p>
-              )}
-            </Card>
-          </>
-        )}
-      </section>
-    </div>
-  );
-}
+         
