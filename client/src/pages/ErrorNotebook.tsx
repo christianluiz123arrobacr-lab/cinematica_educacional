@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, AlertTriangle, RotateCcw } from "lucide-react";
+import { ArrowLeft, AlertTriangle, RotateCcw, CheckCircle2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
@@ -23,6 +23,14 @@ type AttemptRow = {
   difficulty: string | null;
 };
 
+type ReviewStatusRow = {
+  id: string;
+  user_id: string;
+  question_id: string;
+  reviewed: boolean;
+  reviewed_at: string | null;
+};
+
 type ErrorNotebookItem = {
   question_id: string;
   subject: string | null;
@@ -35,6 +43,8 @@ type ErrorNotebookItem = {
   last_time_spent_seconds: number | null;
   total_errors: number;
   max_attempt_number: number;
+  reviewed: boolean;
+  reviewed_at: string | null;
 };
 
 function formatSeconds(seconds?: number | null) {
@@ -45,13 +55,18 @@ function formatSeconds(seconds?: number | null) {
   return `${min}m ${sec}s`;
 }
 
-function buildNotebookItems(attempts: AttemptRow[]): ErrorNotebookItem[] {
+function buildNotebookItems(
+  attempts: AttemptRow[],
+  reviewStatusMap: Map<string, ReviewStatusRow>
+): ErrorNotebookItem[] {
   const map = new Map<string, ErrorNotebookItem>();
 
   for (const attempt of attempts) {
     const existing = map.get(attempt.question_id);
 
     if (!existing) {
+      const review = reviewStatusMap.get(attempt.question_id);
+
       map.set(attempt.question_id, {
         question_id: attempt.question_id,
         subject: attempt.subject,
@@ -64,6 +79,8 @@ function buildNotebookItems(attempts: AttemptRow[]): ErrorNotebookItem[] {
         last_time_spent_seconds: attempt.time_spent_seconds,
         total_errors: 1,
         max_attempt_number: attempt.attempt_number ?? 1,
+        reviewed: review?.reviewed ?? false,
+        reviewed_at: review?.reviewed_at ?? null,
       });
       continue;
     }
@@ -93,8 +110,10 @@ export default function ErrorNotebook() {
   const { user, loading: authLoading } = useSupabaseAuth();
 
   const [attempts, setAttempts] = useState<AttemptRow[]>([]);
+  const [reviewStatuses, setReviewStatuses] = useState<ReviewStatusRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [savingQuestionId, setSavingQuestionId] = useState<string | null>(null);
 
   const [subjectFilter, setSubjectFilter] = useState("todas");
   const [conteudoFilter, setConteudoFilter] = useState("todos");
@@ -102,11 +121,13 @@ export default function ErrorNotebook() {
   const [bancaFilter, setBancaFilter] = useState("todas");
   const [difficultyFilter, setDifficultyFilter] = useState("todas");
   const [sortBy, setSortBy] = useState("recentes");
+  const [reviewFilter, setReviewFilter] = useState("todas");
 
   useEffect(() => {
-    async function loadWrongAttempts() {
+    async function loadData() {
       if (!user?.id) {
         setAttempts([]);
+        setReviewStatuses([]);
         setLoading(false);
         return;
       }
@@ -114,31 +135,59 @@ export default function ErrorNotebook() {
       setLoading(true);
       setError("");
 
-      const { data, error } = await supabase
-        .from("user_question_attempts")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("is_correct", false)
-        .order("answered_at", { ascending: false });
+      const [attemptsRes, reviewRes] = await Promise.all([
+        supabase
+          .from("user_question_attempts")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("is_correct", false)
+          .order("answered_at", { ascending: false }),
 
-      if (error) {
-        console.error("Erro ao buscar caderno de erros:", error);
+        supabase
+          .from("user_error_review_status")
+          .select("*")
+          .eq("user_id", user.id),
+      ]);
+
+      if (attemptsRes.error) {
+        console.error("Erro ao buscar caderno de erros:", attemptsRes.error);
         setError("Não foi possível carregar o caderno de erros.");
         setAttempts([]);
+        setReviewStatuses([]);
         setLoading(false);
         return;
       }
 
-      setAttempts((data as AttemptRow[]) ?? []);
+      if (reviewRes.error) {
+        console.error("Erro ao buscar status de revisão:", reviewRes.error);
+        setError("Não foi possível carregar o status de revisão.");
+        setAttempts([]);
+        setReviewStatuses([]);
+        setLoading(false);
+        return;
+      }
+
+      setAttempts((attemptsRes.data as AttemptRow[]) ?? []);
+      setReviewStatuses((reviewRes.data as ReviewStatusRow[]) ?? []);
       setLoading(false);
     }
 
     if (!authLoading) {
-      loadWrongAttempts();
+      loadData();
     }
   }, [user?.id, authLoading]);
 
-  const notebookItems = useMemo(() => buildNotebookItems(attempts), [attempts]);
+  const reviewStatusMap = useMemo(() => {
+    const map = new Map<string, ReviewStatusRow>();
+    for (const row of reviewStatuses) {
+      map.set(row.question_id, row);
+    }
+    return map;
+  }, [reviewStatuses]);
+
+  const notebookItems = useMemo(() => {
+    return buildNotebookItems(attempts, reviewStatusMap);
+  }, [attempts, reviewStatusMap]);
 
   const availableSubjects = useMemo(() => {
     return Array.from(
@@ -227,6 +276,12 @@ export default function ErrorNotebook() {
       );
     }
 
+    if (reviewFilter === "pendentes") {
+      result = result.filter((item) => !item.reviewed);
+    } else if (reviewFilter === "revisadas") {
+      result = result.filter((item) => item.reviewed);
+    }
+
     if (sortBy === "recentes") {
       result.sort(
         (a, b) =>
@@ -246,7 +301,7 @@ export default function ErrorNotebook() {
     }
 
     return result;
-  }, [filteredByBanca, difficultyFilter, sortBy]);
+  }, [filteredByBanca, difficultyFilter, sortBy, reviewFilter]);
 
   const recurringErrors = useMemo(() => {
     return filteredItems
@@ -272,22 +327,64 @@ export default function ErrorNotebook() {
     setAssuntoFilter("todos");
     setBancaFilter("todas");
     setDifficultyFilter("todas");
+    setReviewFilter("todas");
   }, [subjectFilter]);
 
   useEffect(() => {
     setAssuntoFilter("todos");
     setBancaFilter("todas");
     setDifficultyFilter("todas");
+    setReviewFilter("todas");
   }, [conteudoFilter]);
 
   useEffect(() => {
     setBancaFilter("todas");
     setDifficultyFilter("todas");
+    setReviewFilter("todas");
   }, [assuntoFilter]);
 
   useEffect(() => {
     setDifficultyFilter("todas");
+    setReviewFilter("todas");
   }, [bancaFilter]);
+
+  async function updateReviewStatus(questionId: string, reviewed: boolean) {
+    if (!user?.id) return;
+
+    try {
+      setSavingQuestionId(questionId);
+
+      const payload = {
+        user_id: user.id,
+        question_id: questionId,
+        reviewed,
+        reviewed_at: reviewed ? new Date().toISOString() : null,
+        updated_at: new Date().toISOString(),
+      };
+
+      const { data, error } = await supabase
+        .from("user_error_review_status")
+        .upsert(payload, { onConflict: "user_id,question_id" })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Erro ao atualizar status de revisão:", error);
+        return;
+      }
+
+      if (data) {
+        setReviewStatuses((prev) => {
+          const filtered = prev.filter((item) => item.question_id !== questionId);
+          return [...filtered, data as ReviewStatusRow];
+        });
+      }
+    } catch (err) {
+      console.error("Erro inesperado ao atualizar revisão:", err);
+    } finally {
+      setSavingQuestionId(null);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-red-50 to-slate-50">
@@ -326,7 +423,7 @@ export default function ErrorNotebook() {
                 <h2 className="text-xl font-bold text-slate-900">Filtros</h2>
               </div>
 
-              <div className="grid md:grid-cols-2 xl:grid-cols-6 gap-4">
+              <div className="grid md:grid-cols-2 xl:grid-cols-7 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Disciplina
@@ -419,6 +516,21 @@ export default function ErrorNotebook() {
 
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Revisão
+                  </label>
+                  <select
+                    value={reviewFilter}
+                    onChange={(e) => setReviewFilter(e.target.value)}
+                    className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
+                  >
+                    <option value="todas">Todas</option>
+                    <option value="pendentes">Pendentes</option>
+                    <option value="revisadas">Revisadas</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Ordenar por
                   </label>
                   <select
@@ -434,7 +546,7 @@ export default function ErrorNotebook() {
               </div>
             </Card>
 
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-4 gap-4">
               <Card className="p-6">
                 <p className="text-sm text-slate-500 mb-2">Questões no caderno</p>
                 <p className="text-3xl font-bold text-slate-900">{filteredItems.length}</p>
@@ -443,6 +555,13 @@ export default function ErrorNotebook() {
               <Card className="p-6">
                 <p className="text-sm text-slate-500 mb-2">Erros recorrentes</p>
                 <p className="text-3xl font-bold text-red-600">{recurringErrors.length}</p>
+              </Card>
+
+              <Card className="p-6">
+                <p className="text-sm text-slate-500 mb-2">Questões revisadas</p>
+                <p className="text-3xl font-bold text-green-600">
+                  {filteredItems.filter((item) => item.reviewed).length}
+                </p>
               </Card>
 
               <Card className="p-6">
@@ -464,7 +583,11 @@ export default function ErrorNotebook() {
                   {recurringErrors.map((item) => (
                     <div
                       key={item.question_id}
-                      className="rounded-2xl border border-red-200 bg-red-50 p-5"
+                      className={`rounded-2xl p-5 border ${
+                        item.reviewed
+                          ? "border-green-200 bg-green-50"
+                          : "border-red-200 bg-red-50"
+                      }`}
                     >
                       <div className="flex items-start justify-between gap-4 flex-wrap">
                         <div className="space-y-2">
@@ -491,14 +614,39 @@ export default function ErrorNotebook() {
                           <p className="text-sm text-slate-500">
                             Tempo gasto: {formatSeconds(item.last_time_spent_seconds)}
                           </p>
+
+                          <p className={`text-sm font-semibold ${item.reviewed ? "text-green-700" : "text-yellow-700"}`}>
+                            {item.reviewed
+                              ? `Revisada em ${item.reviewed_at ? new Date(item.reviewed_at).toLocaleString("pt-BR") : "-"}`
+                              : "Revisão pendente"}
+                          </p>
                         </div>
 
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap">
                           <Link href="/banco-de-questoes">
                             <Button className="bg-slate-900 hover:bg-slate-800 text-white">
                               Revisar no banco
                             </Button>
                           </Link>
+
+                          {item.reviewed ? (
+                            <Button
+                              variant="outline"
+                              onClick={() => updateReviewStatus(item.question_id, false)}
+                              disabled={savingQuestionId === item.question_id}
+                            >
+                              Marcar pendente
+                            </Button>
+                          ) : (
+                            <Button
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                              onClick={() => updateReviewStatus(item.question_id, true)}
+                              disabled={savingQuestionId === item.question_id}
+                            >
+                              <CheckCircle2 className="w-4 h-4 mr-2" />
+                              Marcar revisada
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -526,7 +674,11 @@ export default function ErrorNotebook() {
                   {filteredItems.map((item) => (
                     <div
                       key={item.question_id}
-                      className="rounded-2xl border border-red-200 bg-red-50 p-5"
+                      className={`rounded-2xl p-5 border ${
+                        item.reviewed
+                          ? "border-green-200 bg-green-50"
+                          : "border-red-200 bg-red-50"
+                      }`}
                     >
                       <div className="flex items-start justify-between gap-4 flex-wrap">
                         <div className="space-y-2">
@@ -553,14 +705,40 @@ export default function ErrorNotebook() {
                           <p className="text-sm text-slate-500">
                             Tempo gasto: {formatSeconds(item.last_time_spent_seconds)}
                           </p>
+
+                          <p className={`text-sm font-semibold ${item.reviewed ? "text-green-700" : "text-yellow-700"}`}>
+                            {item.reviewed
+                              ? `Revisada em ${item.reviewed_at ? new Date(item.reviewed_at).toLocaleString("pt-BR") : "-"}`
+                              : "Revisão pendente"}
+                          </p>
                         </div>
 
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap">
                           <Link href="/banco-de-questoes">
                             <Button className="bg-slate-900 hover:bg-slate-800 text-white">
                               Revisar no banco
                             </Button>
                           </Link>
+
+                          {item.reviewed ? (
+                            <Button
+                              variant="outline"
+                              onClick={() => updateReviewStatus(item.question_id, false)}
+                              disabled={savingQuestionId === item.question_id}
+                            >
+                              <Eye className="w-4 h-4 mr-2" />
+                              Marcar pendente
+                            </Button>
+                          ) : (
+                            <Button
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                              onClick={() => updateReviewStatus(item.question_id, true)}
+                              disabled={savingQuestionId === item.question_id}
+                            >
+                              <CheckCircle2 className="w-4 h-4 mr-2" />
+                              Marcar revisada
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -601,6 +779,10 @@ export default function ErrorNotebook() {
 
                           <p className="text-sm text-red-600 font-semibold">
                             Último erro em: {new Date(item.last_error_at).toLocaleString("pt-BR")}
+                          </p>
+
+                          <p className={`text-sm font-semibold ${item.reviewed ? "text-green-700" : "text-yellow-700"}`}>
+                            {item.reviewed ? "Revisada" : "Pendente"}
                           </p>
                         </div>
 
