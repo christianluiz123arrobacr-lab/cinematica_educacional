@@ -877,9 +877,17 @@ export default function Progress() {
 
             <div className="grid xl:grid-cols-2 gap-6">
               <Card className="p-6">
-                <h2 className="text-xl font-bold text-slate-900 mb-4">
-                  Últimas erradas
-                </h2>
+                <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
+                  <h2 className="text-xl font-bold text-slate-900">
+                    Últimas erradas
+                  </h2>
+
+                  <Link href="/caderno-de-erros">
+                    <Button className="bg-slate-900 hover:bg-slate-800 text-white">
+                      Abrir caderno de erros
+                    </Button>
+                  </Link>
+                </div>
 
                 {wrongAttempts.length > 0 ? (
                   <div className="space-y-3">
