@@ -24,6 +24,7 @@ import CinematicaSimulator from "./pages/CinematicaSimulator";
 import CinematicaGraphs from "./pages/CinematicaGraphs";
 import CinematicaQuiz from "./pages/CinematicaQuiz";
 import CinematicaTopicBases from "./pages/CinematicaTopicBases";
+import ErrorNotebook from "./pages/ErrorNotebook";
 
 import QuestionBank from "./pages/QuestionBank";
 import LandingPage from "./pages/LandingPage";
@@ -135,6 +136,7 @@ function Router() {
       <Route path="/cinematica/quiz-new" component={CinematicaQuiz} />
       <Route path="/cinematica/simulator" component={CinematicaSimulator} />
       <Route path="/cinematica/topic/bases" component={CinematicaTopicBases} />
+      <Route path="/caderno-de-erros" component={ErrorNotebook} />
       
       <Route path="/banco-questoes" component={QuestionBank} />
       <Route path="/banco-de-questoes" component={QuestionBankPage} />
