@@ -6,15 +6,20 @@ import "katex/dist/katex.min.css";
 import { MathFormula } from "./MathFormula";
 import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import type { Question } from "@/types/question";
+import { supabase } from "@/lib/supabase";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 
 type InteractiveQuizProps = {
   questions: Question[];
 };
 
 export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
+  const { user } = useSupabaseAuth();
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answersByQuestion, setAnswersByQuestion] = useState<Record<number, string>>({});
   const [showExplanationByQuestion, setShowExplanationByQuestion] = useState<Record<number, boolean>>({});
+  const [questionStartedAt, setQuestionStartedAt] = useState<number>(Date.now());
 
   useEffect(() => {
     if (!questions.length) {
@@ -26,6 +31,10 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
       setCurrentQuestion(questions.length - 1);
     }
   }, [questions, currentQuestion]);
+
+  useEffect(() => {
+    setQuestionStartedAt(Date.now());
+  }, [currentQuestion, questions]);
 
   if (!questions.length) {
     return (
@@ -64,7 +73,55 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
 
   const isQuizComplete = questions.length > 0 && totalAnswered === questions.length;
 
-  const handleAnswer = (optionId: string) => {
+  const saveAttempt = async (optionId: string) => {
+    if (!user?.id) return;
+
+    try {
+      const elapsedSeconds = Math.max(
+        1,
+        Math.round((Date.now() - questionStartedAt) / 1000)
+      );
+
+      const { count, error: countError } = await supabase
+        .from("user_question_attempts")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("question_id", question.id);
+
+      if (countError) {
+        console.error("Erro ao contar tentativas:", countError);
+        return;
+      }
+
+      const attemptNumber = (count ?? 0) + 1;
+      const correct = optionId === question.correctOptionId;
+
+      const { error: insertError } = await supabase
+        .from("user_question_attempts")
+        .insert({
+          user_id: user.id,
+          question_id: question.id,
+          selected_option: optionId,
+          is_correct: correct,
+          time_spent_seconds: elapsedSeconds,
+          attempt_number: attemptNumber,
+          subject: question.subject,
+          conteudo: question.topic,
+          assunto: question.subtopic ?? null,
+          banca: question.exam,
+          ano: question.year,
+          difficulty: question.difficulty,
+        });
+
+      if (insertError) {
+        console.error("Erro ao salvar tentativa:", insertError);
+      }
+    } catch (error) {
+      console.error("Erro inesperado ao salvar tentativa:", error);
+    }
+  };
+
+  const handleAnswer = async (optionId: string) => {
     if (answered) return;
 
     setAnswersByQuestion((prev) => ({
@@ -76,6 +133,8 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
       ...prev,
       [currentQuestion]: true,
     }));
+
+    await saveAttempt(optionId);
   };
 
   const handleNext = () => {
@@ -94,6 +153,7 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
     setCurrentQuestion(0);
     setAnswersByQuestion({});
     setShowExplanationByQuestion({});
+    setQuestionStartedAt(Date.now());
   };
 
   const difficultyClass =
@@ -135,20 +195,21 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
       </div>
 
       <div className="mb-8">
-  <div className="flex justify-between items-start mb-2">
-    <span className="text-sm font-bold text-slate-900">Progresso</span>
+        <div className="flex justify-between items-start mb-2">
+          <span className="text-sm font-bold text-slate-900">Progresso</span>
 
-    <div className="flex flex-col items-end">
-      {question.codigo && (
-        <span className="text-xs font-bold text-slate-500 mb-1">
-          {question.codigo}
-        </span>
-      )}
-      <span className="text-sm font-bold text-slate-600">
-        {currentQuestion + 1} de {questions.length}
-      </span>
-    </div>
-  </div>
+          <div className="flex flex-col items-end">
+            {question.codigo && (
+              <span className="text-xs font-bold text-slate-500 mb-1">
+                {question.codigo}
+              </span>
+            )}
+            <span className="text-sm font-bold text-slate-600">
+              {currentQuestion + 1} de {questions.length}
+            </span>
+          </div>
+        </div>
+
         <div className="w-full bg-slate-200 rounded-full h-2">
           <div
             className="bg-gradient-to-r from-blue-500 to-blue-700 h-2 rounded-full transition-all duration-300"
