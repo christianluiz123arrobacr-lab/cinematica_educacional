@@ -1,7 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Trophy, Target, Timer, TrendingUp, TrendingDown } from "lucide-react";
+import {
+  ArrowLeft,
+  Trophy,
+  Target,
+  Timer,
+  TrendingUp,
+  TrendingDown,
+  Filter,
+} from "lucide-react";
 import { Link } from "wouter";
 import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
@@ -25,6 +33,14 @@ type AttemptRow = {
 
 type GroupedStat = {
   label: string;
+  total: number;
+  correct: number;
+  wrong: number;
+  accuracy: number;
+};
+
+type DailyStat = {
+  date: string;
   total: number;
   correct: number;
   wrong: number;
@@ -79,11 +95,69 @@ function ProgressBar({ value }: { value: number }) {
   );
 }
 
+function getCutoffDate(period: string): Date | null {
+  const now = new Date();
+
+  if (period === "7d") {
+    const d = new Date(now);
+    d.setDate(d.getDate() - 7);
+    return d;
+  }
+
+  if (period === "30d") {
+    const d = new Date(now);
+    d.setDate(d.getDate() - 30);
+    return d;
+  }
+
+  if (period === "90d") {
+    const d = new Date(now);
+    d.setDate(d.getDate() - 90);
+    return d;
+  }
+
+  return null;
+}
+
+function buildDailyStats(attempts: AttemptRow[]): DailyStat[] {
+  const map = new Map<string, { total: number; correct: number; wrong: number }>();
+
+  for (const attempt of attempts) {
+    const date = new Date(attempt.answered_at).toLocaleDateString("pt-BR");
+
+    const current = map.get(date) ?? { total: 0, correct: 0, wrong: 0 };
+    current.total += 1;
+    if (attempt.is_correct) current.correct += 1;
+    else current.wrong += 1;
+
+    map.set(date, current);
+  }
+
+  return Array.from(map.entries())
+    .map(([date, value]) => ({
+      date,
+      total: value.total,
+      correct: value.correct,
+      wrong: value.wrong,
+      accuracy: value.total > 0 ? (value.correct / value.total) * 100 : 0,
+    }))
+    .sort((a, b) => {
+      const [da, ma, ya] = a.date.split("/");
+      const [db, mb, yb] = b.date.split("/");
+      const aTime = new Date(`${ya}-${ma}-${da}`).getTime();
+      const bTime = new Date(`${yb}-${mb}-${db}`).getTime();
+      return aTime - bTime;
+    });
+}
+
 export default function Progress() {
   const { user, loading: authLoading } = useSupabaseAuth();
   const [attempts, setAttempts] = useState<AttemptRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [subjectFilter, setSubjectFilter] = useState("todas");
+  const [periodFilter, setPeriodFilter] = useState("all");
 
   useEffect(() => {
     async function loadAttempts() {
@@ -119,44 +193,75 @@ export default function Progress() {
     }
   }, [user?.id, authLoading]);
 
-  const totalAnswered = attempts.length;
+  const availableSubjects = useMemo(() => {
+    return Array.from(
+      new Set(
+        attempts
+          .map((attempt) => attempt.subject?.trim())
+          .filter((value): value is string => !!value)
+      )
+    ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [attempts]);
+
+  const filteredAttempts = useMemo(() => {
+    let result = [...attempts];
+
+    if (subjectFilter !== "todas") {
+      result = result.filter((attempt) => (attempt.subject?.trim() || "") === subjectFilter);
+    }
+
+    const cutoff = getCutoffDate(periodFilter);
+    if (cutoff) {
+      result = result.filter((attempt) => new Date(attempt.answered_at) >= cutoff);
+    }
+
+    return result;
+  }, [attempts, subjectFilter, periodFilter]);
+
+  const totalAnswered = filteredAttempts.length;
 
   const totalCorrect = useMemo(
-    () => attempts.filter((attempt) => attempt.is_correct).length,
-    [attempts]
+    () => filteredAttempts.filter((attempt) => attempt.is_correct).length,
+    [filteredAttempts]
   );
 
   const totalWrong = totalAnswered - totalCorrect;
   const accuracy = totalAnswered > 0 ? (totalCorrect / totalAnswered) * 100 : 0;
 
   const avgTimeSeconds = useMemo(() => {
-    const valid = attempts.filter((a) => typeof a.time_spent_seconds === "number");
+    const valid = filteredAttempts.filter((a) => typeof a.time_spent_seconds === "number");
     if (!valid.length) return 0;
     const total = valid.reduce((sum, a) => sum + (a.time_spent_seconds ?? 0), 0);
     return total / valid.length;
-  }, [attempts]);
+  }, [filteredAttempts]);
 
   const bySubject = useMemo(
-    () => groupAttempts(attempts, (attempt) => attempt.subject),
-    [attempts]
+    () => groupAttempts(filteredAttempts, (attempt) => attempt.subject),
+    [filteredAttempts]
   );
 
   const byConteudo = useMemo(
-    () => groupAttempts(attempts, (attempt) => attempt.conteudo),
-    [attempts]
+    () => groupAttempts(filteredAttempts, (attempt) => attempt.conteudo),
+    [filteredAttempts]
   );
 
   const byAssunto = useMemo(
-    () => groupAttempts(attempts, (attempt) => attempt.assunto),
-    [attempts]
+    () => groupAttempts(filteredAttempts, (attempt) => attempt.assunto),
+    [filteredAttempts]
   );
 
   const byDifficulty = useMemo(
-    () => groupAttempts(attempts, (attempt) => attempt.difficulty),
-    [attempts]
+    () => groupAttempts(filteredAttempts, (attempt) => attempt.difficulty),
+    [filteredAttempts]
   );
 
-  const recentAttempts = useMemo(() => attempts.slice(0, 12), [attempts]);
+  const recentAttempts = useMemo(() => filteredAttempts.slice(0, 12), [filteredAttempts]);
+
+  const dailyStats = useMemo(() => buildDailyStats(filteredAttempts), [filteredAttempts]);
+
+  const maxDailyTotal = useMemo(() => {
+    return dailyStats.length ? Math.max(...dailyStats.map((item) => item.total)) : 1;
+  }, [dailyStats]);
 
   const bestSubject = useMemo(() => {
     return bySubject
@@ -185,7 +290,7 @@ export default function Progress() {
 
     if (worstSubject) {
       recs.push(
-        `Sua disciplina mais fraca no momento é ${worstSubject.label}, com ${worstSubject.accuracy.toFixed(
+        `Sua disciplina mais fraca no período filtrado é ${worstSubject.label}, com ${worstSubject.accuracy.toFixed(
           0
         )}% de acerto.`
       );
@@ -193,13 +298,13 @@ export default function Progress() {
 
     if (mostWrongConteudo && mostWrongConteudo.wrong > 0) {
       recs.push(
-        `O conteúdo com mais erros até agora é ${mostWrongConteudo.label}. Vale revisar esse ponto primeiro.`
+        `O conteúdo com mais erros neste recorte é ${mostWrongConteudo.label}. Vale revisar esse ponto primeiro.`
       );
     }
 
     if (bestSubject) {
       recs.push(
-        `Seu melhor desempenho está em ${bestSubject.label}. Isso é um ponto forte seu hoje.`
+        `Seu melhor desempenho no recorte atual está em ${bestSubject.label}.`
       );
     }
 
@@ -209,8 +314,12 @@ export default function Progress() {
       );
     }
 
+    if (!recs.length && filteredAttempts.length === 0) {
+      recs.push("Ainda não há dados suficientes nesse filtro.");
+    }
+
     return recs;
-  }, [worstSubject, mostWrongConteudo, bestSubject, avgTimeSeconds]);
+  }, [worstSubject, mostWrongConteudo, bestSubject, avgTimeSeconds, filteredAttempts.length]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-50">
@@ -243,6 +352,49 @@ export default function Progress() {
           </Card>
         ) : (
           <>
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Filter className="w-5 h-5 text-slate-600" />
+                <h2 className="text-xl font-bold text-slate-900">Filtros de análise</h2>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Disciplina
+                  </label>
+                  <select
+                    value={subjectFilter}
+                    onChange={(e) => setSubjectFilter(e.target.value)}
+                    className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
+                  >
+                    <option value="todas">Todas</option>
+                    {availableSubjects.map((subject) => (
+                      <option key={subject} value={subject}>
+                        {subject}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Período
+                  </label>
+                  <select
+                    value={periodFilter}
+                    onChange={(e) => setPeriodFilter(e.target.value)}
+                    className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
+                  >
+                    <option value="all">Todo o período</option>
+                    <option value="7d">Últimos 7 dias</option>
+                    <option value="30d">Últimos 30 dias</option>
+                    <option value="90d">Últimos 90 dias</option>
+                  </select>
+                </div>
+              </div>
+            </Card>
+
             <div className="grid md:grid-cols-2 xl:grid-cols-5 gap-4">
               <Card className="p-6">
                 <p className="text-sm text-slate-500 mb-2">Respondidas</p>
@@ -273,6 +425,46 @@ export default function Progress() {
                 </p>
               </Card>
             </div>
+
+            <Card className="p-6">
+              <h2 className="text-xl font-bold text-slate-900 mb-4">
+                Evolução por dia
+              </h2>
+
+              {dailyStats.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <div className="flex items-end gap-3 min-w-max h-64 px-2">
+                    {dailyStats.map((item) => {
+                      const barHeight = Math.max(16, (item.total / maxDailyTotal) * 180);
+
+                      return (
+                        <div key={item.date} className="flex flex-col items-center gap-2 w-16">
+                          <div className="text-xs text-slate-500 font-medium">
+                            {item.total}
+                          </div>
+
+                          <div className="flex items-end h-48">
+                            <div
+                              className="w-10 rounded-t-xl bg-gradient-to-t from-blue-600 to-purple-500"
+                              style={{ height: `${barHeight}px` }}
+                              title={`${item.date} • ${item.total} tentativas • ${item.accuracy.toFixed(
+                                0
+                              )}% acerto`}
+                            />
+                          </div>
+
+                          <div className="text-[11px] text-center text-slate-600 leading-tight">
+                            {item.date}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-slate-500">Ainda não há dados suficientes para o gráfico.</p>
+              )}
+            </Card>
 
             <div className="grid lg:grid-cols-2 xl:grid-cols-4 gap-4">
               <Card className="p-6">
