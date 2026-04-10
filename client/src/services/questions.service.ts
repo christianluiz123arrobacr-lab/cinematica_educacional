@@ -99,12 +99,11 @@ function mapQuestao(row: QuestaoRow): Question {
     row.disciplina ??
     row.diciplina ??
     "fisica"
-  ).toLowerCase() as QuestionSubject;
+  ).toLowerCase().trim() as QuestionSubject;
 
   const institutionNormalizada =
     normalizarTexto(row.instituicao) ??
-    normalizarTexto(row.intituição) ??
-    normalizarTexto(row.banca);
+    normalizarTexto(row.intituição);
 
   return {
     id: row.id,
@@ -173,7 +172,7 @@ export async function getQuestions(
 
   if (filters?.institution) {
     query = query.or(
-      `instituicao.eq.${filters.institution},intituição.eq.${filters.institution},banca.eq.${filters.institution}`
+      `instituicao.eq.${filters.institution},intituição.eq.${filters.institution}`
     );
   }
 
