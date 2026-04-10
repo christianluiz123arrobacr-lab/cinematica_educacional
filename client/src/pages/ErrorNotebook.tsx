@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, AlertTriangle, RotateCcw, CheckCircle2, Eye } from "lucide-react";
+import {
+  ArrowLeft,
+  AlertTriangle,
+  RotateCcw,
+  CheckCircle2,
+  Eye,
+  Tags,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
@@ -29,6 +36,7 @@ type ReviewStatusRow = {
   question_id: string;
   reviewed: boolean;
   reviewed_at: string | null;
+  error_type: string | null;
 };
 
 type ErrorNotebookItem = {
@@ -45,7 +53,17 @@ type ErrorNotebookItem = {
   max_attempt_number: number;
   reviewed: boolean;
   reviewed_at: string | null;
+  error_type: string | null;
 };
+
+const ERROR_TYPE_OPTIONS = [
+  { value: "atencao", label: "Atenção" },
+  { value: "calculo", label: "Cálculo" },
+  { value: "interpretacao", label: "Interpretação" },
+  { value: "conceito", label: "Conceito" },
+  { value: "chute", label: "Chute" },
+  { value: "nao_soube_fazer", label: "Não soube fazer" },
+] as const;
 
 function formatSeconds(seconds?: number | null) {
   if (!seconds || seconds <= 0) return "-";
@@ -53,6 +71,13 @@ function formatSeconds(seconds?: number | null) {
   const sec = Math.round(seconds % 60);
   if (min === 0) return `${sec}s`;
   return `${min}m ${sec}s`;
+}
+
+function getErrorTypeLabel(errorType?: string | null) {
+  return (
+    ERROR_TYPE_OPTIONS.find((item) => item.value === errorType)?.label ??
+    "Não definido"
+  );
 }
 
 function buildNotebookItems(
@@ -81,6 +106,7 @@ function buildNotebookItems(
         max_attempt_number: attempt.attempt_number ?? 1,
         reviewed: review?.reviewed ?? false,
         reviewed_at: review?.reviewed_at ?? null,
+        error_type: review?.error_type ?? null,
       });
       continue;
     }
@@ -91,7 +117,10 @@ function buildNotebookItems(
       existing.max_attempt_number = attempt.attempt_number ?? 1;
     }
 
-    if (new Date(attempt.answered_at).getTime() > new Date(existing.last_error_at).getTime()) {
+    if (
+      new Date(attempt.answered_at).getTime() >
+      new Date(existing.last_error_at).getTime()
+    ) {
       existing.last_error_at = attempt.answered_at;
       existing.last_time_spent_seconds = attempt.time_spent_seconds;
       existing.subject = attempt.subject;
@@ -122,6 +151,7 @@ export default function ErrorNotebook() {
   const [difficultyFilter, setDifficultyFilter] = useState("todas");
   const [sortBy, setSortBy] = useState("recentes");
   const [reviewFilter, setReviewFilter] = useState("todas");
+  const [errorTypeFilter, setErrorTypeFilter] = useState("todos");
 
   useEffect(() => {
     async function loadData() {
@@ -282,6 +312,12 @@ export default function ErrorNotebook() {
       result = result.filter((item) => item.reviewed);
     }
 
+    if (errorTypeFilter !== "todos") {
+      result = result.filter(
+        (item) => (item.error_type?.trim() || "") === errorTypeFilter
+      );
+    }
+
     if (sortBy === "recentes") {
       result.sort(
         (a, b) =>
@@ -301,7 +337,7 @@ export default function ErrorNotebook() {
     }
 
     return result;
-  }, [filteredByBanca, difficultyFilter, sortBy, reviewFilter]);
+  }, [filteredByBanca, difficultyFilter, sortBy, reviewFilter, errorTypeFilter]);
 
   const recurringErrors = useMemo(() => {
     return filteredItems
@@ -328,6 +364,7 @@ export default function ErrorNotebook() {
     setBancaFilter("todas");
     setDifficultyFilter("todas");
     setReviewFilter("todas");
+    setErrorTypeFilter("todos");
   }, [subjectFilter]);
 
   useEffect(() => {
@@ -335,18 +372,67 @@ export default function ErrorNotebook() {
     setBancaFilter("todas");
     setDifficultyFilter("todas");
     setReviewFilter("todas");
+    setErrorTypeFilter("todos");
   }, [conteudoFilter]);
 
   useEffect(() => {
     setBancaFilter("todas");
     setDifficultyFilter("todas");
     setReviewFilter("todas");
+    setErrorTypeFilter("todos");
   }, [assuntoFilter]);
 
   useEffect(() => {
     setDifficultyFilter("todas");
     setReviewFilter("todas");
+    setErrorTypeFilter("todos");
   }, [bancaFilter]);
+
+  async function upsertReviewRow(
+    questionId: string,
+    partial: {
+      reviewed?: boolean;
+      reviewed_at?: string | null;
+      error_type?: string | null;
+    }
+  ) {
+    if (!user?.id) return;
+
+    const existing = reviewStatusMap.get(questionId);
+
+    const payload = {
+      user_id: user.id,
+      question_id: questionId,
+      reviewed: partial.reviewed ?? existing?.reviewed ?? false,
+      reviewed_at:
+        partial.reviewed === false
+          ? null
+          : partial.reviewed_at ?? existing?.reviewed_at ?? null,
+      error_type:
+        partial.error_type !== undefined
+          ? partial.error_type
+          : existing?.error_type ?? null,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { data, error } = await supabase
+      .from("user_error_review_status")
+      .upsert(payload, { onConflict: "user_id,question_id" })
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Erro ao atualizar status de revisão:", error);
+      return;
+    }
+
+    if (data) {
+      setReviewStatuses((prev) => {
+        const filtered = prev.filter((item) => item.question_id !== questionId);
+        return [...filtered, data as ReviewStatusRow];
+      });
+    }
+  }
 
   async function updateReviewStatus(questionId: string, reviewed: boolean) {
     if (!user?.id) return;
@@ -354,33 +440,28 @@ export default function ErrorNotebook() {
     try {
       setSavingQuestionId(questionId);
 
-      const payload = {
-        user_id: user.id,
-        question_id: questionId,
+      await upsertReviewRow(questionId, {
         reviewed,
         reviewed_at: reviewed ? new Date().toISOString() : null,
-        updated_at: new Date().toISOString(),
-      };
-
-      const { data, error } = await supabase
-        .from("user_error_review_status")
-        .upsert(payload, { onConflict: "user_id,question_id" })
-        .select()
-        .single();
-
-      if (error) {
-        console.error("Erro ao atualizar status de revisão:", error);
-        return;
-      }
-
-      if (data) {
-        setReviewStatuses((prev) => {
-          const filtered = prev.filter((item) => item.question_id !== questionId);
-          return [...filtered, data as ReviewStatusRow];
-        });
-      }
+      });
     } catch (err) {
       console.error("Erro inesperado ao atualizar revisão:", err);
+    } finally {
+      setSavingQuestionId(null);
+    }
+  }
+
+  async function updateErrorType(questionId: string, errorType: string) {
+    if (!user?.id) return;
+
+    try {
+      setSavingQuestionId(questionId);
+
+      await upsertReviewRow(questionId, {
+        error_type: errorType || null,
+      });
+    } catch (err) {
+      console.error("Erro inesperado ao atualizar tipo do erro:", err);
     } finally {
       setSavingQuestionId(null);
     }
@@ -423,7 +504,7 @@ export default function ErrorNotebook() {
                 <h2 className="text-xl font-bold text-slate-900">Filtros</h2>
               </div>
 
-              <div className="grid md:grid-cols-2 xl:grid-cols-7 gap-4">
+              <div className="grid md:grid-cols-2 xl:grid-cols-8 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Disciplina
@@ -531,6 +612,24 @@ export default function ErrorNotebook() {
 
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Tipo de erro
+                  </label>
+                  <select
+                    value={errorTypeFilter}
+                    onChange={(e) => setErrorTypeFilter(e.target.value)}
+                    className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
+                  >
+                    <option value="todos">Todos</option>
+                    {ERROR_TYPE_OPTIONS.map((item) => (
+                      <option key={item.value} value={item.value}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Ordenar por
                   </label>
                   <select
@@ -615,6 +714,13 @@ export default function ErrorNotebook() {
                             Tempo gasto: {formatSeconds(item.last_time_spent_seconds)}
                           </p>
 
+                          <p className="text-sm text-slate-700">
+                            Tipo de erro:{" "}
+                            <span className="font-semibold">
+                              {getErrorTypeLabel(item.error_type)}
+                            </span>
+                          </p>
+
                           <p className={`text-sm font-semibold ${item.reviewed ? "text-green-700" : "text-yellow-700"}`}>
                             {item.reviewed
                               ? `Revisada em ${item.reviewed_at ? new Date(item.reviewed_at).toLocaleString("pt-BR") : "-"}`
@@ -623,6 +729,20 @@ export default function ErrorNotebook() {
                         </div>
 
                         <div className="flex gap-2 flex-wrap">
+                          <select
+                            value={item.error_type ?? ""}
+                            onChange={(e) => updateErrorType(item.question_id, e.target.value)}
+                            disabled={savingQuestionId === item.question_id}
+                            className="rounded-xl border border-slate-300 px-3 py-2 bg-white text-sm"
+                          >
+                            <option value="">Tipo do erro</option>
+                            {ERROR_TYPE_OPTIONS.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+
                           <Link href="/banco-de-questoes">
                             <Button className="bg-slate-900 hover:bg-slate-800 text-white">
                               Revisar no banco
@@ -706,6 +826,13 @@ export default function ErrorNotebook() {
                             Tempo gasto: {formatSeconds(item.last_time_spent_seconds)}
                           </p>
 
+                          <p className="text-sm text-slate-700">
+                            Tipo de erro:{" "}
+                            <span className="font-semibold">
+                              {getErrorTypeLabel(item.error_type)}
+                            </span>
+                          </p>
+
                           <p className={`text-sm font-semibold ${item.reviewed ? "text-green-700" : "text-yellow-700"}`}>
                             {item.reviewed
                               ? `Revisada em ${item.reviewed_at ? new Date(item.reviewed_at).toLocaleString("pt-BR") : "-"}`
@@ -714,6 +841,20 @@ export default function ErrorNotebook() {
                         </div>
 
                         <div className="flex gap-2 flex-wrap">
+                          <select
+                            value={item.error_type ?? ""}
+                            onChange={(e) => updateErrorType(item.question_id, e.target.value)}
+                            disabled={savingQuestionId === item.question_id}
+                            className="rounded-xl border border-slate-300 px-3 py-2 bg-white text-sm"
+                          >
+                            <option value="">Tipo do erro</option>
+                            {ERROR_TYPE_OPTIONS.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+
                           <Link href="/banco-de-questoes">
                             <Button className="bg-slate-900 hover:bg-slate-800 text-white">
                               Revisar no banco
@@ -779,6 +920,13 @@ export default function ErrorNotebook() {
 
                           <p className="text-sm text-red-600 font-semibold">
                             Último erro em: {new Date(item.last_error_at).toLocaleString("pt-BR")}
+                          </p>
+
+                          <p className="text-sm text-slate-700">
+                            Tipo do erro:{" "}
+                            <span className="font-semibold">
+                              {getErrorTypeLabel(item.error_type)}
+                            </span>
                           </p>
 
                           <p className={`text-sm font-semibold ${item.reviewed ? "text-green-700" : "text-yellow-700"}`}>
