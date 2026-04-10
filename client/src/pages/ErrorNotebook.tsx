@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, AlertTriangle } from "lucide-react";
+import { ArrowLeft, AlertTriangle, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
@@ -23,12 +23,70 @@ type AttemptRow = {
   difficulty: string | null;
 };
 
+type ErrorNotebookItem = {
+  question_id: string;
+  subject: string | null;
+  conteudo: string | null;
+  assunto: string | null;
+  banca: string | null;
+  ano: number | null;
+  difficulty: string | null;
+  last_error_at: string;
+  last_time_spent_seconds: number | null;
+  total_errors: number;
+  max_attempt_number: number;
+};
+
 function formatSeconds(seconds?: number | null) {
   if (!seconds || seconds <= 0) return "-";
   const min = Math.floor(seconds / 60);
   const sec = Math.round(seconds % 60);
   if (min === 0) return `${sec}s`;
   return `${min}m ${sec}s`;
+}
+
+function buildNotebookItems(attempts: AttemptRow[]): ErrorNotebookItem[] {
+  const map = new Map<string, ErrorNotebookItem>();
+
+  for (const attempt of attempts) {
+    const existing = map.get(attempt.question_id);
+
+    if (!existing) {
+      map.set(attempt.question_id, {
+        question_id: attempt.question_id,
+        subject: attempt.subject,
+        conteudo: attempt.conteudo,
+        assunto: attempt.assunto,
+        banca: attempt.banca,
+        ano: attempt.ano,
+        difficulty: attempt.difficulty,
+        last_error_at: attempt.answered_at,
+        last_time_spent_seconds: attempt.time_spent_seconds,
+        total_errors: 1,
+        max_attempt_number: attempt.attempt_number ?? 1,
+      });
+      continue;
+    }
+
+    existing.total_errors += 1;
+
+    if ((attempt.attempt_number ?? 1) > existing.max_attempt_number) {
+      existing.max_attempt_number = attempt.attempt_number ?? 1;
+    }
+
+    if (new Date(attempt.answered_at).getTime() > new Date(existing.last_error_at).getTime()) {
+      existing.last_error_at = attempt.answered_at;
+      existing.last_time_spent_seconds = attempt.time_spent_seconds;
+      existing.subject = attempt.subject;
+      existing.conteudo = attempt.conteudo;
+      existing.assunto = attempt.assunto;
+      existing.banca = attempt.banca;
+      existing.ano = attempt.ano;
+      existing.difficulty = attempt.difficulty;
+    }
+  }
+
+  return Array.from(map.values());
 }
 
 export default function ErrorNotebook() {
@@ -42,6 +100,8 @@ export default function ErrorNotebook() {
   const [conteudoFilter, setConteudoFilter] = useState("todos");
   const [assuntoFilter, setAssuntoFilter] = useState("todos");
   const [bancaFilter, setBancaFilter] = useState("todas");
+  const [difficultyFilter, setDifficultyFilter] = useState("todas");
+  const [sortBy, setSortBy] = useState("recentes");
 
   useEffect(() => {
     async function loadWrongAttempts() {
@@ -78,40 +138,30 @@ export default function ErrorNotebook() {
     }
   }, [user?.id, authLoading]);
 
-  const deduplicatedAttempts = useMemo(() => {
-    const map = new Map<string, AttemptRow>();
-
-    for (const attempt of attempts) {
-      if (!map.has(attempt.question_id)) {
-        map.set(attempt.question_id, attempt);
-      }
-    }
-
-    return Array.from(map.values());
-  }, [attempts]);
+  const notebookItems = useMemo(() => buildNotebookItems(attempts), [attempts]);
 
   const availableSubjects = useMemo(() => {
     return Array.from(
       new Set(
-        deduplicatedAttempts
-          .map((attempt) => attempt.subject?.trim())
+        notebookItems
+          .map((item) => item.subject?.trim())
           .filter((value): value is string => !!value)
       )
     ).sort((a, b) => a.localeCompare(b, "pt-BR"));
-  }, [deduplicatedAttempts]);
+  }, [notebookItems]);
 
   const filteredBySubject = useMemo(() => {
-    if (subjectFilter === "todas") return deduplicatedAttempts;
-    return deduplicatedAttempts.filter(
-      (attempt) => (attempt.subject?.trim() || "") === subjectFilter
+    if (subjectFilter === "todas") return notebookItems;
+    return notebookItems.filter(
+      (item) => (item.subject?.trim() || "") === subjectFilter
     );
-  }, [deduplicatedAttempts, subjectFilter]);
+  }, [notebookItems, subjectFilter]);
 
   const availableConteudos = useMemo(() => {
     return Array.from(
       new Set(
         filteredBySubject
-          .map((attempt) => attempt.conteudo?.trim())
+          .map((item) => item.conteudo?.trim())
           .filter((value): value is string => !!value)
       )
     ).sort((a, b) => a.localeCompare(b, "pt-BR"));
@@ -120,7 +170,7 @@ export default function ErrorNotebook() {
   const filteredByConteudo = useMemo(() => {
     if (conteudoFilter === "todos") return filteredBySubject;
     return filteredBySubject.filter(
-      (attempt) => (attempt.conteudo?.trim() || "") === conteudoFilter
+      (item) => (item.conteudo?.trim() || "") === conteudoFilter
     );
   }, [filteredBySubject, conteudoFilter]);
 
@@ -128,7 +178,7 @@ export default function ErrorNotebook() {
     return Array.from(
       new Set(
         filteredByConteudo
-          .map((attempt) => attempt.assunto?.trim())
+          .map((item) => item.assunto?.trim())
           .filter((value): value is string => !!value)
       )
     ).sort((a, b) => a.localeCompare(b, "pt-BR"));
@@ -137,7 +187,7 @@ export default function ErrorNotebook() {
   const filteredByAssunto = useMemo(() => {
     if (assuntoFilter === "todos") return filteredByConteudo;
     return filteredByConteudo.filter(
-      (attempt) => (attempt.assunto?.trim() || "") === assuntoFilter
+      (item) => (item.assunto?.trim() || "") === assuntoFilter
     );
   }, [filteredByConteudo, assuntoFilter]);
 
@@ -145,33 +195,99 @@ export default function ErrorNotebook() {
     return Array.from(
       new Set(
         filteredByAssunto
-          .map((attempt) => attempt.banca?.trim())
+          .map((item) => item.banca?.trim())
           .filter((value): value is string => !!value)
       )
     ).sort((a, b) => a.localeCompare(b, "pt-BR"));
   }, [filteredByAssunto]);
 
-  const finalAttempts = useMemo(() => {
+  const filteredByBanca = useMemo(() => {
     if (bancaFilter === "todas") return filteredByAssunto;
     return filteredByAssunto.filter(
-      (attempt) => (attempt.banca?.trim() || "") === bancaFilter
+      (item) => (item.banca?.trim() || "") === bancaFilter
     );
   }, [filteredByAssunto, bancaFilter]);
+
+  const availableDifficulties = useMemo(() => {
+    return Array.from(
+      new Set(
+        filteredByBanca
+          .map((item) => item.difficulty?.trim())
+          .filter((value): value is string => !!value)
+      )
+    ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [filteredByBanca]);
+
+  const filteredItems = useMemo(() => {
+    let result = [...filteredByBanca];
+
+    if (difficultyFilter !== "todas") {
+      result = result.filter(
+        (item) => (item.difficulty?.trim() || "") === difficultyFilter
+      );
+    }
+
+    if (sortBy === "recentes") {
+      result.sort(
+        (a, b) =>
+          new Date(b.last_error_at).getTime() - new Date(a.last_error_at).getTime()
+      );
+    } else if (sortBy === "mais_erradas") {
+      result.sort(
+        (a, b) =>
+          b.total_errors - a.total_errors ||
+          new Date(b.last_error_at).getTime() - new Date(a.last_error_at).getTime()
+      );
+    } else if (sortBy === "antigas") {
+      result.sort(
+        (a, b) =>
+          new Date(a.last_error_at).getTime() - new Date(b.last_error_at).getTime()
+      );
+    }
+
+    return result;
+  }, [filteredByBanca, difficultyFilter, sortBy]);
+
+  const recurringErrors = useMemo(() => {
+    return filteredItems
+      .filter((item) => item.total_errors >= 2)
+      .sort(
+        (a, b) =>
+          b.total_errors - a.total_errors ||
+          new Date(b.last_error_at).getTime() - new Date(a.last_error_at).getTime()
+      );
+  }, [filteredItems]);
+
+  const recentErrors = useMemo(() => {
+    return [...filteredItems]
+      .sort(
+        (a, b) =>
+          new Date(b.last_error_at).getTime() - new Date(a.last_error_at).getTime()
+      )
+      .slice(0, 12);
+  }, [filteredItems]);
 
   useEffect(() => {
     setConteudoFilter("todos");
     setAssuntoFilter("todos");
     setBancaFilter("todas");
+    setDifficultyFilter("todas");
   }, [subjectFilter]);
 
   useEffect(() => {
     setAssuntoFilter("todos");
     setBancaFilter("todas");
+    setDifficultyFilter("todas");
   }, [conteudoFilter]);
 
   useEffect(() => {
     setBancaFilter("todas");
+    setDifficultyFilter("todas");
   }, [assuntoFilter]);
+
+  useEffect(() => {
+    setDifficultyFilter("todas");
+  }, [bancaFilter]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-red-50 to-slate-50">
@@ -210,7 +326,7 @@ export default function ErrorNotebook() {
                 <h2 className="text-xl font-bold text-slate-900">Filtros</h2>
               </div>
 
-              <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+              <div className="grid md:grid-cols-2 xl:grid-cols-6 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Disciplina
@@ -282,7 +398,117 @@ export default function ErrorNotebook() {
                     ))}
                   </select>
                 </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Dificuldade
+                  </label>
+                  <select
+                    value={difficultyFilter}
+                    onChange={(e) => setDifficultyFilter(e.target.value)}
+                    className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
+                  >
+                    <option value="todas">Todas</option>
+                    {availableDifficulties.map((difficulty) => (
+                      <option key={difficulty} value={difficulty}>
+                        {difficulty}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Ordenar por
+                  </label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
+                  >
+                    <option value="recentes">Mais recentes</option>
+                    <option value="mais_erradas">Mais erradas</option>
+                    <option value="antigas">Mais antigas</option>
+                  </select>
+                </div>
               </div>
+            </Card>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              <Card className="p-6">
+                <p className="text-sm text-slate-500 mb-2">Questões no caderno</p>
+                <p className="text-3xl font-bold text-slate-900">{filteredItems.length}</p>
+              </Card>
+
+              <Card className="p-6">
+                <p className="text-sm text-slate-500 mb-2">Erros recorrentes</p>
+                <p className="text-3xl font-bold text-red-600">{recurringErrors.length}</p>
+              </Card>
+
+              <Card className="p-6">
+                <p className="text-sm text-slate-500 mb-2">Total de erros no filtro</p>
+                <p className="text-3xl font-bold text-orange-600">
+                  {filteredItems.reduce((sum, item) => sum + item.total_errors, 0)}
+                </p>
+              </Card>
+            </div>
+
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <RotateCcw className="w-5 h-5 text-red-500" />
+                <h2 className="text-xl font-bold text-slate-900">Erros recorrentes</h2>
+              </div>
+
+              {recurringErrors.length > 0 ? (
+                <div className="space-y-4">
+                  {recurringErrors.map((item) => (
+                    <div
+                      key={item.question_id}
+                      className="rounded-2xl border border-red-200 bg-red-50 p-5"
+                    >
+                      <div className="flex items-start justify-between gap-4 flex-wrap">
+                        <div className="space-y-2">
+                          <p className="font-bold text-slate-900">
+                            {item.subject ?? "Sem disciplina"} •{" "}
+                            {item.conteudo ?? "Sem conteúdo"}
+                            {item.assunto ? ` • ${item.assunto}` : ""}
+                          </p>
+
+                          <p className="text-sm text-slate-600">
+                            {item.banca ?? "Sem banca"}
+                            {item.ano ? ` • ${item.ano}` : ""}
+                            {item.difficulty ? ` • ${item.difficulty}` : ""}
+                          </p>
+
+                          <p className="text-sm font-semibold text-red-700">
+                            {item.total_errors} erro(s) nessa questão
+                          </p>
+
+                          <p className="text-sm text-red-600 font-semibold">
+                            Último erro em: {new Date(item.last_error_at).toLocaleString("pt-BR")}
+                          </p>
+
+                          <p className="text-sm text-slate-500">
+                            Tempo gasto: {formatSeconds(item.last_time_spent_seconds)}
+                          </p>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Link href="/banco-de-questoes">
+                            <Button className="bg-slate-900 hover:bg-slate-800 text-white">
+                              Revisar no banco
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-slate-500">
+                  Nenhum erro recorrente encontrado com os filtros atuais.
+                </p>
+              )}
             </Card>
 
             <Card className="p-6">
@@ -291,37 +517,41 @@ export default function ErrorNotebook() {
                   Questões para revisar
                 </h2>
                 <span className="text-sm font-semibold text-slate-500">
-                  {finalAttempts.length} questão(ões)
+                  {filteredItems.length} questão(ões)
                 </span>
               </div>
 
-              {finalAttempts.length > 0 ? (
+              {filteredItems.length > 0 ? (
                 <div className="space-y-4">
-                  {finalAttempts.map((attempt) => (
+                  {filteredItems.map((item) => (
                     <div
-                      key={attempt.question_id}
+                      key={item.question_id}
                       className="rounded-2xl border border-red-200 bg-red-50 p-5"
                     >
                       <div className="flex items-start justify-between gap-4 flex-wrap">
                         <div className="space-y-2">
                           <p className="font-bold text-slate-900">
-                            {attempt.subject ?? "Sem disciplina"} •{" "}
-                            {attempt.conteudo ?? "Sem conteúdo"}
-                            {attempt.assunto ? ` • ${attempt.assunto}` : ""}
+                            {item.subject ?? "Sem disciplina"} •{" "}
+                            {item.conteudo ?? "Sem conteúdo"}
+                            {item.assunto ? ` • ${item.assunto}` : ""}
                           </p>
 
                           <p className="text-sm text-slate-600">
-                            {attempt.banca ?? "Sem banca"}
-                            {attempt.ano ? ` • ${attempt.ano}` : ""}
-                            {attempt.difficulty ? ` • ${attempt.difficulty}` : ""}
+                            {item.banca ?? "Sem banca"}
+                            {item.ano ? ` • ${item.ano}` : ""}
+                            {item.difficulty ? ` • ${item.difficulty}` : ""}
+                          </p>
+
+                          <p className="text-sm font-semibold text-red-700">
+                            {item.total_errors} erro(s) nessa questão
                           </p>
 
                           <p className="text-sm text-red-600 font-semibold">
-                            Último erro em: {new Date(attempt.answered_at).toLocaleString("pt-BR")}
+                            Último erro em: {new Date(item.last_error_at).toLocaleString("pt-BR")}
                           </p>
 
                           <p className="text-sm text-slate-500">
-                            Tempo gasto: {formatSeconds(attempt.time_spent_seconds)}
+                            Tempo gasto: {formatSeconds(item.last_time_spent_seconds)}
                           </p>
                         </div>
 
@@ -339,6 +569,51 @@ export default function ErrorNotebook() {
               ) : (
                 <p className="text-slate-500">
                   Nenhuma questão errada encontrada com os filtros atuais.
+                </p>
+              )}
+            </Card>
+
+            <Card className="p-6">
+              <h2 className="text-xl font-bold text-slate-900 mb-4">
+                Erros recentes
+              </h2>
+
+              {recentErrors.length > 0 ? (
+                <div className="space-y-4">
+                  {recentErrors.map((item) => (
+                    <div
+                      key={item.question_id}
+                      className="rounded-2xl border border-slate-200 bg-white p-5"
+                    >
+                      <div className="flex items-start justify-between gap-4 flex-wrap">
+                        <div className="space-y-2">
+                          <p className="font-bold text-slate-900">
+                            {item.subject ?? "Sem disciplina"} •{" "}
+                            {item.conteudo ?? "Sem conteúdo"}
+                            {item.assunto ? ` • ${item.assunto}` : ""}
+                          </p>
+
+                          <p className="text-sm text-slate-600">
+                            {item.banca ?? "Sem banca"}
+                            {item.ano ? ` • ${item.ano}` : ""}
+                            {item.difficulty ? ` • ${item.difficulty}` : ""}
+                          </p>
+
+                          <p className="text-sm text-red-600 font-semibold">
+                            Último erro em: {new Date(item.last_error_at).toLocaleString("pt-BR")}
+                          </p>
+                        </div>
+
+                        <div className="text-sm text-slate-500">
+                          {item.total_errors} erro(s)
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-slate-500">
+                  Nenhum erro recente encontrado com os filtros atuais.
                 </p>
               )}
             </Card>
