@@ -1,5 +1,9 @@
 import { supabase } from "@/lib/supabase";
-import type { Question, QuestionDifficulty, QuestionSubject } from "@/types/question";
+import type {
+  Question,
+  QuestionDifficulty,
+  QuestionSubject,
+} from "@/types/question";
 
 export type QuestionFilters = {
   subject?: QuestionSubject;
@@ -51,6 +55,12 @@ type QuestaoRow = {
   }[];
 };
 
+function normalizarTexto(valor?: string | null): string | undefined {
+  if (!valor) return undefined;
+  const limpo = valor.trim();
+  return limpo.length > 0 ? limpo : undefined;
+}
+
 function normalizarAlternativas(row: QuestaoRow): Question["options"] {
   const altA = row.a ?? row.A ?? "";
   const altB = row.b ?? row.B ?? "";
@@ -85,17 +95,26 @@ function mapQuestao(row: QuestaoRow): Question {
       .map((r) => r.texto ?? "")
       .join("\n\n") || "Sem resolução cadastrada.";
 
-  const disciplina = (row.disciplina ?? row.diciplina ?? "fisica").toLowerCase() as QuestionSubject;
+  const disciplina = (
+    row.disciplina ??
+    row.diciplina ??
+    "fisica"
+  ).toLowerCase() as QuestionSubject;
+
+  const institutionNormalizada =
+    normalizarTexto(row.instituicao) ??
+    normalizarTexto(row.intituição) ??
+    normalizarTexto(row.banca);
 
   return {
-  id: row.id,
-  codigo: row.codigo ?? undefined,
-  subject: disciplina,
-    topic: (row.conteudo ?? row.assunto ?? "").toLowerCase(),
-    subtopic: row.assunto?.toLowerCase(),
-    exam: row.banca ?? "Sem banca",
+    id: row.id,
+    codigo: row.codigo ?? undefined,
+    subject: disciplina,
+    topic: (row.conteudo ?? row.assunto ?? "").toLowerCase().trim(),
+    subtopic: row.assunto?.toLowerCase().trim(),
+    exam: normalizarTexto(row.banca) ?? "Sem banca",
     year: row.ano,
-    institution: row.instituicao ?? row.intituição ?? undefined,
+    institution: institutionNormalizada,
     statement: row.enunciado ?? "Sem enunciado cadastrado.",
     statementAfterImage: row.enunciado_pos_imagem ?? undefined,
     formula: row.formula ?? undefined,
@@ -113,10 +132,10 @@ function mapQuestao(row: QuestaoRow): Question {
   };
 }
 
-export async function getQuestions(filters?: QuestionFilters): Promise<Question[]> {
-  let query = supabase
-    .from("questoes")
-    .select(`
+export async function getQuestions(
+  filters?: QuestionFilters
+): Promise<Question[]> {
+  let query = supabase.from("questoes").select(`
       *,
       resolucoes (
         id,
@@ -127,7 +146,9 @@ export async function getQuestions(filters?: QuestionFilters): Promise<Question[
     `);
 
   if (filters?.subject) {
-    query = query.or(`disciplina.eq.${filters.subject},diciplina.eq.${filters.subject}`);
+    query = query.or(
+      `disciplina.eq.${filters.subject},diciplina.eq.${filters.subject}`
+    );
   }
 
   if (filters?.topic) {
@@ -151,14 +172,18 @@ export async function getQuestions(filters?: QuestionFilters): Promise<Question[
   }
 
   if (filters?.institution) {
-    query = query.or(`instituicao.eq.${filters.institution},intituição.eq.${filters.institution}`);
+    query = query.or(
+      `instituicao.eq.${filters.institution},intituição.eq.${filters.institution},banca.eq.${filters.institution}`
+    );
   }
 
   if (filters?.isPublished !== undefined) {
     query = query.eq("publicada", filters.isPublished);
   }
 
-  const { data, error } = await query.order("created_at", { ascending: false });
+  const { data, error } = await query.order("created_at", {
+    ascending: false,
+  });
 
   if (error) {
     console.error("Erro ao buscar questões:", error);
