@@ -127,7 +127,6 @@ export default function Progress() {
   );
 
   const totalWrong = totalAnswered - totalCorrect;
-
   const accuracy = totalAnswered > 0 ? (totalCorrect / totalAnswered) * 100 : 0;
 
   const avgTimeSeconds = useMemo(() => {
@@ -536,4 +535,14 @@ export default function Progress() {
                   ))}
                 </div>
               ) : (
-         
+                <p className="text-slate-500">
+                  Você ainda não respondeu nenhuma questão.
+                </p>
+              )}
+            </Card>
+          </>
+        )}
+      </section>
+    </div>
+  );
+}
