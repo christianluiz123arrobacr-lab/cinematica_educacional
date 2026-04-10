@@ -6,7 +6,7 @@ import {
   RotateCcw,
   CheckCircle2,
   Eye,
-  Tags,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -37,6 +37,7 @@ type ReviewStatusRow = {
   reviewed: boolean;
   reviewed_at: string | null;
   error_type: string | null;
+  note: string | null;
 };
 
 type ErrorNotebookItem = {
@@ -54,6 +55,7 @@ type ErrorNotebookItem = {
   reviewed: boolean;
   reviewed_at: string | null;
   error_type: string | null;
+  note: string | null;
 };
 
 const ERROR_TYPE_OPTIONS = [
@@ -107,6 +109,7 @@ function buildNotebookItems(
         reviewed: review?.reviewed ?? false,
         reviewed_at: review?.reviewed_at ?? null,
         error_type: review?.error_type ?? null,
+        note: review?.note ?? null,
       });
       continue;
     }
@@ -153,6 +156,8 @@ export default function ErrorNotebook() {
   const [reviewFilter, setReviewFilter] = useState("todas");
   const [errorTypeFilter, setErrorTypeFilter] = useState("todos");
 
+  const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
+
   useEffect(() => {
     async function loadData() {
       if (!user?.id) {
@@ -197,8 +202,15 @@ export default function ErrorNotebook() {
         return;
       }
 
+      const reviewData = (reviewRes.data as ReviewStatusRow[]) ?? [];
+
       setAttempts((attemptsRes.data as AttemptRow[]) ?? []);
-      setReviewStatuses((reviewRes.data as ReviewStatusRow[]) ?? []);
+      setReviewStatuses(reviewData);
+      setNoteDrafts(
+        Object.fromEntries(
+          reviewData.map((row) => [row.question_id, row.note ?? ""])
+        )
+      );
       setLoading(false);
     }
 
@@ -394,6 +406,7 @@ export default function ErrorNotebook() {
       reviewed?: boolean;
       reviewed_at?: string | null;
       error_type?: string | null;
+      note?: string | null;
     }
   ) {
     if (!user?.id) return;
@@ -412,6 +425,10 @@ export default function ErrorNotebook() {
         partial.error_type !== undefined
           ? partial.error_type
           : existing?.error_type ?? null,
+      note:
+        partial.note !== undefined
+          ? partial.note
+          : existing?.note ?? null,
       updated_at: new Date().toISOString(),
     };
 
@@ -465,6 +482,55 @@ export default function ErrorNotebook() {
     } finally {
       setSavingQuestionId(null);
     }
+  }
+
+  async function saveNote(questionId: string) {
+    if (!user?.id) return;
+
+    try {
+      setSavingQuestionId(questionId);
+
+      await upsertReviewRow(questionId, {
+        note: (noteDrafts[questionId] ?? "").trim() || null,
+      });
+    } catch (err) {
+      console.error("Erro inesperado ao salvar anotação:", err);
+    } finally {
+      setSavingQuestionId(null);
+    }
+  }
+
+  function renderNoteEditor(item: ErrorNotebookItem) {
+    return (
+      <div className="mt-3">
+        <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+          <FileText className="w-4 h-4" />
+          Anotação
+        </label>
+
+        <textarea
+          value={noteDrafts[item.question_id] ?? item.note ?? ""}
+          onChange={(e) =>
+            setNoteDrafts((prev) => ({
+              ...prev,
+              [item.question_id]: e.target.value,
+            }))
+          }
+          placeholder="Ex.: confundi a fórmula, revisar esse conceito, erro de sinal..."
+          className="w-full min-h-[96px] rounded-xl border border-slate-300 px-3 py-3 bg-white text-sm"
+        />
+
+        <div className="mt-2 flex justify-end">
+          <Button
+            variant="outline"
+            onClick={() => saveNote(item.question_id)}
+            disabled={savingQuestionId === item.question_id}
+          >
+            Salvar anotação
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -769,6 +835,8 @@ export default function ErrorNotebook() {
                           )}
                         </div>
                       </div>
+
+                      {renderNoteEditor(item)}
                     </div>
                   ))}
                 </div>
@@ -882,6 +950,8 @@ export default function ErrorNotebook() {
                           )}
                         </div>
                       </div>
+
+                      {renderNoteEditor(item)}
                     </div>
                   ))}
                 </div>
