@@ -78,9 +78,13 @@ export default function QuestionBankPage() {
     );
   });
 
-  const availableInstitutions = Array.from(
-    new Set(questionsForInstitutions.map((q) => q.institution).filter(Boolean))
-  ).sort();
+ const availableInstitutions = Array.from(
+  new Set(
+    questionsForInstitutions
+      .map((q) => q.institution?.trim())
+      .filter((institution): institution is string => !!institution && institution !== "")
+  )
+).sort((a, b) => a.localeCompare(b, "pt-BR"));
 
   const totalSubjects = useMemo(
     () => new Set(questions.map((q) => q.subject).filter(Boolean)).size,
