@@ -10,6 +10,7 @@ import {
   TrendingDown,
   Filter,
   AlertTriangle,
+  PieChart,
 } from "lucide-react";
 import { Link } from "wouter";
 import { supabase } from "@/lib/supabase";
@@ -53,6 +54,26 @@ type TimeBySubjectStat = {
   avgSeconds: number;
   total: number;
 };
+
+type PieDatum = {
+  label: string;
+  value: number;
+  color: string;
+  percent: number;
+};
+
+const PIE_COLORS = [
+  "#2563eb",
+  "#7c3aed",
+  "#16a34a",
+  "#ea580c",
+  "#dc2626",
+  "#0891b2",
+  "#ca8a04",
+  "#4f46e5",
+  "#db2777",
+  "#475569",
+];
 
 function groupAttempts(
   attempts: AttemptRow[],
@@ -179,6 +200,112 @@ function buildDailyStats(attempts: AttemptRow[]): DailyStat[] {
     });
 }
 
+function buildPieData(
+  rows: Array<{ label: string; value: number }>,
+  limit = 6
+): PieDatum[] {
+  const filtered = rows.filter((row) => row.value > 0).slice(0, limit);
+  const total = filtered.reduce((sum, item) => sum + item.value, 0);
+
+  if (!total) return [];
+
+  return filtered.map((item, index) => ({
+    label: item.label,
+    value: item.value,
+    color: PIE_COLORS[index % PIE_COLORS.length],
+    percent: (item.value / total) * 100,
+  }));
+}
+
+function getPieBackground(data: PieDatum[]) {
+  if (!data.length) return "#e2e8f0";
+
+  let current = 0;
+  const parts = data.map((item) => {
+    const start = current;
+    const end = current + item.percent;
+    current = end;
+    return `${item.color} ${start}% ${end}%`;
+  });
+
+  return `conic-gradient(${parts.join(", ")})`;
+}
+
+function PieLegend({ data }: { data: PieDatum[] }) {
+  return (
+    <div className="space-y-3">
+      {data.map((item) => (
+        <div
+          key={item.label}
+          className="flex items-start justify-between gap-4 rounded-xl border border-slate-200 bg-white p-3"
+        >
+          <div className="flex items-start gap-3 min-w-0">
+            <span
+              className="mt-1 h-3 w-3 rounded-full flex-shrink-0"
+              style={{ backgroundColor: item.color }}
+            />
+            <div className="min-w-0">
+              <p className="font-semibold text-slate-900 break-words">{item.label}</p>
+              <p className="text-sm text-slate-500">{item.value} questão(ões)</p>
+            </div>
+          </div>
+
+          <span className="text-sm font-bold text-slate-700 whitespace-nowrap">
+            {item.percent.toFixed(1)}%
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PieCard({
+  title,
+  subtitle,
+  data,
+  emptyMessage,
+}: {
+  title: string;
+  subtitle?: string;
+  data: PieDatum[];
+  emptyMessage: string;
+}) {
+  return (
+    <Card className="p-6">
+      <div className="flex items-center gap-2 mb-2">
+        <PieChart className="w-5 h-5 text-slate-700" />
+        <h2 className="text-xl font-bold text-slate-900">{title}</h2>
+      </div>
+
+      {subtitle && <p className="text-sm text-slate-500 mb-5">{subtitle}</p>}
+
+      {data.length > 0 ? (
+        <div className="grid lg:grid-cols-[220px,1fr] gap-6 items-center">
+          <div className="flex justify-center">
+            <div
+              className="relative h-48 w-48 rounded-full border-8 border-white shadow-md"
+              style={{ background: getPieBackground(data) }}
+            >
+              <div className="absolute inset-[26%] rounded-full bg-white flex items-center justify-center text-center p-3">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-slate-500">Total</p>
+                  <p className="text-2xl font-bold text-slate-900">
+                    {data.reduce((sum, item) => sum + item.value, 0)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <PieLegend data={data} />
+        </div>
+      ) : (
+        <p className="text-slate-500">{emptyMessage}</p>
+      )}
+    </Card>
+  );
+}
+
 export default function Progress() {
   const { user, loading: authLoading } = useSupabaseAuth();
   const [attempts, setAttempts] = useState<AttemptRow[]>([]);
@@ -187,6 +314,7 @@ export default function Progress() {
 
   const [subjectFilter, setSubjectFilter] = useState("todas");
   const [periodFilter, setPeriodFilter] = useState("all");
+  const [chartSubject, setChartSubject] = useState("todas");
 
   useEffect(() => {
     async function loadAttempts() {
@@ -232,12 +360,8 @@ export default function Progress() {
     ).sort((a, b) => a.localeCompare(b, "pt-BR"));
   }, [attempts]);
 
-  const filteredAttempts = useMemo(() => {
+  const periodFilteredAttempts = useMemo(() => {
     let result = [...attempts];
-
-    if (subjectFilter !== "todas") {
-      result = result.filter((attempt) => (attempt.subject?.trim() || "") === subjectFilter);
-    }
 
     const cutoff = getCutoffDate(periodFilter);
     if (cutoff) {
@@ -245,7 +369,50 @@ export default function Progress() {
     }
 
     return result;
-  }, [attempts, subjectFilter, periodFilter]);
+  }, [attempts, periodFilter]);
+
+  const filteredAttempts = useMemo(() => {
+    let result = [...periodFilteredAttempts];
+
+    if (subjectFilter !== "todas") {
+      result = result.filter((attempt) => (attempt.subject?.trim() || "") === subjectFilter);
+    }
+
+    return result;
+  }, [periodFilteredAttempts, subjectFilter]);
+
+  const chartAvailableSubjects = useMemo(() => {
+    const source = subjectFilter === "todas" ? periodFilteredAttempts : filteredAttempts;
+
+    return Array.from(
+      new Set(
+        source
+          .map((attempt) => attempt.subject?.trim())
+          .filter((value): value is string => !!value)
+      )
+    ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [subjectFilter, periodFilteredAttempts, filteredAttempts]);
+
+  useEffect(() => {
+    if (!chartAvailableSubjects.length) {
+      setChartSubject("todas");
+      return;
+    }
+
+    if (
+      chartSubject !== "todas" &&
+      !chartAvailableSubjects.includes(chartSubject)
+    ) {
+      setChartSubject(chartAvailableSubjects[0]);
+    }
+
+    if (
+      subjectFilter !== "todas" &&
+      chartSubject !== subjectFilter
+    ) {
+      setChartSubject(subjectFilter);
+    }
+  }, [chartAvailableSubjects, chartSubject, subjectFilter]);
 
   const totalAnswered = filteredAttempts.length;
 
@@ -396,6 +563,63 @@ export default function Progress() {
     filteredAttempts.length,
   ]);
 
+  const generalPieData = useMemo(() => {
+    return buildPieData([
+      { label: "Acertos", value: totalCorrect },
+      { label: "Erros", value: totalWrong },
+    ], 2);
+  }, [totalCorrect, totalWrong]);
+
+  const chartSourceAttempts = useMemo(() => {
+    const source = subjectFilter === "todas" ? periodFilteredAttempts : filteredAttempts;
+
+    if (chartSubject === "todas") return source;
+
+    return source.filter(
+      (attempt) => (attempt.subject?.trim() || "") === chartSubject
+    );
+  }, [subjectFilter, periodFilteredAttempts, filteredAttempts, chartSubject]);
+
+  const selectedChartSubjectLabel = useMemo(() => {
+    if (chartSubject !== "todas") return chartSubject;
+    if (subjectFilter !== "todas") return subjectFilter;
+    return "Todas";
+  }, [chartSubject, subjectFilter]);
+
+  const chartCorrectByConteudo = useMemo(() => {
+    const map = new Map<string, number>();
+
+    for (const attempt of chartSourceAttempts) {
+      if (!attempt.is_correct) continue;
+      const label = attempt.conteudo?.trim() || "Não informado";
+      map.set(label, (map.get(label) ?? 0) + 1);
+    }
+
+    return buildPieData(
+      Array.from(map.entries())
+        .map(([label, value]) => ({ label, value }))
+        .sort((a, b) => b.value - a.value),
+      6
+    );
+  }, [chartSourceAttempts]);
+
+  const chartWrongByConteudo = useMemo(() => {
+    const map = new Map<string, number>();
+
+    for (const attempt of chartSourceAttempts) {
+      if (attempt.is_correct) continue;
+      const label = attempt.conteudo?.trim() || "Não informado";
+      map.set(label, (map.get(label) ?? 0) + 1);
+    }
+
+    return buildPieData(
+      Array.from(map.entries())
+        .map(([label, value]) => ({ label, value }))
+        .sort((a, b) => b.value - a.value),
+      6
+    );
+  }, [chartSourceAttempts]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-50">
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
@@ -500,6 +724,56 @@ export default function Progress() {
                 </p>
               </Card>
             </div>
+
+            <PieCard
+              title="Visão geral: acertos x erros"
+              subtitle="Leitura visual rápida do seu desempenho no recorte atual."
+              data={generalPieData}
+              emptyMessage="Ainda não há dados suficientes para o gráfico geral."
+            />
+
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <PieChart className="w-5 h-5 text-slate-700" />
+                <h2 className="text-xl font-bold text-slate-900">
+                  Análise visual por disciplina
+                </h2>
+              </div>
+
+              <div className="max-w-sm mb-6">
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Disciplina do gráfico
+                </label>
+                <select
+                  value={chartSubject}
+                  onChange={(e) => setChartSubject(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
+                >
+                  {subjectFilter === "todas" && <option value="todas">Todas</option>}
+                  {chartAvailableSubjects.map((subject) => (
+                    <option key={subject} value={subject}>
+                      {subject}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid xl:grid-cols-2 gap-6">
+                <PieCard
+                  title="Conteúdos com mais acertos"
+                  subtitle={`Disciplina selecionada: ${selectedChartSubjectLabel}`}
+                  data={chartCorrectByConteudo}
+                  emptyMessage="Ainda não há acertos suficientes para montar essa pizza."
+                />
+
+                <PieCard
+                  title="Conteúdos com mais erros"
+                  subtitle={`Disciplina selecionada: ${selectedChartSubjectLabel}`}
+                  data={chartWrongByConteudo}
+                  emptyMessage="Ainda não há erros suficientes para montar essa pizza."
+                />
+              </div>
+            </Card>
 
             <Card className="p-6">
               <h2 className="text-xl font-bold text-slate-900 mb-4">
