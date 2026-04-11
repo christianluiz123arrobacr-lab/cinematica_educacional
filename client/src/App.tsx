@@ -7,6 +7,8 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Landing from "./pages/Landing";
 import VetPage from "./pages/VetPage";
 import VetObjectivePage from "./pages/VetObjectivePage";
+import VetDiagnosisPage from "./pages/VetDiagnosisPage";
+import VetPrioritiesPage from "./pages/VetPrioritiesPage";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
@@ -27,7 +29,6 @@ import CinematicaGraphs from "./pages/CinematicaGraphs";
 import CinematicaQuiz from "./pages/CinematicaQuiz";
 import CinematicaTopicBases from "./pages/CinematicaTopicBases";
 import ErrorNotebook from "./pages/ErrorNotebook";
-import VetDiagnosisPage from "./pages/VetDiagnosisPage";
 
 import QuestionBank from "./pages/QuestionBank";
 import LandingPage from "./pages/LandingPage";
@@ -111,10 +112,7 @@ import FisicaModernaTopicAtomo from "./pages/FisicaModernaTopicAtomo";
 import FisicaModernaTopicParticulas from "./pages/FisicaModernaTopicParticulas";
 import FisicaModernaTopicAplicacoes from "./pages/FisicaModernaTopicAplicacoes";
 
-
-
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path="/" component={LandingPage} />
@@ -122,10 +120,12 @@ function Router() {
       <Route path="/fisica" component={FisicaSelector} />
       <Route path="/login" component={LoginPage} />
 
-       <Route path="/admin/usuarios"> <ProtectedRoute>
-    <AdminUsersPage />
-  </ProtectedRoute>
-</Route>
+      <Route path="/admin/usuarios">
+        <ProtectedRoute>
+          <AdminUsersPage />
+        </ProtectedRoute>
+      </Route>
+
       <Route path="/fisica-i" component={FisicaIHome} />
       <Route path="/fisica-ii" component={FisicaIIHome} />
       <Route path="/fisica-iii" component={FisicaIIIHome} />
@@ -140,7 +140,7 @@ function Router() {
       <Route path="/cinematica/simulator" component={CinematicaSimulator} />
       <Route path="/cinematica/topic/bases" component={CinematicaTopicBases} />
       <Route path="/caderno-de-erros" component={ErrorNotebook} />
-      
+
       <Route path="/banco-questoes" component={QuestionBank} />
       <Route path="/banco-de-questoes" component={QuestionBankPage} />
       <Route path="/disciplinas" component={LandingPage} />
@@ -169,8 +169,7 @@ function Router() {
       <Route path="/estatica/topic/torque" component={EstaticaTopicTorque} />
       <Route path="/estatica/topic/maquinas" component={EstaticaTopicMaquinas} />
       <Route path="/estatica/topic/hidrostatica" component={EstaticaTopicHidrostatica} />
-      <Route path="/vet/diagnostico" component={VetDiagnosisPage} />
-      
+
       <Route path="/termologia" component={TermologiaHome} />
       <Route path="/termologia/graphs" component={TermologiaGraphs} />
       <Route path="/termologia/quiz" component={TermologiaQuiz} />
@@ -184,8 +183,11 @@ function Router() {
       <Route path="/mecanica" component={MecanicaHome} />
       <Route path="/mecanica/topic/cinematica" component={MecanicaTopicCinematica} />
       <Route path="/mecanica/topic/dinamica" component={MecanicaTopicDinamica} />
+
       <Route path="/vet" component={VetPage} />
       <Route path="/vet/objetivo" component={VetObjectivePage} />
+      <Route path="/vet/diagnostico" component={VetDiagnosisPage} />
+      <Route path="/vet/prioridades" component={VetPrioritiesPage} />
 
       <Route path="/ondulatoria" component={OndulatóriaHome} />
       <Route path="/ondulatoria/topic/conceitos" component={OndulatóriaTopicConceitos} />
@@ -237,24 +239,15 @@ function Router() {
       <Route path="/progress" component={Progress} />
       <Route path="/ia-resolver" component={IAResolver} />
       <Route path="/404" component={NotFound} />
-      {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>
   );
 }
 
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
-
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
+      <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
           <Router />
