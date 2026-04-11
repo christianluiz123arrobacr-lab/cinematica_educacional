@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { ArrowLeft, Target, Activity, ListChecks, BrainCircuit, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ArrowLeft, Target, Activity, ListChecks, BrainCircuit, BookOpen, Gauge } from "lucide-react";
 
 const modules = [
   {
@@ -42,6 +43,14 @@ const modules = [
     "Resolva questões reais escolhidas com base no seu objetivo, nas prioridades e no treino do VET.",
   href: "/vet/questoes",
   icon: BookOpen,
+  enabled: true,
+},
+  {
+  title: "Nivelamento",
+  description:
+    "Descubra se você está muito abaixo, baixo, próximo, compatível ou acima da régua da sua prova-alvo.",
+  href: "/vet/nivelamento",
+  icon: Gauge,
   enabled: true,
 },
 ];
