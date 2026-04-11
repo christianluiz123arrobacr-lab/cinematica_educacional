@@ -510,4 +510,248 @@ export default function VetTrainingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-50">
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
+        <div className="container py-4 flex items-center gap-4">
+          <Link href="/vet">
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar
+            </Button>
+          </Link>
+
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Treino recomendado</h1>
+            <p className="text-sm text-slate-500">Transformando diagnóstico em ação</p>
+          </div>
+        </div>
+      </header>
+
+      <main className="container py-8 space-y-6">
+        {authLoading || loading ? (
+          <Card className="p-8">
+            <p className="text-slate-600">Carregando treino recomendado...</p>
+          </Card>
+        ) : error ? (
+          <Card className="p-8 border-red-200 bg-red-50">
+            <p className="text-red-700">{error}</p>
+          </Card>
+        ) : !user ? (
+          <Card className="p-8">
+            <p className="text-slate-700">Você precisa estar logado para usar o VET.</p>
+          </Card>
+        ) : !profile ? (
+          <Card className="p-8">
+            <p className="text-slate-700 mb-4">
+              Antes de usar o treino recomendado, você precisa configurar seu objetivo do VET.
+            </p>
+            <Link href="/vet/objetivo">
+              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                Configurar objetivo
+              </Button>
+            </Link>
+          </Card>
+        ) : (
+          <>
+            <Card className="p-6 md:p-8 border-emerald-200 bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
+              <p className="text-sm uppercase tracking-wide text-emerald-100 mb-2">
+                Direção prática
+              </p>
+              <h2 className="text-3xl font-bold mb-3">
+                Treino recomendado para {profile.target_exam}
+              </h2>
+              <p className="text-emerald-50 leading-relaxed">
+                Agora o VET considera também conteúdos importantes da prova que ainda não foram treinados.
+              </p>
+            </Card>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              <Card className="p-5">
+                <p className="text-sm text-slate-500 mb-1">Ataque imediato</p>
+                <p className="text-3xl font-bold text-red-600">{ataque.length}</p>
+              </Card>
+
+              <Card className="p-5">
+                <p className="text-sm text-slate-500 mb-1">Consolidação</p>
+                <p className="text-3xl font-bold text-yellow-600">{consolidacao.length}</p>
+              </Card>
+
+              <Card className="p-5">
+                <p className="text-sm text-slate-500 mb-1">Manutenção</p>
+                <p className="text-3xl font-bold text-green-600">{manutencao.length}</p>
+              </Card>
+            </div>
+
+            <div className="grid xl:grid-cols-2 gap-6">
+              <Card className="p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Clock3 className="w-5 h-5 text-emerald-600" />
+                  <h2 className="text-xl font-bold text-slate-900">Carga semanal estimada</h2>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-2">Dias/semana</p>
+                    <p className="text-3xl font-bold text-slate-900">{weeklyLoad.studyDays}</p>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-2">Horas/dia</p>
+                    <p className="text-3xl font-bold text-slate-900">{weeklyLoad.hoursPerDay}</p>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-2">Horas/semana</p>
+                    <p className="text-3xl font-bold text-emerald-600">
+                      {weeklyLoad.totalWeeklyHours.toFixed(1)}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <CalendarDays className="w-5 h-5 text-emerald-600" />
+                  <h2 className="text-xl font-bold text-slate-900">Dias disponíveis</h2>
+                </div>
+
+                {studyDaysLabels.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {studyDaysLabels.map((day) => (
+                      <span
+                        key={day}
+                        className="px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-semibold text-sm"
+                      >
+                        {day}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-slate-500">
+                    Nenhum dia específico foi marcado ainda.
+                  </p>
+                )}
+              </Card>
+            </div>
+
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Clock3 className="w-5 h-5 text-emerald-600" />
+                <h2 className="text-xl font-bold text-slate-900">Estratégia semanal sugerida</h2>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
+                  <p className="text-sm text-red-700 font-semibold mb-2">Ataque</p>
+                  <p className="text-3xl font-bold text-red-600">
+                    {weeklyStrategy.attackPercent}%
+                  </p>
+                  <p className="text-sm text-slate-600 mt-2">
+                    {weeklyHoursSplit.attackHours.toFixed(1)}h por semana
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-yellow-200 bg-yellow-50 p-4">
+                  <p className="text-sm text-yellow-700 font-semibold mb-2">Consolidação</p>
+                  <p className="text-3xl font-bold text-yellow-600">
+                    {weeklyStrategy.consolidationPercent}%
+                  </p>
+                  <p className="text-sm text-slate-600 mt-2">
+                    {weeklyHoursSplit.consolidationHours.toFixed(1)}h por semana
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-green-200 bg-green-50 p-4">
+                  <p className="text-sm text-green-700 font-semibold mb-2">Manutenção</p>
+                  <p className="text-3xl font-bold text-green-600">
+                    {weeklyStrategy.maintenancePercent}%
+                  </p>
+                  <p className="text-sm text-slate-600 mt-2">
+                    {weeklyHoursSplit.maintenanceHours.toFixed(1)}h por semana
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            <BlockCard
+              title="Ataque imediato"
+              icon={Flame}
+              items={ataque}
+              emptyText="Nenhum conteúdo entrou em ataque imediato ainda."
+              tone="red"
+            />
+
+            <BlockCard
+              title="Consolidação"
+              icon={Layers3}
+              items={consolidacao}
+              emptyText="Nenhum conteúdo entrou em consolidação ainda."
+              tone="yellow"
+            />
+
+            <BlockCard
+              title="Manutenção"
+              icon={Shield}
+              items={manutencao}
+              emptyText="Nenhum conteúdo entrou em manutenção ainda."
+              tone="green"
+            />
+
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <BrainCircuit className="w-5 h-5 text-emerald-600" />
+                <h2 className="text-xl font-bold text-slate-900">Leitura do treino</h2>
+              </div>
+
+              <div className="space-y-3 text-slate-700">
+                <p>{trainingReading}</p>
+                <p>
+                  <span className="font-semibold">Ataque imediato:</span> é o bloco que mais deve
+                  receber seu tempo agora.
+                </p>
+                <p>
+                  <span className="font-semibold">Consolidação:</span> vem logo depois, para aumentar
+                  consistência sem tirar foco do que é urgente.
+                </p>
+                <p>
+                  <span className="font-semibold">Manutenção:</span> serve para não deixar conteúdos
+                  menos urgentes sumirem totalmente do seu radar.
+                </p>
+                <p>
+                  <span className="font-semibold">Próximo passo natural:</span> depois disso, o VET
+                  pode evoluir para montar listas reais de questões por bloco.
+                </p>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="w-5 h-5 text-emerald-600" />
+                <h2 className="text-xl font-bold text-slate-900">Resumo do plano</h2>
+              </div>
+
+              <div className="space-y-2 text-slate-700">
+                <p>
+                  Prova-alvo: <span className="font-semibold">{profile.target_exam}</span>
+                </p>
+                <p>
+                  Tempo até a prova:{" "}
+                  <span className="font-semibold">{profile.months_until_exam} mês(es)</span>
+                </p>
+                <p>
+                  Disciplina foco: <span className="font-semibold">{profile.focus_subject}</span>
+                </p>
+                <p>
+                  Carga semanal estimada:{" "}
+                  <span className="font-semibold">
+                    {weeklyLoad.totalWeeklyHours.toFixed(1)} hora(s)
+                  </span>
+                </p>
+              </div>
+            </Card>
+          </>
+        )}
+      </main>
+    </div>
+  );
+}
