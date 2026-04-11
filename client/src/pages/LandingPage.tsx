@@ -11,6 +11,7 @@ import {
   List,
   LogIn,
   Trophy,
+  BrainCircuit,
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -56,6 +57,12 @@ export default function LandingPage() {
           <Link href="/progress">
             <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-full text-lg">
               Progresso <Trophy className="w-5 h-5 ml-2" />
+            </Button>
+          </Link>
+
+          <Link href="/vet">
+            <Button className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full text-lg">
+              VET <BrainCircuit className="w-5 h-5 ml-2" />
             </Button>
           </Link>
         </div>
