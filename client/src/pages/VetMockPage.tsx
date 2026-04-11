@@ -16,6 +16,8 @@ import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { getQuestions } from "@/services/questions.service";
 import type { Question } from "@/types/question";
+import { useLocation } from "wouter";
+import type { QuizCompletionData } from "@/components/InteractiveQuiz";
 
 type VetProfileRow = {
   id: string;
