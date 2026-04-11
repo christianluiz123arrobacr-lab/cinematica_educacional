@@ -21,13 +21,13 @@ const modules = [
   enabled: true,
 },
   {
-    title: "Prioridades",
-    description:
-      "Descubra o que atacar primeiro com base no peso da prova e no seu desempenho.",
-    href: "/vet/prioridades",
-    icon: ListChecks,
-    enabled: false,
-  },
+  title: "Prioridades",
+  description:
+    "Descubra o que atacar primeiro com base no peso da prova e no seu desempenho.",
+  href: "/vet/prioridades",
+  icon: ListChecks,
+  enabled: true,
+},
   {
     title: "Treino recomendado",
     description:
