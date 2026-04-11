@@ -105,6 +105,71 @@ function matchesExamInstitution(question: Question, targetExam: string) {
   return normalizeText(question.institution) === normalizeText(targetExam);
 }
 
+function getBlockLimit(block: "ataque" | "consolidacao" | "manutencao") {
+  if (block === "ataque") return 12;
+  if (block === "consolidacao") return 8;
+  return 5;
+}
+
+function getQuestionDifficultyScore(question: Question, block: "ataque" | "consolidacao" | "manutencao") {
+  const difficulty = normalizeText(question.difficulty);
+
+  if (block === "ataque") {
+    if (difficulty === "medio") return 3;
+    if (difficulty === "dificil") return 2;
+    if (difficulty === "facil") return 1;
+    return 0;
+  }
+
+  if (block === "consolidacao") {
+    if (difficulty === "medio") return 3;
+    if (difficulty === "facil") return 2;
+    if (difficulty === "dificil") return 1;
+    return 0;
+  }
+
+  if (difficulty === "facil") return 3;
+  if (difficulty === "medio") return 2;
+  if (difficulty === "dificil") return 1;
+  return 0;
+}
+
+function getQuestionPriorityScore(
+  question: Question,
+  block: "ataque" | "consolidacao" | "manutencao",
+  contents: string[],
+  targetExam: string,
+  attemptedQuestionIds: Set<string>
+) {
+  let score = 0;
+
+  const normalizedTopic = normalizeText(question.topic);
+  const contentIndex = contents.indexOf(normalizedTopic);
+
+  if (contentIndex !== -1) {
+    score += Math.max(20 - contentIndex * 3, 5);
+  }
+
+  if (matchesExamInstitution(question, targetExam)) {
+    score += 30;
+  }
+
+  if (!attemptedQuestionIds.has(question.id)) {
+    score += 40;
+  } else {
+    score -= 10;
+  }
+
+  score += getQuestionDifficultyScore(question, block);
+
+  const year = Number(question.year);
+  if (!Number.isNaN(year)) {
+    score += Math.min(Math.max(year - 2015, 0), 10);
+  }
+
+  return score;
+}
+
 export default function VetQuestionsPage() {
   const { user, loading: authLoading } = useSupabaseAuth();
 
@@ -292,33 +357,31 @@ export default function VetQuestionsPage() {
       contents.includes(normalizeText(question.topic))
     );
 
-    const examMatches = base.filter((question) =>
-      matchesExamInstitution(question, profile.target_exam)
-    );
+    const sorted = [...base].sort((a, b) => {
+      const scoreA = getQuestionPriorityScore(
+        a,
+        block,
+        contents,
+        profile.target_exam,
+        attemptedQuestionIds
+      );
+      const scoreB = getQuestionPriorityScore(
+        b,
+        block,
+        contents,
+        profile.target_exam,
+        attemptedQuestionIds
+      );
 
-    const fallback = base.filter(
-      (question) => !matchesExamInstitution(question, profile.target_exam)
-    );
-
-    const ordered = [...examMatches, ...fallback].sort((a, b) => {
-      const aAttempted = attemptedQuestionIds.has(a.id) ? 1 : 0;
-      const bAttempted = attemptedQuestionIds.has(b.id) ? 1 : 0;
-
-      if (aAttempted !== bAttempted) {
-        return aAttempted - bAttempted;
-      }
-
-      const aContentIndex = contents.indexOf(normalizeText(a.topic));
-      const bContentIndex = contents.indexOf(normalizeText(b.topic));
-
-      if (aContentIndex !== bContentIndex) {
-        return aContentIndex - bContentIndex;
-      }
-
-      return Number(b.year) - Number(a.year);
+      return scoreB - scoreA;
     });
 
-    return ordered.slice(0, 12);
+    const limit = getBlockLimit(block);
+
+    const unseen = sorted.filter((question) => !attemptedQuestionIds.has(question.id));
+    const seen = sorted.filter((question) => attemptedQuestionIds.has(question.id));
+
+    return [...unseen, ...seen].slice(0, limit);
   }
 
   const attackQuestions = useMemo(() => buildRecommendedQuestions("ataque"), [
@@ -406,8 +469,8 @@ export default function VetQuestionsPage() {
                 Fila recomendada para {profile.target_exam}
               </h2>
               <p className="text-emerald-50 leading-relaxed">
-                O VET está puxando questões com base nos seus conteúdos prioritários,
-                tentando priorizar primeiro a prova-alvo e, depois, questões próximas.
+                Agora o VET prioriza questões inéditas, valoriza mais a prova-alvo e organiza a fila
+                de forma mais estratégica por bloco.
               </p>
             </Card>
 
