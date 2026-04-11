@@ -4,12 +4,14 @@ import VetTrainingPage from "./pages/VetTrainingPage";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
+import VetQuestionsPage from "./pages/VetQuestionsPage";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Landing from "./pages/Landing";
 import VetPage from "./pages/VetPage";
 import VetObjectivePage from "./pages/VetObjectivePage";
 import VetDiagnosisPage from "./pages/VetDiagnosisPage";
 import VetPrioritiesPage from "./pages/VetPrioritiesPage";
+
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
@@ -190,6 +192,7 @@ function Router() {
       <Route path="/vet/diagnostico" component={VetDiagnosisPage} />
       <Route path="/vet/prioridades" component={VetPrioritiesPage} />
       <Route path="/vet/treino" component={VetTrainingPage} />
+      <Route path="/vet/questoes" component={VetQuestionsPage} />
 
       <Route path="/ondulatoria" component={OndulatóriaHome} />
       <Route path="/ondulatoria/topic/conceitos" component={OndulatóriaTopicConceitos} />
