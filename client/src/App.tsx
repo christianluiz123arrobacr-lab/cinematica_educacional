@@ -12,6 +12,7 @@ import VetObjectivePage from "./pages/VetObjectivePage";
 import VetDiagnosisPage from "./pages/VetDiagnosisPage";
 import VetPrioritiesPage from "./pages/VetPrioritiesPage";
 import VetLevelPage from "./pages/VetLevelPage";
+import VetMockPage from "./pages/VetMockPage";
 
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
@@ -195,6 +196,7 @@ function Router() {
       <Route path="/vet/treino" component={VetTrainingPage} />
       <Route path="/vet/questoes" component={VetQuestionsPage} />
       <Route path="/vet/nivelamento" component={VetLevelPage} />
+      <Route path="/vet/simulado" component={VetMockPage} />
 
       <Route path="/ondulatoria" component={OndulatóriaHome} />
       <Route path="/ondulatoria/topic/conceitos" component={OndulatóriaTopicConceitos} />
