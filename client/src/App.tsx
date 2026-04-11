@@ -199,6 +199,7 @@ function Router() {
       <Route path="/vet/questoes" component={VetQuestionsPage} />
       <Route path="/vet/nivelamento" component={VetLevelPage} />
       <Route path="/vet/simulado" component={VetMockPage} />
+      <Route path="/vet/simulado/resultado" component={VetMockResultPage} />
 
       <Route path="/ondulatoria" component={OndulatóriaHome} />
       <Route path="/ondulatoria/topic/conceitos" component={OndulatóriaTopicConceitos} />
