@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import {
   ArrowLeft,
   BrainCircuit,
@@ -11,13 +11,14 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { InteractiveQuiz } from "@/components/InteractiveQuiz";
+import {
+  InteractiveQuiz,
+  type QuizCompletionData,
+} from "@/components/InteractiveQuiz";
 import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { getQuestions } from "@/services/questions.service";
 import type { Question } from "@/types/question";
-import { useLocation } from "wouter";
-import type { QuizCompletionData } from "@/components/InteractiveQuiz";
 
 type VetProfileRow = {
   id: string;
@@ -187,6 +188,7 @@ function uniqueById(items: Question[]) {
 
 export default function VetMockPage() {
   const { user, loading: authLoading } = useSupabaseAuth();
+  const [, setLocation] = useLocation();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -195,7 +197,6 @@ export default function VetMockPage() {
   const [weights, setWeights] = useState<WeightRow[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [mode, setMode] = useState<SimuladoMode>("misto");
-  const [, setLocation] = useLocation();
 
   useEffect(() => {
     async function loadData() {
@@ -293,10 +294,16 @@ export default function VetMockPage() {
       const conteudo = normalizeText(attempt.conteudo);
       if (!conteudo) continue;
 
-      const current = contentMap.get(conteudo) ?? { total: 0, correct: 0, wrong: 0 };
+      const current = contentMap.get(conteudo) ?? {
+        total: 0,
+        correct: 0,
+        wrong: 0,
+      };
+
       current.total += 1;
       if (attempt.is_correct) current.correct += 1;
       else current.wrong += 1;
+
       contentMap.set(conteudo, current);
     }
 
@@ -315,7 +322,12 @@ export default function VetMockPage() {
     return Array.from(allContents)
       .filter(Boolean)
       .map((conteudo) => {
-        const stats = contentMap.get(conteudo) ?? { total: 0, correct: 0, wrong: 0 };
+        const stats = contentMap.get(conteudo) ?? {
+          total: 0,
+          correct: 0,
+          wrong: 0,
+        };
+
         const accuracy = stats.total ? (stats.correct / stats.total) * 100 : 0;
 
         const matchedWeight = filteredWeights.find(
@@ -344,17 +356,26 @@ export default function VetMockPage() {
   }, [filteredAttempts, profile, weights]);
 
   const attackContents = useMemo(
-    () => recommendedContents.filter((item) => item.block === "ataque").map((item) => item.conteudo),
+    () =>
+      recommendedContents
+        .filter((item) => item.block === "ataque")
+        .map((item) => item.conteudo),
     [recommendedContents]
   );
 
   const consolidationContents = useMemo(
-    () => recommendedContents.filter((item) => item.block === "consolidacao").map((item) => item.conteudo),
+    () =>
+      recommendedContents
+        .filter((item) => item.block === "consolidacao")
+        .map((item) => item.conteudo),
     [recommendedContents]
   );
 
   const maintenanceContents = useMemo(
-    () => recommendedContents.filter((item) => item.block === "manutencao").map((item) => item.conteudo),
+    () =>
+      recommendedContents
+        .filter((item) => item.block === "manutencao")
+        .map((item) => item.conteudo),
     [recommendedContents]
   );
 
@@ -368,8 +389,8 @@ export default function VetMockPage() {
       block === "ataque"
         ? attackContents
         : block === "consolidacao"
-        ? consolidationContents
-        : maintenanceContents;
+          ? consolidationContents
+          : maintenanceContents;
 
     if (!contents.length) return [];
 
@@ -446,19 +467,38 @@ export default function VetMockPage() {
     mode === "ataque"
       ? ataqueQuestions
       : mode === "consolidacao"
-      ? consolidacaoQuestions
-      : mode === "manutencao"
-      ? manutencaoQuestions
-      : mistoQuestions;
+        ? consolidacaoQuestions
+        : mode === "manutencao"
+          ? manutencaoQuestions
+          : mistoQuestions;
 
   const modeLabel =
     mode === "ataque"
       ? "Simulado de ataque"
       : mode === "consolidacao"
-      ? "Simulado de consolidação"
-      : mode === "manutencao"
-      ? "Simulado de manutenção"
-      : "Simulado misto VET";
+        ? "Simulado de consolidação"
+        : mode === "manutencao"
+          ? "Simulado de manutenção"
+          : "Simulado misto VET";
+
+  function handleSimuladoComplete(data: QuizCompletionData) {
+    if (!profile) return;
+
+    const payload = {
+      mode,
+      targetExam: profile.target_exam,
+      focusSubject: profile.focus_subject,
+      totalQuestions: data.totalQuestions,
+      totalAnswered: data.totalAnswered,
+      score: data.score,
+      accuracy: data.accuracy,
+      wrongTopics: data.wrongTopics,
+      wrongDifficulties: data.wrongDifficulties,
+    };
+
+    window.sessionStorage.setItem("vet_mock_result", JSON.stringify(payload));
+    setLocation("/vet/simulado/resultado");
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-50">
@@ -473,7 +513,9 @@ export default function VetMockPage() {
 
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Simulado VET</h1>
-            <p className="text-sm text-slate-500">Treino estratégico em formato de simulado</p>
+            <p className="text-sm text-slate-500">
+              Treino estratégico em formato de simulado
+            </p>
           </div>
         </div>
       </header>
@@ -613,6 +655,7 @@ export default function VetMockPage() {
                 <InteractiveQuiz
                   key={`${mode}-${currentQuestions.map((q) => q.id).join("-")}`}
                   questions={currentQuestions}
+                  onComplete={handleSimuladoComplete}
                 />
               ) : (
                 <p className="text-slate-500">
