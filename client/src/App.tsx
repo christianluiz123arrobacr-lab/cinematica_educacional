@@ -1,5 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import VetTrainingPage from "./pages/VetTrainingPage";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -188,6 +189,7 @@ function Router() {
       <Route path="/vet/objetivo" component={VetObjectivePage} />
       <Route path="/vet/diagnostico" component={VetDiagnosisPage} />
       <Route path="/vet/prioridades" component={VetPrioritiesPage} />
+      <Route path="/vet/treino" component={VetTrainingPage} />
 
       <Route path="/ondulatoria" component={OndulatóriaHome} />
       <Route path="/ondulatoria/topic/conceitos" component={OndulatóriaTopicConceitos} />
