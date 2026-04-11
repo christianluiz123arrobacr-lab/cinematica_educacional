@@ -233,24 +233,28 @@ function getPieBackground(data: PieDatum[]) {
 
 function PieLegend({ data }: { data: PieDatum[] }) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-2 md:space-y-2.5">
       {data.map((item) => (
         <div
           key={item.label}
-          className="flex items-start justify-between gap-4 rounded-xl border border-slate-200 bg-white p-3"
+          className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 bg-white p-2.5 md:p-2 lg:p-3"
         >
-          <div className="flex items-start gap-3 min-w-0">
+          <div className="flex items-start gap-2.5 min-w-0">
             <span
               className="mt-1 h-3 w-3 rounded-full flex-shrink-0"
               style={{ backgroundColor: item.color }}
             />
             <div className="min-w-0">
-              <p className="font-semibold text-slate-900 break-words">{item.label}</p>
-              <p className="text-sm text-slate-500">{item.value} questão(ões)</p>
+              <p className="font-semibold text-slate-900 break-words text-sm md:text-[13px] lg:text-sm">
+                {item.label}
+              </p>
+              <p className="text-xs md:text-[11px] lg:text-xs text-slate-500">
+                {item.value} questão(ões)
+              </p>
             </div>
           </div>
 
-          <span className="text-sm font-bold text-slate-700 whitespace-nowrap">
+          <span className="text-xs md:text-[11px] lg:text-sm font-bold text-slate-700 whitespace-nowrap">
             {item.percent.toFixed(1)}%
           </span>
         </div>
@@ -271,25 +275,33 @@ function PieCard({
   emptyMessage: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 h-full">
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 md:p-3 lg:p-4 xl:p-5 h-full">
       <div className="flex items-center gap-2 mb-2">
-        <PieChart className="w-5 h-5 text-slate-700" />
-        <h3 className="text-lg font-bold text-slate-900">{title}</h3>
+        <PieChart className="w-4 h-4 md:w-4 md:h-4 lg:w-5 lg:h-5 text-slate-700" />
+        <h3 className="text-base md:text-[15px] lg:text-lg font-bold text-slate-900 leading-tight">
+          {title}
+        </h3>
       </div>
 
-      {subtitle && <p className="text-sm text-slate-500 mb-5">{subtitle}</p>}
+      {subtitle && (
+        <p className="text-sm md:text-xs lg:text-sm text-slate-500 mb-4 md:mb-3 lg:mb-4">
+          {subtitle}
+        </p>
+      )}
 
       {data.length > 0 ? (
-        <div className="grid gap-6 items-center">
+        <div className="grid gap-4 md:gap-3 lg:gap-5 items-center">
           <div className="flex justify-center">
             <div
-              className="relative h-44 w-44 rounded-full border-8 border-white shadow-md"
+              className="relative h-32 w-32 md:h-24 md:w-24 lg:h-32 lg:w-32 xl:h-40 xl:w-40 rounded-full border-8 border-white shadow-md"
               style={{ background: getPieBackground(data) }}
             >
-              <div className="absolute inset-[26%] rounded-full bg-white flex items-center justify-center text-center p-3">
+              <div className="absolute inset-[26%] rounded-full bg-white flex items-center justify-center text-center p-2">
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-slate-500">Total</p>
-                  <p className="text-2xl font-bold text-slate-900">
+                  <p className="text-[10px] md:text-[9px] lg:text-[10px] uppercase tracking-wide text-slate-500">
+                    Total
+                  </p>
+                  <p className="text-xl md:text-base lg:text-xl xl:text-2xl font-bold text-slate-900">
                     {data.reduce((sum, item) => sum + item.value, 0)}
                   </p>
                 </div>
@@ -300,7 +312,7 @@ function PieCard({
           <PieLegend data={data} />
         </div>
       ) : (
-        <p className="text-slate-500">{emptyMessage}</p>
+        <p className="text-slate-500 text-sm">{emptyMessage}</p>
       )}
     </div>
   );
@@ -399,17 +411,11 @@ export default function Progress() {
       return;
     }
 
-    if (
-      chartSubject !== "todas" &&
-      !chartAvailableSubjects.includes(chartSubject)
-    ) {
+    if (chartSubject !== "todas" && !chartAvailableSubjects.includes(chartSubject)) {
       setChartSubject(chartAvailableSubjects[0]);
     }
 
-    if (
-      subjectFilter !== "todas" &&
-      chartSubject !== subjectFilter
-    ) {
+    if (subjectFilter !== "todas" && chartSubject !== subjectFilter) {
       setChartSubject(subjectFilter);
     }
   }, [chartAvailableSubjects, chartSubject, subjectFilter]);
@@ -538,9 +544,7 @@ export default function Progress() {
     }
 
     if (bestSubject) {
-      recs.push(
-        `Seu melhor desempenho no recorte atual está em ${bestSubject.label}.`
-      );
+      recs.push(`Seu melhor desempenho no recorte atual está em ${bestSubject.label}.`);
     }
 
     if (avgTimeSeconds > 0) {
@@ -564,10 +568,13 @@ export default function Progress() {
   ]);
 
   const generalPieData = useMemo(() => {
-    return buildPieData([
-      { label: "Acertos", value: totalCorrect },
-      { label: "Erros", value: totalWrong },
-    ], 2);
+    return buildPieData(
+      [
+        { label: "Acertos", value: totalCorrect },
+        { label: "Erros", value: totalWrong },
+      ],
+      2
+    );
   }, [totalCorrect, totalWrong]);
 
   const chartSourceAttempts = useMemo(() => {
@@ -575,9 +582,7 @@ export default function Progress() {
 
     if (chartSubject === "todas") return source;
 
-    return source.filter(
-      (attempt) => (attempt.subject?.trim() || "") === chartSubject
-    );
+    return source.filter((attempt) => (attempt.subject?.trim() || "") === chartSubject);
   }, [subjectFilter, periodFilteredAttempts, filteredAttempts, chartSubject]);
 
   const selectedChartSubjectLabel = useMemo(() => {
@@ -712,9 +717,7 @@ export default function Progress() {
 
               <Card className="p-6">
                 <p className="text-sm text-slate-500 mb-2">Taxa de acerto</p>
-                <p className="text-3xl font-bold text-blue-600">
-                  {accuracy.toFixed(1)}%
-                </p>
+                <p className="text-3xl font-bold text-blue-600">{accuracy.toFixed(1)}%</p>
               </Card>
 
               <Card className="p-6">
@@ -728,9 +731,7 @@ export default function Progress() {
             <Card className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <PieChart className="w-5 h-5 text-slate-700" />
-                <h2 className="text-xl font-bold text-slate-900">
-                  Análise visual
-                </h2>
+                <h2 className="text-xl font-bold text-slate-900">Análise visual</h2>
               </div>
 
               <div className="max-w-sm mb-6">
@@ -751,7 +752,7 @@ export default function Progress() {
                 </select>
               </div>
 
-              <div className="grid xl:grid-cols-3 gap-6 items-start">
+              <div className="grid md:grid-cols-3 gap-4 md:gap-3 lg:gap-4 xl:gap-6 items-start">
                 <PieCard
                   title="Acertos x erros"
                   subtitle="Visão geral do recorte atual"
@@ -776,9 +777,7 @@ export default function Progress() {
             </Card>
 
             <Card className="p-6">
-              <h2 className="text-xl font-bold text-slate-900 mb-4">
-                Evolução por dia
-              </h2>
+              <h2 className="text-xl font-bold text-slate-900 mb-4">Evolução por dia</h2>
 
               {dailyStats.length > 0 ? (
                 <div className="overflow-x-auto">
@@ -788,9 +787,7 @@ export default function Progress() {
 
                       return (
                         <div key={item.date} className="flex flex-col items-center gap-2 w-16">
-                          <div className="text-xs text-slate-500 font-medium">
-                            {item.total}
-                          </div>
+                          <div className="text-xs text-slate-500 font-medium">{item.total}</div>
 
                           <div className="flex items-end h-48">
                             <div
@@ -945,9 +942,7 @@ export default function Progress() {
 
             <div className="grid xl:grid-cols-2 gap-6">
               <Card className="p-6">
-                <h2 className="text-xl font-bold text-slate-900 mb-4">
-                  Taxa de acerto por banca
-                </h2>
+                <h2 className="text-xl font-bold text-slate-900 mb-4">Taxa de acerto por banca</h2>
 
                 <div className="space-y-3">
                   {byBanca.length > 0 ? (
@@ -957,9 +952,7 @@ export default function Progress() {
                         className="rounded-xl border border-slate-200 p-4 bg-white"
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className="font-semibold text-slate-800">
-                            {item.label}
-                          </span>
+                          <span className="font-semibold text-slate-800">{item.label}</span>
                           <span className="text-sm font-bold text-slate-600">
                             {item.accuracy.toFixed(0)}%
                           </span>
@@ -989,9 +982,7 @@ export default function Progress() {
                         className="rounded-xl border border-slate-200 p-4 bg-white"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="font-semibold text-slate-800">
-                            {item.label}
-                          </span>
+                          <span className="font-semibold text-slate-800">{item.label}</span>
                           <span className="text-sm font-bold text-purple-600">
                             {formatSeconds(Math.round(item.avgSeconds))}
                           </span>
@@ -1012,9 +1003,7 @@ export default function Progress() {
 
             <div className="grid xl:grid-cols-2 gap-6">
               <Card className="p-6">
-                <h2 className="text-xl font-bold text-slate-900 mb-4">
-                  Top conteúdos
-                </h2>
+                <h2 className="text-xl font-bold text-slate-900 mb-4">Top conteúdos</h2>
 
                 <div className="space-y-3">
                   {byConteudo.length > 0 ? (
@@ -1024,9 +1013,7 @@ export default function Progress() {
                         className="rounded-xl border border-slate-200 p-4 bg-white"
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className="font-semibold text-slate-800">
-                            {item.label}
-                          </span>
+                          <span className="font-semibold text-slate-800">{item.label}</span>
                           <span className="text-sm font-bold text-slate-600">
                             {item.accuracy.toFixed(0)}%
                           </span>
@@ -1044,9 +1031,7 @@ export default function Progress() {
               </Card>
 
               <Card className="p-6">
-                <h2 className="text-xl font-bold text-slate-900 mb-4">
-                  Top assuntos
-                </h2>
+                <h2 className="text-xl font-bold text-slate-900 mb-4">Top assuntos</h2>
 
                 <div className="space-y-3">
                   {byAssunto.length > 0 ? (
@@ -1056,9 +1041,7 @@ export default function Progress() {
                         className="rounded-xl border border-slate-200 p-4 bg-white"
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className="font-semibold text-slate-800">
-                            {item.label}
-                          </span>
+                          <span className="font-semibold text-slate-800">{item.label}</span>
                           <span className="text-sm font-bold text-slate-600">
                             {item.accuracy.toFixed(0)}%
                           </span>
@@ -1084,9 +1067,7 @@ export default function Progress() {
 
               <div className="grid md:grid-cols-3 gap-4">
                 <div className="rounded-xl border border-red-200 bg-red-50 p-4">
-                  <p className="text-sm font-semibold text-red-700 mb-2">
-                    Conteúdo com mais erros
-                  </p>
+                  <p className="text-sm font-semibold text-red-700 mb-2">Conteúdo com mais erros</p>
                   <p className="font-bold text-slate-900">
                     {mostWrongConteudo?.label ?? "Sem dados"}
                   </p>
@@ -1152,9 +1133,7 @@ export default function Progress() {
             <div className="grid xl:grid-cols-2 gap-6">
               <Card className="p-6">
                 <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
-                  <h2 className="text-xl font-bold text-slate-900">
-                    Últimas erradas
-                  </h2>
+                  <h2 className="text-xl font-bold text-slate-900">Últimas erradas</h2>
 
                   <Link href="/caderno-de-erros">
                     <Button className="bg-slate-900 hover:bg-slate-800 text-white">
@@ -1191,9 +1170,7 @@ export default function Progress() {
               </Card>
 
               <Card className="p-6">
-                <h2 className="text-xl font-bold text-slate-900 mb-4">
-                  Últimas tentativas
-                </h2>
+                <h2 className="text-xl font-bold text-slate-900 mb-4">Últimas tentativas</h2>
 
                 {recentAttempts.length > 0 ? (
                   <div className="space-y-3">
@@ -1233,9 +1210,7 @@ export default function Progress() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-slate-500">
-                    Você ainda não respondeu nenhuma questão.
-                  </p>
+                  <p className="text-slate-500">Você ainda não respondeu nenhuma questão.</p>
                 )}
               </Card>
             </div>
