@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowLeft, Target, Activity, ListChecks, BrainCircuit } from "lucide-react";
+import { ArrowLeft, Target, Activity, ListChecks, BrainCircuit, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -36,6 +36,14 @@ const modules = [
     icon: BrainCircuit,
     enabled: true,
   },
+  {
+  title: "Questões recomendadas",
+  description:
+    "Resolva questões reais escolhidas com base no seu objetivo, nas prioridades e no treino do VET.",
+  href: "/vet/questoes",
+  icon: BookOpen,
+  enabled: true,
+},
 ];
 
 export default function VetPage() {
