@@ -195,6 +195,7 @@ export default function VetMockPage() {
   const [weights, setWeights] = useState<WeightRow[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [mode, setMode] = useState<SimuladoMode>("misto");
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     async function loadData() {
