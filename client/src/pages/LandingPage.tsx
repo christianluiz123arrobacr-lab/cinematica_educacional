@@ -10,6 +10,7 @@ import {
   Zap,
   List,
   LogIn,
+  Trophy,
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -39,15 +40,22 @@ export default function LandingPage() {
           Teoria, questões, simulados e resolução inteligente em um só lugar.
         </p>
 
-        <div className="flex gap-6 justify-center flex-wrap mb-16">
+        <div className="flex gap-4 justify-center flex-wrap mb-16">
           <Link href="/fisica">
             <Button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full text-lg">
               Explorar disciplinas <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </Link>
+
           <Link href="/banco-de-questoes">
             <Button className="border-2 border-purple-600 text-purple-600 hover:bg-purple-50 font-bold py-3 px-8 rounded-full text-lg bg-white">
               Acessar banco de questões <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </Link>
+
+          <Link href="/progress">
+            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-full text-lg">
+              Progresso <Trophy className="w-5 h-5 ml-2" />
             </Button>
           </Link>
         </div>
@@ -128,7 +136,6 @@ export default function LandingPage() {
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full -ml-48 -mb-48"></div>
 
             <div className="grid md:grid-cols-2 gap-12 relative z-10">
-              {/* Left side - Content */}
               <div>
                 <div className="flex items-center gap-3 mb-6">
                   <div className="text-4xl">⭐</div>
@@ -173,7 +180,6 @@ export default function LandingPage() {
                 </Link>
               </div>
 
-              {/* Right side - Visual */}
               <div className="hidden md:flex items-center justify-center relative h-80">
                 <div className="relative w-full h-full flex items-center justify-center">
                   <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-80 h-56 bg-white rounded-3xl shadow-2xl border-8 border-white overflow-hidden z-10">
