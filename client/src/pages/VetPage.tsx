@@ -13,13 +13,13 @@ const modules = [
     enabled: true,
   },
   {
-    title: "Diagnóstico",
-    description:
-      "Veja disciplina crítica, disciplina forte, conteúdo urgente e risco atual.",
-    href: "/vet/diagnostico",
-    icon: Activity,
-    enabled: false,
-  },
+  title: "Diagnóstico",
+  description:
+    "Veja disciplina crítica, disciplina forte, conteúdo urgente e risco atual.",
+  href: "/vet/diagnostico",
+  icon: Activity,
+  enabled: true,
+},
   {
     title: "Prioridades",
     description:
