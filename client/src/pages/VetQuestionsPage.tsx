@@ -57,6 +57,7 @@ type RecommendedContent = {
   conteudo: string;
   score: number;
   block: "ataque" | "consolidacao" | "manutencao";
+  hasAttempts: boolean;
 };
 
 function normalizeText(value?: string | null) {
@@ -67,7 +68,8 @@ function normalizeText(value?: string | null) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-function getWeaknessScore(accuracy: number) {
+function getWeaknessScore(accuracy: number, total: number) {
+  if (total === 0) return 6;
   if (accuracy < 40) return 10;
   if (accuracy < 55) return 7;
   if (accuracy < 70) return 4;
@@ -90,6 +92,14 @@ function getWrongVolumeScore(wrong: number) {
   return 0;
 }
 
+function getNoAttemptPenalty(total: number, weight: number) {
+  if (total > 0) return 0;
+  if (weight >= 8) return 6;
+  if (weight >= 6) return 4;
+  if (weight >= 4) return 2;
+  return 1;
+}
+
 function getTrainingBlock(score: number): "ataque" | "consolidacao" | "manutencao" {
   if (score >= 15) return "ataque";
   if (score >= 9) return "consolidacao";
@@ -106,7 +116,10 @@ function getBlockLimit(block: "ataque" | "consolidacao" | "manutencao") {
   return 5;
 }
 
-function getQuestionDifficultyScore(question: Question, block: "ataque" | "consolidacao" | "manutencao") {
+function getQuestionDifficultyScore(
+  question: Question,
+  block: "ataque" | "consolidacao" | "manutencao"
+) {
   const difficulty = normalizeText(question.difficulty);
 
   if (block === "ataque") {
@@ -202,7 +215,8 @@ export default function VetQuestionsPage() {
   const [attempts, setAttempts] = useState<AttemptRow[]>([]);
   const [weights, setWeights] = useState<WeightRow[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [selectedBlock, setSelectedBlock] = useState<"ataque" | "consolidacao" | "manutencao">("ataque");
+  const [selectedBlock, setSelectedBlock] =
+    useState<"ataque" | "consolidacao" | "manutencao">("ataque");
 
   useEffect(() => {
     async function loadData() {
@@ -310,46 +324,80 @@ export default function VetQuestionsPage() {
       contentMap.set(conteudo, current);
     }
 
+    const filteredWeights = weights.filter((row) => {
+      if (profile.focus_subject === "todas") return true;
+      return normalizeText(row.subject) === normalizeText(profile.focus_subject);
+    });
+
+    const allContents = new Set<string>();
+
+    filteredWeights.forEach((row) => {
+      allContents.add(normalizeText(row.conteudo));
+    });
+
+    contentMap.forEach((_, conteudo) => {
+      allContents.add(conteudo);
+    });
+
     const urgencyTimeScore = getUrgencyTimeScore(profile.months_until_exam);
 
-    return Array.from(contentMap.entries())
-      .map(([conteudo, value]) => {
-        const accuracy = value.total ? (value.correct / value.total) * 100 : 0;
+    return Array.from(allContents)
+      .filter(Boolean)
+      .map((conteudo) => {
+        const stats = contentMap.get(conteudo) ?? {
+          total: 0,
+          correct: 0,
+          wrong: 0,
+        };
 
-        const matchedWeight = weights.find((row) => {
-          const sameSubject =
-            profile.focus_subject === "todas" ||
-            normalizeText(row.subject) === normalizeText(profile.focus_subject);
+        const accuracy = stats.total ? (stats.correct / stats.total) * 100 : 0;
 
-          return sameSubject && normalizeText(row.conteudo) === conteudo;
-        });
+        const matchedWeight = filteredWeights.find(
+          (row) => normalizeText(row.conteudo) === conteudo
+        );
 
         const weight = matchedWeight?.weight ?? 3;
-        const weaknessScore = getWeaknessScore(accuracy);
-        const wrongVolumeScore = getWrongVolumeScore(value.wrong);
-        const score = weight + weaknessScore + urgencyTimeScore + wrongVolumeScore;
+        const weaknessScore = getWeaknessScore(accuracy, stats.total);
+        const wrongVolumeScore = getWrongVolumeScore(stats.wrong);
+        const noAttemptPenalty = getNoAttemptPenalty(stats.total, weight);
+        const score =
+          weight + weaknessScore + urgencyTimeScore + wrongVolumeScore + noAttemptPenalty;
 
         return {
           conteudo,
           score,
           block: getTrainingBlock(score),
+          hasAttempts: stats.total > 0,
         } as RecommendedContent;
       })
-      .sort((a, b) => b.score - a.score);
+      .sort(
+        (a, b) =>
+          b.score - a.score ||
+          Number(a.hasAttempts) - Number(b.hasAttempts)
+      );
   }, [filteredAttempts, profile, weights]);
 
   const attackContents = useMemo(
-    () => recommendedContents.filter((item) => item.block === "ataque").map((item) => item.conteudo),
+    () =>
+      recommendedContents
+        .filter((item) => item.block === "ataque")
+        .map((item) => item.conteudo),
     [recommendedContents]
   );
 
   const consolidationContents = useMemo(
-    () => recommendedContents.filter((item) => item.block === "consolidacao").map((item) => item.conteudo),
+    () =>
+      recommendedContents
+        .filter((item) => item.block === "consolidacao")
+        .map((item) => item.conteudo),
     [recommendedContents]
   );
 
   const maintenanceContents = useMemo(
-    () => recommendedContents.filter((item) => item.block === "manutencao").map((item) => item.conteudo),
+    () =>
+      recommendedContents
+        .filter((item) => item.block === "manutencao")
+        .map((item) => item.conteudo),
     [recommendedContents]
   );
 
@@ -519,7 +567,7 @@ export default function VetQuestionsPage() {
                 Fila recomendada para {profile.target_exam}
               </h2>
               <p className="text-emerald-50 leading-relaxed">
-                Agora você pode tanto resolver aqui dentro quanto abrir o banco já filtrado pelo bloco do VET.
+                Agora o VET também usa conteúdos importantes da prova que ainda não foram treinados para montar a fila.
               </p>
             </Card>
 
