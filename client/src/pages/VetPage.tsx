@@ -3,6 +3,8 @@ import { ArrowLeft, Target, Activity, ListChecks, BrainCircuit, BookOpen } from 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Target, Activity, ListChecks, BrainCircuit, BookOpen, Gauge } from "lucide-react";
+import {ArrowLeft, Target, Activity,ListChecks, BrainCircuit, BookOpen, Gauge, FileCheck, Shuffle
+} from "lucide-react";
 
 const modules = [
   {
@@ -51,6 +53,14 @@ const modules = [
     "Descubra se você está muito abaixo, baixo, próximo, compatível ou acima da régua da sua prova-alvo.",
   href: "/vet/nivelamento",
   icon: Gauge,
+  enabled: true,
+},
+  {
+  title: "Simulado VET",
+  description:
+    "Monte um simulado estratégico com questões reais de ataque, consolidação, manutenção ou modo misto.",
+  href: "/vet/simulado",
+  icon: FileCheck,
   enabled: true,
 },
 ];
