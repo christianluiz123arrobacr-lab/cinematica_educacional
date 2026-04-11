@@ -11,6 +11,11 @@ import {
   Filter,
   AlertTriangle,
   PieChart,
+  CheckCircle2,
+  XCircle,
+  Gauge,
+  Clock3,
+  BookOpen,
 } from "lucide-react";
 import { Link } from "wouter";
 import { supabase } from "@/lib/supabase";
@@ -170,7 +175,7 @@ function getCutoffDate(period: string): Date | null {
 }
 
 function buildDailyStats(attempts: AttemptRow[]): DailyStat[] {
-  const map = new Map<string, { total: number; correct: number; wrong: number }>();
+  const map = new Map<string, { total: number, correct: number, wrong: number }>();
 
   for (const attempt of attempts) {
     const date = new Date(attempt.answered_at).toLocaleDateString("pt-BR");
@@ -700,31 +705,98 @@ export default function Progress() {
             </Card>
 
             <div className="grid md:grid-cols-2 xl:grid-cols-5 gap-4">
-              <Card className="p-6">
-                <p className="text-sm text-slate-500 mb-2">Respondidas</p>
-                <p className="text-3xl font-bold text-slate-900">{totalAnswered}</p>
+              <Card className="relative overflow-hidden border-slate-200 bg-white shadow-sm">
+                <div className="absolute top-0 right-0 h-24 w-24 rounded-full bg-blue-100/60 blur-2xl" />
+                <div className="p-6 relative">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-500">Respondidas</p>
+                      <p className="text-3xl font-bold text-slate-900 mt-2">{totalAnswered}</p>
+                    </div>
+                    <div className="h-11 w-11 rounded-2xl bg-blue-100 flex items-center justify-center">
+                      <BookOpen className="w-5 h-5 text-blue-700" />
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-500">
+                    Total de questões feitas no filtro atual
+                  </p>
+                </div>
               </Card>
 
-              <Card className="p-6">
-                <p className="text-sm text-slate-500 mb-2">Acertos</p>
-                <p className="text-3xl font-bold text-green-600">{totalCorrect}</p>
+              <Card className="relative overflow-hidden border-green-200 bg-white shadow-sm">
+                <div className="absolute top-0 right-0 h-24 w-24 rounded-full bg-green-100/70 blur-2xl" />
+                <div className="p-6 relative">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-500">Acertos</p>
+                      <p className="text-3xl font-bold text-green-600 mt-2">{totalCorrect}</p>
+                    </div>
+                    <div className="h-11 w-11 rounded-2xl bg-green-100 flex items-center justify-center">
+                      <CheckCircle2 className="w-5 h-5 text-green-700" />
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-500">
+                    Questões resolvidas corretamente
+                  </p>
+                </div>
               </Card>
 
-              <Card className="p-6">
-                <p className="text-sm text-slate-500 mb-2">Erros</p>
-                <p className="text-3xl font-bold text-red-600">{totalWrong}</p>
+              <Card className="relative overflow-hidden border-red-200 bg-white shadow-sm">
+                <div className="absolute top-0 right-0 h-24 w-24 rounded-full bg-red-100/70 blur-2xl" />
+                <div className="p-6 relative">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-500">Erros</p>
+                      <p className="text-3xl font-bold text-red-600 mt-2">{totalWrong}</p>
+                    </div>
+                    <div className="h-11 w-11 rounded-2xl bg-red-100 flex items-center justify-center">
+                      <XCircle className="w-5 h-5 text-red-700" />
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-500">
+                    Questões que ainda pedem revisão
+                  </p>
+                </div>
               </Card>
 
-              <Card className="p-6">
-                <p className="text-sm text-slate-500 mb-2">Taxa de acerto</p>
-                <p className="text-3xl font-bold text-blue-600">{accuracy.toFixed(1)}%</p>
+              <Card className="relative overflow-hidden border-indigo-200 bg-white shadow-sm">
+                <div className="absolute top-0 right-0 h-24 w-24 rounded-full bg-indigo-100/70 blur-2xl" />
+                <div className="p-6 relative">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-500">Taxa de acerto</p>
+                      <p className="text-3xl font-bold text-indigo-600 mt-2">
+                        {accuracy.toFixed(1)}%
+                      </p>
+                    </div>
+                    <div className="h-11 w-11 rounded-2xl bg-indigo-100 flex items-center justify-center">
+                      <Gauge className="w-5 h-5 text-indigo-700" />
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-500">
+                    Aproveitamento geral no período selecionado
+                  </p>
+                </div>
               </Card>
 
-              <Card className="p-6">
-                <p className="text-sm text-slate-500 mb-2">Tempo médio</p>
-                <p className="text-3xl font-bold text-purple-600">
-                  {formatSeconds(Math.round(avgTimeSeconds))}
-                </p>
+              <Card className="relative overflow-hidden border-purple-200 bg-white shadow-sm">
+                <div className="absolute top-0 right-0 h-24 w-24 rounded-full bg-purple-100/70 blur-2xl" />
+                <div className="p-6 relative">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-500">Tempo médio</p>
+                      <p className="text-3xl font-bold text-purple-600 mt-2">
+                        {formatSeconds(Math.round(avgTimeSeconds))}
+                      </p>
+                    </div>
+                    <div className="h-11 w-11 rounded-2xl bg-purple-100 flex items-center justify-center">
+                      <Clock3 className="w-5 h-5 text-purple-700" />
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-500">
+                    Tempo gasto por questão, em média
+                  </p>
+                </div>
               </Card>
             </div>
 
