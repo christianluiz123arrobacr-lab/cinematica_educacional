@@ -7,6 +7,7 @@ import {
   Shield,
   BrainCircuit,
   BookOpen,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -64,12 +65,6 @@ function normalizeText(value?: string | null) {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
-}
-
-function prettify(value?: string | null) {
-  const text = (value || "").trim();
-  if (!text) return "Não informado";
-  return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 function getWeaknessScore(accuracy: number) {
@@ -168,6 +163,33 @@ function getQuestionPriorityScore(
   }
 
   return score;
+}
+
+function buildBankUrl(
+  subject: string,
+  institution: string,
+  block: string,
+  topics: string[]
+) {
+  const params = new URLSearchParams();
+
+  if (subject && subject !== "todas") {
+    params.set("subject", subject);
+  }
+
+  if (institution) {
+    params.set("institution", institution);
+  }
+
+  if (block) {
+    params.set("block", block);
+  }
+
+  if (topics.length > 0) {
+    params.set("topics", topics.join(","));
+  }
+
+  return `/banco-de-questoes?${params.toString()}`;
 }
 
 export default function VetQuestionsPage() {
@@ -415,6 +437,34 @@ export default function VetQuestionsPage() {
       ? "Questões de consolidação"
       : "Questões de manutenção";
 
+  const attackBankUrl = buildBankUrl(
+    profile?.focus_subject ?? "todas",
+    profile?.target_exam ?? "",
+    "ataque",
+    attackContents
+  );
+
+  const consolidationBankUrl = buildBankUrl(
+    profile?.focus_subject ?? "todas",
+    profile?.target_exam ?? "",
+    "consolidacao",
+    consolidationContents
+  );
+
+  const maintenanceBankUrl = buildBankUrl(
+    profile?.focus_subject ?? "todas",
+    profile?.target_exam ?? "",
+    "manutencao",
+    maintenanceContents
+  );
+
+  const visibleBankUrl =
+    selectedBlock === "ataque"
+      ? attackBankUrl
+      : selectedBlock === "consolidacao"
+      ? consolidationBankUrl
+      : maintenanceBankUrl;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-50">
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
@@ -469,8 +519,7 @@ export default function VetQuestionsPage() {
                 Fila recomendada para {profile.target_exam}
               </h2>
               <p className="text-emerald-50 leading-relaxed">
-                Agora o VET prioriza questões inéditas, valoriza mais a prova-alvo e organiza a fila
-                de forma mais estratégica por bloco.
+                Agora você pode tanto resolver aqui dentro quanto abrir o banco já filtrado pelo bloco do VET.
               </p>
             </Card>
 
@@ -478,30 +527,57 @@ export default function VetQuestionsPage() {
               <Card className="p-5">
                 <p className="text-sm text-slate-500 mb-1">Ataque</p>
                 <p className="text-3xl font-bold text-red-600">{attackQuestions.length}</p>
+                <Link href={attackBankUrl}>
+                  <Button variant="outline" className="w-full mt-4 rounded-xl">
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    Abrir no banco
+                  </Button>
+                </Link>
               </Card>
 
               <Card className="p-5">
                 <p className="text-sm text-slate-500 mb-1">Consolidação</p>
                 <p className="text-3xl font-bold text-yellow-600">{consolidationQuestions.length}</p>
+                <Link href={consolidationBankUrl}>
+                  <Button variant="outline" className="w-full mt-4 rounded-xl">
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    Abrir no banco
+                  </Button>
+                </Link>
               </Card>
 
               <Card className="p-5">
                 <p className="text-sm text-slate-500 mb-1">Manutenção</p>
                 <p className="text-3xl font-bold text-green-600">{maintenanceQuestions.length}</p>
+                <Link href={maintenanceBankUrl}>
+                  <Button variant="outline" className="w-full mt-4 rounded-xl">
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    Abrir no banco
+                  </Button>
+                </Link>
               </Card>
             </div>
 
             <Card className="p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                  <BrainCircuit className="w-5 h-5 text-emerald-700" />
+              <div className="flex items-center justify-between gap-4 flex-wrap mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                    <BrainCircuit className="w-5 h-5 text-emerald-700" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">Escolha o bloco</h2>
+                    <p className="text-sm text-slate-500">
+                      Veja primeiro as questões mais alinhadas com o estágio atual do seu treino.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900">Escolha o bloco</h2>
-                  <p className="text-sm text-slate-500">
-                    Veja primeiro as questões mais alinhadas com o estágio atual do seu treino.
-                  </p>
-                </div>
+
+                <Link href={visibleBankUrl}>
+                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl">
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    Abrir este bloco no banco
+                  </Button>
+                </Link>
               </div>
 
               <div className="flex flex-wrap gap-3">
