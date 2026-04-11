@@ -27,6 +27,7 @@ import CinematicaGraphs from "./pages/CinematicaGraphs";
 import CinematicaQuiz from "./pages/CinematicaQuiz";
 import CinematicaTopicBases from "./pages/CinematicaTopicBases";
 import ErrorNotebook from "./pages/ErrorNotebook";
+import VetDiagnosisPage from "./pages/VetDiagnosisPage";
 
 import QuestionBank from "./pages/QuestionBank";
 import LandingPage from "./pages/LandingPage";
@@ -168,6 +169,7 @@ function Router() {
       <Route path="/estatica/topic/torque" component={EstaticaTopicTorque} />
       <Route path="/estatica/topic/maquinas" component={EstaticaTopicMaquinas} />
       <Route path="/estatica/topic/hidrostatica" component={EstaticaTopicHidrostatica} />
+      <Route path="/vet/diagnostico" component={VetDiagnosisPage} />
       
       <Route path="/termologia" component={TermologiaHome} />
       <Route path="/termologia/graphs" component={TermologiaGraphs} />
