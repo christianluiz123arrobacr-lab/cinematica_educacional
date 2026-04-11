@@ -9,17 +9,30 @@ import type { Question } from "@/types/question";
 import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 
-type InteractiveQuizProps = {
-  questions: Question[];
+export type QuizCompletionData = {
+  totalQuestions: number;
+  totalAnswered: number;
+  score: number;
+  accuracy: number;
+  correctQuestionIds: string[];
+  wrongQuestionIds: string[];
+  wrongTopics: { topic: string; count: number }[];
+  wrongDifficulties: { difficulty: string; count: number }[];
 };
 
-export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
+type InteractiveQuizProps = {
+  questions: Question[];
+  onComplete?: (data: QuizCompletionData) => void;
+};
+
+export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps) {
   const { user } = useSupabaseAuth();
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answersByQuestion, setAnswersByQuestion] = useState<Record<number, string>>({});
   const [showExplanationByQuestion, setShowExplanationByQuestion] = useState<Record<number, boolean>>({});
   const [questionStartedAt, setQuestionStartedAt] = useState<number>(Date.now());
+  const [hasSentCompletion, setHasSentCompletion] = useState(false);
 
   useEffect(() => {
     if (!questions.length) {
@@ -35,6 +48,10 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
   useEffect(() => {
     setQuestionStartedAt(Date.now());
   }, [currentQuestion, questions]);
+
+  useEffect(() => {
+    setHasSentCompletion(false);
+  }, [questions]);
 
   if (!questions.length) {
     return (
@@ -72,6 +89,62 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
   }, [answersByQuestion]);
 
   const isQuizComplete = questions.length > 0 && totalAnswered === questions.length;
+
+  const completionData = useMemo<QuizCompletionData | null>(() => {
+    if (!isQuizComplete) return null;
+
+    const correctQuestionIds: string[] = [];
+    const wrongQuestionIds: string[] = [];
+    const wrongTopicMap = new Map<string, number>();
+    const wrongDifficultyMap = new Map<string, number>();
+
+    questions.forEach((q, index) => {
+      const selected = answersByQuestion[index];
+      const correct = selected === q.correctOptionId;
+
+      if (correct) {
+        correctQuestionIds.push(q.id);
+      } else {
+        wrongQuestionIds.push(q.id);
+
+        const topic = q.topic || "Sem conteúdo";
+        wrongTopicMap.set(topic, (wrongTopicMap.get(topic) ?? 0) + 1);
+
+        const difficulty =
+          q.difficulty === "facil"
+            ? "Fácil"
+            : q.difficulty === "medio"
+              ? "Médio"
+              : q.difficulty === "dificil"
+                ? "Difícil"
+                : "Não informado";
+
+        wrongDifficultyMap.set(difficulty, (wrongDifficultyMap.get(difficulty) ?? 0) + 1);
+      }
+    });
+
+    return {
+      totalQuestions: questions.length,
+      totalAnswered,
+      score,
+      accuracy: questions.length > 0 ? (score / questions.length) * 100 : 0,
+      correctQuestionIds,
+      wrongQuestionIds,
+      wrongTopics: Array.from(wrongTopicMap.entries())
+        .map(([topic, count]) => ({ topic, count }))
+        .sort((a, b) => b.count - a.count),
+      wrongDifficulties: Array.from(wrongDifficultyMap.entries())
+        .map(([difficulty, count]) => ({ difficulty, count }))
+        .sort((a, b) => b.count - a.count),
+    };
+  }, [answersByQuestion, isQuizComplete, questions, score, totalAnswered]);
+
+  useEffect(() => {
+    if (isQuizComplete && completionData && onComplete && !hasSentCompletion) {
+      onComplete(completionData);
+      setHasSentCompletion(true);
+    }
+  }, [completionData, hasSentCompletion, isQuizComplete, onComplete]);
 
   const saveAttempt = async (optionId: string) => {
     if (!user?.id) return;
@@ -154,6 +227,7 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
     setAnswersByQuestion({});
     setShowExplanationByQuestion({});
     setQuestionStartedAt(Date.now());
+    setHasSentCompletion(false);
   };
 
   const difficultyClass =
@@ -391,7 +465,7 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
         )}
       </div>
 
-      {isQuizComplete && (
+      {isQuizComplete && completionData && (
         <div className="mt-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border-2 border-purple-300">
           <h4 className="text-xl font-bold text-slate-900 mb-4">🏆 Resultado Final</h4>
           <div className="text-center">
@@ -399,7 +473,7 @@ export function InteractiveQuiz({ questions }: InteractiveQuizProps) {
               {score}/{questions.length}
             </p>
             <p className="text-lg font-bold text-slate-700 mb-4">
-              {((score / questions.length) * 100).toFixed(0)}% de acerto
+              {completionData.accuracy.toFixed(0)}% de acerto
             </p>
           </div>
         </div>
