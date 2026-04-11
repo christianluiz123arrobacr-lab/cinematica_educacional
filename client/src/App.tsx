@@ -13,6 +13,8 @@ import VetDiagnosisPage from "./pages/VetDiagnosisPage";
 import VetPrioritiesPage from "./pages/VetPrioritiesPage";
 import VetLevelPage from "./pages/VetLevelPage";
 import VetMockPage from "./pages/VetMockPage";
+import VetMockPage from "./pages/VetMockPage";
+import VetMockResultPage from "./pages/VetMockResultPage";
 
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
