@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { ArrowLeft, Save, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,10 +13,22 @@ type VetProfileRow = {
   months_until_exam: number;
   hours_per_day: number;
   focus_subject: string;
+  study_days_per_week: number | null;
+  study_weekdays: string[] | null;
 };
 
 const EXAMS = ["EEAR", "EsPCEx", "EFOMM"];
 const SUBJECTS = ["todas", "fisica", "matematica", "quimica"];
+
+const WEEKDAYS = [
+  { value: "segunda", label: "Segunda" },
+  { value: "terca", label: "Terça" },
+  { value: "quarta", label: "Quarta" },
+  { value: "quinta", label: "Quinta" },
+  { value: "sexta", label: "Sexta" },
+  { value: "sabado", label: "Sábado" },
+  { value: "domingo", label: "Domingo" },
+];
 
 export default function VetObjectivePage() {
   const { user, loading: authLoading } = useSupabaseAuth();
@@ -30,6 +42,8 @@ export default function VetObjectivePage() {
   const [monthsUntilExam, setMonthsUntilExam] = useState("6");
   const [hoursPerDay, setHoursPerDay] = useState("3");
   const [focusSubject, setFocusSubject] = useState("todas");
+  const [studyDaysPerWeek, setStudyDaysPerWeek] = useState("5");
+  const [studyWeekdays, setStudyWeekdays] = useState<string[]>([]);
 
   useEffect(() => {
     async function loadProfile() {
@@ -62,6 +76,12 @@ export default function VetObjectivePage() {
         setMonthsUntilExam(String(profile.months_until_exam));
         setHoursPerDay(String(profile.hours_per_day));
         setFocusSubject(profile.focus_subject);
+        setStudyDaysPerWeek(
+          profile.study_days_per_week !== null && profile.study_days_per_week !== undefined
+            ? String(profile.study_days_per_week)
+            : "5"
+        );
+        setStudyWeekdays(profile.study_weekdays ?? []);
       }
 
       setLoading(false);
@@ -72,6 +92,17 @@ export default function VetObjectivePage() {
     }
   }, [user?.id, authLoading]);
 
+  const selectedDaysCount = useMemo(() => studyWeekdays.length, [studyWeekdays]);
+
+  function handleToggleWeekday(day: string) {
+    setStudyWeekdays((prev) => {
+      if (prev.includes(day)) {
+        return prev.filter((item) => item !== day);
+      }
+      return [...prev, day];
+    });
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
 
@@ -81,12 +112,50 @@ export default function VetObjectivePage() {
     setError("");
     setSuccess("");
 
+    const parsedMonths = Number(monthsUntilExam);
+    const parsedHours = Number(hoursPerDay);
+    const parsedDaysPerWeek = Number(studyDaysPerWeek);
+
+    if (!targetExam) {
+      setSaving(false);
+      setError("Escolha a prova-alvo.");
+      return;
+    }
+
+    if (Number.isNaN(parsedMonths) || parsedMonths < 0) {
+      setSaving(false);
+      setError("Informe um valor válido para meses até a prova.");
+      return;
+    }
+
+    if (Number.isNaN(parsedHours) || parsedHours <= 0) {
+      setSaving(false);
+      setError("Informe um valor válido para horas por dia.");
+      return;
+    }
+
+    if (Number.isNaN(parsedDaysPerWeek) || parsedDaysPerWeek < 0 || parsedDaysPerWeek > 7) {
+      setSaving(false);
+      setError("Informe um valor válido para dias por semana.");
+      return;
+    }
+
+    if (studyWeekdays.length > 0 && studyWeekdays.length !== parsedDaysPerWeek) {
+      setSaving(false);
+      setError(
+        "A quantidade de dias selecionados na semana precisa bater com o número de dias por semana."
+      );
+      return;
+    }
+
     const payload = {
       user_id: user.id,
       target_exam: targetExam,
-      months_until_exam: Number(monthsUntilExam),
-      hours_per_day: Number(hoursPerDay),
+      months_until_exam: parsedMonths,
+      hours_per_day: parsedHours,
       focus_subject: focusSubject,
+      study_days_per_week: parsedDaysPerWeek,
+      study_weekdays: studyWeekdays,
       updated_at: new Date().toISOString(),
     };
 
@@ -148,7 +217,7 @@ export default function VetObjectivePage() {
                     Configure seu objetivo
                   </h2>
                   <p className="text-sm text-slate-500">
-                    Essas informações vão guiar o diagnóstico e as prioridades do VET.
+                    Essas informações vão guiar o diagnóstico, as prioridades e o treino do VET.
                   </p>
                 </div>
               </div>
@@ -200,21 +269,68 @@ export default function VetObjectivePage() {
                   </div>
                 </div>
 
+                <div className="grid md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      Dias por semana que consegue estudar
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="7"
+                      value={studyDaysPerWeek}
+                      onChange={(e) => setStudyDaysPerWeek(e.target.value)}
+                      className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      Disciplina foco
+                    </label>
+                    <select
+                      value={focusSubject}
+                      onChange={(e) => setFocusSubject(e.target.value)}
+                      className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
+                    >
+                      {SUBJECTS.map((subject) => (
+                        <option key={subject} value={subject}>
+                          {subject}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Disciplina foco
+                  <label className="block text-sm font-semibold text-slate-700 mb-3">
+                    Quais dias da semana você consegue estudar?
                   </label>
-                  <select
-                    value={focusSubject}
-                    onChange={(e) => setFocusSubject(e.target.value)}
-                    className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
-                  >
-                    {SUBJECTS.map((subject) => (
-                      <option key={subject} value={subject}>
-                        {subject}
-                      </option>
-                    ))}
-                  </select>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {WEEKDAYS.map((day) => {
+                      const selected = studyWeekdays.includes(day.value);
+
+                      return (
+                        <button
+                          key={day.value}
+                          type="button"
+                          onClick={() => handleToggleWeekday(day.value)}
+                          className={`rounded-xl border px-4 py-3 text-sm font-semibold transition-all ${
+                            selected
+                              ? "border-emerald-600 bg-emerald-50 text-emerald-700"
+                              : "border-slate-300 bg-white text-slate-700 hover:border-emerald-400"
+                          }`}
+                        >
+                          {day.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <p className="text-xs text-slate-500 mt-3">
+                    Selecionados: {selectedDaysCount} dia(s)
+                  </p>
                 </div>
 
                 {error && (
