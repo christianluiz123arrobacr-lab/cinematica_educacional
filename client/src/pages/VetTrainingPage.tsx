@@ -8,6 +8,7 @@ import {
   Layers3,
   Clock3,
   Target,
+  CalendarDays,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -21,6 +22,8 @@ type VetProfileRow = {
   months_until_exam: number;
   hours_per_day: number;
   focus_subject: string;
+  study_days_per_week: number | null;
+  study_weekdays: string[] | null;
 };
 
 type AttemptRow = {
@@ -116,6 +119,20 @@ function buildReason(
   }
 
   return `Entrou em manutenção porque, no momento, não precisa roubar foco dos conteúdos mais urgentes.`;
+}
+
+function weekdayLabel(day: string) {
+  const map: Record<string, string> = {
+    segunda: "Segunda",
+    terca: "Terça",
+    quarta: "Quarta",
+    quinta: "Quinta",
+    sexta: "Sexta",
+    sabado: "Sábado",
+    domingo: "Domingo",
+  };
+
+  return map[day] ?? day;
 }
 
 export default function VetTrainingPage() {
@@ -271,6 +288,26 @@ export default function VetTrainingPage() {
   const consolidacao = trainingItems.filter((item) => item.block === "consolidacao");
   const manutencao = trainingItems.filter((item) => item.block === "manutencao");
 
+  const weeklyLoad = useMemo(() => {
+    if (!profile) {
+      return {
+        studyDays: 0,
+        hoursPerDay: 0,
+        totalWeeklyHours: 0,
+      };
+    }
+
+    const studyDays = profile.study_days_per_week ?? 0;
+    const hoursPerDay = Number(profile.hours_per_day ?? 0);
+    const totalWeeklyHours = studyDays * hoursPerDay;
+
+    return {
+      studyDays,
+      hoursPerDay,
+      totalWeeklyHours,
+    };
+  }, [profile]);
+
   const weeklyStrategy = useMemo(() => {
     if (!profile) {
       return {
@@ -294,6 +331,36 @@ export default function VetTrainingPage() {
 
     return { attackPercent: 40, consolidationPercent: 40, maintenancePercent: 20 };
   }, [profile]);
+
+  const weeklyHoursSplit = useMemo(() => {
+    const total = weeklyLoad.totalWeeklyHours;
+
+    return {
+      attackHours: (total * weeklyStrategy.attackPercent) / 100,
+      consolidationHours: (total * weeklyStrategy.consolidationPercent) / 100,
+      maintenanceHours: (total * weeklyStrategy.maintenancePercent) / 100,
+    };
+  }, [weeklyLoad.totalWeeklyHours, weeklyStrategy]);
+
+  const studyDaysLabels = useMemo(() => {
+    return (profile?.study_weekdays ?? []).map(weekdayLabel);
+  }, [profile]);
+
+  const trainingReading = useMemo(() => {
+    if (!profile) return "Configure seu objetivo para gerar uma leitura estratégica do treino.";
+
+    const total = weeklyLoad.totalWeeklyHours;
+
+    if (total <= 6) {
+      return `Sua carga semanal está mais enxuta, então o treino precisa ser cirúrgico. Priorize fortemente os conteúdos de ataque e evite dispersar energia em muitos tópicos ao mesmo tempo.`;
+    }
+
+    if (total <= 12) {
+      return `Sua carga semanal permite um treino equilibrado, mas ainda exige foco. O ideal é concentrar a maior parte do esforço nos conteúdos críticos e usar o restante para consolidação.`;
+    }
+
+    return `Sua carga semanal é boa o bastante para distribuir melhor o treino. Dá para atacar os conteúdos mais urgentes sem abandonar consolidação e manutenção.`;
+  }, [profile, weeklyLoad.totalWeeklyHours]);
 
   function BlockCard({
     title,
@@ -434,6 +501,58 @@ export default function VetTrainingPage() {
               </Card>
             </div>
 
+            <div className="grid xl:grid-cols-2 gap-6">
+              <Card className="p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Clock3 className="w-5 h-5 text-emerald-600" />
+                  <h2 className="text-xl font-bold text-slate-900">Carga semanal estimada</h2>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-2">Dias/semana</p>
+                    <p className="text-3xl font-bold text-slate-900">{weeklyLoad.studyDays}</p>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-2">Horas/dia</p>
+                    <p className="text-3xl font-bold text-slate-900">{weeklyLoad.hoursPerDay}</p>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-2">Horas/semana</p>
+                    <p className="text-3xl font-bold text-emerald-600">
+                      {weeklyLoad.totalWeeklyHours.toFixed(1)}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <CalendarDays className="w-5 h-5 text-emerald-600" />
+                  <h2 className="text-xl font-bold text-slate-900">Dias disponíveis</h2>
+                </div>
+
+                {studyDaysLabels.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {studyDaysLabels.map((day) => (
+                      <span
+                        key={day}
+                        className="px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-semibold text-sm"
+                      >
+                        {day}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-slate-500">
+                    Nenhum dia específico foi marcado ainda.
+                  </p>
+                )}
+              </Card>
+            </div>
+
             <Card className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Clock3 className="w-5 h-5 text-emerald-600" />
@@ -447,7 +566,7 @@ export default function VetTrainingPage() {
                     {weeklyStrategy.attackPercent}%
                   </p>
                   <p className="text-sm text-slate-600 mt-2">
-                    Maior parte do tempo em conteúdos críticos.
+                    {weeklyHoursSplit.attackHours.toFixed(1)}h por semana
                   </p>
                 </div>
 
@@ -457,7 +576,7 @@ export default function VetTrainingPage() {
                     {weeklyStrategy.consolidationPercent}%
                   </p>
                   <p className="text-sm text-slate-600 mt-2">
-                    Subir conteúdos relevantes sem perder ritmo.
+                    {weeklyHoursSplit.consolidationHours.toFixed(1)}h por semana
                   </p>
                 </div>
 
@@ -467,7 +586,7 @@ export default function VetTrainingPage() {
                     {weeklyStrategy.maintenancePercent}%
                   </p>
                   <p className="text-sm text-slate-600 mt-2">
-                    Não abandonar conteúdos que já estão mais estáveis.
+                    {weeklyHoursSplit.maintenanceHours.toFixed(1)}h por semana
                   </p>
                 </div>
               </div>
@@ -504,6 +623,7 @@ export default function VetTrainingPage() {
               </div>
 
               <div className="space-y-3 text-slate-700">
+                <p>{trainingReading}</p>
                 <p>
                   <span className="font-semibold">Ataque imediato:</span> é o bloco que mais deve
                   receber seu tempo agora.
@@ -519,6 +639,32 @@ export default function VetTrainingPage() {
                 <p>
                   <span className="font-semibold">Próximo passo natural:</span> depois disso, o VET
                   pode evoluir para montar listas reais de questões por bloco.
+                </p>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="w-5 h-5 text-emerald-600" />
+                <h2 className="text-xl font-bold text-slate-900">Resumo do plano</h2>
+              </div>
+
+              <div className="space-y-2 text-slate-700">
+                <p>
+                  Prova-alvo: <span className="font-semibold">{profile.target_exam}</span>
+                </p>
+                <p>
+                  Tempo até a prova:{" "}
+                  <span className="font-semibold">{profile.months_until_exam} mês(es)</span>
+                </p>
+                <p>
+                  Disciplina foco: <span className="font-semibold">{profile.focus_subject}</span>
+                </p>
+                <p>
+                  Carga semanal estimada:{" "}
+                  <span className="font-semibold">
+                    {weeklyLoad.totalWeeklyHours.toFixed(1)} hora(s)
+                  </span>
                 </p>
               </div>
             </Card>
