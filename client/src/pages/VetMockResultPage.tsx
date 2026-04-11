@@ -1,15 +1,21 @@
 import { Link } from "wouter";
 import {
-  ArrowLeft,
   BrainCircuit,
   Target,
   AlertTriangle,
   RotateCcw,
   BookOpen,
   BarChart3,
+  Trophy,
+  XCircle,
+  Percent,
+  FileCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { VetPageHeader } from "@/components/vet/VetPageHeader";
+import { VetModuleNav } from "@/components/vet/VetModuleNav";
+import { VetStatCard } from "@/components/vet/VetStatCard";
+import { VetSectionCard } from "@/components/vet/VetSectionCard";
 
 type StoredResult = {
   mode: "ataque" | "consolidacao" | "manutencao" | "misto";
@@ -28,7 +34,7 @@ function getReading(accuracy: number) {
     return {
       title: "Desempenho crítico",
       text: "Seu simulado mostrou uma base ainda muito instável. O melhor agora é voltar para ataque imediato, revisar os conteúdos mais errados e evitar avançar sem consolidar o núcleo principal.",
-      tone: "red",
+      tone: "red" as const,
     };
   }
 
@@ -36,7 +42,7 @@ function getReading(accuracy: number) {
     return {
       title: "Desempenho instável",
       text: "Você já tem alguma base, mas ainda há oscilação forte. O melhor próximo passo é revisar os conteúdos com mais erro e fazer novo treino focado em consolidação.",
-      tone: "yellow",
+      tone: "yellow" as const,
     };
   }
 
@@ -44,14 +50,14 @@ function getReading(accuracy: number) {
     return {
       title: "Desempenho competitivo",
       text: "Seu resultado já mostra um bom nível de sustentação. Agora vale lapidar os erros mais frequentes e manter ritmo de treino misto com atenção aos pontos fracos.",
-      tone: "emerald",
+      tone: "green" as const,
     };
   }
 
   return {
     title: "Desempenho forte",
     text: "Você fechou um simulado muito sólido. O ideal agora é manter constância, revisar os poucos erros e continuar com treinos mistos e blocos de manutenção.",
-    tone: "blue",
+    tone: "blue" as const,
   };
 }
 
@@ -66,109 +72,97 @@ export default function VetMockResultPage() {
   if (!result) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-50">
-        <div className="container py-16">
-          <Card className="p-8">
+        <VetPageHeader
+          title="Resultado do Simulado VET"
+          subtitle="Leitura estratégica do seu desempenho no simulado."
+          eyebrow="Pós-simulado"
+          backHref="/vet/simulado"
+        />
+        <VetModuleNav />
+
+        <main className="container py-6">
+          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
             <p className="text-slate-700 mb-4">
               Nenhum resultado de simulado foi encontrado.
             </p>
             <Link href="/vet/simulado">
-              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
+              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl">
                 Ir para o Simulado VET
               </Button>
             </Link>
-          </Card>
-        </div>
+          </div>
+        </main>
       </div>
     );
   }
 
   const reading = getReading(result.accuracy);
 
-  const toneClasses =
-    reading.tone === "red"
-      ? "border-red-200 bg-red-50"
-      : reading.tone === "yellow"
-        ? "border-yellow-200 bg-yellow-50"
-        : reading.tone === "blue"
-          ? "border-blue-200 bg-blue-50"
-          : "border-emerald-200 bg-emerald-50";
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-50">
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
-        <div className="container py-4 flex items-center gap-4">
-          <Link href="/vet/simulado">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar
-            </Button>
-          </Link>
+      <VetPageHeader
+        title="Resultado do Simulado VET"
+        subtitle={`Leitura estratégica do seu desempenho para ${result.targetExam}.`}
+        eyebrow="Pós-simulado"
+        backHref="/vet/simulado"
+      />
 
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Resultado do Simulado VET</h1>
-            <p className="text-sm text-slate-500">
-              Leitura estratégica do seu desempenho
-            </p>
-          </div>
-        </div>
-      </header>
+      <VetModuleNav />
 
-      <main className="container py-8 space-y-6">
-        <Card className="p-6 md:p-8 border-emerald-200 bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
-          <p className="text-sm uppercase tracking-wide text-emerald-100 mb-2">
-            Pós-simulado
-          </p>
-          <h2 className="text-3xl font-bold mb-3">Resultado para {result.targetExam}</h2>
-          <p className="text-emerald-50 leading-relaxed">
-            O VET analisou seu desempenho no simulado e transformou isso em leitura estratégica.
-          </p>
-        </Card>
-
-        <div className="grid md:grid-cols-4 gap-4">
-          <Card className="p-5">
-            <p className="text-sm text-slate-500 mb-1">Acertos</p>
-            <p className="text-3xl font-bold text-emerald-600">{result.score}</p>
-          </Card>
-
-          <Card className="p-5">
-            <p className="text-sm text-slate-500 mb-1">Erros</p>
-            <p className="text-3xl font-bold text-red-600">
-              {result.totalQuestions - result.score}
-            </p>
-          </Card>
-
-          <Card className="p-5">
-            <p className="text-sm text-slate-500 mb-1">Taxa de acerto</p>
-            <p className="text-3xl font-bold text-slate-900">
-              {result.accuracy.toFixed(0)}%
-            </p>
-          </Card>
-
-          <Card className="p-5">
-            <p className="text-sm text-slate-500 mb-1">Modo</p>
-            <p className="text-2xl font-bold text-slate-900 capitalize">
-              {result.mode}
-            </p>
-          </Card>
+      <main className="container py-6 space-y-6">
+        <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+          <VetStatCard
+            label="Acertos"
+            value={result.score}
+            icon={Trophy}
+            tone="green"
+          />
+          <VetStatCard
+            label="Erros"
+            value={result.totalQuestions - result.score}
+            icon={XCircle}
+            tone="red"
+          />
+          <VetStatCard
+            label="Taxa de acerto"
+            value={`${result.accuracy.toFixed(0)}%`}
+            icon={Percent}
+            tone="blue"
+          />
+          <VetStatCard
+            label="Modo"
+            value={result.mode}
+            icon={FileCheck}
+            tone="purple"
+          />
         </div>
 
-        <Card className={`p-6 ${toneClasses}`}>
-          <div className="flex items-center gap-2 mb-4">
-            <BrainCircuit className="w-5 h-5 text-slate-900" />
-            <h2 className="text-xl font-bold text-slate-900">{reading.title}</h2>
+        <VetSectionCard
+          title={reading.title}
+          subtitle="Interpretação automática do VET para o seu simulado."
+          icon={BrainCircuit}
+        >
+          <div
+            className={`rounded-2xl border p-5 ${
+              reading.tone === "red"
+                ? "border-red-200 bg-red-50"
+                : reading.tone === "yellow"
+                  ? "border-yellow-200 bg-yellow-50"
+                  : reading.tone === "blue"
+                    ? "border-blue-200 bg-blue-50"
+                    : "border-emerald-200 bg-emerald-50"
+            }`}
+          >
+            <p className="text-slate-700 leading-relaxed">{reading.text}</p>
           </div>
-          <p className="text-slate-700 leading-relaxed">{reading.text}</p>
-        </Card>
+        </VetSectionCard>
 
         <div className="grid xl:grid-cols-2 gap-6">
-          <Card className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Target className="w-5 h-5 text-emerald-600" />
-              <h2 className="text-xl font-bold text-slate-900">
-                Conteúdos com mais erro
-              </h2>
-            </div>
-
+          <VetSectionCard
+            title="Conteúdos com mais erro"
+            subtitle="Os pontos que mais te derrubaram neste simulado."
+            icon={Target}
+          >
             {result.wrongTopics.length > 0 ? (
               <div className="space-y-3">
                 {result.wrongTopics.slice(0, 5).map((item, index) => (
@@ -188,14 +182,13 @@ export default function VetMockResultPage() {
             ) : (
               <p className="text-slate-500">Nenhum conteúdo com erro registrado.</p>
             )}
-          </Card>
+          </VetSectionCard>
 
-          <Card className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <AlertTriangle className="w-5 h-5 text-orange-500" />
-              <h2 className="text-xl font-bold text-slate-900">Erros por dificuldade</h2>
-            </div>
-
+          <VetSectionCard
+            title="Erros por dificuldade"
+            subtitle="Onde a dificuldade mais te pressionou."
+            icon={AlertTriangle}
+          >
             {result.wrongDifficulties.length > 0 ? (
               <div className="space-y-3">
                 {result.wrongDifficulties.map((item, index) => (
@@ -211,17 +204,14 @@ export default function VetMockResultPage() {
             ) : (
               <p className="text-slate-500">Nenhum erro por dificuldade registrado.</p>
             )}
-          </Card>
+          </VetSectionCard>
         </div>
 
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <BarChart3 className="w-5 h-5 text-emerald-600" />
-            <h2 className="text-xl font-bold text-slate-900">
-              Próximo passo recomendado
-            </h2>
-          </div>
-
+        <VetSectionCard
+          title="Próximo passo recomendado"
+          subtitle="Transforme o resultado do simulado em ação prática."
+          icon={BarChart3}
+        >
           <div className="grid md:grid-cols-3 gap-4">
             <Link href="/vet/simulado">
               <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl">
@@ -244,7 +234,7 @@ export default function VetMockResultPage() {
               </Button>
             </Link>
           </div>
-        </Card>
+        </VetSectionCard>
       </main>
     </div>
   );
