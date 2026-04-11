@@ -271,19 +271,19 @@ function PieCard({
   emptyMessage: string;
 }) {
   return (
-    <Card className="p-6">
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 h-full">
       <div className="flex items-center gap-2 mb-2">
         <PieChart className="w-5 h-5 text-slate-700" />
-        <h2 className="text-xl font-bold text-slate-900">{title}</h2>
+        <h3 className="text-lg font-bold text-slate-900">{title}</h3>
       </div>
 
       {subtitle && <p className="text-sm text-slate-500 mb-5">{subtitle}</p>}
 
       {data.length > 0 ? (
-        <div className="grid lg:grid-cols-[220px,1fr] gap-6 items-center">
+        <div className="grid gap-6 items-center">
           <div className="flex justify-center">
             <div
-              className="relative h-48 w-48 rounded-full border-8 border-white shadow-md"
+              className="relative h-44 w-44 rounded-full border-8 border-white shadow-md"
               style={{ background: getPieBackground(data) }}
             >
               <div className="absolute inset-[26%] rounded-full bg-white flex items-center justify-center text-center p-3">
@@ -302,7 +302,7 @@ function PieCard({
       ) : (
         <p className="text-slate-500">{emptyMessage}</p>
       )}
-    </Card>
+    </div>
   );
 }
 
@@ -725,18 +725,11 @@ export default function Progress() {
               </Card>
             </div>
 
-            <PieCard
-              title="Visão geral: acertos x erros"
-              subtitle="Leitura visual rápida do seu desempenho no recorte atual."
-              data={generalPieData}
-              emptyMessage="Ainda não há dados suficientes para o gráfico geral."
-            />
-
             <Card className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <PieChart className="w-5 h-5 text-slate-700" />
                 <h2 className="text-xl font-bold text-slate-900">
-                  Análise visual por disciplina
+                  Análise visual
                 </h2>
               </div>
 
@@ -758,17 +751,24 @@ export default function Progress() {
                 </select>
               </div>
 
-              <div className="grid xl:grid-cols-2 gap-6">
+              <div className="grid xl:grid-cols-3 gap-6 items-start">
+                <PieCard
+                  title="Acertos x erros"
+                  subtitle="Visão geral do recorte atual"
+                  data={generalPieData}
+                  emptyMessage="Ainda não há dados suficientes para o gráfico geral."
+                />
+
                 <PieCard
                   title="Conteúdos com mais acertos"
-                  subtitle={`Disciplina selecionada: ${selectedChartSubjectLabel}`}
+                  subtitle={`Disciplina: ${selectedChartSubjectLabel}`}
                   data={chartCorrectByConteudo}
                   emptyMessage="Ainda não há acertos suficientes para montar essa pizza."
                 />
 
                 <PieCard
                   title="Conteúdos com mais erros"
-                  subtitle={`Disciplina selecionada: ${selectedChartSubjectLabel}`}
+                  subtitle={`Disciplina: ${selectedChartSubjectLabel}`}
                   data={chartWrongByConteudo}
                   emptyMessage="Ainda não há erros suficientes para montar essa pizza."
                 />
