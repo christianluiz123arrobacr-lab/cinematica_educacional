@@ -20,6 +20,8 @@ type VetProfileRow = {
   months_until_exam: number;
   hours_per_day: number;
   focus_subject: string;
+  study_days_per_week: number | null;
+  study_weekdays: string[] | null;
 };
 
 type AttemptRow = {
@@ -57,13 +59,19 @@ type PriorityItem = {
   weaknessScore: number;
   urgencyTimeScore: number;
   wrongVolumeScore: number;
+  noAttemptPenalty: number;
   priorityScore: number;
   priorityLevel: "alta" | "media" | "manutencao";
   reason: string;
+  hasAttempts: boolean;
 };
 
 function normalizeText(value?: string | null) {
-  return (value || "").trim().toLowerCase();
+  return (value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 }
 
 function prettify(value?: string | null) {
@@ -72,7 +80,8 @@ function prettify(value?: string | null) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-function getWeaknessScore(accuracy: number) {
+function getWeaknessScore(accuracy: number, total: number) {
+  if (total === 0) return 6;
   if (accuracy < 40) return 10;
   if (accuracy < 55) return 7;
   if (accuracy < 70) return 4;
@@ -95,18 +104,41 @@ function getWrongVolumeScore(wrong: number) {
   return 0;
 }
 
+function getNoAttemptPenalty(total: number, weight: number) {
+  if (total > 0) return 0;
+  if (weight >= 8) return 6;
+  if (weight >= 6) return 4;
+  if (weight >= 4) return 2;
+  return 1;
+}
+
 function getPriorityLevel(score: number): "alta" | "media" | "manutencao" {
   if (score >= 15) return "alta";
   if (score >= 9) return "media";
   return "manutencao";
 }
 
-function buildReason(
-  weight: number,
-  accuracy: number,
-  wrong: number,
-  monthsUntilExam: number
-) {
+function buildReason(params: {
+  weight: number;
+  accuracy: number;
+  wrong: number;
+  monthsUntilExam: number;
+  total: number;
+}) {
+  const { weight, accuracy, wrong, monthsUntilExam, total } = params;
+
+  if (total === 0) {
+    if (weight >= 8) {
+      return "Prioridade porque esse conteúdo tem peso alto na prova e ainda não foi treinado.";
+    }
+
+    if (weight >= 5) {
+      return "Prioridade porque esse conteúdo tem peso relevante na prova e ainda não foi treinado.";
+    }
+
+    return "Conteúdo ainda não treinado; vale entrar no radar para não criar lacuna.";
+  }
+
   const parts: string[] = [];
 
   if (weight >= 8) {
@@ -247,47 +279,84 @@ export default function VetPrioritiesPage() {
       contentMap.set(conteudo, current);
     }
 
-    const urgencyTimeScore = getUrgencyTimeScore(profile.months_until_exam);
-
-    const rows: PriorityItem[] = Array.from(contentMap.entries()).map(([conteudo, value]) => {
-      const accuracy = value.total ? (value.correct / value.total) * 100 : 0;
-
-      const matchedWeight = weights.find((row) => {
-        const sameSubject =
-          profile.focus_subject === "todas" ||
-          normalizeText(row.subject) === normalizeText(profile.focus_subject);
-
-        return sameSubject && normalizeText(row.conteudo) === conteudo;
-      });
-
-      const weight = matchedWeight?.weight ?? 3;
-      const weaknessScore = getWeaknessScore(accuracy);
-      const wrongVolumeScore = getWrongVolumeScore(value.wrong);
-      const priorityScore = weight + weaknessScore + urgencyTimeScore + wrongVolumeScore;
-      const priorityLevel = getPriorityLevel(priorityScore);
-
-      return {
-        conteudo,
-        total: value.total,
-        correct: value.correct,
-        wrong: value.wrong,
-        accuracy,
-        weight,
-        weaknessScore,
-        urgencyTimeScore,
-        wrongVolumeScore,
-        priorityScore,
-        priorityLevel,
-        reason: buildReason(weight, accuracy, value.wrong, profile.months_until_exam),
-      };
+    const filteredWeights = weights.filter((row) => {
+      if (profile.focus_subject === "todas") return true;
+      return normalizeText(row.subject) === normalizeText(profile.focus_subject);
     });
 
-    return rows.sort(
-      (a, b) =>
-        b.priorityScore - a.priorityScore ||
-        a.accuracy - b.accuracy ||
-        b.total - a.total
-    );
+    const allContents = new Set<string>();
+
+    filteredWeights.forEach((row) => {
+      allContents.add(normalizeText(row.conteudo));
+    });
+
+    contentMap.forEach((_, conteudo) => {
+      allContents.add(conteudo);
+    });
+
+    const urgencyTimeScore = getUrgencyTimeScore(profile.months_until_exam);
+
+    const rows: PriorityItem[] = Array.from(allContents)
+      .filter(Boolean)
+      .map((conteudo) => {
+        const stats = contentMap.get(conteudo) ?? {
+          total: 0,
+          correct: 0,
+          wrong: 0,
+        };
+
+        const accuracy = stats.total ? (stats.correct / stats.total) * 100 : 0;
+
+        const matchedWeight = filteredWeights.find(
+          (row) => normalizeText(row.conteudo) === conteudo
+        );
+
+        const weight = matchedWeight?.weight ?? 3;
+        const weaknessScore = getWeaknessScore(accuracy, stats.total);
+        const wrongVolumeScore = getWrongVolumeScore(stats.wrong);
+        const noAttemptPenalty = getNoAttemptPenalty(stats.total, weight);
+
+        const priorityScore =
+          weight +
+          weaknessScore +
+          urgencyTimeScore +
+          wrongVolumeScore +
+          noAttemptPenalty;
+
+        const priorityLevel = getPriorityLevel(priorityScore);
+
+        return {
+          conteudo,
+          total: stats.total,
+          correct: stats.correct,
+          wrong: stats.wrong,
+          accuracy,
+          weight,
+          weaknessScore,
+          urgencyTimeScore,
+          wrongVolumeScore,
+          noAttemptPenalty,
+          priorityScore,
+          priorityLevel,
+          reason: buildReason({
+            weight,
+            accuracy,
+            wrong: stats.wrong,
+            monthsUntilExam: profile.months_until_exam,
+            total: stats.total,
+          }),
+          hasAttempts: stats.total > 0,
+        };
+      })
+      .sort(
+        (a, b) =>
+          b.priorityScore - a.priorityScore ||
+          Number(a.hasAttempts) - Number(b.hasAttempts) ||
+          a.accuracy - b.accuracy ||
+          b.total - a.total
+      );
+
+    return rows;
   }, [filteredAttempts, profile, weights]);
 
   const highPriority = priorities.filter((item) => item.priorityLevel === "alta");
@@ -317,7 +386,15 @@ export default function VetPrioritiesPage() {
     return (
       <Card className="p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Icon className={`w-5 h-5 ${tone === "red" ? "text-red-500" : tone === "yellow" ? "text-yellow-500" : "text-green-500"}`} />
+          <Icon
+            className={`w-5 h-5 ${
+              tone === "red"
+                ? "text-red-500"
+                : tone === "yellow"
+                ? "text-yellow-500"
+                : "text-green-500"
+            }`}
+          />
           <h2 className="text-xl font-bold text-slate-900">{title}</h2>
         </div>
 
@@ -334,7 +411,9 @@ export default function VetPrioritiesPage() {
                       #{index + 1} {prettify(item.conteudo)}
                     </p>
                     <p className="text-sm text-slate-600 mt-1">
-                      {item.correct} acertos • {item.wrong} erros • {item.total} tentativas
+                      {item.hasAttempts
+                        ? `${item.correct} acertos • ${item.wrong} erros • ${item.total} tentativas`
+                        : "Ainda não treinado"}
                     </p>
                   </div>
 
@@ -343,15 +422,27 @@ export default function VetPrioritiesPage() {
                       Score {item.priorityScore}
                     </p>
                     <p className="text-xs text-slate-500">
-                      {item.accuracy.toFixed(0)}% de acerto
+                      {item.hasAttempts
+                        ? `${item.accuracy.toFixed(0)}% de acerto`
+                        : "Sem histórico ainda"}
                     </p>
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-2 text-sm text-slate-700 mb-3">
-                  <div>Peso na prova: <span className="font-semibold">{item.weight}</span></div>
-                  <div>Fraqueza: <span className="font-semibold">{item.weaknessScore}</span></div>
-                  <div>Urgência: <span className="font-semibold">{item.urgencyTimeScore}</span></div>
+                <div className="grid md:grid-cols-4 gap-2 text-sm text-slate-700 mb-3">
+                  <div>
+                    Peso: <span className="font-semibold">{item.weight}</span>
+                  </div>
+                  <div>
+                    Fraqueza: <span className="font-semibold">{item.weaknessScore}</span>
+                  </div>
+                  <div>
+                    Urgência: <span className="font-semibold">{item.urgencyTimeScore}</span>
+                  </div>
+                  <div>
+                    Sem treino:{" "}
+                    <span className="font-semibold">{item.noAttemptPenalty}</span>
+                  </div>
                 </div>
 
                 <p className="text-sm text-slate-700">{item.reason}</p>
@@ -419,7 +510,7 @@ export default function VetPrioritiesPage() {
                 Prioridades para {profile.target_exam}
               </h2>
               <p className="text-emerald-50 leading-relaxed">
-                O VET está organizando os conteúdos conforme peso da prova, fraqueza atual e urgência temporal.
+                Agora o VET considera também conteúdos importantes da prova que ainda não foram treinados.
               </p>
             </Card>
 
@@ -472,13 +563,13 @@ export default function VetPrioritiesPage() {
 
               <div className="space-y-3 text-slate-700">
                 <p>
-                  <span className="font-semibold">Alta prioridade:</span> conteúdos com mais retorno imediato para a prova e onde seu desempenho está mais vulnerável.
+                  <span className="font-semibold">Alta prioridade:</span> conteúdos que mais podem mudar seu resultado agora, incluindo conteúdos importantes ainda não treinados.
                 </p>
                 <p>
-                  <span className="font-semibold">Média prioridade:</span> conteúdos relevantes que precisam subir, mas não são seu gargalo máximo agora.
+                  <span className="font-semibold">Média prioridade:</span> conteúdos relevantes que precisam subir, mas não são o gargalo máximo no momento.
                 </p>
                 <p>
-                  <span className="font-semibold">Manutenção:</span> conteúdos que ainda devem aparecer no treino, mas sem tomar a frente do foco principal.
+                  <span className="font-semibold">Manutenção:</span> conteúdos que devem continuar no radar sem roubar o foco principal.
                 </p>
               </div>
             </Card>
