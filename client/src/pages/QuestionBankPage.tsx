@@ -5,17 +5,69 @@ import { Card } from "@/components/ui/card";
 import { InteractiveQuiz } from "@/components/InteractiveQuiz";
 import { getQuestions } from "@/services/questions.service";
 import type { Question } from "@/types/question";
-import { ArrowLeft, Zap, BarChart3, BookMarked, Filter } from "lucide-react";
+import {
+  ArrowLeft,
+  Zap,
+  BarChart3,
+  BookMarked,
+  Filter,
+  BrainCircuit,
+} from "lucide-react";
+
+function normalizeText(value?: string | null) {
+  return (value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function parseVetFiltersFromUrl() {
+  if (typeof window === "undefined") {
+    return {
+      subject: "todos",
+      institution: "todos",
+      topics: [] as string[],
+      block: "",
+    };
+  }
+
+  const params = new URLSearchParams(window.location.search);
+
+  const subject = params.get("subject") || "todos";
+  const institution = params.get("institution") || "todos";
+  const block = params.get("block") || "";
+  const topicsParam = params.get("topics") || "";
+
+  const topics = topicsParam
+    .split(",")
+    .map((item) => decodeURIComponent(item))
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  return { subject, institution, topics, block };
+}
 
 export default function QuestionBankPage() {
+  const initialVetFilters = useMemo(() => parseVetFiltersFromUrl(), []);
+
   const [questions, setQuestions] = useState<Question[]>([]);
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("todos");
-  const [selectedSubject, setSelectedSubject] = useState<string>("todos");
+  const [selectedSubject, setSelectedSubject] = useState<string>(initialVetFilters.subject);
   const [selectedTopic, setSelectedTopic] = useState<string>("todos");
   const [selectedSubtopic, setSelectedSubtopic] = useState<string>("todos");
   const [selectedYear, setSelectedYear] = useState<string>("todos");
-  const [selectedInstitution, setSelectedInstitution] = useState<string>("todos");
+  const [selectedInstitution, setSelectedInstitution] = useState<string>(
+    initialVetFilters.institution
+  );
+  const [vetTopics, setVetTopics] = useState<string[]>(initialVetFilters.topics);
+  const [vetBlock, setVetBlock] = useState<string>(initialVetFilters.block);
+
+  const hasVetFilter = vetTopics.length > 0;
+
+  const effectiveTopicFilter =
+    selectedTopic !== "todos" ? [selectedTopic] : vetTopics;
 
   const questionsForTopics = questions.filter((q) => {
     return selectedSubject === "todos" || q.subject === selectedSubject;
@@ -28,7 +80,12 @@ export default function QuestionBankPage() {
   const questionsForSubtopics = questions.filter((q) => {
     const matchesSubject =
       selectedSubject === "todos" || q.subject === selectedSubject;
-    const matchesTopic = selectedTopic === "todos" || q.topic === selectedTopic;
+
+    const matchesTopic =
+      effectiveTopicFilter.length === 0 ||
+      effectiveTopicFilter.some(
+        (topic) => normalizeText(q.topic) === normalizeText(topic)
+      );
 
     return matchesSubject && matchesTopic;
   });
@@ -42,16 +99,17 @@ export default function QuestionBankPage() {
       selectedDifficulty === "todos" || q.difficulty === selectedDifficulty;
     const matchesSubject =
       selectedSubject === "todos" || q.subject === selectedSubject;
-    const matchesTopic = selectedTopic === "todos" || q.topic === selectedTopic;
+
+    const matchesTopic =
+      effectiveTopicFilter.length === 0 ||
+      effectiveTopicFilter.some(
+        (topic) => normalizeText(q.topic) === normalizeText(topic)
+      );
+
     const matchesSubtopic =
       selectedSubtopic === "todos" || q.subtopic === selectedSubtopic;
 
-    return (
-      matchesDifficulty &&
-      matchesSubject &&
-      matchesTopic &&
-      matchesSubtopic
-    );
+    return matchesDifficulty && matchesSubject && matchesTopic && matchesSubtopic;
   });
 
   const availableYears = Array.from(
@@ -63,9 +121,16 @@ export default function QuestionBankPage() {
       selectedDifficulty === "todos" || q.difficulty === selectedDifficulty;
     const matchesSubject =
       selectedSubject === "todos" || q.subject === selectedSubject;
-    const matchesTopic = selectedTopic === "todos" || q.topic === selectedTopic;
+
+    const matchesTopic =
+      effectiveTopicFilter.length === 0 ||
+      effectiveTopicFilter.some(
+        (topic) => normalizeText(q.topic) === normalizeText(topic)
+      );
+
     const matchesSubtopic =
       selectedSubtopic === "todos" || q.subtopic === selectedSubtopic;
+
     const matchesYear =
       selectedYear === "todos" || String(q.year) === selectedYear;
 
@@ -78,13 +143,13 @@ export default function QuestionBankPage() {
     );
   });
 
- const availableInstitutions = Array.from(
-  new Set(
-    questionsForInstitutions
-      .map((q) => q.institution?.trim())
-      .filter((institution): institution is string => !!institution && institution !== "")
-  )
-).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  const availableInstitutions = Array.from(
+    new Set(
+      questionsForInstitutions
+        .map((q) => q.institution?.trim())
+        .filter((institution): institution is string => !!institution && institution !== "")
+    )
+  ).sort((a, b) => a.localeCompare(b, "pt-BR"));
 
   const totalSubjects = useMemo(
     () => new Set(questions.map((q) => q.subject).filter(Boolean)).size,
@@ -160,23 +225,23 @@ export default function QuestionBankPage() {
     setSelectedTopic("todos");
     setSelectedSubtopic("todos");
     setSelectedYear("todos");
-    setSelectedInstitution("todos");
-  }, [selectedSubject]);
+    setSelectedInstitution(initialVetFilters.institution || "todos");
+  }, [selectedSubject, initialVetFilters.institution]);
 
   useEffect(() => {
     setSelectedSubtopic("todos");
     setSelectedYear("todos");
-    setSelectedInstitution("todos");
-  }, [selectedTopic]);
+    setSelectedInstitution(initialVetFilters.institution || "todos");
+  }, [selectedTopic, initialVetFilters.institution]);
 
   useEffect(() => {
     setSelectedYear("todos");
-    setSelectedInstitution("todos");
-  }, [selectedSubtopic]);
+    setSelectedInstitution(initialVetFilters.institution || "todos");
+  }, [selectedSubtopic, initialVetFilters.institution]);
 
   useEffect(() => {
-    setSelectedInstitution("todos");
-  }, [selectedYear]);
+    setSelectedInstitution(initialVetFilters.institution || "todos");
+  }, [selectedYear, initialVetFilters.institution]);
 
   useEffect(() => {
     let filtered = questions;
@@ -189,8 +254,12 @@ export default function QuestionBankPage() {
       filtered = filtered.filter((q) => q.subject === selectedSubject);
     }
 
-    if (selectedTopic !== "todos") {
-      filtered = filtered.filter((q) => q.topic === selectedTopic);
+    if (effectiveTopicFilter.length > 0) {
+      filtered = filtered.filter((q) =>
+        effectiveTopicFilter.some(
+          (topic) => normalizeText(q.topic) === normalizeText(topic)
+        )
+      );
     }
 
     if (selectedSubtopic !== "todos") {
@@ -213,8 +282,26 @@ export default function QuestionBankPage() {
     selectedSubtopic,
     selectedYear,
     selectedInstitution,
+    vetTopics,
     questions,
+    effectiveTopicFilter,
   ]);
+
+  function clearAllFilters() {
+    setSelectedDifficulty("todos");
+    setSelectedSubject("todos");
+    setSelectedTopic("todos");
+    setSelectedSubtopic("todos");
+    setSelectedYear("todos");
+    setSelectedInstitution("todos");
+    setVetTopics([]);
+    setVetBlock("");
+  }
+
+  function clearVetFilterOnly() {
+    setVetTopics([]);
+    setVetBlock("");
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -250,6 +337,47 @@ export default function QuestionBankPage() {
       </header>
 
       <main className="container py-12">
+        {hasVetFilter && (
+          <section className="mb-8">
+            <Card className="p-6 border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50">
+              <div className="flex items-start justify-between gap-4 flex-wrap">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <BrainCircuit className="w-5 h-5 text-emerald-700" />
+                    <h3 className="text-lg font-bold text-slate-900">
+                      Filtro vindo do VET
+                    </h3>
+                  </div>
+
+                  <p className="text-sm text-slate-600 mb-3">
+                    Você abriu o banco com uma recomendação estratégica do VET
+                    {vetBlock ? ` para o bloco de ${vetBlock}` : ""}.
+                  </p>
+
+                  <div className="flex flex-wrap gap-2">
+                    {vetTopics.map((topic) => (
+                      <span
+                        key={topic}
+                        className="px-3 py-1 rounded-full bg-white border border-emerald-200 text-emerald-700 text-sm font-semibold"
+                      >
+                        {topic}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <Button
+                  variant="outline"
+                  onClick={clearVetFilterOnly}
+                  className="rounded-xl"
+                >
+                  Remover filtro do VET
+                </Button>
+              </div>
+            </Card>
+          </section>
+        )}
+
         <section className="grid md:grid-cols-3 gap-6 mb-12">
           <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <div className="flex items-center gap-4">
@@ -502,14 +630,7 @@ export default function QuestionBankPage() {
               <div className="flex justify-end">
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    setSelectedDifficulty("todos");
-                    setSelectedSubject("todos");
-                    setSelectedTopic("todos");
-                    setSelectedSubtopic("todos");
-                    setSelectedYear("todos");
-                    setSelectedInstitution("todos");
-                  }}
+                  onClick={clearAllFilters}
                   className="rounded-xl"
                 >
                   Limpar filtros
@@ -522,7 +643,7 @@ export default function QuestionBankPage() {
         <section>
           {filteredQuestions.length > 0 ? (
             <InteractiveQuiz
-              key={`${selectedDifficulty}-${selectedSubject}-${selectedTopic}-${selectedSubtopic}-${selectedYear}-${selectedInstitution}`}
+              key={`${selectedDifficulty}-${selectedSubject}-${selectedTopic}-${selectedSubtopic}-${selectedYear}-${selectedInstitution}-${vetTopics.join("|")}`}
               questions={filteredQuestions}
             />
           ) : (
@@ -530,16 +651,7 @@ export default function QuestionBankPage() {
               <p className="text-lg text-slate-600 mb-4">
                 Nenhuma questão encontrada com os filtros selecionados.
               </p>
-              <Button
-                onClick={() => {
-                  setSelectedDifficulty("todos");
-                  setSelectedSubject("todos");
-                  setSelectedTopic("todos");
-                  setSelectedSubtopic("todos");
-                  setSelectedYear("todos");
-                  setSelectedInstitution("todos");
-                }}
-              >
+              <Button onClick={clearAllFilters}>
                 Limpar Filtros
               </Button>
             </Card>
