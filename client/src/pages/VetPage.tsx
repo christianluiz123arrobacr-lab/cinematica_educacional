@@ -34,7 +34,7 @@ const modules = [
       "Receba uma trilha estratégica de treino baseada no seu objetivo e no seu nível.",
     href: "/vet/treino",
     icon: BrainCircuit,
-    enabled: false,
+    enabled: true,
   },
 ];
 
