@@ -1,5 +1,13 @@
 import { Link } from "wouter";
-import { ArrowLeft, BrainCircuit, Target, AlertTriangle, RotateCcw, BookOpen, BarChart3 } from "lucide-react";
+import {
+  ArrowLeft,
+  BrainCircuit,
+  Target,
+  AlertTriangle,
+  RotateCcw,
+  BookOpen,
+  BarChart3,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -98,7 +106,9 @@ export default function VetMockResultPage() {
 
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Resultado do Simulado VET</h1>
-            <p className="text-sm text-slate-500">Leitura estratégica do seu desempenho</p>
+            <p className="text-sm text-slate-500">
+              Leitura estratégica do seu desempenho
+            </p>
           </div>
         </div>
       </header>
@@ -108,9 +118,7 @@ export default function VetMockResultPage() {
           <p className="text-sm uppercase tracking-wide text-emerald-100 mb-2">
             Pós-simulado
           </p>
-          <h2 className="text-3xl font-bold mb-3">
-            Resultado para {result.targetExam}
-          </h2>
+          <h2 className="text-3xl font-bold mb-3">Resultado para {result.targetExam}</h2>
           <p className="text-emerald-50 leading-relaxed">
             O VET analisou seu desempenho no simulado e transformou isso em leitura estratégica.
           </p>
@@ -156,7 +164,9 @@ export default function VetMockResultPage() {
           <Card className="p-6">
             <div className="flex items-center gap-2 mb-4">
               <Target className="w-5 h-5 text-emerald-600" />
-              <h2 className="text-xl font-bold text-slate-900">Conteúdos com mais erro</h2>
+              <h2 className="text-xl font-bold text-slate-900">
+                Conteúdos com mais erro
+              </h2>
             </div>
 
             {result.wrongTopics.length > 0 ? (
@@ -169,7 +179,9 @@ export default function VetMockResultPage() {
                     <p className="font-semibold text-slate-900">
                       #{index + 1} {item.topic}
                     </p>
-                    <p className="text-sm font-bold text-red-600">{item.count} erro(s)</p>
+                    <p className="text-sm font-bold text-red-600">
+                      {item.count} erro(s)
+                    </p>
                   </div>
                 ))}
               </div>
@@ -205,7 +217,9 @@ export default function VetMockResultPage() {
         <Card className="p-6">
           <div className="flex items-center gap-2 mb-4">
             <BarChart3 className="w-5 h-5 text-emerald-600" />
-            <h2 className="text-xl font-bold text-slate-900">Próximo passo recomendado</h2>
+            <h2 className="text-xl font-bold text-slate-900">
+              Próximo passo recomendado
+            </h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-4">
