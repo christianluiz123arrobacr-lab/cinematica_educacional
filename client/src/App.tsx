@@ -5,6 +5,8 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Landing from "./pages/Landing";
+import VetPage from "./pages/VetPage";
+import VetObjectivePage from "./pages/VetObjectivePage";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
@@ -180,6 +182,8 @@ function Router() {
       <Route path="/mecanica" component={MecanicaHome} />
       <Route path="/mecanica/topic/cinematica" component={MecanicaTopicCinematica} />
       <Route path="/mecanica/topic/dinamica" component={MecanicaTopicDinamica} />
+      <Route path="/vet" component={VetPage} />
+      <Route path="/vet/objetivo" component={VetObjectivePage} />
 
       <Route path="/ondulatoria" component={OndulatóriaHome} />
       <Route path="/ondulatoria/topic/conceitos" component={OndulatóriaTopicConceitos} />
