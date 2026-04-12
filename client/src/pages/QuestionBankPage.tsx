@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,6 +12,7 @@ import {
   BookMarked,
   Filter,
   BrainCircuit,
+  ChevronDown,
 } from "lucide-react";
 
 function normalizeText(value?: string | null) {
@@ -59,10 +60,109 @@ function toggleValue(list: string[], value: string) {
     : [...list, value];
 }
 
-function matchesMulti(value: string | number | null | undefined, selected: string[]) {
+function matchesMulti(
+  value: string | number | null | undefined,
+  selected: string[]
+) {
   if (selected.length === 0) return true;
   const normalizedValue = normalizeText(String(value ?? ""));
   return selected.some((item) => normalizeText(item) === normalizedValue);
+}
+
+function getMultiSelectLabel(
+  selected: string[],
+  placeholder: string
+) {
+  if (selected.length === 0) return placeholder;
+  if (selected.length === 1) return selected[0];
+  return `${selected.length} selecionados`;
+}
+
+type MultiSelectDropdownProps = {
+  title: string;
+  items: string[];
+  selected: string[];
+  onToggle: (value: string) => void;
+  placeholder: string;
+  emptyMessage: string;
+};
+
+function MultiSelectDropdown({
+  title,
+  items,
+  selected,
+  onToggle,
+  placeholder,
+  emptyMessage,
+}: MultiSelectDropdownProps) {
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (!wrapperRef.current) return;
+      if (!wrapperRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div ref={wrapperRef} className="relative">
+      <label className="block text-sm font-semibold text-slate-700 mb-2">
+        {title}
+      </label>
+
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-left text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-between"
+      >
+        <span className="truncate">
+          {getMultiSelectLabel(selected, placeholder)}
+        </span>
+        <ChevronDown
+          className={`w-4 h-4 text-slate-500 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute z-30 mt-2 w-full rounded-2xl border border-slate-200 bg-white shadow-xl p-3 max-h-64 overflow-y-auto">
+          {items.length > 0 ? (
+            <div className="space-y-2">
+              {items.map((item) => {
+                const checked = selected.some(
+                  (value) => normalizeText(value) === normalizeText(item)
+                );
+
+                return (
+                  <label
+                    key={item}
+                    className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-slate-50 cursor-pointer transition-all"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => onToggle(item)}
+                      className="h-4 w-4 rounded border-slate-300"
+                    />
+                    <span className="text-sm text-slate-700">{item}</span>
+                  </label>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500 px-2 py-2">{emptyMessage}</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function QuestionBankPage() {
@@ -258,16 +358,22 @@ export default function QuestionBankPage() {
   useEffect(() => {
     let filtered = questions;
 
-    filtered = filtered.filter((q) => matchesMulti(q.difficulty, selectedDifficulties));
+    filtered = filtered.filter((q) =>
+      matchesMulti(q.difficulty, selectedDifficulties)
+    );
     filtered = filtered.filter((q) => matchesMulti(q.subject, selectedSubjects));
 
     if (effectiveTopics.length > 0) {
       filtered = filtered.filter((q) => matchesMulti(q.topic, effectiveTopics));
     }
 
-    filtered = filtered.filter((q) => matchesMulti(q.subtopic, selectedSubtopics));
+    filtered = filtered.filter((q) =>
+      matchesMulti(q.subtopic, selectedSubtopics)
+    );
     filtered = filtered.filter((q) => matchesMulti(String(q.year), selectedYears));
-    filtered = filtered.filter((q) => matchesMulti(q.institution, selectedInstitutions));
+    filtered = filtered.filter((q) =>
+      matchesMulti(q.institution, selectedInstitutions)
+    );
 
     setFilteredQuestions(filtered);
   }, [
@@ -295,55 +401,6 @@ export default function QuestionBankPage() {
     setVetTopics([]);
     setVetBlock("");
   }
-
-  const CheckboxList = ({
-    title,
-    items,
-    selected,
-    onToggle,
-    emptyMessage,
-  }: {
-    title: string;
-    items: string[];
-    selected: string[];
-    onToggle: (value: string) => void;
-    emptyMessage: string;
-  }) => (
-    <div>
-      <label className="block text-sm font-semibold text-slate-700 mb-2">
-        {title}
-      </label>
-
-      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 max-h-56 overflow-y-auto">
-        {items.length > 0 ? (
-          <div className="space-y-2">
-            {items.map((item) => {
-              const checked = selected.some(
-                (value) => normalizeText(value) === normalizeText(item)
-              );
-
-              return (
-                <label
-                  key={item}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-white cursor-pointer transition-all"
-                >
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => onToggle(item)}
-                    className="h-4 w-4 rounded border-slate-300"
-                  />
-                  <span className="text-sm text-slate-700">{item}</span>
-                </label>
-              );
-            })}
-          </div>
-        ) : (
-          <p className="text-sm text-slate-500">{emptyMessage}</p>
-        )}
-      </div>
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -529,7 +586,7 @@ export default function QuestionBankPage() {
               <div>
                 <h3 className="text-lg font-bold text-slate-900">Filtros</h3>
                 <p className="text-sm text-slate-500">
-                  Agora você pode marcar várias opções ao mesmo tempo
+                  Você pode combinar várias opções ao mesmo tempo
                 </p>
               </div>
             </div>
@@ -547,7 +604,9 @@ export default function QuestionBankPage() {
                       <button
                         key={diff}
                         onClick={() =>
-                          setSelectedDifficulties((prev) => toggleValue(prev, diff))
+                          setSelectedDifficulties((prev) =>
+                            toggleValue(prev, diff)
+                          )
                         }
                         className={`px-4 py-2.5 rounded-full border text-sm font-semibold transition-all ${
                           selected
@@ -602,43 +661,49 @@ export default function QuestionBankPage() {
               </div>
 
               <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
-                <CheckboxList
+                <MultiSelectDropdown
                   title="Conteúdo"
                   items={availableTopics}
                   selected={selectedTopics}
                   onToggle={(value) =>
                     setSelectedTopics((prev) => toggleValue(prev, value))
                   }
+                  placeholder="Todos"
                   emptyMessage="Nenhum conteúdo disponível."
                 />
 
-                <CheckboxList
+                <MultiSelectDropdown
                   title="Assunto"
                   items={availableSubtopics}
                   selected={selectedSubtopics}
                   onToggle={(value) =>
                     setSelectedSubtopics((prev) => toggleValue(prev, value))
                   }
+                  placeholder="Todos"
                   emptyMessage="Nenhum assunto disponível."
                 />
 
-                <CheckboxList
+                <MultiSelectDropdown
                   title="Ano"
                   items={availableYears}
                   selected={selectedYears}
                   onToggle={(value) =>
                     setSelectedYears((prev) => toggleValue(prev, value))
                   }
+                  placeholder="Todos"
                   emptyMessage="Nenhum ano disponível."
                 />
 
-                <CheckboxList
+                <MultiSelectDropdown
                   title="Instituição"
                   items={availableInstitutions}
                   selected={selectedInstitutions}
                   onToggle={(value) =>
-                    setSelectedInstitutions((prev) => toggleValue(prev, value))
+                    setSelectedInstitutions((prev) =>
+                      toggleValue(prev, value)
+                    )
                   }
+                  placeholder="Todas"
                   emptyMessage="Nenhuma instituição disponível."
                 />
               </div>
