@@ -399,42 +399,105 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
       </div>
 
       {showExplanation && (
-        <div
-          className={`p-6 rounded-lg border-2 mb-8 ${
-            isCorrect ? "bg-green-50 border-green-300" : "bg-yellow-50 border-yellow-300"
-          }`}
-        >
-          <div className="flex gap-3 items-start">
-            {isCorrect ? (
-              <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-            ) : (
-              <AlertCircle className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
-            )}
-
-            <div className="w-full">
-              <p className={`font-bold mb-3 ${isCorrect ? "text-green-900" : "text-yellow-900"}`}>
-                {isCorrect ? "✅ Correto!" : "❌ Incorreto"}
-              </p>
-
-              <div className={`text-sm ${isCorrect ? "text-green-800" : "text-yellow-800"}`}>
-                <ReactMarkdown
-                  remarkPlugins={[remarkMath]}
-                  rehypePlugins={[rehypeKatex]}
-                  components={{
-                    p: ({ children }) => <p className="mb-3 whitespace-pre-line">{children}</p>,
-                    strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-                    ul: ({ children }) => <ul className="list-disc pl-5 mb-3">{children}</ul>,
-                    ol: ({ children }) => <ol className="list-decimal pl-5 mb-3">{children}</ol>,
-                    li: ({ children }) => <li className="mb-1">{children}</li>,
-                  }}
-                >
-                  {question.explanation || "Sem resolução cadastrada."}
-                </ReactMarkdown>
-              </div>
-            </div>
-          </div>
-        </div>
+  <div
+    className={`p-6 rounded-lg border-2 mb-8 ${
+      isCorrect ? "bg-green-50 border-green-300" : "bg-yellow-50 border-yellow-300"
+    }`}
+  >
+    <div className="flex gap-3 items-start">
+      {isCorrect ? (
+        <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+      ) : (
+        <AlertCircle className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
       )}
+
+      <div className="w-full">
+        <p className={`font-bold mb-3 ${isCorrect ? "text-green-900" : "text-yellow-900"}`}>
+          {isCorrect ? "✅ Correto!" : "❌ Incorreto"}
+        </p>
+
+        <div className={`text-sm ${isCorrect ? "text-green-800" : "text-yellow-800"}`}>
+          {question.explanationBlocks && question.explanationBlocks.length > 0 ? (
+            <div className="space-y-4">
+              {question.explanationBlocks
+                .sort((a, b) => a.order - b.order)
+                .map((block, index) => {
+                  if (block.type === "imagem" && block.imageUrl) {
+                    return (
+                      <div key={`${block.type}-${block.order}-${index}`} className="rounded-xl overflow-hidden border border-slate-200 bg-white p-3">
+                        <img
+                          src={block.imageUrl}
+                          alt={`Imagem da resolução ${index + 1}`}
+                          className="max-w-full rounded-lg mx-auto"
+                        />
+                      </div>
+                    );
+                  }
+
+                  if (block.type === "latex" && block.content) {
+                    return (
+                      <div
+                        key={`${block.type}-${block.order}-${index}`}
+                        className="rounded-xl border border-slate-200 bg-white p-4"
+                      >
+                        <ReactMarkdown
+                          remarkPlugins={[remarkMath]}
+                          rehypePlugins={[rehypeKatex]}
+                          components={{
+                            p: ({ children }) => <p className="mb-0">{children}</p>,
+                            strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                          }}
+                        >
+                          {block.content}
+                        </ReactMarkdown>
+                      </div>
+                    );
+                  }
+
+                  if (block.content) {
+                    return (
+                      <ReactMarkdown
+                        key={`${block.type}-${block.order}-${index}`}
+                        remarkPlugins={[remarkMath]}
+                        rehypePlugins={[rehypeKatex]}
+                        components={{
+                          p: ({ children }) => (
+                            <p className="mb-3 whitespace-pre-line">{children}</p>
+                          ),
+                          strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                          ul: ({ children }) => <ul className="list-disc pl-5 mb-3">{children}</ul>,
+                          ol: ({ children }) => <ol className="list-decimal pl-5 mb-3">{children}</ol>,
+                          li: ({ children }) => <li className="mb-1">{children}</li>,
+                        }}
+                      >
+                        {block.content}
+                      </ReactMarkdown>
+                    );
+                  }
+
+                  return null;
+                })}
+            </div>
+          ) : (
+            <ReactMarkdown
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+              components={{
+                p: ({ children }) => <p className="mb-3 whitespace-pre-line">{children}</p>,
+                strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                ul: ({ children }) => <ul className="list-disc pl-5 mb-3">{children}</ul>,
+                ol: ({ children }) => <ol className="list-decimal pl-5 mb-3">{children}</ol>,
+                li: ({ children }) => <li className="mb-1">{children}</li>,
+              }}
+            >
+              {question.explanation || "Sem resolução cadastrada."}
+            </ReactMarkdown>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
 
       <div className="flex gap-4">
         {currentQuestion > 0 && (
