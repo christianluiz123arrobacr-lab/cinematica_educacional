@@ -10,8 +10,9 @@ export type QuestionDifficulty = "facil" | "medio" | "dificil";
 export type QuestionSubject = "fisica" | "matematica" | "quimica";
 
 export type ExplanationBlock = {
-  type: "texto" | "latex";
-  content: string;
+  type: "texto" | "latex" | "imagem";
+  content?: string;
+  imageUrl?: string;
   order: number;
 };
 
