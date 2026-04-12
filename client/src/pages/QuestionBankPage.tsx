@@ -584,4 +584,113 @@ export default function QuestionBankPage() {
                         onClick={() =>
                           setSelectedSubjects((prev) => toggleValue(prev, subj))
                         }
-                        className={`px-4 py-2.
+                        className={`px-4 py-2.5 rounded-full border text-sm font-semibold transition-all ${
+                          selected
+                            ? "bg-blue-600 border-blue-600 text-white shadow-sm"
+                            : "bg-white border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-50"
+                        }`}
+                      >
+                        {subj === "fisica"
+                          ? "Física"
+                          : subj === "matematica"
+                            ? "Matemática"
+                            : "Química"}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <CheckboxList
+                  title="Conteúdo"
+                  items={availableTopics}
+                  selected={selectedTopics}
+                  onToggle={(value) =>
+                    setSelectedTopics((prev) => toggleValue(prev, value))
+                  }
+                  emptyMessage="Nenhum conteúdo disponível."
+                />
+
+                <CheckboxList
+                  title="Assunto"
+                  items={availableSubtopics}
+                  selected={selectedSubtopics}
+                  onToggle={(value) =>
+                    setSelectedSubtopics((prev) => toggleValue(prev, value))
+                  }
+                  emptyMessage="Nenhum assunto disponível."
+                />
+
+                <CheckboxList
+                  title="Ano"
+                  items={availableYears}
+                  selected={selectedYears}
+                  onToggle={(value) =>
+                    setSelectedYears((prev) => toggleValue(prev, value))
+                  }
+                  emptyMessage="Nenhum ano disponível."
+                />
+
+                <CheckboxList
+                  title="Instituição"
+                  items={availableInstitutions}
+                  selected={selectedInstitutions}
+                  onToggle={(value) =>
+                    setSelectedInstitutions((prev) => toggleValue(prev, value))
+                  }
+                  emptyMessage="Nenhuma instituição disponível."
+                />
+              </div>
+
+              <div className="flex justify-end">
+                <Button
+                  variant="outline"
+                  onClick={clearAllFilters}
+                  className="rounded-xl"
+                >
+                  Limpar filtros
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </section>
+
+        <section>
+          {filteredQuestions.length > 0 ? (
+            <InteractiveQuiz
+              key={[
+                selectedDifficulties.join("|"),
+                selectedSubjects.join("|"),
+                selectedTopics.join("|"),
+                selectedSubtopics.join("|"),
+                selectedYears.join("|"),
+                selectedInstitutions.join("|"),
+                vetTopics.join("|"),
+              ].join("::")}
+              questions={filteredQuestions}
+            />
+          ) : (
+            <Card className="p-12 text-center">
+              <p className="text-lg text-slate-600 mb-4">
+                Nenhuma questão encontrada com os filtros selecionados.
+              </p>
+              <Button onClick={clearAllFilters}>Limpar Filtros</Button>
+            </Card>
+          )}
+        </section>
+      </main>
+
+      <footer className="bg-slate-900 text-slate-300 py-12 mt-20">
+        <div className="container text-center">
+          <p className="mb-4">
+            © 2026 Domine Exatas. Banco de Questões Premium.
+          </p>
+          <p className="text-sm text-slate-500">
+            Questões comentadas, análise de desempenho e simulados estratégicos.
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}
