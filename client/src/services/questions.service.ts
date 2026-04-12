@@ -51,6 +51,7 @@ type QuestaoRow = {
     tipo: string;
     texto?: string | null;
     ordem?: number | null;
+    url_imagem?: string | null;
   }[];
 };
 
@@ -79,13 +80,35 @@ function normalizarAlternativas(row: QuestaoRow): Question["options"] {
 function mapQuestao(row: QuestaoRow): Question {
   const explanationBlocks =
     row.resolucoes
-      ?.filter((r) => r.texto)
-      .sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0))
-      .map((r) => ({
-        type: r.tipo === "latex" ? "latex" : "texto",
-        content: r.texto ?? "",
-        order: r.ordem ?? 0,
-      })) || [];
+      ?.sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0))
+      .map((r) => {
+        const tipo = (r.tipo || "").toLowerCase().trim();
+
+        if (tipo === "imagem") {
+          return {
+            type: "imagem" as const,
+            imageUrl: r.url_imagem ?? undefined,
+            order: r.ordem ?? 0,
+          };
+        }
+
+        if (tipo === "latex") {
+          return {
+            type: "latex" as const,
+            content: r.texto ?? "",
+            order: r.ordem ?? 0,
+          };
+        }
+
+        return {
+          type: "texto" as const,
+          content: r.texto ?? "",
+          order: r.ordem ?? 0,
+        };
+      })
+      .filter((block) =>
+        block.type === "imagem" ? !!block.imageUrl : !!block.content
+      ) || [];
 
   const resolucaoTexto =
     row.resolucoes
@@ -135,7 +158,8 @@ export async function getQuestions(
         id,
         tipo,
         texto,
-        ordem
+        ordem,
+        url_imagem
       )
     `);
 
@@ -194,7 +218,8 @@ export async function getQuestionById(id: string): Promise<Question | null> {
         id,
         tipo,
         texto,
-        ordem
+        ordem,
+        url_imagem
       )
     `)
     .eq("id", id)
@@ -206,4 +231,4 @@ export async function getQuestionById(id: string): Promise<Question | null> {
   }
 
   return mapQuestao(data as QuestaoRow);
-}
+      }
