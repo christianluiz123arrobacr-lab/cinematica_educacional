@@ -25,8 +25,8 @@ function normalizeText(value?: string | null) {
 function parseVetFiltersFromUrl() {
   if (typeof window === "undefined") {
     return {
-      subject: "todos",
-      institution: "todos",
+      subjects: [] as string[],
+      institution: "",
       topics: [] as string[],
       block: "",
     };
@@ -34,8 +34,8 @@ function parseVetFiltersFromUrl() {
 
   const params = new URLSearchParams(window.location.search);
 
-  const subject = params.get("subject") || "todos";
-  const institution = params.get("institution") || "todos";
+  const subject = params.get("subject") || "";
+  const institution = params.get("institution") || "";
   const block = params.get("block") || "";
   const topicsParam = params.get("topics") || "";
 
@@ -45,7 +45,24 @@ function parseVetFiltersFromUrl() {
     .map((item) => item.trim())
     .filter(Boolean);
 
-  return { subject, institution, topics, block };
+  return {
+    subjects: subject ? [subject] : [],
+    institution,
+    topics,
+    block,
+  };
+}
+
+function toggleValue(list: string[], value: string) {
+  return list.includes(value)
+    ? list.filter((item) => item !== value)
+    : [...list, value];
+}
+
+function matchesMulti(value: string | number | null | undefined, selected: string[]) {
+  if (selected.length === 0) return true;
+  const normalizedValue = normalizeText(String(value ?? ""));
+  return selected.some((item) => normalizeText(item) === normalizedValue);
 }
 
 export default function QuestionBankPage() {
@@ -53,103 +70,120 @@ export default function QuestionBankPage() {
 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("todos");
-  const [selectedSubject, setSelectedSubject] = useState<string>(initialVetFilters.subject);
-  const [selectedTopic, setSelectedTopic] = useState<string>("todos");
-  const [selectedSubtopic, setSelectedSubtopic] = useState<string>("todos");
-  const [selectedYear, setSelectedYear] = useState<string>("todos");
-  const [selectedInstitution, setSelectedInstitution] = useState<string>(
-    initialVetFilters.institution
+
+  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>(
+    initialVetFilters.subjects
   );
+  const [selectedTopics, setSelectedTopics] = useState<string[]>(
+    initialVetFilters.topics
+  );
+  const [selectedSubtopics, setSelectedSubtopics] = useState<string[]>([]);
+  const [selectedYears, setSelectedYears] = useState<string[]>([]);
+  const [selectedInstitutions, setSelectedInstitutions] = useState<string[]>(
+    initialVetFilters.institution ? [initialVetFilters.institution] : []
+  );
+
   const [vetTopics, setVetTopics] = useState<string[]>(initialVetFilters.topics);
   const [vetBlock, setVetBlock] = useState<string>(initialVetFilters.block);
 
   const hasVetFilter = vetTopics.length > 0;
 
-  const effectiveTopicFilter =
-    selectedTopic !== "todos" ? [selectedTopic] : vetTopics;
+  const effectiveTopics = selectedTopics.length > 0 ? selectedTopics : vetTopics;
 
-  const questionsForTopics = questions.filter((q) => {
-    return selectedSubject === "todos" || q.subject === selectedSubject;
-  });
+  const questionsForTopics = useMemo(() => {
+    return questions.filter((q) => matchesMulti(q.subject, selectedSubjects));
+  }, [questions, selectedSubjects]);
 
-  const availableTopics = Array.from(
-    new Set(questionsForTopics.map((q) => q.topic).filter(Boolean))
-  ).sort();
+  const availableTopics = useMemo(() => {
+    return Array.from(
+      new Set(questionsForTopics.map((q) => q.topic).filter(Boolean))
+    ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [questionsForTopics]);
 
-  const questionsForSubtopics = questions.filter((q) => {
-    const matchesSubject =
-      selectedSubject === "todos" || q.subject === selectedSubject;
+  const questionsForSubtopics = useMemo(() => {
+    return questions.filter((q) => {
+      const matchesSubject = matchesMulti(q.subject, selectedSubjects);
+      const matchesTopic =
+        effectiveTopics.length === 0 || matchesMulti(q.topic, effectiveTopics);
 
-    const matchesTopic =
-      effectiveTopicFilter.length === 0 ||
-      effectiveTopicFilter.some(
-        (topic) => normalizeText(q.topic) === normalizeText(topic)
+      return matchesSubject && matchesTopic;
+    });
+  }, [questions, selectedSubjects, effectiveTopics]);
+
+  const availableSubtopics = useMemo(() => {
+    return Array.from(
+      new Set(questionsForSubtopics.map((q) => q.subtopic).filter(Boolean))
+    ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [questionsForSubtopics]);
+
+  const questionsForYears = useMemo(() => {
+    return questions.filter((q) => {
+      const matchesDifficulty = matchesMulti(q.difficulty, selectedDifficulties);
+      const matchesSubject = matchesMulti(q.subject, selectedSubjects);
+      const matchesTopic =
+        effectiveTopics.length === 0 || matchesMulti(q.topic, effectiveTopics);
+      const matchesSubtopic = matchesMulti(q.subtopic, selectedSubtopics);
+
+      return (
+        matchesDifficulty &&
+        matchesSubject &&
+        matchesTopic &&
+        matchesSubtopic
       );
+    });
+  }, [
+    questions,
+    selectedDifficulties,
+    selectedSubjects,
+    effectiveTopics,
+    selectedSubtopics,
+  ]);
 
-    return matchesSubject && matchesTopic;
-  });
+  const availableYears = useMemo(() => {
+    return Array.from(
+      new Set(questionsForYears.map((q) => String(q.year)).filter(Boolean))
+    ).sort((a, b) => Number(b) - Number(a));
+  }, [questionsForYears]);
 
-  const availableSubtopics = Array.from(
-    new Set(questionsForSubtopics.map((q) => q.subtopic).filter(Boolean))
-  ).sort();
+  const questionsForInstitutions = useMemo(() => {
+    return questions.filter((q) => {
+      const matchesDifficulty = matchesMulti(q.difficulty, selectedDifficulties);
+      const matchesSubject = matchesMulti(q.subject, selectedSubjects);
+      const matchesTopic =
+        effectiveTopics.length === 0 || matchesMulti(q.topic, effectiveTopics);
+      const matchesSubtopic = matchesMulti(q.subtopic, selectedSubtopics);
+      const matchesYear = matchesMulti(String(q.year), selectedYears);
 
-  const questionsForYears = questions.filter((q) => {
-    const matchesDifficulty =
-      selectedDifficulty === "todos" || q.difficulty === selectedDifficulty;
-    const matchesSubject =
-      selectedSubject === "todos" || q.subject === selectedSubject;
-
-    const matchesTopic =
-      effectiveTopicFilter.length === 0 ||
-      effectiveTopicFilter.some(
-        (topic) => normalizeText(q.topic) === normalizeText(topic)
+      return (
+        matchesDifficulty &&
+        matchesSubject &&
+        matchesTopic &&
+        matchesSubtopic &&
+        matchesYear
       );
+    });
+  }, [
+    questions,
+    selectedDifficulties,
+    selectedSubjects,
+    effectiveTopics,
+    selectedSubtopics,
+    selectedYears,
+  ]);
 
-    const matchesSubtopic =
-      selectedSubtopic === "todos" || q.subtopic === selectedSubtopic;
-
-    return matchesDifficulty && matchesSubject && matchesTopic && matchesSubtopic;
-  });
-
-  const availableYears = Array.from(
-    new Set(questionsForYears.map((q) => String(q.year)).filter(Boolean))
-  ).sort((a, b) => Number(b) - Number(a));
-
-  const questionsForInstitutions = questions.filter((q) => {
-    const matchesDifficulty =
-      selectedDifficulty === "todos" || q.difficulty === selectedDifficulty;
-    const matchesSubject =
-      selectedSubject === "todos" || q.subject === selectedSubject;
-
-    const matchesTopic =
-      effectiveTopicFilter.length === 0 ||
-      effectiveTopicFilter.some(
-        (topic) => normalizeText(q.topic) === normalizeText(topic)
-      );
-
-    const matchesSubtopic =
-      selectedSubtopic === "todos" || q.subtopic === selectedSubtopic;
-
-    const matchesYear =
-      selectedYear === "todos" || String(q.year) === selectedYear;
-
-    return (
-      matchesDifficulty &&
-      matchesSubject &&
-      matchesTopic &&
-      matchesSubtopic &&
-      matchesYear
-    );
-  });
-
-  const availableInstitutions = Array.from(
-    new Set(
-      questionsForInstitutions
-        .map((q) => q.institution?.trim())
-        .filter((institution): institution is string => !!institution && institution !== "")
-    )
-  ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  const availableInstitutions = useMemo(() => {
+    return Array.from(
+      new Set(
+        questionsForInstitutions
+          .map((q) => q.institution?.trim())
+          .filter(
+            (institution): institution is string =>
+              !!institution && institution !== ""
+          )
+      )
+    ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [questionsForInstitutions]);
 
   const totalSubjects = useMemo(
     () => new Set(questions.map((q) => q.subject).filter(Boolean)).size,
@@ -222,78 +256,37 @@ export default function QuestionBankPage() {
   }, []);
 
   useEffect(() => {
-    setSelectedTopic("todos");
-    setSelectedSubtopic("todos");
-    setSelectedYear("todos");
-    setSelectedInstitution(initialVetFilters.institution || "todos");
-  }, [selectedSubject, initialVetFilters.institution]);
-
-  useEffect(() => {
-    setSelectedSubtopic("todos");
-    setSelectedYear("todos");
-    setSelectedInstitution(initialVetFilters.institution || "todos");
-  }, [selectedTopic, initialVetFilters.institution]);
-
-  useEffect(() => {
-    setSelectedYear("todos");
-    setSelectedInstitution(initialVetFilters.institution || "todos");
-  }, [selectedSubtopic, initialVetFilters.institution]);
-
-  useEffect(() => {
-    setSelectedInstitution(initialVetFilters.institution || "todos");
-  }, [selectedYear, initialVetFilters.institution]);
-
-  useEffect(() => {
     let filtered = questions;
 
-    if (selectedDifficulty !== "todos") {
-      filtered = filtered.filter((q) => q.difficulty === selectedDifficulty);
+    filtered = filtered.filter((q) => matchesMulti(q.difficulty, selectedDifficulties));
+    filtered = filtered.filter((q) => matchesMulti(q.subject, selectedSubjects));
+
+    if (effectiveTopics.length > 0) {
+      filtered = filtered.filter((q) => matchesMulti(q.topic, effectiveTopics));
     }
 
-    if (selectedSubject !== "todos") {
-      filtered = filtered.filter((q) => q.subject === selectedSubject);
-    }
-
-    if (effectiveTopicFilter.length > 0) {
-      filtered = filtered.filter((q) =>
-        effectiveTopicFilter.some(
-          (topic) => normalizeText(q.topic) === normalizeText(topic)
-        )
-      );
-    }
-
-    if (selectedSubtopic !== "todos") {
-      filtered = filtered.filter((q) => q.subtopic === selectedSubtopic);
-    }
-
-    if (selectedYear !== "todos") {
-      filtered = filtered.filter((q) => String(q.year) === selectedYear);
-    }
-
-    if (selectedInstitution !== "todos") {
-      filtered = filtered.filter((q) => q.institution === selectedInstitution);
-    }
+    filtered = filtered.filter((q) => matchesMulti(q.subtopic, selectedSubtopics));
+    filtered = filtered.filter((q) => matchesMulti(String(q.year), selectedYears));
+    filtered = filtered.filter((q) => matchesMulti(q.institution, selectedInstitutions));
 
     setFilteredQuestions(filtered);
   }, [
-    selectedDifficulty,
-    selectedSubject,
-    selectedTopic,
-    selectedSubtopic,
-    selectedYear,
-    selectedInstitution,
-    vetTopics,
     questions,
-    effectiveTopicFilter,
+    selectedDifficulties,
+    selectedSubjects,
+    effectiveTopics,
+    selectedSubtopics,
+    selectedYears,
+    selectedInstitutions,
   ]);
 
   function clearAllFilters() {
-    setSelectedDifficulty("todos");
-    setSelectedSubject("todos");
-    setSelectedTopic("todos");
-    setSelectedSubtopic("todos");
-    setSelectedYear("todos");
-    setSelectedInstitution("todos");
+    setSelectedDifficulties([]);
+    setSelectedSubjects([]);
+    setSelectedTopics([]);
+    setSelectedSubtopics([]);
+    setSelectedYears([]);
+    setSelectedInstitutions([]);
     setVetTopics([]);
     setVetBlock("");
   }
@@ -302,6 +295,55 @@ export default function QuestionBankPage() {
     setVetTopics([]);
     setVetBlock("");
   }
+
+  const CheckboxList = ({
+    title,
+    items,
+    selected,
+    onToggle,
+    emptyMessage,
+  }: {
+    title: string;
+    items: string[];
+    selected: string[];
+    onToggle: (value: string) => void;
+    emptyMessage: string;
+  }) => (
+    <div>
+      <label className="block text-sm font-semibold text-slate-700 mb-2">
+        {title}
+      </label>
+
+      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 max-h-56 overflow-y-auto">
+        {items.length > 0 ? (
+          <div className="space-y-2">
+            {items.map((item) => {
+              const checked = selected.some(
+                (value) => normalizeText(value) === normalizeText(item)
+              );
+
+              return (
+                <label
+                  key={item}
+                  className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-white cursor-pointer transition-all"
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => onToggle(item)}
+                    className="h-4 w-4 rounded border-slate-300"
+                  />
+                  <span className="text-sm text-slate-700">{item}</span>
+                </label>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-sm text-slate-500">{emptyMessage}</p>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -487,42 +529,44 @@ export default function QuestionBankPage() {
               <div>
                 <h3 className="text-lg font-bold text-slate-900">Filtros</h3>
                 <p className="text-sm text-slate-500">
-                  Refine as questões por perfil, conteúdo e prova
+                  Agora você pode marcar várias opções ao mesmo tempo
                 </p>
               </div>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-3">
                   Dificuldade
                 </label>
                 <div className="flex flex-wrap gap-3">
-                  {["todos", "facil", "medio", "dificil"].map((diff) => (
-                    <button
-                      key={diff}
-                      onClick={() => setSelectedDifficulty(diff)}
-                      className={`px-4 py-2.5 rounded-full border text-sm font-semibold transition-all ${
-                        selectedDifficulty === diff
-                          ? diff === "facil"
-                            ? "bg-green-500 border-green-500 text-white shadow-sm"
-                            : diff === "medio"
-                              ? "bg-yellow-500 border-yellow-500 text-white shadow-sm"
-                              : diff === "dificil"
-                                ? "bg-red-500 border-red-500 text-white shadow-sm"
-                                : "bg-slate-900 border-slate-900 text-white shadow-sm"
-                          : "bg-white border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-50"
-                      }`}
-                    >
-                      {diff === "todos"
-                        ? "Todas"
-                        : diff === "facil"
+                  {["facil", "medio", "dificil"].map((diff) => {
+                    const selected = selectedDifficulties.includes(diff);
+
+                    return (
+                      <button
+                        key={diff}
+                        onClick={() =>
+                          setSelectedDifficulties((prev) => toggleValue(prev, diff))
+                        }
+                        className={`px-4 py-2.5 rounded-full border text-sm font-semibold transition-all ${
+                          selected
+                            ? diff === "facil"
+                              ? "bg-green-500 border-green-500 text-white shadow-sm"
+                              : diff === "medio"
+                                ? "bg-yellow-500 border-yellow-500 text-white shadow-sm"
+                                : "bg-red-500 border-red-500 text-white shadow-sm"
+                            : "bg-white border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-50"
+                        }`}
+                      >
+                        {diff === "facil"
                           ? "Fácil"
                           : diff === "medio"
                             ? "Médio"
                             : "Difícil"}
-                    </button>
-                  ))}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -531,144 +575,13 @@ export default function QuestionBankPage() {
                   Disciplina
                 </label>
                 <div className="flex flex-wrap gap-3">
-                  {["todos", "fisica", "matematica", "quimica"].map((subj) => (
-                    <button
-                      key={subj}
-                      onClick={() => setSelectedSubject(subj)}
-                      className={`px-4 py-2.5 rounded-full border text-sm font-semibold transition-all ${
-                        selectedSubject === subj
-                          ? "bg-blue-600 border-blue-600 text-white shadow-sm"
-                          : "bg-white border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-50"
-                      }`}
-                    >
-                      {subj === "todos"
-                        ? "Todas"
-                        : subj === "fisica"
-                          ? "Física"
-                          : subj === "matematica"
-                            ? "Matemática"
-                            : "Química"}
-                    </button>
-                  ))}
-                </div>
-              </div>
+                  {["fisica", "matematica", "quimica"].map((subj) => {
+                    const selected = selectedSubjects.includes(subj);
 
-              <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Conteúdo
-                  </label>
-                  <select
-                    value={selectedTopic}
-                    onChange={(e) => setSelectedTopic(e.target.value)}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="todos">Todos</option>
-                    {availableTopics.map((topic) => (
-                      <option key={topic} value={topic}>
-                        {topic}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Assunto
-                  </label>
-                  <select
-                    value={selectedSubtopic}
-                    onChange={(e) => setSelectedSubtopic(e.target.value)}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="todos">Todos</option>
-                    {availableSubtopics.map((subtopic) => (
-                      <option key={subtopic} value={subtopic}>
-                        {subtopic}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Ano
-                  </label>
-                  <select
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="todos">Todos</option>
-                    {availableYears.map((year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Instituição
-                  </label>
-                  <select
-                    value={selectedInstitution}
-                    onChange={(e) => setSelectedInstitution(e.target.value)}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="todos">Todas</option>
-                    {availableInstitutions.map((institution) => (
-                      <option key={institution} value={institution ?? "todos"}>
-                        {institution}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex justify-end">
-                <Button
-                  variant="outline"
-                  onClick={clearAllFilters}
-                  className="rounded-xl"
-                >
-                  Limpar filtros
-                </Button>
-              </div>
-            </div>
-          </Card>
-        </section>
-
-        <section>
-          {filteredQuestions.length > 0 ? (
-            <InteractiveQuiz
-              key={`${selectedDifficulty}-${selectedSubject}-${selectedTopic}-${selectedSubtopic}-${selectedYear}-${selectedInstitution}-${vetTopics.join("|")}`}
-              questions={filteredQuestions}
-            />
-          ) : (
-            <Card className="p-12 text-center">
-              <p className="text-lg text-slate-600 mb-4">
-                Nenhuma questão encontrada com os filtros selecionados.
-              </p>
-              <Button onClick={clearAllFilters}>
-                Limpar Filtros
-              </Button>
-            </Card>
-          )}
-        </section>
-      </main>
-
-      <footer className="bg-slate-900 text-slate-300 py-12 mt-20">
-        <div className="container text-center">
-          <p className="mb-4">
-            © 2026 Domine Exatas. Banco de Questões Premium.
-          </p>
-          <p className="text-sm text-slate-500">
-            Questões comentadas, análise de desempenho e simulados estratégicos.
-          </p>
-        </div>
-      </footer>
-    </div>
-  );
-}
+                    return (
+                      <button
+                        key={subj}
+                        onClick={() =>
+                          setSelectedSubjects((prev) => toggleValue(prev, subj))
+                        }
+                        className={`px-4 py-2.
