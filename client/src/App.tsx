@@ -24,6 +24,7 @@ import AdminResolutionsPage from "./pages/AdminResolutionsPage";
 import AdminUploadsPage from "./pages/AdminUploadsPage";
 import AdminVetPage from "./pages/AdminVetPage";
 import AdminLogsPage from "./pages/AdminLogsPage";
+import AdminQuestionEditPage from "./pages/AdminQuestionEditPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import DinamicaHome from "./pages/DinamicaHome";
@@ -138,6 +139,12 @@ function Router() {
           <AdminDashboardPage />
         </ProtectedRoute>
       </Route>
+
+      <Route path="/admin/questoes/:id">
+  <ProtectedRoute>
+    <AdminQuestionEditPage />
+  </ProtectedRoute>
+</Route>
 
       <Route path="/admin/usuarios">
         <ProtectedRoute>
