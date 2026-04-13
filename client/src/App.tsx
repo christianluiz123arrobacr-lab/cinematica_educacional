@@ -13,12 +13,18 @@ import VetDiagnosisPage from "./pages/VetDiagnosisPage";
 import VetPrioritiesPage from "./pages/VetPrioritiesPage";
 import VetLevelPage from "./pages/VetLevelPage";
 import VetMockPage from "./pages/VetMockPage";
-import VetMockPage from "./pages/VetMockPage";
 import VetMockResultPage from "./pages/VetMockResultPage";
 
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
+import AdminQuestionsPage from "./pages/AdminQuestionsPage";
+import AdminResolutionsPage from "./pages/AdminResolutionsPage";
+import AdminUploadsPage from "./pages/AdminUploadsPage";
+import AdminVetPage from "./pages/AdminVetPage";
+import AdminLogsPage from "./pages/AdminLogsPage";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 import DinamicaHome from "./pages/DinamicaHome";
 import Calculator from "./pages/Calculator";
@@ -127,9 +133,45 @@ function Router() {
       <Route path="/fisica" component={FisicaSelector} />
       <Route path="/login" component={LoginPage} />
 
+      <Route path="/admin">
+        <ProtectedRoute>
+          <AdminDashboardPage />
+        </ProtectedRoute>
+      </Route>
+
       <Route path="/admin/usuarios">
         <ProtectedRoute>
           <AdminUsersPage />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/admin/questoes">
+        <ProtectedRoute>
+          <AdminQuestionsPage />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/admin/resolucoes">
+        <ProtectedRoute>
+          <AdminResolutionsPage />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/admin/uploads">
+        <ProtectedRoute>
+          <AdminUploadsPage />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/admin/vet">
+        <ProtectedRoute>
+          <AdminVetPage />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/admin/logs">
+        <ProtectedRoute>
+          <AdminLogsPage />
         </ProtectedRoute>
       </Route>
 
