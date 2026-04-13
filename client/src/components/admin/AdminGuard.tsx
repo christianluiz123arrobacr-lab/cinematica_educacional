@@ -6,9 +6,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Loader2, ShieldCheck } from "lucide-react";
 
+type AdminRole = "admin" | "editor";
+
 type AdminGuardProps = {
   children: ReactNode;
-  allowedRoles?: Array<"admin" | "editor">;
+  allowedRoles?: AdminRole[];
 };
 
 type AdminGuardStatus =
@@ -19,18 +21,23 @@ type AdminGuardStatus =
   | "forbidden"
   | "error";
 
+const DEFAULT_ALLOWED_ROLES: AdminRole[] = ["admin", "editor"];
+
 export default function AdminGuard({
   children,
-  allowedRoles = ["admin", "editor"],
+  allowedRoles = DEFAULT_ALLOWED_ROLES,
 }: AdminGuardProps) {
   const { user, loading } = useSupabaseAuth();
   const [, setLocation] = useLocation();
 
   const [status, setStatus] = useState<AdminGuardStatus>("checking-auth");
   const [role, setRole] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const allowedRolesSet = useMemo(() => new Set(allowedRoles), [allowedRoles]);
+  const allowedRolesKey = useMemo(
+    () => [...allowedRoles].sort().join("|"),
+    [allowedRoles]
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -80,7 +87,9 @@ export default function AdminGuard({
       const userRole = data?.role ?? null;
       setRole(userRole);
 
-      if (!userRole || !allowedRolesSet.has(userRole as "admin" | "editor")) {
+      const allowedSet = new Set(allowedRoles);
+
+      if (!userRole || !allowedSet.has(userRole as AdminRole)) {
         setStatus("forbidden");
         return;
       }
@@ -93,7 +102,7 @@ export default function AdminGuard({
     return () => {
       isMounted = false;
     };
-  }, [user?.id, loading, setLocation, allowedRolesSet]);
+  }, [user?.id, loading, setLocation, allowedRolesKey]);
 
   if (status === "allowed") {
     return <>{children}</>;
@@ -119,7 +128,8 @@ export default function AdminGuard({
 
           <p className="text-slate-600">
             {status === "checking-auth" && "Validando autenticação..."}
-            {status === "checking-role" && "Validando permissões administrativas..."}
+            {status === "checking-role" &&
+              "Validando permissões administrativas..."}
             {status === "redirecting" && "Redirecionando para o login..."}
           </p>
         </Card>
