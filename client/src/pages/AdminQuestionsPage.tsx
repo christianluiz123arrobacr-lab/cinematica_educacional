@@ -73,9 +73,7 @@ export default function AdminQuestionsPage() {
 
         const { data, error } = await supabase
           .from("questoes")
-          .select(
-            "id, codigo, disciplina, diciplina, conteudo, assunto, banca, ano, dificuldade, instituição, publicada, enunciado, created_at"
-          )
+          .select("*")
           .order("created_at", { ascending: false });
 
         if (error) {
