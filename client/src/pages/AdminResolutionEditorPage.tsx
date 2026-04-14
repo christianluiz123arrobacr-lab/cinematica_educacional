@@ -1,25 +1,565 @@
-import { useRoute } from "wouter";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useRoute } from "wouter";
+import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminGuard from "@/components/admin/AdminGuard";
+import {
+  ArrowLeft,
+  Blocks,
+  Image,
+  Loader2,
+  Plus,
+  Save,
+  Trash2,
+  AlertTriangle,
+  CheckCircle2,
+} from "lucide-react";
+
+type QuestionInfo = {
+  id: string;
+  codigo?: string | null;
+  enunciado?: string | null;
+};
+
+type ResolutionBlock = {
+  id: string;
+  questao_id: string;
+  tipo: string;
+  texto?: string | null;
+  ordem?: number | null;
+  url_imagem?: string | null;
+  codigo_resolucao?: string | null;
+  created_at?: string | null;
+};
+
+type EditableBlock = {
+  id?: string;
+  localId: string;
+  tipo: "texto" | "latex" | "imagem";
+  texto: string;
+  url_imagem: string;
+  ordem: number;
+  isNew?: boolean;
+};
+
+function textoCurto(texto?: string | null, limite = 140) {
+  const valor = (texto || "").trim();
+  if (!valor) return "Sem enunciado";
+  if (valor.length <= limite) return valor;
+  return `${valor.slice(0, limite)}...`;
+}
+
+function gerarLocalId() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function criarBlocoVazio(ordem: number): EditableBlock {
+  return {
+    localId: gerarLocalId(),
+    tipo: "texto",
+    texto: "",
+    url_imagem: "",
+    ordem,
+    isNew: true,
+  };
+}
 
 export default function AdminResolutionEditorPage() {
-  const [, params] = useRoute("/admin/resolucoes/:questaoId");
+  const [match, params] = useRoute("/admin/resolucoes/:questaoId");
+  const questaoId = match ? params.questaoId : null;
+
+  const [question, setQuestion] = useState<QuestionInfo | null>(null);
+  const [blocks, setBlocks] = useState<EditableBlock[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [savingAll, setSavingAll] = useState(false);
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  useEffect(() => {
+    async function loadData() {
+      if (!questaoId) {
+        setError("Questão não encontrada.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError("");
+        setSuccessMessage("");
+
+        const [questionResult, resolutionsResult] = await Promise.all([
+          supabase
+            .from("questoes")
+            .select("id, codigo, enunciado")
+            .eq("id", questaoId)
+            .single(),
+
+          supabase
+            .from("resolucoes")
+            .select("id, questao_id, tipo, texto, ordem, url_imagem, codigo_resolucao, created_at")
+            .eq("questao_id", questaoId)
+            .order("ordem", { ascending: true }),
+        ]);
+
+        if (questionResult.error || !questionResult.data) {
+          console.error("Erro ao carregar questão da resolução:", questionResult.error);
+          setError("Não foi possível carregar a questão.");
+          return;
+        }
+
+        if (resolutionsResult.error) {
+          console.error("Erro ao carregar blocos da resolução:", resolutionsResult.error);
+          setError("Não foi possível carregar os blocos da resolução.");
+          return;
+        }
+
+        setQuestion(questionResult.data as QuestionInfo);
+
+        const mappedBlocks: EditableBlock[] = ((resolutionsResult.data as ResolutionBlock[]) || []).map(
+          (block, index) => ({
+            id: block.id,
+            localId: block.id || `${index}-${gerarLocalId()}`,
+            tipo: ((block.tipo || "texto").toLowerCase() as "texto" | "latex" | "imagem"),
+            texto: block.texto || "",
+            url_imagem: block.url_imagem || "",
+            ordem: block.ordem ?? index + 1,
+            isNew: false,
+          })
+        );
+
+        setBlocks(mappedBlocks);
+      } catch (err) {
+        console.error("Erro inesperado ao carregar editor de resolução:", err);
+        setError("Ocorreu um erro inesperado ao carregar a resolução.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, [questaoId]);
+
+  const orderedBlocks = useMemo(
+    () => [...blocks].sort((a, b) => a.ordem - b.ordem),
+    [blocks]
+  );
+
+  function updateBlock(localId: string, patch: Partial<EditableBlock>) {
+    setBlocks((prev) =>
+      prev.map((block) =>
+        block.localId === localId ? { ...block, ...patch } : block
+      )
+    );
+  }
+
+  function addNewBlock() {
+    const nextOrder =
+      blocks.length > 0 ? Math.max(...blocks.map((b) => b.ordem)) + 1 : 1;
+
+    setBlocks((prev) => [...prev, criarBlocoVazio(nextOrder)]);
+    setSuccessMessage("");
+    setError("");
+  }
+
+  function removeLocalBlock(localId: string) {
+    setBlocks((prev) => prev.filter((block) => block.localId !== localId));
+    setSuccessMessage("");
+    setError("");
+  }
+
+  async function deletePersistedBlock(localId: string, id?: string) {
+    if (!id) {
+      removeLocalBlock(localId);
+      return;
+    }
+
+    try {
+      setError("");
+      setSuccessMessage("");
+
+      const { error } = await supabase
+        .from("resolucoes")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        console.error("Erro ao excluir bloco:", error);
+        setError("Não foi possível excluir o bloco.");
+        return;
+      }
+
+      removeLocalBlock(localId);
+      setSuccessMessage("Bloco excluído com sucesso.");
+    } catch (err) {
+      console.error("Erro inesperado ao excluir bloco:", err);
+      setError("Ocorreu um erro inesperado ao excluir o bloco.");
+    }
+  }
+
+  async function saveBlock(block: EditableBlock) {
+    if (!questaoId) return;
+
+    const payload = {
+      questao_id: questaoId,
+      tipo: block.tipo,
+      texto: block.tipo === "imagem" ? null : block.texto || null,
+      url_imagem: block.tipo === "imagem" ? block.url_imagem || null : null,
+      ordem: block.ordem,
+    };
+
+    if (block.id) {
+      const { error } = await supabase
+        .from("resolucoes")
+        .update(payload)
+        .eq("id", block.id);
+
+      if (error) throw error;
+      return block.id;
+    }
+
+    const { data, error } = await supabase
+      .from("resolucoes")
+      .insert(payload)
+      .select("id")
+      .single();
+
+    if (error) throw error;
+    return data?.id as string;
+  }
+
+  async function handleSaveSingle(localId: string) {
+    const block = blocks.find((item) => item.localId === localId);
+    if (!block || !questaoId) return;
+
+    try {
+      setError("");
+      setSuccessMessage("");
+
+      if (block.tipo === "imagem" && !block.url_imagem.trim()) {
+        setError("Bloco de imagem precisa ter uma URL de imagem.");
+        return;
+      }
+
+      if ((block.tipo === "texto" || block.tipo === "latex") && !block.texto.trim()) {
+        setError("Bloco de texto/latex precisa ter conteúdo.");
+        return;
+      }
+
+      const savedId = await saveBlock(block);
+
+      setBlocks((prev) =>
+        prev.map((item) =>
+          item.localId === localId
+            ? { ...item, id: savedId, isNew: false }
+            : item
+        )
+      );
+
+      setSuccessMessage("Bloco salvo com sucesso.");
+    } catch (err) {
+      console.error("Erro ao salvar bloco:", err);
+      setError("Não foi possível salvar o bloco.");
+    }
+  }
+
+  async function handleSaveAll() {
+    if (!questaoId) return;
+
+    try {
+      setSavingAll(true);
+      setError("");
+      setSuccessMessage("");
+
+      for (const block of orderedBlocks) {
+        if (block.tipo === "imagem" && !block.url_imagem.trim()) {
+          setError(`O bloco de ordem ${block.ordem} precisa de URL da imagem.`);
+          return;
+        }
+
+        if ((block.tipo === "texto" || block.tipo === "latex") && !block.texto.trim()) {
+          setError(`O bloco de ordem ${block.ordem} precisa de conteúdo.`);
+          return;
+        }
+      }
+
+      const updatedBlocks: EditableBlock[] = [];
+
+      for (const block of orderedBlocks) {
+        const savedId = await saveBlock(block);
+        updatedBlocks.push({
+          ...block,
+          id: savedId,
+          isNew: false,
+        });
+      }
+
+      setBlocks(updatedBlocks);
+      setSuccessMessage("Todos os blocos foram salvos com sucesso.");
+    } catch (err) {
+      console.error("Erro ao salvar todos os blocos:", err);
+      setError("Não foi possível salvar todos os blocos.");
+    } finally {
+      setSavingAll(false);
+    }
+  }
 
   return (
     <AdminGuard>
       <AdminLayout
         title="Editar resolução"
-        subtitle="Aqui vamos montar o editor real de blocos da resolução."
+        subtitle="Monte a resolução por blocos de texto, latex e imagem, na ordem que quiser."
       >
-        <Card className="p-8">
-          <p className="text-slate-600 mb-2">
-            Questão selecionada:
-          </p>
-          <p className="font-mono text-sm text-slate-900 break-all">
-            {params?.questaoId || "Sem ID"}
-          </p>
+        <Card className="p-6 bg-white border-slate-200">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <p className="text-sm text-slate-500 mb-1">Questão</p>
+              <p className="font-semibold text-slate-900">
+                {question?.codigo || "Sem código"}
+              </p>
+              <p className="text-sm text-slate-600 mt-1">
+                {textoCurto(question?.enunciado)}
+              </p>
+              <p className="text-xs text-slate-500 mt-2 break-all">
+                ID: {questaoId || "—"}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Link href="/admin/resolucoes">
+                <Button variant="outline" className="rounded-2xl">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Voltar
+                </Button>
+              </Link>
+
+              <Button onClick={addNewBlock} className="rounded-2xl">
+                <Plus className="w-4 h-4 mr-2" />
+                Adicionar bloco
+              </Button>
+
+              <Button
+                onClick={handleSaveAll}
+                disabled={savingAll || orderedBlocks.length === 0}
+                className="rounded-2xl"
+              >
+                {savingAll ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Salvando tudo...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Salvar tudo
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
         </Card>
+
+        {loading ? (
+          <Card className="p-10 flex items-center justify-center gap-3">
+            <Loader2 className="w-5 h-5 animate-spin text-slate-500" />
+            <p className="text-slate-600">Carregando blocos da resolução...</p>
+          </Card>
+        ) : error ? (
+          <Card className="p-6 border-red-200 bg-red-50">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
+              <div>
+                <h2 className="text-lg font-bold text-red-700 mb-1">
+                  Erro no editor de resolução
+                </h2>
+                <p className="text-red-600">{error}</p>
+              </div>
+            </div>
+          </Card>
+        ) : null}
+
+        {successMessage ? (
+          <Card className="p-5 border-emerald-200 bg-emerald-50">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+              <p className="text-emerald-700 font-medium">{successMessage}</p>
+            </div>
+          </Card>
+        ) : null}
+
+        {!loading && orderedBlocks.length === 0 ? (
+          <Card className="p-10 text-center">
+            <Blocks className="w-8 h-8 text-slate-400 mx-auto mb-3" />
+            <h2 className="text-lg font-bold text-slate-900 mb-2">
+              Nenhum bloco de resolução cadastrado
+            </h2>
+            <p className="text-slate-500 mb-4">
+              Comece adicionando um bloco de texto, latex ou imagem.
+            </p>
+            <Button onClick={addNewBlock} className="rounded-2xl">
+              <Plus className="w-4 h-4 mr-2" />
+              Criar primeiro bloco
+            </Button>
+          </Card>
+        ) : null}
+
+        <div className="space-y-5">
+          {orderedBlocks.map((block, index) => (
+            <Card key={block.localId} className="p-6 bg-white border-slate-200">
+              <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4 mb-5">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold">
+                      Bloco {index + 1}
+                    </span>
+
+                    <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200">
+                      Ordem {block.ordem}
+                    </span>
+
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold border ${
+                        block.tipo === "imagem"
+                          ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                          : block.tipo === "latex"
+                          ? "bg-purple-100 text-purple-700 border-purple-200"
+                          : "bg-blue-100 text-blue-700 border-blue-200"
+                      }`}
+                    >
+                      {block.tipo}
+                    </span>
+                  </div>
+
+                  <p className="text-sm text-slate-500">
+                    {block.id ? `ID: ${block.id}` : "Bloco ainda não salvo"}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl"
+                    onClick={() => handleSaveSingle(block.localId)}
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Salvar bloco
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl border-red-200 text-red-600 hover:bg-red-50"
+                    onClick={() => deletePersistedBlock(block.localId, block.id)}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Excluir
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4 mb-5">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Tipo do bloco
+                  </label>
+                  <select
+                    value={block.tipo}
+                    onChange={(e) =>
+                      updateBlock(block.localId, {
+                        tipo: e.target.value as "texto" | "latex" | "imagem",
+                      })
+                    }
+                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  >
+                    <option value="texto">Texto</option>
+                    <option value="latex">Latex</option>
+                    <option value="imagem">Imagem</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Ordem
+                  </label>
+                  <input
+                    type="number"
+                    value={block.ordem}
+                    onChange={(e) =>
+                      updateBlock(block.localId, {
+                        ordem: Number(e.target.value) || 1,
+                      })
+                    }
+                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  />
+                </div>
+
+                {block.tipo === "imagem" ? (
+                  <div className="md:col-span-2 xl:col-span-1">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      URL da imagem
+                    </label>
+                    <input
+                      type="text"
+                      value={block.url_imagem}
+                      onChange={(e) =>
+                        updateBlock(block.localId, {
+                          url_imagem: e.target.value,
+                        })
+                      }
+                      placeholder="https://..."
+                      className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                    />
+                  </div>
+                ) : null}
+              </div>
+
+              {block.tipo === "imagem" ? (
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Image className="w-4 h-4 text-emerald-600" />
+                      <p className="text-sm font-semibold text-slate-700">
+                        Preview da imagem
+                      </p>
+                    </div>
+
+                    {block.url_imagem ? (
+                      <img
+                        src={block.url_imagem}
+                        alt="Preview do bloco de imagem"
+                        className="max-w-full rounded-xl border border-slate-200 bg-white"
+                      />
+                    ) : (
+                      <p className="text-sm text-slate-500">
+                        Insira uma URL de imagem para visualizar o preview.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Conteúdo do bloco
+                  </label>
+                  <textarea
+                    rows={block.tipo === "latex" ? 5 : 7}
+                    value={block.texto}
+                    onChange={(e) =>
+                      updateBlock(block.localId, { texto: e.target.value })
+                    }
+                    placeholder={
+                      block.tipo === "latex"
+                        ? "Ex.: $$ v = \\frac{\\Delta s}{\\Delta t} $$"
+                        : "Digite o texto do bloco..."
+                    }
+                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  />
+                </div>
+              )}
+            </Card>
+          ))}
+        </div>
       </AdminLayout>
     </AdminGuard>
   );
