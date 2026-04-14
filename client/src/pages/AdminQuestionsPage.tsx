@@ -151,10 +151,12 @@ export default function AdminQuestionsPage() {
                 />
               </div>
 
-              <Button className="rounded-2xl">
-                <Plus className="w-4 h-4 mr-2" />
-                Nova questão
-              </Button>
+              <Link href="/admin/questoes/nova">
+                <Button className="rounded-2xl">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nova questão
+                </Button>
+              </Link>
             </div>
           </div>
         </Card>
