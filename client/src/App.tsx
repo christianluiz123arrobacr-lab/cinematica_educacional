@@ -15,6 +15,7 @@ import VetLevelPage from "./pages/VetLevelPage";
 import VetMockPage from "./pages/VetMockPage";
 import VetMockResultPage from "./pages/VetMockResultPage";
 import AdminQuestionCreatePage from "./pages/AdminQuestionCreatePage";
+import AdminResolutionEditorPage from "./pages/AdminResolutionEditorPage";
 
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
@@ -164,6 +165,12 @@ function Router() {
           <AdminQuestionsPage />
         </ProtectedRoute>
       </Route>
+
+      <Route path="/admin/resolucoes/:questaoId">
+  <ProtectedRoute>
+    <AdminResolutionEditorPage />
+  </ProtectedRoute>
+</Route>
 
       <Route path="/admin/resolucoes">
         <ProtectedRoute>
