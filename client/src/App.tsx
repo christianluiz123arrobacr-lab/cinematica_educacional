@@ -167,10 +167,10 @@ function Router() {
       </Route>
 
       <Route path="/admin/resolucoes/:questaoId">
-  <ProtectedRoute>
-    <AdminResolutionEditorPage />
-  </ProtectedRoute>
-</Route>
+        <ProtectedRoute>
+          <AdminResolutionEditorPage />
+        </ProtectedRoute>
+      </Route>
 
       <Route path="/admin/resolucoes">
         <ProtectedRoute>
