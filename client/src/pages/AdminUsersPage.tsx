@@ -16,6 +16,7 @@ import {
   Save,
   UserCircle2,
   Users,
+  Clock3,
 } from "lucide-react";
 
 type AdminUserRow = {
@@ -32,6 +33,7 @@ type ProfileRow = {
   role: string;
   ativo: boolean;
   created_at: string;
+  last_seen_at?: string | null;
 };
 
 type AdminUserWithProfile = AdminUserRow & {
@@ -52,6 +54,25 @@ function formatDate(date?: string | null) {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function formatLastSeen(date?: string | null) {
+  if (!date) return "Nunca registrado";
+
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) return "Nunca registrado";
+
+  const now = new Date();
+  const diffMs = now.getTime() - parsed.getTime();
+  const diffMinutes = Math.floor(diffMs / 60000);
+
+  if (diffMinutes < 1) return "Agora há pouco";
+  if (diffMinutes < 60) return `Há ${diffMinutes} min`;
+
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `Há ${diffHours} h`;
+
+  return formatDate(date);
 }
 
 export default function AdminUsersPage() {
@@ -322,7 +343,7 @@ export default function AdminUsersPage() {
     <AdminGuard>
       <AdminLayout
         title="Usuários ADM"
-        subtitle="Central de gerenciamento de usuários e acessos administrativos."
+        subtitle="Central de gerenciamento de usuários, acessos administrativos e último acesso."
       >
         <Card className="p-6 bg-white border-slate-200">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
@@ -535,6 +556,11 @@ export default function AdminUsersPage() {
                                 <span className="font-semibold text-slate-800">Role do profile:</span>{" "}
                                 {user.profile?.role || "Sem role"}
                               </p>
+                              <p className="flex items-center gap-2">
+                                <Clock3 className="w-4 h-4 text-slate-400" />
+                                <span className="font-semibold text-slate-800">Último acesso:</span>{" "}
+                                {formatLastSeen(user.profile?.last_seen_at)}
+                              </p>
                               <p>
                                 <span className="font-semibold text-slate-800">User ID:</span>{" "}
                                 <span className="font-mono break-all">{user.user_id}</span>
@@ -706,6 +732,11 @@ export default function AdminUsersPage() {
                           </div>
 
                           <div className="mt-4 space-y-2 text-sm text-slate-600">
+                            <p className="flex items-center gap-2">
+                              <Clock3 className="w-4 h-4 text-slate-400" />
+                              <span className="font-semibold text-slate-800">Último acesso:</span>{" "}
+                              {formatLastSeen(profile.last_seen_at)}
+                            </p>
                             <p>
                               <span className="font-semibold text-slate-800">ID:</span>{" "}
                               <span className="font-mono break-all">{profile.id}</span>
