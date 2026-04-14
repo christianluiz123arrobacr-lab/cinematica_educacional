@@ -13,6 +13,8 @@ import {
   RefreshCcw,
   Plus,
   Search,
+  Save,
+  UserCircle2,
 } from "lucide-react";
 
 type AdminUserRow = {
@@ -56,14 +58,16 @@ export default function AdminUsersPage() {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
+  const [busyProfileId, setBusyProfileId] = useState<string | null>(null);
 
   const [newEmail, setNewEmail] = useState("");
   const [newRole, setNewRole] = useState<"admin" | "editor">("editor");
   const [addingUser, setAddingUser] = useState(false);
 
-  const [search, setSearch] = useState("");
+  const [searchAdmins, setSearchAdmins] = useState("");
+  const [searchProfiles, setSearchProfiles] = useState("");
 
-  async function loadAdminUsers() {
+  async function loadAll() {
     try {
       setLoading(true);
       setError("");
@@ -82,7 +86,7 @@ export default function AdminUsersPage() {
 
       if (adminUsersResult.error) {
         console.error("Erro ao carregar admin_users:", adminUsersResult.error);
-        setError("Não foi possível carregar os usuários administrativos.");
+        setError("Não foi possível carregar os acessos administrativos.");
         return;
       }
 
@@ -105,19 +109,19 @@ export default function AdminUsersPage() {
       setProfiles(profileRows);
       setUsers(merged);
     } catch (err) {
-      console.error("Erro inesperado ao carregar usuários ADM:", err);
-      setError("Ocorreu um erro inesperado ao carregar os usuários administrativos.");
+      console.error("Erro inesperado ao carregar módulo de usuários:", err);
+      setError("Ocorreu um erro inesperado ao carregar os dados dos usuários.");
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    loadAdminUsers();
+    loadAll();
   }, []);
 
-  const filteredUsers = useMemo(() => {
-    const term = search.trim().toLowerCase();
+  const filteredAdmins = useMemo(() => {
+    const term = searchAdmins.trim().toLowerCase();
 
     if (!term) return users;
 
@@ -136,7 +140,27 @@ export default function AdminUsersPage() {
         userId.includes(term)
       );
     });
-  }, [users, search]);
+  }, [users, searchAdmins]);
+
+  const filteredProfiles = useMemo(() => {
+    const term = searchProfiles.trim().toLowerCase();
+
+    if (!term) return profiles;
+
+    return profiles.filter((profile) => {
+      const nome = (profile.nome || "").toLowerCase();
+      const email = (profile.email || "").toLowerCase();
+      const role = (profile.role || "").toLowerCase();
+      const id = (profile.id || "").toLowerCase();
+
+      return (
+        nome.includes(term) ||
+        email.includes(term) ||
+        role.includes(term) ||
+        id.includes(term)
+      );
+    });
+  }, [profiles, searchProfiles]);
 
   async function handleAddAccess() {
     try {
@@ -181,7 +205,7 @@ export default function AdminUsersPage() {
       );
       setNewEmail("");
       setNewRole("editor");
-      await loadAdminUsers();
+      await loadAll();
     } catch (err) {
       console.error("Erro inesperado ao adicionar acesso:", err);
       setError("Ocorreu um erro inesperado ao adicionar o acesso.");
@@ -251,38 +275,76 @@ export default function AdminUsersPage() {
     }
   }
 
+  function updateLocalProfile(id: string, patch: Partial<ProfileRow>) {
+    setProfiles((prev) =>
+      prev.map((profile) =>
+        profile.id === id ? { ...profile, ...patch } : profile
+      )
+    );
+  }
+
+  async function handleSaveProfile(profile: ProfileRow) {
+    try {
+      setBusyProfileId(profile.id);
+      setError("");
+      setSuccessMessage("");
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          nome: profile.nome,
+          role: profile.role,
+          ativo: profile.ativo,
+        })
+        .eq("id", profile.id);
+
+      if (error) {
+        console.error("Erro ao salvar perfil:", error);
+        setError("Não foi possível salvar as alterações do perfil.");
+        return;
+      }
+
+      setSuccessMessage(`Perfil de ${profile.nome || profile.email} salvo com sucesso.`);
+    } catch (err) {
+      console.error("Erro inesperado ao salvar perfil:", err);
+      setError("Ocorreu um erro inesperado ao salvar o perfil.");
+    } finally {
+      setBusyProfileId(null);
+    }
+  }
+
   return (
     <AdminGuard>
       <AdminLayout
         title="Usuários ADM"
-        subtitle="Gerencie quem tem acesso administrativo ao sistema."
+        subtitle="Central de gerenciamento de acessos administrativos e perfis dos usuários."
       >
         <Card className="p-6 bg-white border-slate-200">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
             <div>
               <h2 className="text-xl font-bold text-slate-900 mb-1">
-                Acessos administrativos
+                Central de usuários
               </h2>
               <p className="text-sm text-slate-500">
-                Total de usuários com acesso: {users.length}
+                {users.length} acessos administrativos • {profiles.length} perfis cadastrados
               </p>
             </div>
 
             <Button
               variant="outline"
               className="rounded-2xl"
-              onClick={loadAdminUsers}
+              onClick={loadAll}
               disabled={loading}
             >
               <RefreshCcw className="w-4 h-4 mr-2" />
-              Atualizar lista
+              Atualizar tudo
             </Button>
           </div>
         </Card>
 
         <Card className="p-6 bg-white border-slate-200">
           <h2 className="text-lg font-bold text-slate-900 mb-4">
-            Adicionar novo acesso por email
+            Adicionar novo acesso administrativo por email
           </h2>
 
           <div className="grid md:grid-cols-3 gap-4">
@@ -301,7 +363,7 @@ export default function AdminUsersPage() {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Papel
+                Papel administrativo
               </label>
               <select
                 value={newRole}
@@ -337,23 +399,10 @@ export default function AdminUsersPage() {
           </div>
         </Card>
 
-        <Card className="p-6 bg-white border-slate-200">
-          <div className="relative w-full">
-            <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por nome, email, papel ou user_id..."
-              className="w-full rounded-2xl border border-slate-300 bg-white pl-11 pr-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-            />
-          </div>
-        </Card>
-
         {loading ? (
           <Card className="p-10 flex items-center justify-center gap-3">
             <Loader2 className="w-5 h-5 animate-spin text-slate-500" />
-            <p className="text-slate-600">Carregando usuários administrativos...</p>
+            <p className="text-slate-600">Carregando dados dos usuários...</p>
           </Card>
         ) : null}
 
@@ -380,119 +429,290 @@ export default function AdminUsersPage() {
           </Card>
         ) : null}
 
-        {!loading && filteredUsers.length === 0 ? (
-          <Card className="p-10 text-center">
-            <Shield className="w-8 h-8 text-slate-400 mx-auto mb-3" />
-            <h2 className="text-lg font-bold text-slate-900 mb-2">
-              Nenhum usuário administrativo encontrado
-            </h2>
-            <p className="text-slate-500">
-              Quando houver usuários na tabela admin_users, eles aparecerão aqui.
-            </p>
-          </Card>
-        ) : null}
+        <Card className="p-6 bg-white border-slate-200">
+          <h2 className="text-lg font-bold text-slate-900 mb-4">
+            Acessos administrativos
+          </h2>
 
-        {!loading && filteredUsers.length > 0 ? (
-          <div className="space-y-4">
-            {filteredUsers.map((user) => {
-              const busy = busyUserId === user.id;
-
-              return (
-                <Card
-                  key={user.id}
-                  className="p-6 bg-white border-slate-200 shadow-sm"
-                >
-                  <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-5">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-3">
-                        <span className="px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold">
-                          {user.role}
-                        </span>
-
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold border ${
-                            user.role === "admin"
-                              ? "bg-blue-100 text-blue-700 border-blue-200"
-                              : "bg-purple-100 text-purple-700 border-purple-200"
-                          }`}
-                        >
-                          {user.role === "admin" ? "Administrador" : "Editor"}
-                        </span>
-
-                        {user.profile?.ativo === false ? (
-                          <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-red-100 text-red-700 border-red-200">
-                            Inativo
-                          </span>
-                        ) : (
-                          <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-emerald-100 text-emerald-700 border-emerald-200">
-                            Ativo
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="space-y-2 text-sm text-slate-600">
-                        <p>
-                          <span className="font-semibold text-slate-800">Nome:</span>{" "}
-                          {user.profile?.nome || "Sem nome"}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-800">Email:</span>{" "}
-                          {user.profile?.email || "Sem email"}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-800">Role do profile:</span>{" "}
-                          {user.profile?.role || "Sem role"}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-800">User ID:</span>{" "}
-                          <span className="font-mono break-all">{user.user_id}</span>
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-800">Registro:</span>{" "}
-                          <span className="font-mono break-all">{user.id}</span>
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-800">Criado em:</span>{" "}
-                          {formatDate(user.created_at)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-3 shrink-0">
-                      <Button
-                        variant="outline"
-                        className="rounded-2xl"
-                        onClick={() => handleChangeRole(user)}
-                        disabled={busy}
-                      >
-                        {busy ? (
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        ) : (
-                          <RefreshCcw className="w-4 h-4 mr-2" />
-                        )}
-                        Tornar {user.role === "admin" ? "editor" : "admin"}
-                      </Button>
-
-                      <Button
-                        variant="outline"
-                        className="rounded-2xl border-red-200 text-red-600 hover:bg-red-50"
-                        onClick={() => handleRemoveAccess(user)}
-                        disabled={busy}
-                      >
-                        {busy ? (
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        ) : (
-                          <Trash2 className="w-4 h-4 mr-2" />
-                        )}
-                        Remover acesso
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              );
-            })}
+          <div className="relative w-full mb-5">
+            <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchAdmins}
+              onChange={(e) => setSearchAdmins(e.target.value)}
+              placeholder="Buscar por nome, email, papel ou user_id..."
+              className="w-full rounded-2xl border border-slate-300 bg-white pl-11 pr-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+            />
           </div>
-        ) : null}
+
+          {filteredAdmins.length === 0 ? (
+            <Card className="p-10 text-center border-slate-200">
+              <Shield className="w-8 h-8 text-slate-400 mx-auto mb-3" />
+              <h3 className="text-lg font-bold text-slate-900 mb-2">
+                Nenhum acesso administrativo encontrado
+              </h3>
+              <p className="text-slate-500">
+                Quando houver registros na tabela admin_users, eles aparecerão aqui.
+              </p>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {filteredAdmins.map((user) => {
+                const busy = busyUserId === user.id;
+
+                return (
+                  <Card
+                    key={user.id}
+                    className="p-6 bg-white border-slate-200 shadow-sm"
+                  >
+                    <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-5">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                          <span className="px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold">
+                            {user.role}
+                          </span>
+
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-semibold border ${
+                              user.role === "admin"
+                                ? "bg-blue-100 text-blue-700 border-blue-200"
+                                : "bg-purple-100 text-purple-700 border-purple-200"
+                            }`}
+                          >
+                            {user.role === "admin" ? "Administrador" : "Editor"}
+                          </span>
+
+                          {user.profile?.ativo === false ? (
+                            <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-red-100 text-red-700 border-red-200">
+                              Inativo
+                            </span>
+                          ) : (
+                            <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-emerald-100 text-emerald-700 border-emerald-200">
+                              Ativo
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="space-y-2 text-sm text-slate-600">
+                          <p>
+                            <span className="font-semibold text-slate-800">Nome:</span>{" "}
+                            {user.profile?.nome || "Sem nome"}
+                          </p>
+                          <p>
+                            <span className="font-semibold text-slate-800">Email:</span>{" "}
+                            {user.profile?.email || "Sem email"}
+                          </p>
+                          <p>
+                            <span className="font-semibold text-slate-800">Role do profile:</span>{" "}
+                            {user.profile?.role || "Sem role"}
+                          </p>
+                          <p>
+                            <span className="font-semibold text-slate-800">User ID:</span>{" "}
+                            <span className="font-mono break-all">{user.user_id}</span>
+                          </p>
+                          <p>
+                            <span className="font-semibold text-slate-800">Criado em:</span>{" "}
+                            {formatDate(user.created_at)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-3 shrink-0">
+                        <Button
+                          variant="outline"
+                          className="rounded-2xl"
+                          onClick={() => handleChangeRole(user)}
+                          disabled={busy}
+                        >
+                          {busy ? (
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          ) : (
+                            <RefreshCcw className="w-4 h-4 mr-2" />
+                          )}
+                          Tornar {user.role === "admin" ? "editor" : "admin"}
+                        </Button>
+
+                        <Button
+                          variant="outline"
+                          className="rounded-2xl border-red-200 text-red-600 hover:bg-red-50"
+                          onClick={() => handleRemoveAccess(user)}
+                          disabled={busy}
+                        >
+                          {busy ? (
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4 mr-2" />
+                          )}
+                          Remover acesso
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </Card>
+
+        <Card className="p-6 bg-white border-slate-200">
+          <h2 className="text-lg font-bold text-slate-900 mb-4">
+            Perfis dos usuários
+          </h2>
+
+          <div className="relative w-full mb-5">
+            <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchProfiles}
+              onChange={(e) => setSearchProfiles(e.target.value)}
+              placeholder="Buscar por nome, email, role ou id..."
+              className="w-full rounded-2xl border border-slate-300 bg-white pl-11 pr-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+            />
+          </div>
+
+          {filteredProfiles.length === 0 ? (
+            <Card className="p-10 text-center border-slate-200">
+              <UserCircle2 className="w-8 h-8 text-slate-400 mx-auto mb-3" />
+              <h3 className="text-lg font-bold text-slate-900 mb-2">
+                Nenhum perfil encontrado
+              </h3>
+              <p className="text-slate-500">
+                Tente outro termo de busca.
+              </p>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {filteredProfiles.map((profile) => {
+                const busy = busyProfileId === profile.id;
+
+                return (
+                  <Card
+                    key={profile.id}
+                    className="p-6 bg-white border-slate-200 shadow-sm"
+                  >
+                    <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-6">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-4">
+                          <span className="px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold">
+                            {profile.role || "sem role"}
+                          </span>
+
+                          {profile.ativo ? (
+                            <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-emerald-100 text-emerald-700 border-emerald-200">
+                              Ativo
+                            </span>
+                          ) : (
+                            <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-red-100 text-red-700 border-red-200">
+                              Inativo
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">
+                              Nome
+                            </label>
+                            <input
+                              type="text"
+                              value={profile.nome || ""}
+                              onChange={(e) =>
+                                updateLocalProfile(profile.id, {
+                                  nome: e.target.value,
+                                })
+                              }
+                              className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">
+                              Email
+                            </label>
+                            <input
+                              type="text"
+                              value={profile.email || ""}
+                              disabled
+                              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500 shadow-sm"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">
+                              Role do perfil
+                            </label>
+                            <select
+                              value={profile.role || "student"}
+                              onChange={(e) =>
+                                updateLocalProfile(profile.id, {
+                                  role: e.target.value,
+                                })
+                              }
+                              className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                            >
+                              <option value="student">student</option>
+                              <option value="admin">admin</option>
+                              <option value="editor">editor</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">
+                              Status
+                            </label>
+                            <select
+                              value={profile.ativo ? "ativo" : "inativo"}
+                              onChange={(e) =>
+                                updateLocalProfile(profile.id, {
+                                  ativo: e.target.value === "ativo",
+                                })
+                              }
+                              className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                            >
+                              <option value="ativo">Ativo</option>
+                              <option value="inativo">Inativo</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 space-y-2 text-sm text-slate-600">
+                          <p>
+                            <span className="font-semibold text-slate-800">ID:</span>{" "}
+                            <span className="font-mono break-all">{profile.id}</span>
+                          </p>
+                          <p>
+                            <span className="font-semibold text-slate-800">Criado em:</span>{" "}
+                            {formatDate(profile.created_at)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="shrink-0">
+                        <Button
+                          className="rounded-2xl min-w-[170px]"
+                          onClick={() => handleSaveProfile(profile)}
+                          disabled={busy}
+                        >
+                          {busy ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Salvando...
+                            </>
+                          ) : (
+                            <>
+                              <Save className="w-4 h-4 mr-2" />
+                              Salvar perfil
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </Card>
       </AdminLayout>
     </AdminGuard>
   );
