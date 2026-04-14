@@ -98,6 +98,11 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   );
 }
 
+function valorLimpo(texto: string) {
+  const valor = texto.trim();
+  return valor.length > 0 ? valor : null;
+}
+
 export default function AdminQuestionCreatePage() {
   const [, setLocation] = useLocation();
 
@@ -117,59 +122,101 @@ export default function AdminQuestionCreatePage() {
   }
 
   async function handleCreate() {
+    if (saving) return;
+
     try {
       setSaving(true);
       setError("");
       setSuccessMessage("");
 
-      if (!form.disciplina || !form.assunto || !form.alternativa_correta) {
-        setError("Preencha pelo menos disciplina, assunto e alternativa correta.");
+      const anoNumero = Number(form.ano);
+
+      if (!form.disciplina.trim()) {
+        setError("Preencha a disciplina.");
+        return;
+      }
+
+      if (!form.assunto.trim()) {
+        setError("Preencha o assunto.");
+        return;
+      }
+
+      if (!form.dificuldade.trim()) {
+        setError("Preencha a dificuldade.");
+        return;
+      }
+
+      if (!form.instituicao.trim()) {
+        setError("Preencha a instituição.");
+        return;
+      }
+
+      if (!form.ano.trim() || Number.isNaN(anoNumero)) {
+        setError("Preencha um ano válido.");
+        return;
+      }
+
+      if (!form.alternativa_a.trim()) {
+        setError("Preencha a alternativa A.");
+        return;
+      }
+
+      if (!form.alternativa_b.trim()) {
+        setError("Preencha a alternativa B.");
+        return;
+      }
+
+      if (!form.alternativa_correta.trim()) {
+        setError("Selecione a alternativa correta.");
         return;
       }
 
       const payload = {
-        codigo: form.codigo || null,
-        disciplina: form.disciplina || null,
-        conteudo: form.conteudo || null,
-        assunto: form.assunto || null,
-        banca: form.banca || null,
-        ano: form.ano ? Number(form.ano) : null,
-        dificuldade: form.dificuldade || null,
-        instituição: form.instituicao || null,
+        codigo: valorLimpo(form.codigo),
+        disciplina: valorLimpo(form.disciplina),
+        conteudo: valorLimpo(form.conteudo),
+        assunto: valorLimpo(form.assunto),
+        banca: valorLimpo(form.banca),
+        ano: anoNumero,
+        dificuldade: valorLimpo(form.dificuldade),
+        instituição: valorLimpo(form.instituicao),
         publicada: form.publicada,
-        enunciado: form.enunciado || null,
-        enunciado_pos_imagem: form.enunciado_pos_imagem || null,
-        formula: form.formula || null,
-        url_imagem: form.url_imagem || null,
-        A: form.alternativa_a || null,
-        B: form.alternativa_b || null,
-        C: form.alternativa_c || null,
-        D: form.alternativa_d || null,
-        E: form.alternativa_e || null,
-        alternativa_correta: form.alternativa_correta || null,
+        enunciado: valorLimpo(form.enunciado),
+        enunciado_pos_imagem: valorLimpo(form.enunciado_pos_imagem),
+        formula: valorLimpo(form.formula),
+        url_imagem: valorLimpo(form.url_imagem),
+        A: valorLimpo(form.alternativa_a),
+        B: valorLimpo(form.alternativa_b),
+        C: valorLimpo(form.alternativa_c),
+        D: valorLimpo(form.alternativa_d),
+        E: valorLimpo(form.alternativa_e),
+        alternativa_correta: valorLimpo(form.alternativa_correta),
       };
 
       const { data, error } = await supabase
         .from("questoes")
-        .insert(payload)
+        .insert([payload])
         .select("id")
         .single();
 
       if (error) {
         console.error("Erro ao criar questão:", error);
-        setError("Não foi possível criar a questão.");
+        setError(
+          error.message
+            ? `Não foi possível criar a questão: ${error.message}`
+            : "Não foi possível criar a questão."
+        );
         return;
       }
 
-      setSuccessMessage("Questão criada com sucesso.");
+      if (!data?.id) {
+        setError("A questão foi criada, mas o ID não retornou como esperado.");
+        return;
+      }
 
-      setTimeout(() => {
-        if (data?.id) {
-          setLocation(`/admin/resolucoes/${data.id}`);
-        } else {
-          setLocation("/admin/questoes");
-        }
-      }, 700);
+      setSuccessMessage("Questão criada com sucesso. Indo para a resolução...");
+
+      setLocation(`/admin/resolucoes/${data.id}`);
     } catch (err) {
       console.error("Erro inesperado ao criar questão:", err);
       setError("Ocorreu um erro inesperado ao criar a questão.");
