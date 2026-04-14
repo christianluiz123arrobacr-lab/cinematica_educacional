@@ -7,6 +7,8 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import AdminGuard from "@/components/admin/AdminGuard";
 import {
   ArrowLeft,
+  ArrowDown,
+  ArrowUp,
   Blocks,
   Image,
   Loader2,
@@ -77,6 +79,13 @@ function gerarNomeArquivo(originalName: string) {
   return `${Date.now()}-${Math.random()
     .toString(36)
     .slice(2, 10)}.${extensao}`;
+}
+
+function normalizarOrdens(lista: EditableBlock[]) {
+  return lista.map((block, index) => ({
+    ...block,
+    ordem: index + 1,
+  }));
 }
 
 export default function AdminResolutionEditorPage() {
@@ -155,7 +164,7 @@ export default function AdminResolutionEditorPage() {
           isNew: false,
         }));
 
-        setBlocks(mappedBlocks);
+        setBlocks(normalizarOrdens(mappedBlocks));
       } catch (err) {
         console.error(
           "Erro inesperado ao carregar editor de resolução:",
@@ -193,7 +202,29 @@ export default function AdminResolutionEditorPage() {
   }
 
   function removeLocalBlock(localId: string) {
-    setBlocks((prev) => prev.filter((block) => block.localId !== localId));
+    setBlocks((prev) =>
+      normalizarOrdens(prev.filter((block) => block.localId !== localId))
+    );
+    setSuccessMessage("");
+    setError("");
+  }
+
+  function moveBlock(localId: string, direction: "up" | "down") {
+    setBlocks((prev) => {
+      const sorted = [...prev].sort((a, b) => a.ordem - b.ordem);
+      const index = sorted.findIndex((block) => block.localId === localId);
+
+      if (index === -1) return prev;
+      if (direction === "up" && index === 0) return prev;
+      if (direction === "down" && index === sorted.length - 1) return prev;
+
+      const targetIndex = direction === "up" ? index - 1 : index + 1;
+
+      [sorted[index], sorted[targetIndex]] = [sorted[targetIndex], sorted[index]];
+
+      return normalizarOrdens(sorted);
+    });
+
     setSuccessMessage("");
     setError("");
   }
@@ -520,6 +551,26 @@ export default function AdminResolutionEditorPage() {
                 </div>
 
                 <div className="flex flex-wrap gap-3">
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl"
+                    onClick={() => moveBlock(block.localId, "up")}
+                    disabled={index === 0}
+                  >
+                    <ArrowUp className="w-4 h-4 mr-2" />
+                    Subir
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl"
+                    onClick={() => moveBlock(block.localId, "down")}
+                    disabled={index === orderedBlocks.length - 1}
+                  >
+                    <ArrowDown className="w-4 h-4 mr-2" />
+                    Descer
+                  </Button>
+
                   <Button
                     variant="outline"
                     className="rounded-2xl"
