@@ -12,12 +12,18 @@ import {
   Loader2,
   AlertTriangle,
   Clock3,
+  UserCircle2,
+  EyeOff,
+  BookOpenCheck,
 } from "lucide-react";
 import { Link } from "wouter";
 
 type DashboardStats = {
+  totalUsers: number;
   totalAdmins: number;
   totalQuestions: number;
+  totalQuestionsWithoutResolution: number;
+  totalUnpublishedQuestions: number;
   totalResolutions: number;
   totalResolutionImages: number;
 };
@@ -29,6 +35,7 @@ type LatestQuestion = {
   banca?: string | null;
   ano?: number | null;
   created_at?: string | null;
+  publicada?: boolean | null;
 };
 
 type LatestResolution = {
@@ -37,6 +44,24 @@ type LatestResolution = {
   tipo?: string | null;
   ordem?: number | null;
   codigo_resolucao?: string | null;
+  created_at?: string | null;
+};
+
+type LatestUser = {
+  id: string;
+  nome?: string | null;
+  email?: string | null;
+  role?: string | null;
+  ativo?: boolean | null;
+  created_at?: string | null;
+};
+
+type QuestionWithoutResolution = {
+  id: string;
+  codigo?: string | null;
+  enunciado?: string | null;
+  banca?: string | null;
+  ano?: number | null;
   created_at?: string | null;
 };
 
@@ -50,15 +75,17 @@ function StatCard({
   title: string;
   value: string;
   icon: React.ElementType;
-  tone: "blue" | "purple" | "orange" | "emerald";
+  tone: "blue" | "purple" | "orange" | "emerald" | "red" | "slate" | "indigo";
   helper?: string;
 }) {
   const tones = {
     blue: "from-blue-50 to-blue-100 border-blue-200 text-blue-700",
     purple: "from-purple-50 to-purple-100 border-purple-200 text-purple-700",
     orange: "from-orange-50 to-orange-100 border-orange-200 text-orange-700",
-    emerald:
-      "from-emerald-50 to-emerald-100 border-emerald-200 text-emerald-700",
+    emerald: "from-emerald-50 to-emerald-100 border-emerald-200 text-emerald-700",
+    red: "from-red-50 to-red-100 border-red-200 text-red-700",
+    slate: "from-slate-50 to-slate-100 border-slate-200 text-slate-700",
+    indigo: "from-indigo-50 to-indigo-100 border-indigo-200 text-indigo-700",
   };
 
   return (
@@ -67,9 +94,7 @@ function StatCard({
         <div>
           <p className="text-sm text-slate-600 mb-1">{title}</p>
           <p className="text-3xl font-bold text-slate-900">{value}</p>
-          {helper ? (
-            <p className="text-xs text-slate-500 mt-2">{helper}</p>
-          ) : null}
+          {helper ? <p className="text-xs text-slate-500 mt-2">{helper}</p> : null}
         </div>
 
         <div className="w-12 h-12 rounded-2xl bg-white/70 flex items-center justify-center">
@@ -95,9 +120,7 @@ function QuickLinkCard({
         <div className="flex items-start justify-between gap-4">
           <div>
             <h3 className="text-lg font-bold text-slate-900 mb-2">{title}</h3>
-            <p className="text-sm text-slate-500 leading-relaxed">
-              {description}
-            </p>
+            <p className="text-sm text-slate-500 leading-relaxed">{description}</p>
           </div>
           <ArrowRight className="w-5 h-5 text-slate-400 shrink-0 mt-1" />
         </div>
@@ -130,16 +153,20 @@ export default function AdminDashboardPage() {
   const [error, setError] = useState("");
 
   const [stats, setStats] = useState<DashboardStats>({
+    totalUsers: 0,
     totalAdmins: 0,
     totalQuestions: 0,
+    totalQuestionsWithoutResolution: 0,
+    totalUnpublishedQuestions: 0,
     totalResolutions: 0,
     totalResolutionImages: 0,
   });
 
   const [latestQuestions, setLatestQuestions] = useState<LatestQuestion[]>([]);
-  const [latestResolutions, setLatestResolutions] = useState<LatestResolution[]>(
-    []
-  );
+  const [latestResolutions, setLatestResolutions] = useState<LatestResolution[]>([]);
+  const [latestUsers, setLatestUsers] = useState<LatestUser[]>([]);
+  const [latestQuestionsWithoutResolution, setLatestQuestionsWithoutResolution] =
+    useState<QuestionWithoutResolution[]>([]);
 
   useEffect(() => {
     async function loadDashboard() {
@@ -148,24 +175,30 @@ export default function AdminDashboardPage() {
         setError("");
 
         const [
+          usersCountResult,
           adminsCountResult,
           questionsCountResult,
+          unpublishedQuestionsCountResult,
           resolutionsCountResult,
           resolutionImagesResult,
           latestQuestionsResult,
           latestResolutionsResult,
+          latestUsersResult,
+          questionsWithoutResolutionRaw,
+          latestQuestionsWithoutResolutionRaw,
         ] = await Promise.all([
-          supabase
-            .from("admin_users")
-            .select("*", { count: "exact", head: true }),
+          supabase.from("profiles").select("*", { count: "exact", head: true }),
+
+          supabase.from("admin_users").select("*", { count: "exact", head: true }),
+
+          supabase.from("questoes").select("*", { count: "exact", head: true }),
 
           supabase
             .from("questoes")
-            .select("*", { count: "exact", head: true }),
+            .select("*", { count: "exact", head: true })
+            .eq("publicada", false),
 
-          supabase
-            .from("resolucoes")
-            .select("*", { count: "exact", head: true }),
+          supabase.from("resolucoes").select("*", { count: "exact", head: true }),
 
           supabase
             .from("resolucoes")
@@ -174,7 +207,7 @@ export default function AdminDashboardPage() {
 
           supabase
             .from("questoes")
-            .select("id, codigo, enunciado, banca, ano, created_at")
+            .select("id, codigo, enunciado, banca, ano, created_at, publicada")
             .order("created_at", { ascending: false })
             .limit(5),
 
@@ -183,15 +216,33 @@ export default function AdminDashboardPage() {
             .select("id, questao_id, tipo, ordem, codigo_resolucao, created_at")
             .order("created_at", { ascending: false })
             .limit(5),
+
+          supabase
+            .from("profiles")
+            .select("id, nome, email, role, ativo, created_at")
+            .order("created_at", { ascending: false })
+            .limit(5),
+
+          supabase.from("questoes").select("id"),
+
+          supabase
+            .from("questoes")
+            .select("id, codigo, enunciado, banca, ano, created_at")
+            .order("created_at", { ascending: false }),
         ]);
 
         const possibleError =
+          usersCountResult.error ||
           adminsCountResult.error ||
           questionsCountResult.error ||
+          unpublishedQuestionsCountResult.error ||
           resolutionsCountResult.error ||
           resolutionImagesResult.error ||
           latestQuestionsResult.error ||
-          latestResolutionsResult.error;
+          latestResolutionsResult.error ||
+          latestUsersResult.error ||
+          questionsWithoutResolutionRaw.error ||
+          latestQuestionsWithoutResolutionRaw.error;
 
         if (possibleError) {
           console.error("Erro ao carregar dashboard ADM:", possibleError);
@@ -199,17 +250,42 @@ export default function AdminDashboardPage() {
           return;
         }
 
+        const { data: allResolutionQuestionIdsData, error: allResolutionIdsError } =
+          await supabase.from("resolucoes").select("questao_id");
+
+        if (allResolutionIdsError) {
+          console.error("Erro ao carregar questao_id das resoluções:", allResolutionIdsError);
+          setError("Não foi possível calcular as questões sem resolução.");
+          return;
+        }
+
+        const resolutionQuestionIds = new Set(
+          ((allResolutionQuestionIdsData as Array<{ questao_id: string }> | null) || [])
+            .map((item) => item.questao_id)
+            .filter(Boolean)
+        );
+
+        const allQuestions =
+          (latestQuestionsWithoutResolutionRaw.data as QuestionWithoutResolution[]) || [];
+
+        const questionsWithoutResolution = allQuestions.filter(
+          (question) => !resolutionQuestionIds.has(question.id)
+        );
+
         setStats({
+          totalUsers: usersCountResult.count ?? 0,
           totalAdmins: adminsCountResult.count ?? 0,
           totalQuestions: questionsCountResult.count ?? 0,
+          totalQuestionsWithoutResolution: questionsWithoutResolution.length,
+          totalUnpublishedQuestions: unpublishedQuestionsCountResult.count ?? 0,
           totalResolutions: resolutionsCountResult.count ?? 0,
           totalResolutionImages: resolutionImagesResult.count ?? 0,
         });
 
         setLatestQuestions((latestQuestionsResult.data as LatestQuestion[]) ?? []);
-        setLatestResolutions(
-          (latestResolutionsResult.data as LatestResolution[]) ?? []
-        );
+        setLatestResolutions((latestResolutionsResult.data as LatestResolution[]) ?? []);
+        setLatestUsers((latestUsersResult.data as LatestUser[]) ?? []);
+        setLatestQuestionsWithoutResolution(questionsWithoutResolution.slice(0, 5));
       } catch (err) {
         console.error("Erro inesperado no dashboard ADM:", err);
         setError("Ocorreu um erro inesperado ao carregar o dashboard.");
@@ -237,16 +313,21 @@ export default function AdminDashboardPage() {
             <div className="flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
               <div>
-                <h2 className="text-lg font-bold text-red-700 mb-1">
-                  Erro no dashboard
-                </h2>
+                <h2 className="text-lg font-bold text-red-700 mb-1">Erro no dashboard</h2>
                 <p className="text-red-600">{error}</p>
               </div>
             </div>
           </Card>
         ) : (
           <>
-            <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-7 gap-4">
+              <StatCard
+                title="Usuários cadastrados"
+                value={String(stats.totalUsers)}
+                icon={UserCircle2}
+                tone="indigo"
+                helper="Contagem real da tabela profiles"
+              />
               <StatCard
                 title="Acessos administrativos"
                 value={String(stats.totalAdmins)}
@@ -260,6 +341,20 @@ export default function AdminDashboardPage() {
                 icon={FileText}
                 tone="purple"
                 helper="Contagem real da tabela questoes"
+              />
+              <StatCard
+                title="Sem resolução"
+                value={String(stats.totalQuestionsWithoutResolution)}
+                icon={BookOpenCheck}
+                tone="red"
+                helper="Questões sem nenhum bloco em resolucoes"
+              />
+              <StatCard
+                title="Não publicadas"
+                value={String(stats.totalUnpublishedQuestions)}
+                icon={EyeOff}
+                tone="slate"
+                helper="Questões com publicada = false"
               />
               <StatCard
                 title="Blocos de resolução"
@@ -281,9 +376,7 @@ export default function AdminDashboardPage() {
               <Card className="p-6 bg-white border-slate-200">
                 <div className="flex items-center gap-2 mb-4">
                   <Clock3 className="w-5 h-5 text-slate-500" />
-                  <h2 className="text-xl font-bold text-slate-900">
-                    Últimas questões
-                  </h2>
+                  <h2 className="text-xl font-bold text-slate-900">Últimas questões</h2>
                 </div>
 
                 {latestQuestions.length > 0 ? (
@@ -308,16 +401,21 @@ export default function AdminDashboardPage() {
                           </span>
                         </div>
 
-                        <p className="text-sm text-slate-600 leading-relaxed">
+                        <p className="text-sm text-slate-600 leading-relaxed mb-2">
                           {truncateText(question.enunciado)}
+                        </p>
+
+                        <p className="text-xs text-slate-500">
+                          Status:{" "}
+                          <span className="font-semibold">
+                            {question.publicada ? "Publicada" : "Não publicada"}
+                          </span>
                         </p>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-500">
-                    Nenhuma questão cadastrada ainda.
-                  </p>
+                  <p className="text-sm text-slate-500">Nenhuma questão cadastrada ainda.</p>
                 )}
               </Card>
 
@@ -357,9 +455,7 @@ export default function AdminDashboardPage() {
                             {resolution.tipo || "não informado"}
                           </span>{" "}
                           • Ordem:{" "}
-                          <span className="font-semibold">
-                            {resolution.ordem ?? "-"}
-                          </span>
+                          <span className="font-semibold">{resolution.ordem ?? "-"}</span>
                         </p>
                       </div>
                     ))}
@@ -372,12 +468,99 @@ export default function AdminDashboardPage() {
               </Card>
             </div>
 
+            <div className="grid xl:grid-cols-2 gap-6">
+              <Card className="p-6 bg-white border-slate-200">
+                <div className="flex items-center gap-2 mb-4">
+                  <Users className="w-5 h-5 text-slate-500" />
+                  <h2 className="text-xl font-bold text-slate-900">Últimos usuários</h2>
+                </div>
+
+                {latestUsers.length > 0 ? (
+                  <div className="space-y-3">
+                    {latestUsers.map((user) => (
+                      <div
+                        key={user.id}
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                      >
+                        <div className="flex items-start justify-between gap-4 mb-2">
+                          <div>
+                            <p className="font-bold text-slate-900">
+                              {user.nome || "Sem nome"}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {user.email || "Sem email"}
+                            </p>
+                          </div>
+
+                          <span className="text-xs text-slate-500 whitespace-nowrap">
+                            {formatDate(user.created_at)}
+                          </span>
+                        </div>
+
+                        <p className="text-sm text-slate-600">
+                          Role: <span className="font-semibold">{user.role || "sem role"}</span> •{" "}
+                          Status:{" "}
+                          <span className="font-semibold">
+                            {user.ativo ? "Ativo" : "Inativo"}
+                          </span>
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-500">Nenhum usuário cadastrado ainda.</p>
+                )}
+              </Card>
+
+              <Card className="p-6 bg-white border-slate-200">
+                <div className="flex items-center gap-2 mb-4">
+                  <BookOpenCheck className="w-5 h-5 text-slate-500" />
+                  <h2 className="text-xl font-bold text-slate-900">
+                    Últimas questões sem resolução
+                  </h2>
+                </div>
+
+                {latestQuestionsWithoutResolution.length > 0 ? (
+                  <div className="space-y-3">
+                    {latestQuestionsWithoutResolution.map((question) => (
+                      <div
+                        key={question.id}
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                      >
+                        <div className="flex items-start justify-between gap-4 mb-2">
+                          <div>
+                            <p className="font-bold text-slate-900">
+                              {question.codigo || "Sem código"}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {question.banca || "Sem banca"} • {question.ano || "Sem ano"}
+                            </p>
+                          </div>
+
+                          <span className="text-xs text-slate-500 whitespace-nowrap">
+                            {formatDate(question.created_at)}
+                          </span>
+                        </div>
+
+                        <p className="text-sm text-slate-600 leading-relaxed">
+                          {truncateText(question.enunciado)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-500">
+                    Todas as questões já têm resolução cadastrada.
+                  </p>
+                )}
+              </Card>
+            </div>
+
             <Card className="p-6 bg-white border-slate-200">
-              <h2 className="text-xl font-bold text-slate-900 mb-2">
-                Ações rápidas
-              </h2>
+              <h2 className="text-xl font-bold text-slate-900 mb-2">Ações rápidas</h2>
               <p className="text-sm text-slate-500 mb-6">
-                Esse painel centraliza o núcleo do sistema administrativo e a gestão dos principais módulos do site.
+                Esse painel centraliza o núcleo do sistema administrativo e destaca o que
+                ainda está pendente no banco.
               </p>
 
               <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
