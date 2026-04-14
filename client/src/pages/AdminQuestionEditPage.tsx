@@ -204,11 +204,11 @@ export default function AdminQuestionEditPage() {
         enunciado_pos_imagem: form.enunciado_pos_imagem || null,
         formula: form.formula || null,
         url_imagem: form.url_imagem || null,
-        a: form.alternativa_a || null,
-        b: form.alternativa_b || null,
-        c: form.alternativa_c || null,
-        d: form.alternativa_d || null,
-        e: form.alternativa_e || null,
+        A: form.alternativa_a || null,
+        B: form.alternativa_b || null,
+        C: form.alternativa_c || null,
+        D: form.alternativa_d || null,
+        E: form.alternativa_e || null,
         alternativa_correta: form.alternativa_correta || null,
       };
 
