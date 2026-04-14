@@ -16,6 +16,7 @@ import VetMockPage from "./pages/VetMockPage";
 import VetMockResultPage from "./pages/VetMockResultPage";
 import AdminQuestionCreatePage from "./pages/AdminQuestionCreatePage";
 import AdminResolutionEditorPage from "./pages/AdminResolutionEditorPage";
+import AdminProfilesPage from "./pages/AdminProfilesPage";
 
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
@@ -193,6 +194,12 @@ function Router() {
       <Route path="/admin/logs">
         <ProtectedRoute>
           <AdminLogsPage />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/admin/perfis">
+        <ProtectedRoute>
+         <AdminProfilesPage />
         </ProtectedRoute>
       </Route>
 
