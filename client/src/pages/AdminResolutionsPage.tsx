@@ -1,189 +1,479 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "wouter";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { Link, useRoute } from "wouter";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminGuard from "@/components/admin/AdminGuard";
+import ReactMarkdown from "react-markdown";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 import {
-  Search,
-  Loader2,
-  AlertTriangle,
+  ArrowLeft,
+  ArrowDown,
+  ArrowUp,
   Blocks,
   Image,
-  Pencil,
-  FileText,
+  Loader2,
+  Plus,
+  Save,
+  Trash2,
+  AlertTriangle,
+  CheckCircle2,
+  Upload,
 } from "lucide-react";
 
-type QuestionRow = {
+type QuestionInfo = {
   id: string;
   codigo?: string | null;
   enunciado?: string | null;
-  disciplina?: string | null;
-  diciplina?: string | null;
-  conteudo?: string | null;
-  assunto?: string | null;
-  banca?: string | null;
-  ano?: number | null;
 };
 
-type ResolutionRow = {
+type ResolutionBlock = {
   id: string;
   questao_id: string;
-  tipo?: string | null;
+  tipo: string;
+  texto?: string | null;
+  ordem?: number | null;
   url_imagem?: string | null;
+  codigo_resolucao?: string | null;
+  created_at?: string | null;
 };
 
-type ResolutionSummary = {
-  totalBlocks: number;
-  totalImages: number;
+type EditableBlock = {
+  id?: string;
+  localId: string;
+  tipo: "texto" | "latex" | "imagem";
+  texto: string;
+  url_imagem: string;
+  ordem: number;
+  isNew?: boolean;
 };
 
-function normalizarDisciplina(question: QuestionRow) {
-  return question.disciplina || question.diciplina || "—";
-}
+const STORAGE_BUCKET = "resolucoes-imagens";
 
-function textoCurto(texto?: string | null, limite = 110) {
+function textoCurto(texto?: string | null, limite = 140) {
   const valor = (texto || "").trim();
   if (!valor) return "Sem enunciado";
   if (valor.length <= limite) return valor;
   return `${valor.slice(0, limite)}...`;
 }
 
-export default function AdminResolutionsPage() {
-  const [questions, setQuestions] = useState<QuestionRow[]>([]);
-  const [resolutions, setResolutions] = useState<ResolutionRow[]>([]);
+function gerarLocalId() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function criarBlocoVazio(ordem: number): EditableBlock {
+  return {
+    localId: gerarLocalId(),
+    tipo: "texto",
+    texto: "",
+    url_imagem: "",
+    ordem,
+    isNew: true,
+  };
+}
+
+function gerarNomeArquivo(originalName: string) {
+  const extensao = originalName.includes(".")
+    ? originalName.split(".").pop()
+    : "png";
+
+  return `${Date.now()}-${Math.random()
+    .toString(36)
+    .slice(2, 10)}.${extensao}`;
+}
+
+function normalizarOrdens(lista: EditableBlock[]) {
+  return lista.map((block, index) => ({
+    ...block,
+    ordem: index + 1,
+  }));
+}
+
+export default function AdminResolutionEditorPage() {
+  const [match, params] = useRoute("/admin/resolucoes/:questaoId");
+  const questaoId = match ? params.questaoId : null;
+
+  const [question, setQuestion] = useState<QuestionInfo | null>(null);
+  const [blocks, setBlocks] = useState<EditableBlock[]>([]);
   const [loading, setLoading] = useState(true);
+  const [savingAll, setSavingAll] = useState(false);
+  const [uploadingBlockId, setUploadingBlockId] = useState<string | null>(null);
   const [error, setError] = useState("");
-  const [search, setSearch] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     async function loadData() {
+      if (!questaoId) {
+        setError("Questão não encontrada.");
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         setError("");
+        setSuccessMessage("");
 
-        const [questionsResult, resolutionsResult] = await Promise.all([
+        const [questionResult, resolutionsResult] = await Promise.all([
           supabase
             .from("questoes")
-            .select("*")
-            .order("created_at", { ascending: false }),
+            .select("id, codigo, enunciado")
+            .eq("id", questaoId)
+            .single(),
 
           supabase
             .from("resolucoes")
-            .select("*"),
+            .select(
+              "id, questao_id, tipo, texto, ordem, url_imagem, codigo_resolucao, created_at"
+            )
+            .eq("questao_id", questaoId)
+            .order("ordem", { ascending: true }),
         ]);
 
-        if (questionsResult.error) {
+        if (questionResult.error || !questionResult.data) {
           console.error(
-            "Erro ao carregar questões para resoluções:",
-            questionsResult.error
+            "Erro ao carregar questão da resolução:",
+            questionResult.error
           );
-          setError("Não foi possível carregar as questões.");
+          setError("Não foi possível carregar a questão.");
           return;
         }
 
         if (resolutionsResult.error) {
           console.error(
-            "Erro ao carregar resoluções:",
+            "Erro ao carregar blocos da resolução:",
             resolutionsResult.error
           );
-          setError("Não foi possível carregar os blocos de resolução.");
+          setError("Não foi possível carregar os blocos da resolução.");
           return;
         }
 
-        setQuestions((questionsResult.data as QuestionRow[]) || []);
-        setResolutions((resolutionsResult.data as ResolutionRow[]) || []);
+        setQuestion(questionResult.data as QuestionInfo);
+
+        const mappedBlocks: EditableBlock[] = (
+          (resolutionsResult.data as ResolutionBlock[]) || []
+        ).map((block, index) => ({
+          id: block.id,
+          localId: block.id || `${index}-${gerarLocalId()}`,
+          tipo: ((block.tipo || "texto").toLowerCase() as
+            | "texto"
+            | "latex"
+            | "imagem"),
+          texto: block.texto || "",
+          url_imagem: block.url_imagem || "",
+          ordem: block.ordem ?? index + 1,
+          isNew: false,
+        }));
+
+        setBlocks(normalizarOrdens(mappedBlocks));
       } catch (err) {
         console.error(
-          "Erro inesperado ao carregar módulo de resoluções:",
+          "Erro inesperado ao carregar editor de resolução:",
           err
         );
-        setError("Ocorreu um erro inesperado ao carregar as resoluções.");
+        setError("Ocorreu um erro inesperado ao carregar a resolução.");
       } finally {
         setLoading(false);
       }
     }
 
     loadData();
-  }, []);
+  }, [questaoId]);
 
-  const resolutionMap = useMemo(() => {
-    const map = new Map<string, ResolutionSummary>();
+  const orderedBlocks = useMemo(
+    () => [...blocks].sort((a, b) => a.ordem - b.ordem),
+    [blocks]
+  );
 
-    for (const item of resolutions) {
-      const current = map.get(item.questao_id) || {
-        totalBlocks: 0,
-        totalImages: 0,
-      };
+  function updateBlock(localId: string, patch: Partial<EditableBlock>) {
+    setBlocks((prev) =>
+      prev.map((block) =>
+        block.localId === localId ? { ...block, ...patch } : block
+      )
+    );
+  }
 
-      current.totalBlocks += 1;
+  function addNewBlock() {
+    const nextOrder =
+      blocks.length > 0 ? Math.max(...blocks.map((b) => b.ordem)) + 1 : 1;
 
-      if (
-        (item.tipo || "").toLowerCase().trim() === "imagem" ||
-        !!item.url_imagem
-      ) {
-        current.totalImages += 1;
-      }
+    setBlocks((prev) => [...prev, criarBlocoVazio(nextOrder)]);
+    setSuccessMessage("");
+    setError("");
+  }
 
-      map.set(item.questao_id, current);
+  function removeLocalBlock(localId: string) {
+    setBlocks((prev) =>
+      normalizarOrdens(prev.filter((block) => block.localId !== localId))
+    );
+    setSuccessMessage("");
+    setError("");
+  }
+
+  function moveBlock(localId: string, direction: "up" | "down") {
+    setBlocks((prev) => {
+      const sorted = [...prev].sort((a, b) => a.ordem - b.ordem);
+      const index = sorted.findIndex((block) => block.localId === localId);
+
+      if (index === -1) return prev;
+      if (direction === "up" && index === 0) return prev;
+      if (direction === "down" && index === sorted.length - 1) return prev;
+
+      const targetIndex = direction === "up" ? index - 1 : index + 1;
+
+      [sorted[index], sorted[targetIndex]] = [sorted[targetIndex], sorted[index]];
+
+      return normalizarOrdens(sorted);
+    });
+
+    setSuccessMessage("");
+    setError("");
+  }
+
+  async function deletePersistedBlock(localId: string, id?: string) {
+    if (!id) {
+      removeLocalBlock(localId);
+      return;
     }
 
-    return map;
-  }, [resolutions]);
+    try {
+      setError("");
+      setSuccessMessage("");
 
-  const filteredQuestions = useMemo(() => {
-    const termo = search.trim().toLowerCase();
+      const { error } = await supabase.from("resolucoes").delete().eq("id", id);
 
-    if (!termo) return questions;
+      if (error) {
+        console.error("Erro ao excluir bloco:", error);
+        setError("Não foi possível excluir o bloco.");
+        return;
+      }
 
-    return questions.filter((q) => {
-      const codigo = (q.codigo || "").toLowerCase();
-      const enunciado = (q.enunciado || "").toLowerCase();
-      const disciplina = normalizarDisciplina(q).toLowerCase();
-      const conteudo = (q.conteudo || "").toLowerCase();
-      const assunto = (q.assunto || "").toLowerCase();
-      const banca = (q.banca || "").toLowerCase();
-      const ano = String(q.ano || "");
+      removeLocalBlock(localId);
+      setSuccessMessage("Bloco excluído com sucesso.");
+    } catch (err) {
+      console.error("Erro inesperado ao excluir bloco:", err);
+      setError("Ocorreu um erro inesperado ao excluir o bloco.");
+    }
+  }
 
-      return (
-        codigo.includes(termo) ||
-        enunciado.includes(termo) ||
-        disciplina.includes(termo) ||
-        conteudo.includes(termo) ||
-        assunto.includes(termo) ||
-        banca.includes(termo) ||
-        ano.includes(termo)
+  async function saveBlock(block: EditableBlock) {
+    if (!questaoId) return;
+
+    const payload = {
+      questao_id: questaoId,
+      tipo: block.tipo,
+      texto: block.tipo === "imagem" ? null : block.texto || null,
+      url_imagem: block.tipo === "imagem" ? block.url_imagem || null : null,
+      ordem: block.ordem,
+    };
+
+    if (block.id) {
+      const { error } = await supabase
+        .from("resolucoes")
+        .update(payload)
+        .eq("id", block.id);
+
+      if (error) throw error;
+      return block.id;
+    }
+
+    const { data, error } = await supabase
+      .from("resolucoes")
+      .insert(payload)
+      .select("id")
+      .single();
+
+    if (error) throw error;
+    return data?.id as string;
+  }
+
+  async function handleSaveSingle(localId: string) {
+    const block = blocks.find((item) => item.localId === localId);
+    if (!block || !questaoId) return;
+
+    try {
+      setError("");
+      setSuccessMessage("");
+
+      if (block.tipo === "imagem" && !block.url_imagem.trim()) {
+        setError("Bloco de imagem precisa ter uma URL de imagem.");
+        return;
+      }
+
+      if (
+        (block.tipo === "texto" || block.tipo === "latex") &&
+        !block.texto.trim()
+      ) {
+        setError("Bloco de texto/latex precisa ter conteúdo.");
+        return;
+      }
+
+      const savedId = await saveBlock(block);
+
+      setBlocks((prev) =>
+        prev.map((item) =>
+          item.localId === localId
+            ? { ...item, id: savedId, isNew: false }
+            : item
+        )
       );
-    });
-  }, [questions, search]);
+
+      setSuccessMessage("Bloco salvo com sucesso.");
+    } catch (err) {
+      console.error("Erro ao salvar bloco:", err);
+      setError("Não foi possível salvar o bloco.");
+    }
+  }
+
+  async function handleSaveAll() {
+    if (!questaoId) return;
+
+    try {
+      setSavingAll(true);
+      setError("");
+      setSuccessMessage("");
+
+      for (const block of orderedBlocks) {
+        if (block.tipo === "imagem" && !block.url_imagem.trim()) {
+          setError(`O bloco de ordem ${block.ordem} precisa de URL da imagem.`);
+          return;
+        }
+
+        if (
+          (block.tipo === "texto" || block.tipo === "latex") &&
+          !block.texto.trim()
+        ) {
+          setError(`O bloco de ordem ${block.ordem} precisa de conteúdo.`);
+          return;
+        }
+      }
+
+      const updatedBlocks: EditableBlock[] = [];
+
+      for (const block of orderedBlocks) {
+        const savedId = await saveBlock(block);
+        updatedBlocks.push({
+          ...block,
+          id: savedId,
+          isNew: false,
+        });
+      }
+
+      setBlocks(updatedBlocks);
+      setSuccessMessage("Todos os blocos foram salvos com sucesso.");
+    } catch (err) {
+      console.error("Erro ao salvar todos os blocos:", err);
+      setError("Não foi possível salvar todos os blocos.");
+    } finally {
+      setSavingAll(false);
+    }
+  }
+
+  async function handleImageUpload(
+    localId: string,
+    event: ChangeEvent<HTMLInputElement>
+  ) {
+    const file = event.target.files?.[0];
+    if (!file || !questaoId) return;
+
+    try {
+      setUploadingBlockId(localId);
+      setError("");
+      setSuccessMessage("");
+
+      const fileName = gerarNomeArquivo(file.name);
+      const path = `${questaoId}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .upload(path, file, {
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.error("Erro ao enviar imagem:", uploadError);
+        setError("Não foi possível enviar a imagem para o bucket.");
+        return;
+      }
+
+      const { data } = supabase.storage
+        .from(STORAGE_BUCKET)
+        .getPublicUrl(path);
+
+      if (!data?.publicUrl) {
+        setError("Não foi possível gerar a URL pública da imagem.");
+        return;
+      }
+
+      updateBlock(localId, {
+        tipo: "imagem",
+        url_imagem: data.publicUrl,
+      });
+
+      setSuccessMessage("Imagem enviada com sucesso.");
+    } catch (err) {
+      console.error("Erro inesperado no upload da imagem:", err);
+      setError("Ocorreu um erro inesperado ao enviar a imagem.");
+    } finally {
+      setUploadingBlockId(null);
+      event.target.value = "";
+    }
+  }
 
   return (
     <AdminGuard>
       <AdminLayout
-        title="Resoluções ADM"
-        subtitle="Gerencie os blocos de resolução das questões, incluindo texto, latex e imagem."
+        title="Editar resolução"
+        subtitle="Monte a resolução por blocos de texto, latex e imagem, na ordem que quiser."
       >
         <Card className="p-6 bg-white border-slate-200">
-          <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-1">
-                Editor administrativo de resoluções
-              </h2>
-              <p className="text-sm text-slate-500">
-                Total carregado: {filteredQuestions.length} de {questions.length} questões
+              <p className="text-sm text-slate-500 mb-1">Questão</p>
+              <p className="font-semibold text-slate-900">
+                {question?.codigo || "Sem código"}
+              </p>
+              <p className="text-sm text-slate-600 mt-1">
+                {textoCurto(question?.enunciado)}
+              </p>
+              <p className="text-xs text-slate-500 mt-2 break-all">
+                ID: {questaoId || "—"}
               </p>
             </div>
 
-            <div className="relative w-full xl:w-96">
-              <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar por código, enunciado, disciplina, conteúdo..."
-                className="w-full rounded-2xl border border-slate-300 bg-white pl-11 pr-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-              />
+            <div className="flex flex-wrap gap-3">
+              <Link href="/admin/resolucoes">
+                <Button variant="outline" className="rounded-2xl">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Voltar
+                </Button>
+              </Link>
+
+              <Button onClick={addNewBlock} className="rounded-2xl">
+                <Plus className="w-4 h-4 mr-2" />
+                Adicionar bloco
+              </Button>
+
+              <Button
+                onClick={handleSaveAll}
+                disabled={savingAll || orderedBlocks.length === 0}
+                className="rounded-2xl"
+              >
+                {savingAll ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Salvando tudo...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Salvar tudo
+                  </>
+                )}
+              </Button>
             </div>
           </div>
         </Card>
@@ -191,110 +481,163 @@ export default function AdminResolutionsPage() {
         {loading ? (
           <Card className="p-10 flex items-center justify-center gap-3">
             <Loader2 className="w-5 h-5 animate-spin text-slate-500" />
-            <p className="text-slate-600">Carregando resoluções...</p>
+            <p className="text-slate-600">Carregando blocos da resolução...</p>
           </Card>
         ) : error ? (
-          <Card className="p-8 border-red-200 bg-red-50">
+          <Card className="p-6 border-red-200 bg-red-50">
             <div className="flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
               <div>
                 <h2 className="text-lg font-bold text-red-700 mb-1">
-                  Erro ao carregar resoluções
+                  Erro no editor de resolução
                 </h2>
                 <p className="text-red-600">{error}</p>
               </div>
             </div>
           </Card>
-        ) : filteredQuestions.length === 0 ? (
-          <Card className="p-10 text-center">
-            <FileText className="w-8 h-8 text-slate-400 mx-auto mb-3" />
-            <h2 className="text-lg font-bold text-slate-900 mb-2">
-              Nenhuma questão encontrada
-            </h2>
-            <p className="text-slate-500">
-              Tente outro termo de busca.
-            </p>
+        ) : null}
+
+        {successMessage ? (
+          <Card className="p-5 border-emerald-200 bg-emerald-50">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+              <p className="text-emerald-700 font-medium">{successMessage}</p>
+            </div>
           </Card>
-        ) : (
-          <div className="space-y-4">
-            {filteredQuestions.map((question) => {
-              const summary = resolutionMap.get(question.id) || {
-                totalBlocks: 0,
-                totalImages: 0,
-              };
+        ) : null}
 
-              return (
-                <Card
-                  key={question.id}
-                  className="p-5 bg-white border-slate-200 shadow-sm"
-                >
-                  <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-3">
-                        <span className="px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold">
-                          {question.codigo || "Sem código"}
-                        </span>
+        {!loading && orderedBlocks.length === 0 ? (
+          <Card className="p-10 text-center">
+            <Blocks className="w-8 h-8 text-slate-400 mx-auto mb-3" />
+            <h2 className="text-lg font-bold text-slate-900 mb-2">
+              Nenhum bloco de resolução cadastrado
+            </h2>
+            <p className="text-slate-500 mb-4">
+              Comece adicionando um bloco de texto, latex ou imagem.
+            </p>
+            <Button onClick={addNewBlock} className="rounded-2xl">
+              <Plus className="w-4 h-4 mr-2" />
+              Criar primeiro bloco
+            </Button>
+          </Card>
+        ) : null}
 
-                        <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold border border-blue-200">
-                          {normalizarDisciplina(question)}
-                        </span>
+        <div className="space-y-5">
+          {orderedBlocks.map((block, index) => (
+            <Card key={block.localId} className="p-6 bg-white border-slate-200">
+              <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4 mb-5">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold">
+                      Bloco {index + 1}
+                    </span>
 
-                        <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-semibold border border-purple-200">
-                          {question.conteudo || "Sem conteúdo"}
-                        </span>
-                      </div>
+                    <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200">
+                      Ordem {block.ordem}
+                    </span>
 
-                      <p className="text-base font-semibold text-slate-900 mb-2">
-                        {textoCurto(question.enunciado, 150)}
-                      </p>
-
-                      <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-3 text-sm text-slate-600">
-                        <p>
-                          <span className="font-semibold text-slate-800">Assunto:</span>{" "}
-                          {question.assunto || "—"}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-800">Banca:</span>{" "}
-                          {question.banca || "—"}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-800">Ano:</span>{" "}
-                          {question.ano || "—"}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-800">ID:</span>{" "}
-                          {question.id}
-                        </p>
-                      </div>
-
-                      <div className="flex flex-wrap gap-3 mt-4">
-                        <div className="inline-flex items-center gap-2 rounded-2xl bg-orange-50 border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-700">
-                          <Blocks className="w-4 h-4" />
-                          {summary.totalBlocks} bloco(s)
-                        </div>
-
-                        <div className="inline-flex items-center gap-2 rounded-2xl bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm font-semibold text-emerald-700">
-                          <Image className="w-4 h-4" />
-                          {summary.totalImages} imagem(ns)
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 shrink-0">
-                      <Link href={`/admin/resolucoes/${question.id}`}>
-                        <Button variant="outline" className="rounded-2xl">
-                          <Pencil className="w-4 h-4 mr-2" />
-                          Editar resolução
-                        </Button>
-                      </Link>
-                    </div>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold border ${
+                        block.tipo === "imagem"
+                          ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                          : block.tipo === "latex"
+                          ? "bg-purple-100 text-purple-700 border-purple-200"
+                          : "bg-blue-100 text-blue-700 border-blue-200"
+                      }`}
+                    >
+                      {block.tipo}
+                    </span>
                   </div>
-                </Card>
-              );
-            })}
-          </div>
-        )}
-      </AdminLayout>
-    </AdminGuard>
-  );
-}
+
+                  <p className="text-sm text-slate-500">
+                    {block.id ? `ID: ${block.id}` : "Bloco ainda não salvo"}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl"
+                    onClick={() => moveBlock(block.localId, "up")}
+                    disabled={index === 0}
+                  >
+                    <ArrowUp className="w-4 h-4 mr-2" />
+                    Subir
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl"
+                    onClick={() => moveBlock(block.localId, "down")}
+                    disabled={index === orderedBlocks.length - 1}
+                  >
+                    <ArrowDown className="w-4 h-4 mr-2" />
+                    Descer
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl"
+                    onClick={() => handleSaveSingle(block.localId)}
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Salvar bloco
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl border-red-200 text-red-600 hover:bg-red-50"
+                    onClick={() => deletePersistedBlock(block.localId, block.id)}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Excluir
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4 mb-5">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Tipo do bloco
+                  </label>
+                  <select
+                    value={block.tipo}
+                    onChange={(e) =>
+                      updateBlock(block.localId, {
+                        tipo: e.target.value as "texto" | "latex" | "imagem",
+                      })
+                    }
+                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  >
+                    <option value="texto">Texto</option>
+                    <option value="latex">Latex</option>
+                    <option value="imagem">Imagem</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Ordem
+                  </label>
+                  <input
+                    type="number"
+                    value={block.ordem}
+                    onChange={(e) =>
+                      updateBlock(block.localId, {
+                        ordem: Number(e.target.value) || 1,
+                      })
+                    }
+                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  />
+                </div>
+
+                {block.tipo === "imagem" ? (
+                  <div className="md:col-span-2 xl:col-span-1">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      URL da imagem
+                    </label>
+                    <input
+                      type="text"
+                      value={block.url_imagem}
+                      onChange={(e) =>
+                  
