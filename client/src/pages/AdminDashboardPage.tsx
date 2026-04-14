@@ -225,7 +225,7 @@ export default function AdminDashboardPage() {
     <AdminGuard>
       <AdminLayout
         title="Dashboard ADM"
-        subtitle="Gerencie usuários, questões, resoluções, uploads e a estrutura estratégica do sistema."
+        subtitle="Gerencie usuários, perfis, acessos administrativos, questões, resoluções, uploads e a estrutura estratégica do sistema."
       >
         {loading ? (
           <Card className="p-10 flex items-center justify-center gap-3">
@@ -248,7 +248,7 @@ export default function AdminDashboardPage() {
           <>
             <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
               <StatCard
-                title="Admins cadastrados"
+                title="Acessos administrativos"
                 value={String(stats.totalAdmins)}
                 icon={Users}
                 tone="blue"
@@ -377,13 +377,13 @@ export default function AdminDashboardPage() {
                 Ações rápidas
               </h2>
               <p className="text-sm text-slate-500 mb-6">
-                Este é o núcleo do sistema administrativo. Os módulos vão crescer em cima dessa base.
+                Esse painel centraliza o núcleo do sistema administrativo e a gestão dos principais módulos do site.
               </p>
 
               <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
                 <QuickLinkCard
                   title="Gerenciar usuários"
-                  description="Criar, buscar, editar permissões e acompanhar usuários do sistema."
+                  description="Acessar a central de usuários, perfis e acessos administrativos do sistema."
                   href="/admin/usuarios"
                 />
                 <QuickLinkCard
