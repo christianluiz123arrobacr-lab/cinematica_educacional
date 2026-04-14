@@ -65,9 +65,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function TextInput(
-  props: React.InputHTMLAttributes<HTMLInputElement>
-) {
+function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
@@ -78,9 +76,7 @@ function TextInput(
   );
 }
 
-function TextArea(
-  props: React.TextareaHTMLAttributes<HTMLTextAreaElement>
-) {
+function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
       {...props}
@@ -91,9 +87,7 @@ function TextArea(
   );
 }
 
-function Select(
-  props: React.SelectHTMLAttributes<HTMLSelectElement>
-) {
+function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <select
       {...props}
@@ -134,26 +128,26 @@ export default function AdminQuestionCreatePage() {
       }
 
       const payload = {
-  codigo: form.codigo || null,
-  disciplina: form.disciplina || null,
-  conteudo: form.conteudo || null,
-  assunto: form.assunto || null,
-  banca: form.banca || null,
-  ano: form.ano ? Number(form.ano) : null,
-  dificuldade: form.dificuldade || null,
-  instituição: form.instituicao || null,
-  publicada: form.publicada,
-  enunciado: form.enunciado || null,
-  enunciado_pos_imagem: form.enunciado_pos_imagem || null,
-  formula: form.formula || null,
-  url_imagem: form.url_imagem || null,
-  A: form.alternativa_a || null,
-  B: form.alternativa_b || null,
-  C: form.alternativa_c || null,
-  D: form.alternativa_d || null,
-  E: form.alternativa_e || null,
-  alternativa_correta: form.alternativa_correta || null,
-};
+        codigo: form.codigo || null,
+        disciplina: form.disciplina || null,
+        conteudo: form.conteudo || null,
+        assunto: form.assunto || null,
+        banca: form.banca || null,
+        ano: form.ano ? Number(form.ano) : null,
+        dificuldade: form.dificuldade || null,
+        instituição: form.instituicao || null,
+        publicada: form.publicada,
+        enunciado: form.enunciado || null,
+        enunciado_pos_imagem: form.enunciado_pos_imagem || null,
+        formula: form.formula || null,
+        url_imagem: form.url_imagem || null,
+        A: form.alternativa_a || null,
+        B: form.alternativa_b || null,
+        C: form.alternativa_c || null,
+        D: form.alternativa_d || null,
+        E: form.alternativa_e || null,
+        alternativa_correta: form.alternativa_correta || null,
+      };
 
       const { data, error } = await supabase
         .from("questoes")
@@ -171,7 +165,7 @@ export default function AdminQuestionCreatePage() {
 
       setTimeout(() => {
         if (data?.id) {
-          setLocation(`/admin/questoes/${data.id}`);
+          setLocation(`/admin/resolucoes/${data.id}`);
         } else {
           setLocation("/admin/questoes");
         }
