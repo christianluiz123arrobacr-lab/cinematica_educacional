@@ -141,15 +141,21 @@ function Router() {
         </ProtectedRoute>
       </Route>
 
-      <Route path="/admin/questoes/:id">
-  <ProtectedRoute>
-    <AdminQuestionEditPage />
-  </ProtectedRoute>
-</Route>
-
       <Route path="/admin/usuarios">
         <ProtectedRoute>
           <AdminUsersPage />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/admin/questoes/nova">
+        <ProtectedRoute>
+          <AdminQuestionCreatePage />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/admin/questoes/:id">
+        <ProtectedRoute>
+          <AdminQuestionEditPage />
         </ProtectedRoute>
       </Route>
 
@@ -176,12 +182,6 @@ function Router() {
           <AdminVetPage />
         </ProtectedRoute>
       </Route>
-
-      <Route path="/admin/questoes/nova">
-  <ProtectedRoute>
-    <AdminQuestionCreatePage />
-  </ProtectedRoute>
-</Route>
 
       <Route path="/admin/logs">
         <ProtectedRoute>
