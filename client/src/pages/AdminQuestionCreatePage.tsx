@@ -134,26 +134,26 @@ export default function AdminQuestionCreatePage() {
       }
 
       const payload = {
-        codigo: form.codigo || null,
-        disciplina: form.disciplina || null,
-        conteudo: form.conteudo || null,
-        assunto: form.assunto || null,
-        banca: form.banca || null,
-        ano: form.ano ? Number(form.ano) : null,
-        dificuldade: form.dificuldade || null,
-        instituição: form.instituicao || null,
-        publicada: form.publicada,
-        enunciado: form.enunciado || null,
-        enunciado_pos_imagem: form.enunciado_pos_imagem || null,
-        formula: form.formula || null,
-        url_imagem: form.url_imagem || null,
-        a: form.alternativa_a || null,
-        b: form.alternativa_b || null,
-        c: form.alternativa_c || null,
-        d: form.alternativa_d || null,
-        e: form.alternativa_e || null,
-        alternativa_correta: form.alternativa_correta || null,
-      };
+  codigo: form.codigo || null,
+  disciplina: form.disciplina || null,
+  conteudo: form.conteudo || null,
+  assunto: form.assunto || null,
+  banca: form.banca || null,
+  ano: form.ano ? Number(form.ano) : null,
+  dificuldade: form.dificuldade || null,
+  instituição: form.instituicao || null,
+  publicada: form.publicada,
+  enunciado: form.enunciado || null,
+  enunciado_pos_imagem: form.enunciado_pos_imagem || null,
+  formula: form.formula || null,
+  url_imagem: form.url_imagem || null,
+  A: form.alternativa_a || null,
+  B: form.alternativa_b || null,
+  C: form.alternativa_c || null,
+  D: form.alternativa_d || null,
+  E: form.alternativa_e || null,
+  alternativa_correta: form.alternativa_correta || null,
+};
 
       const { data, error } = await supabase
         .from("questoes")
