@@ -5,6 +5,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminGuard from "@/components/admin/AdminGuard";
+import ReactMarkdown from "react-markdown";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 import {
   ArrowLeft,
   ArrowDown,
@@ -695,23 +699,48 @@ export default function AdminResolutionEditorPage() {
                   </div>
                 </div>
               ) : (
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Conteúdo do bloco
-                  </label>
-                  <textarea
-                    rows={block.tipo === "latex" ? 5 : 7}
-                    value={block.texto}
-                    onChange={(e) =>
-                      updateBlock(block.localId, { texto: e.target.value })
-                    }
-                    placeholder={
-                      block.tipo === "latex"
-                        ? "Ex.: $$ v = \\frac{\\Delta s}{\\Delta t} $$"
-                        : "Digite o texto do bloco..."
-                    }
-                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-                  />
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      Conteúdo do bloco
+                    </label>
+                    <textarea
+                      rows={block.tipo === "latex" ? 5 : 7}
+                      value={block.texto}
+                      onChange={(e) =>
+                        updateBlock(block.localId, { texto: e.target.value })
+                      }
+                      placeholder={
+                        block.tipo === "latex"
+                          ? "Ex.: $$ v = \\frac{\\Delta s}{\\Delta t} $$"
+                          : "Digite o texto do bloco..."
+                      }
+                      className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                    />
+                  </div>
+
+                  {block.tipo === "latex" ? (
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                      <p className="text-sm font-semibold text-slate-700 mb-3">
+                        Preview do LaTeX
+                      </p>
+
+                      <div className="prose prose-slate max-w-none text-slate-800">
+                        {block.texto.trim() ? (
+                          <ReactMarkdown
+                            remarkPlugins={[remarkMath]}
+                            rehypePlugins={[rehypeKatex]}
+                          >
+                            {block.texto}
+                          </ReactMarkdown>
+                        ) : (
+                          <p className="text-sm text-slate-500">
+                            Digite o conteúdo em LaTeX para ver o preview aqui.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               )}
             </Card>
