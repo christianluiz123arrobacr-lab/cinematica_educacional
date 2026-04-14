@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -12,6 +12,7 @@ import {
   Trash2,
   RefreshCcw,
   Plus,
+  Search,
 } from "lucide-react";
 
 type AdminUserRow = {
@@ -19,6 +20,19 @@ type AdminUserRow = {
   user_id: string;
   role: "admin" | "editor";
   created_at: string;
+};
+
+type ProfileRow = {
+  id: string;
+  nome: string;
+  email: string;
+  role: string;
+  ativo: boolean;
+  created_at: string;
+};
+
+type AdminUserWithProfile = AdminUserRow & {
+  profile?: ProfileRow | null;
 };
 
 function formatDate(date?: string | null) {
@@ -36,33 +50,60 @@ function formatDate(date?: string | null) {
 }
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<AdminUserRow[]>([]);
+  const [users, setUsers] = useState<AdminUserWithProfile[]>([]);
+  const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
 
-  const [newUserId, setNewUserId] = useState("");
+  const [newEmail, setNewEmail] = useState("");
   const [newRole, setNewRole] = useState<"admin" | "editor">("editor");
   const [addingUser, setAddingUser] = useState(false);
+
+  const [search, setSearch] = useState("");
 
   async function loadAdminUsers() {
     try {
       setLoading(true);
       setError("");
 
-      const { data, error } = await supabase
-        .from("admin_users")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const [adminUsersResult, profilesResult] = await Promise.all([
+        supabase
+          .from("admin_users")
+          .select("*")
+          .order("created_at", { ascending: false }),
 
-      if (error) {
-        console.error("Erro ao carregar admin_users:", error);
+        supabase
+          .from("profiles")
+          .select("*")
+          .order("created_at", { ascending: false }),
+      ]);
+
+      if (adminUsersResult.error) {
+        console.error("Erro ao carregar admin_users:", adminUsersResult.error);
         setError("Não foi possível carregar os usuários administrativos.");
         return;
       }
 
-      setUsers((data as AdminUserRow[]) || []);
+      if (profilesResult.error) {
+        console.error("Erro ao carregar profiles:", profilesResult.error);
+        setError("Não foi possível carregar os perfis dos usuários.");
+        return;
+      }
+
+      const adminRows = (adminUsersResult.data as AdminUserRow[]) || [];
+      const profileRows = (profilesResult.data as ProfileRow[]) || [];
+
+      const profileMap = new Map(profileRows.map((profile) => [profile.id, profile]));
+
+      const merged: AdminUserWithProfile[] = adminRows.map((user) => ({
+        ...user,
+        profile: profileMap.get(user.user_id) || null,
+      }));
+
+      setProfiles(profileRows);
+      setUsers(merged);
     } catch (err) {
       console.error("Erro inesperado ao carregar usuários ADM:", err);
       setError("Ocorreu um erro inesperado ao carregar os usuários administrativos.");
@@ -75,22 +116,53 @@ export default function AdminUsersPage() {
     loadAdminUsers();
   }, []);
 
+  const filteredUsers = useMemo(() => {
+    const term = search.trim().toLowerCase();
+
+    if (!term) return users;
+
+    return users.filter((user) => {
+      const nome = (user.profile?.nome || "").toLowerCase();
+      const email = (user.profile?.email || "").toLowerCase();
+      const adminRole = (user.role || "").toLowerCase();
+      const profileRole = (user.profile?.role || "").toLowerCase();
+      const userId = (user.user_id || "").toLowerCase();
+
+      return (
+        nome.includes(term) ||
+        email.includes(term) ||
+        adminRole.includes(term) ||
+        profileRole.includes(term) ||
+        userId.includes(term)
+      );
+    });
+  }, [users, search]);
+
   async function handleAddAccess() {
     try {
       setAddingUser(true);
       setError("");
       setSuccessMessage("");
 
-      const trimmedUserId = newUserId.trim();
+      const trimmedEmail = newEmail.trim().toLowerCase();
 
-      if (!trimmedUserId) {
-        setError("Digite um user_id válido.");
+      if (!trimmedEmail) {
+        setError("Digite um email válido.");
+        return;
+      }
+
+      const foundProfile = profiles.find(
+        (profile) => profile.email.trim().toLowerCase() === trimmedEmail
+      );
+
+      if (!foundProfile) {
+        setError("Nenhum usuário com esse email foi encontrado na tabela profiles.");
         return;
       }
 
       const { error } = await supabase.from("admin_users").upsert(
         {
-          user_id: trimmedUserId,
+          user_id: foundProfile.id,
           role: newRole,
         },
         {
@@ -105,9 +177,9 @@ export default function AdminUsersPage() {
       }
 
       setSuccessMessage(
-        `Acesso ${newRole} adicionado/atualizado com sucesso.`
+        `Acesso ${newRole} adicionado/atualizado com sucesso para ${foundProfile.email}.`
       );
-      setNewUserId("");
+      setNewEmail("");
       setNewRole("editor");
       await loadAdminUsers();
     } catch (err) {
@@ -118,7 +190,7 @@ export default function AdminUsersPage() {
     }
   }
 
-  async function handleChangeRole(user: AdminUserRow) {
+  async function handleChangeRole(user: AdminUserWithProfile) {
     try {
       setBusyUserId(user.id);
       setError("");
@@ -152,7 +224,7 @@ export default function AdminUsersPage() {
     }
   }
 
-  async function handleRemoveAccess(user: AdminUserRow) {
+  async function handleRemoveAccess(user: AdminUserWithProfile) {
     try {
       setBusyUserId(user.id);
       setError("");
@@ -210,19 +282,19 @@ export default function AdminUsersPage() {
 
         <Card className="p-6 bg-white border-slate-200">
           <h2 className="text-lg font-bold text-slate-900 mb-4">
-            Adicionar novo acesso
+            Adicionar novo acesso por email
           </h2>
 
           <div className="grid md:grid-cols-3 gap-4">
             <div className="md:col-span-2">
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                User ID
+                Email do usuário
               </label>
               <input
-                type="text"
-                value={newUserId}
-                onChange={(e) => setNewUserId(e.target.value)}
-                placeholder="Cole aqui o user_id do usuário"
+                type="email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                placeholder="Digite o email do usuário"
                 className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
               />
             </div>
@@ -265,6 +337,19 @@ export default function AdminUsersPage() {
           </div>
         </Card>
 
+        <Card className="p-6 bg-white border-slate-200">
+          <div className="relative w-full">
+            <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por nome, email, papel ou user_id..."
+              className="w-full rounded-2xl border border-slate-300 bg-white pl-11 pr-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+            />
+          </div>
+        </Card>
+
         {loading ? (
           <Card className="p-10 flex items-center justify-center gap-3">
             <Loader2 className="w-5 h-5 animate-spin text-slate-500" />
@@ -295,7 +380,7 @@ export default function AdminUsersPage() {
           </Card>
         ) : null}
 
-        {!loading && users.length === 0 ? (
+        {!loading && filteredUsers.length === 0 ? (
           <Card className="p-10 text-center">
             <Shield className="w-8 h-8 text-slate-400 mx-auto mb-3" />
             <h2 className="text-lg font-bold text-slate-900 mb-2">
@@ -307,9 +392,9 @@ export default function AdminUsersPage() {
           </Card>
         ) : null}
 
-        {!loading && users.length > 0 ? (
+        {!loading && filteredUsers.length > 0 ? (
           <div className="space-y-4">
-            {users.map((user) => {
+            {filteredUsers.map((user) => {
               const busy = busyUserId === user.id;
 
               return (
@@ -333,9 +418,31 @@ export default function AdminUsersPage() {
                         >
                           {user.role === "admin" ? "Administrador" : "Editor"}
                         </span>
+
+                        {user.profile?.ativo === false ? (
+                          <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-red-100 text-red-700 border-red-200">
+                            Inativo
+                          </span>
+                        ) : (
+                          <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-emerald-100 text-emerald-700 border-emerald-200">
+                            Ativo
+                          </span>
+                        )}
                       </div>
 
                       <div className="space-y-2 text-sm text-slate-600">
+                        <p>
+                          <span className="font-semibold text-slate-800">Nome:</span>{" "}
+                          {user.profile?.nome || "Sem nome"}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-800">Email:</span>{" "}
+                          {user.profile?.email || "Sem email"}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-800">Role do profile:</span>{" "}
+                          {user.profile?.role || "Sem role"}
+                        </p>
                         <p>
                           <span className="font-semibold text-slate-800">User ID:</span>{" "}
                           <span className="font-mono break-all">{user.user_id}</span>
