@@ -14,6 +14,7 @@ import {
   ArrowDown,
   ArrowUp,
   Blocks,
+  Copy,
   Image,
   Loader2,
   Plus,
@@ -203,6 +204,55 @@ export default function AdminResolutionEditorPage() {
     setBlocks((prev) => [...prev, criarBlocoVazio(nextOrder)]);
     setSuccessMessage("");
     setError("");
+  }
+
+  function insertBlockAt(index: number, block?: Partial<EditableBlock>) {
+    setBlocks((prev) => {
+      const sorted = [...prev].sort((a, b) => a.ordem - b.ordem);
+
+      const novoBloco: EditableBlock = {
+        localId: gerarLocalId(),
+        tipo: block?.tipo || "texto",
+        texto: block?.texto || "",
+        url_imagem: block?.url_imagem || "",
+        ordem: 0,
+        isNew: true,
+      };
+
+      sorted.splice(index, 0, novoBloco);
+      return normalizarOrdens(sorted);
+    });
+
+    setSuccessMessage("");
+    setError("");
+  }
+
+  function addBlockAbove(localId: string) {
+    const sorted = [...blocks].sort((a, b) => a.ordem - b.ordem);
+    const index = sorted.findIndex((block) => block.localId === localId);
+    if (index === -1) return;
+    insertBlockAt(index);
+  }
+
+  function addBlockBelow(localId: string) {
+    const sorted = [...blocks].sort((a, b) => a.ordem - b.ordem);
+    const index = sorted.findIndex((block) => block.localId === localId);
+    if (index === -1) return;
+    insertBlockAt(index + 1);
+  }
+
+  function duplicateBlock(localId: string) {
+    const sorted = [...blocks].sort((a, b) => a.ordem - b.ordem);
+    const index = sorted.findIndex((block) => block.localId === localId);
+    if (index === -1) return;
+
+    const original = sorted[index];
+
+    insertBlockAt(index + 1, {
+      tipo: original.tipo,
+      texto: original.texto,
+      url_imagem: original.url_imagem,
+    });
   }
 
   function removeLocalBlock(localId: string) {
@@ -555,6 +605,33 @@ export default function AdminResolutionEditorPage() {
                 </div>
 
                 <div className="flex flex-wrap gap-3">
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl"
+                    onClick={() => addBlockAbove(block.localId)}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Acima
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl"
+                    onClick={() => addBlockBelow(block.localId)}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Abaixo
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl"
+                    onClick={() => duplicateBlock(block.localId)}
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Duplicar
+                  </Button>
+
                   <Button
                     variant="outline"
                     className="rounded-2xl"
