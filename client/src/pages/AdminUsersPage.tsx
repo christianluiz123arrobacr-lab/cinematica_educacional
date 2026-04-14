@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   Trash2,
   RefreshCcw,
+  Plus,
 } from "lucide-react";
 
 type AdminUserRow = {
@@ -41,6 +42,10 @@ export default function AdminUsersPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
 
+  const [newUserId, setNewUserId] = useState("");
+  const [newRole, setNewRole] = useState<"admin" | "editor">("editor");
+  const [addingUser, setAddingUser] = useState(false);
+
   async function loadAdminUsers() {
     try {
       setLoading(true);
@@ -70,6 +75,49 @@ export default function AdminUsersPage() {
     loadAdminUsers();
   }, []);
 
+  async function handleAddAccess() {
+    try {
+      setAddingUser(true);
+      setError("");
+      setSuccessMessage("");
+
+      const trimmedUserId = newUserId.trim();
+
+      if (!trimmedUserId) {
+        setError("Digite um user_id válido.");
+        return;
+      }
+
+      const { error } = await supabase.from("admin_users").upsert(
+        {
+          user_id: trimmedUserId,
+          role: newRole,
+        },
+        {
+          onConflict: "user_id",
+        }
+      );
+
+      if (error) {
+        console.error("Erro ao adicionar acesso administrativo:", error);
+        setError("Não foi possível adicionar o acesso administrativo.");
+        return;
+      }
+
+      setSuccessMessage(
+        `Acesso ${newRole} adicionado/atualizado com sucesso.`
+      );
+      setNewUserId("");
+      setNewRole("editor");
+      await loadAdminUsers();
+    } catch (err) {
+      console.error("Erro inesperado ao adicionar acesso:", err);
+      setError("Ocorreu um erro inesperado ao adicionar o acesso.");
+    } finally {
+      setAddingUser(false);
+    }
+  }
+
   async function handleChangeRole(user: AdminUserRow) {
     try {
       setBusyUserId(user.id);
@@ -95,9 +143,7 @@ export default function AdminUsersPage() {
         )
       );
 
-      setSuccessMessage(
-        `Papel alterado com sucesso para ${nextRole}.`
-      );
+      setSuccessMessage(`Papel alterado com sucesso para ${nextRole}.`);
     } catch (err) {
       console.error("Erro inesperado ao alterar papel:", err);
       setError("Ocorreu um erro inesperado ao alterar o papel.");
@@ -140,7 +186,7 @@ export default function AdminUsersPage() {
         subtitle="Gerencie quem tem acesso administrativo ao sistema."
       >
         <Card className="p-6 bg-white border-slate-200">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
             <div>
               <h2 className="text-xl font-bold text-slate-900 mb-1">
                 Acessos administrativos
@@ -158,6 +204,63 @@ export default function AdminUsersPage() {
             >
               <RefreshCcw className="w-4 h-4 mr-2" />
               Atualizar lista
+            </Button>
+          </div>
+        </Card>
+
+        <Card className="p-6 bg-white border-slate-200">
+          <h2 className="text-lg font-bold text-slate-900 mb-4">
+            Adicionar novo acesso
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                User ID
+              </label>
+              <input
+                type="text"
+                value={newUserId}
+                onChange={(e) => setNewUserId(e.target.value)}
+                placeholder="Cole aqui o user_id do usuário"
+                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Papel
+              </label>
+              <select
+                value={newRole}
+                onChange={(e) =>
+                  setNewRole(e.target.value as "admin" | "editor")
+                }
+                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+              >
+                <option value="editor">Editor</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="mt-5 flex justify-end">
+            <Button
+              onClick={handleAddAccess}
+              disabled={addingUser}
+              className="rounded-2xl"
+            >
+              {addingUser ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Adicionando...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Adicionar acesso
+                </>
+              )}
             </Button>
           </div>
         </Card>
