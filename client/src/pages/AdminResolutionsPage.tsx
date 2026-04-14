@@ -66,22 +66,28 @@ export default function AdminResolutionsPage() {
         const [questionsResult, resolutionsResult] = await Promise.all([
           supabase
             .from("questoes")
-            .select("id, codigo, enunciado, disciplina, diciplina, conteudo, assunto, banca, ano")
+            .select("*")
             .order("created_at", { ascending: false }),
 
           supabase
             .from("resolucoes")
-            .select("id, questao_id, tipo, url_imagem"),
+            .select("*"),
         ]);
 
         if (questionsResult.error) {
-          console.error("Erro ao carregar questões para resoluções:", questionsResult.error);
+          console.error(
+            "Erro ao carregar questões para resoluções:",
+            questionsResult.error
+          );
           setError("Não foi possível carregar as questões.");
           return;
         }
 
         if (resolutionsResult.error) {
-          console.error("Erro ao carregar resoluções:", resolutionsResult.error);
+          console.error(
+            "Erro ao carregar resoluções:",
+            resolutionsResult.error
+          );
           setError("Não foi possível carregar os blocos de resolução.");
           return;
         }
@@ -89,7 +95,10 @@ export default function AdminResolutionsPage() {
         setQuestions((questionsResult.data as QuestionRow[]) || []);
         setResolutions((resolutionsResult.data as ResolutionRow[]) || []);
       } catch (err) {
-        console.error("Erro inesperado ao carregar módulo de resoluções:", err);
+        console.error(
+          "Erro inesperado ao carregar módulo de resoluções:",
+          err
+        );
         setError("Ocorreu um erro inesperado ao carregar as resoluções.");
       } finally {
         setLoading(false);
