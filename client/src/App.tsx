@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { supabase } from "@/lib/supabase";
 import VetTrainingPage from "./pages/VetTrainingPage";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
@@ -16,7 +18,6 @@ import VetMockPage from "./pages/VetMockPage";
 import VetMockResultPage from "./pages/VetMockResultPage";
 import AdminQuestionCreatePage from "./pages/AdminQuestionCreatePage";
 import AdminResolutionEditorPage from "./pages/AdminResolutionEditorPage";
-import AdminProfilesPage from "./pages/AdminProfilesPage";
 
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
@@ -197,12 +198,6 @@ function Router() {
         </ProtectedRoute>
       </Route>
 
-      <Route path="/admin/perfis">
-        <ProtectedRoute>
-         <AdminProfilesPage />
-        </ProtectedRoute>
-      </Route>
-
       <Route path="/fisica-i" component={FisicaIHome} />
       <Route path="/fisica-ii" component={FisicaIIHome} />
       <Route path="/fisica-iii" component={FisicaIIIHome} />
@@ -327,6 +322,42 @@ function Router() {
 }
 
 function App() {
+  useEffect(() => {
+    let intervalId: number | undefined;
+
+    async function updateLastSeen() {
+      try {
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
+
+        if (error || !user) return;
+
+        await supabase
+          .from("profiles")
+          .update({
+            last_seen_at: new Date().toISOString(),
+          })
+          .eq("id", user.id);
+      } catch (err) {
+        console.error("Erro ao atualizar last_seen_at:", err);
+      }
+    }
+
+    updateLastSeen();
+
+    intervalId = window.setInterval(() => {
+      updateLastSeen();
+    }, 5 * 60 * 1000);
+
+    return () => {
+      if (intervalId) {
+        window.clearInterval(intervalId);
+      }
+    };
+  }, []);
+
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
