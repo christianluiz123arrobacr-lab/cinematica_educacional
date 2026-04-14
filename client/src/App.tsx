@@ -14,6 +14,7 @@ import VetPrioritiesPage from "./pages/VetPrioritiesPage";
 import VetLevelPage from "./pages/VetLevelPage";
 import VetMockPage from "./pages/VetMockPage";
 import VetMockResultPage from "./pages/VetMockResultPage";
+import AdminQuestionCreatePage from "./pages/AdminQuestionCreatePage";
 
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
@@ -175,6 +176,12 @@ function Router() {
           <AdminVetPage />
         </ProtectedRoute>
       </Route>
+
+      <Route path="/admin/questoes/nova">
+  <ProtectedRoute>
+    <AdminQuestionCreatePage />
+  </ProtectedRoute>
+</Route>
 
       <Route path="/admin/logs">
         <ProtectedRoute>
