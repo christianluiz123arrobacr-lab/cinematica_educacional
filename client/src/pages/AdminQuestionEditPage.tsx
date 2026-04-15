@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useRoute } from "wouter";
+import { useRoute, useLocation, Link } from "wouter";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,8 +11,8 @@ import {
   Save,
   ArrowLeft,
   CheckCircle2,
+  Blocks,
 } from "lucide-react";
-import { Link } from "wouter";
 
 type QuestionFormData = {
   codigo: string;
@@ -66,9 +66,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function TextInput(
-  props: React.InputHTMLAttributes<HTMLInputElement>
-) {
+function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
@@ -79,9 +77,7 @@ function TextInput(
   );
 }
 
-function TextArea(
-  props: React.TextareaHTMLAttributes<HTMLTextAreaElement>
-) {
+function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
       {...props}
@@ -92,9 +88,7 @@ function TextArea(
   );
 }
 
-function Select(
-  props: React.SelectHTMLAttributes<HTMLSelectElement>
-) {
+function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <select
       {...props}
@@ -105,8 +99,14 @@ function Select(
   );
 }
 
+function valorLimpo(texto: string) {
+  const valor = texto.trim();
+  return valor.length > 0 ? valor : null;
+}
+
 export default function AdminQuestionEditPage() {
   const [match, params] = useRoute("/admin/questoes/:id");
+  const [, setLocation] = useLocation();
   const questionId = match ? params.id : null;
 
   const [form, setForm] = useState<QuestionFormData>(initialForm);
@@ -182,51 +182,131 @@ export default function AdminQuestionEditPage() {
     }));
   }
 
+  async function saveQuestion() {
+    if (!questionId) {
+      return { ok: false };
+    }
+
+    const anoNumero = Number(form.ano);
+
+    if (!form.disciplina.trim()) {
+      setError("Preencha a disciplina.");
+      return { ok: false };
+    }
+
+    if (!form.assunto.trim()) {
+      setError("Preencha o assunto.");
+      return { ok: false };
+    }
+
+    if (!form.dificuldade.trim()) {
+      setError("Preencha a dificuldade.");
+      return { ok: false };
+    }
+
+    if (!form.instituicao.trim()) {
+      setError("Preencha a instituição.");
+      return { ok: false };
+    }
+
+    if (!form.ano.trim() || Number.isNaN(anoNumero)) {
+      setError("Preencha um ano válido.");
+      return { ok: false };
+    }
+
+    if (!form.alternativa_a.trim()) {
+      setError("Preencha a alternativa A.");
+      return { ok: false };
+    }
+
+    if (!form.alternativa_b.trim()) {
+      setError("Preencha a alternativa B.");
+      return { ok: false };
+    }
+
+    if (!form.alternativa_correta.trim()) {
+      setError("Selecione a alternativa correta.");
+      return { ok: false };
+    }
+
+    const payload = {
+      codigo: valorLimpo(form.codigo),
+      disciplina: valorLimpo(form.disciplina),
+      conteudo: valorLimpo(form.conteudo),
+      assunto: valorLimpo(form.assunto),
+      banca: valorLimpo(form.banca),
+      ano: anoNumero,
+      dificuldade: valorLimpo(form.dificuldade),
+      instituição: valorLimpo(form.instituicao),
+      publicada: form.publicada,
+      enunciado: valorLimpo(form.enunciado),
+      enunciado_pos_imagem: valorLimpo(form.enunciado_pos_imagem),
+      formula: valorLimpo(form.formula),
+      url_imagem: valorLimpo(form.url_imagem),
+      A: valorLimpo(form.alternativa_a),
+      B: valorLimpo(form.alternativa_b),
+      C: valorLimpo(form.alternativa_c),
+      D: valorLimpo(form.alternativa_d),
+      E: valorLimpo(form.alternativa_e),
+      alternativa_correta: valorLimpo(form.alternativa_correta),
+    };
+
+    const { error } = await supabase
+      .from("questoes")
+      .update(payload)
+      .eq("id", questionId);
+
+    if (error) {
+      console.error("Erro ao salvar questão:", error);
+      setError(
+        error.message
+          ? `Não foi possível salvar as alterações: ${error.message}`
+          : "Não foi possível salvar as alterações."
+      );
+      return { ok: false };
+    }
+
+    return { ok: true };
+  }
+
   async function handleSave() {
-    if (!questionId) return;
+    if (saving) return;
 
     try {
       setSaving(true);
       setError("");
       setSuccessMessage("");
 
-      const payload = {
-        codigo: form.codigo || null,
-        disciplina: form.disciplina || null,
-        conteudo: form.conteudo || null,
-        assunto: form.assunto || null,
-        banca: form.banca || null,
-        ano: form.ano ? Number(form.ano) : null,
-        dificuldade: form.dificuldade || null,
-        instituição: form.instituicao || null,
-        publicada: form.publicada,
-        enunciado: form.enunciado || null,
-        enunciado_pos_imagem: form.enunciado_pos_imagem || null,
-        formula: form.formula || null,
-        url_imagem: form.url_imagem || null,
-        A: form.alternativa_a || null,
-        B: form.alternativa_b || null,
-        C: form.alternativa_c || null,
-        D: form.alternativa_d || null,
-        E: form.alternativa_e || null,
-        alternativa_correta: form.alternativa_correta || null,
-      };
+      const result = await saveQuestion();
 
-      const { error } = await supabase
-        .from("questoes")
-        .update(payload)
-        .eq("id", questionId);
-
-      if (error) {
-        console.error("Erro ao salvar questão:", error);
-        setError("Não foi possível salvar as alterações.");
-        return;
-      }
+      if (!result.ok) return;
 
       setSuccessMessage("Questão salva com sucesso.");
     } catch (err) {
       console.error("Erro inesperado ao salvar questão:", err);
       setError("Ocorreu um erro inesperado ao salvar.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleSaveAndGoToResolution() {
+    if (saving || !questionId) return;
+
+    try {
+      setSaving(true);
+      setError("");
+      setSuccessMessage("");
+
+      const result = await saveQuestion();
+
+      if (!result.ok) return;
+
+      setSuccessMessage("Questão salva com sucesso. Indo para a resolução...");
+      setLocation(`/admin/resolucoes/${questionId}`);
+    } catch (err) {
+      console.error("Erro inesperado ao salvar e ir para resolução:", err);
+      setError("Ocorreu um erro inesperado ao salvar e abrir a resolução.");
     } finally {
       setSaving(false);
     }
@@ -247,12 +327,23 @@ export default function AdminQuestionEditPage() {
               </p>
             </div>
 
-            <Link href="/admin/questoes">
-              <Button variant="outline" className="rounded-2xl">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Voltar para questões
-              </Button>
-            </Link>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/admin/questoes">
+                <Button variant="outline" className="rounded-2xl">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Voltar para questões
+                </Button>
+              </Link>
+
+              {questionId ? (
+                <Link href={`/admin/resolucoes/${questionId}`}>
+                  <Button variant="outline" className="rounded-2xl">
+                    <Blocks className="w-4 h-4 mr-2" />
+                    Ir para resolução
+                  </Button>
+                </Link>
+              ) : null}
+            </div>
           </div>
         </Card>
 
@@ -279,7 +370,9 @@ export default function AdminQuestionEditPage() {
               <Card className="p-5 border-emerald-200 bg-emerald-50">
                 <div className="flex items-center gap-3">
                   <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                  <p className="text-emerald-700 font-medium">{successMessage}</p>
+                  <p className="text-emerald-700 font-medium">
+                    {successMessage}
+                  </p>
                 </div>
               </Card>
             ) : null}
@@ -429,7 +522,7 @@ export default function AdminQuestionEditPage() {
                     rows={4}
                     value={form.formula}
                     onChange={(e) => updateField("formula", e.target.value)}
-                    placeholder="Ex.: $$ v = \frac{\Delta s}{\Delta t} $$"
+                    placeholder="Ex.: $$ v = \\frac{\\Delta s}{\\Delta t} $$"
                   />
                 </div>
               </div>
@@ -515,7 +608,26 @@ export default function AdminQuestionEditPage() {
               </div>
             </Card>
 
-            <div className="flex justify-end">
+            <div className="flex flex-wrap justify-end gap-3">
+              <Button
+                variant="outline"
+                onClick={handleSaveAndGoToResolution}
+                disabled={saving}
+                className="rounded-2xl min-w-[220px]"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  <>
+                    <Blocks className="w-4 h-4 mr-2" />
+                    Salvar e ir para resolução
+                  </>
+                )}
+              </Button>
+
               <Button
                 onClick={handleSave}
                 disabled={saving}
