@@ -7,6 +7,8 @@ import {
   CircleDashed,
   Shield,
   Target,
+  AlertTriangle,
+  BookOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -74,6 +76,7 @@ type PriorityItem = {
   priorityLevel: PriorityLevel;
   reason: string;
   hasAttempts: boolean;
+  isImportantAndUntrained: boolean;
 };
 
 type PriorityFilter = PriorityLevel;
@@ -124,9 +127,30 @@ function getNoAttemptPenalty(total: number, weight: number) {
   return 1;
 }
 
-function getPriorityLevel(score: number): PriorityLevel {
+function getPriorityLevel(params: {
+  score: number;
+  total: number;
+  accuracy: number;
+  weight: number;
+}): PriorityLevel {
+  const { score, total, accuracy, weight } = params;
+
+  if (total === 0) {
+    return weight >= 5 ? "alta" : "media";
+  }
+
   if (score >= 15) return "alta";
+
+  if (accuracy >= 75 && total >= 3 && score <= 10) {
+    return "manutencao";
+  }
+
+  if (accuracy >= 65 && total >= 4 && weight <= 5 && score <= 11) {
+    return "manutencao";
+  }
+
   if (score >= 9) return "media";
+
   return "manutencao";
 }
 
@@ -136,19 +160,28 @@ function buildReason(params: {
   wrong: number;
   monthsUntilExam: number;
   total: number;
+  priorityLevel: PriorityLevel;
 }) {
-  const { weight, accuracy, wrong, monthsUntilExam, total } = params;
+  const { weight, accuracy, wrong, monthsUntilExam, total, priorityLevel } = params;
 
   if (total === 0) {
     if (weight >= 8) {
-      return "Prioridade porque esse conteúdo tem peso alto na prova e ainda não foi treinado.";
+      return "Conteúdo importante e ainda não treinado. Como tem peso alto na prova, ele precisa entrar logo no seu ciclo.";
     }
 
     if (weight >= 5) {
-      return "Prioridade porque esse conteúdo tem peso relevante na prova e ainda não foi treinado.";
+      return "Conteúdo relevante e ainda não treinado. Vale puxar para o treino antes que vire lacuna.";
     }
 
-    return "Conteúdo ainda não treinado; vale entrar no radar para não criar lacuna.";
+    return "Conteúdo ainda não treinado. Não é o foco máximo agora, mas precisa entrar no radar.";
+  }
+
+  if (priorityLevel === "manutencao") {
+    if (accuracy >= 75) {
+      return "Conteúdo em manutenção estratégica: seu desempenho já está bom, então o ideal é revisar sem roubar foco do que está mais crítico.";
+    }
+
+    return "Conteúdo em manutenção: ele não é o gargalo principal agora, mas não deve ser abandonado.";
   }
 
   const parts: string[] = [];
@@ -176,7 +209,7 @@ function buildReason(params: {
   }
 
   if (!parts.length) {
-    return "Conteúdo em faixa de manutenção no momento.";
+    return "Conteúdo em faixa intermediária no momento.";
   }
 
   return `Prioridade porque ${parts.join(", ")}.`;
@@ -383,7 +416,14 @@ export default function VetPrioritiesPage() {
           wrongVolumeScore +
           noAttemptPenalty;
 
-        const priorityLevel = getPriorityLevel(priorityScore);
+        const priorityLevel = getPriorityLevel({
+          score: priorityScore,
+          total: stats.total,
+          accuracy,
+          weight,
+        });
+
+        const isImportantAndUntrained = stats.total === 0 && weight >= 5;
 
         return {
           conteudo,
@@ -404,8 +444,10 @@ export default function VetPrioritiesPage() {
             wrong: stats.wrong,
             monthsUntilExam: profile.months_until_exam,
             total: stats.total,
+            priorityLevel,
           }),
           hasAttempts: stats.total > 0,
+          isImportantAndUntrained,
         };
       })
       .sort(
@@ -424,6 +466,7 @@ export default function VetPrioritiesPage() {
   const maintenancePriority = priorities.filter(
     (item) => item.priorityLevel === "manutencao"
   );
+  const importantUntrained = priorities.filter((item) => item.isImportantAndUntrained);
 
   const overviewChartData = useMemo(
     () =>
@@ -523,7 +566,7 @@ export default function VetPrioritiesPage() {
               </p>
             </Card>
 
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-4 gap-4">
               <Card className="p-5">
                 <p className="text-sm text-slate-500 mb-1">Alta prioridade</p>
                 <p className="text-3xl font-bold text-red-600">{highPriority.length}</p>
@@ -538,7 +581,58 @@ export default function VetPrioritiesPage() {
                 <p className="text-sm text-slate-500 mb-1">Manutenção</p>
                 <p className="text-3xl font-bold text-green-600">{maintenancePriority.length}</p>
               </Card>
+
+              <Card className="p-5">
+                <p className="text-sm text-slate-500 mb-1">Importantes sem treino</p>
+                <p className="text-3xl font-bold text-slate-900">{importantUntrained.length}</p>
+              </Card>
             </div>
+
+            {importantUntrained.length > 0 ? (
+              <Card className="p-6 border-slate-200 bg-white">
+                <div className="flex items-center gap-2 mb-4">
+                  <AlertTriangle className="w-5 h-5 text-orange-500" />
+                  <h2 className="text-xl font-bold text-slate-900">
+                    Conteúdos importantes ainda não treinados
+                  </h2>
+                </div>
+
+                <p className="text-sm text-slate-500 mb-5">
+                  Esses conteúdos têm peso relevante na prova, mas ainda não apareceram no seu histórico de tentativas.
+                </p>
+
+                <div className="space-y-4">
+                  {importantUntrained.map((item, index) => (
+                    <div
+                      key={`untrained-${item.conteudo}`}
+                      className="rounded-2xl border border-orange-200 bg-orange-50 p-4"
+                    >
+                      <div className="flex items-start justify-between gap-4 mb-2">
+                        <div>
+                          <p className="font-bold text-slate-900">
+                            #{index + 1} {prettify(item.conteudo)}
+                          </p>
+                          <p className="text-sm text-slate-600 mt-1">
+                            Ainda sem tentativas registradas
+                          </p>
+                        </div>
+
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-slate-900">
+                            Score {item.priorityScore}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            Peso {item.weight}
+                          </p>
+                        </div>
+                      </div>
+
+                      <p className="text-sm text-slate-700">{item.reason}</p>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            ) : null}
 
             <div className="grid md:grid-cols-2 gap-6 items-stretch">
               <Card className="p-6 h-full">
@@ -769,6 +863,30 @@ export default function VetPrioritiesPage() {
                   Não há conteúdos nessa faixa no momento.
                 </p>
               )}
+            </Card>
+
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <BookOpen className="w-5 h-5 text-emerald-600" />
+                <h2 className="text-xl font-bold text-slate-900">
+                  Leitura da manutenção
+                </h2>
+              </div>
+
+              <div className="space-y-3 text-slate-700">
+                <p>
+                  <span className="font-semibold">Manutenção</span> não significa conteúdo sem valor.
+                  Significa que esse conteúdo já não é o gargalo principal agora.
+                </p>
+                <p>
+                  Entram em manutenção conteúdos que já foram treinados e estão com
+                  desempenho razoável ou bom, ou que têm peso menor no curto prazo.
+                </p>
+                <p>
+                  A ideia é manter vivos esses assuntos no ciclo, mas sem deixar que
+                  roubem energia do que realmente está puxando seu resultado para baixo.
+                </p>
+              </div>
             </Card>
 
             <Card className="p-6">
