@@ -8,7 +8,6 @@ interface MathFormulaProps {
   className?: string;
 }
 
-// Fila global para evitar conflitos de renderização
 class MathJaxQueue {
   private queue: Array<() => Promise<void>> = [];
   private isProcessing = false;
@@ -39,7 +38,7 @@ class MathJaxQueue {
       }
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 40));
     await this.process();
   }
 }
@@ -102,14 +101,15 @@ export function MathFormula({
   const style = {
     display: isDisplay ? 'block' : 'inline-block',
     textAlign: isDisplay ? 'center' : ('inherit' as const),
-    padding: isDisplay ? '1rem 0' : '0',
-    margin: isDisplay ? '0.5rem 0' : '0',
+    padding: isDisplay ? '0.75rem 0' : '0',
+    margin: isDisplay ? '0.25rem 0' : '0',
     overflow: 'visible',
-    minHeight: isDisplay ? '2.5rem' : 'auto',
+    minHeight: isDisplay ? '2rem' : 'auto',
     border: 'none',
     background: 'transparent',
-    lineHeight: isDisplay ? '1.5' : 'inherit',
+    lineHeight: isDisplay ? '1.4' : 'inherit',
     fontFamily: 'inherit',
+    verticalAlign: inline ? 'middle' : undefined,
   };
 
   if (isDisplay) {
