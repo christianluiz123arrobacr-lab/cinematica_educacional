@@ -2,7 +2,6 @@ import { Link } from "wouter";
 import {
   ArrowLeft,
   Target,
-  Activity,
   ListChecks,
   BrainCircuit,
   BookOpen,
@@ -16,17 +15,9 @@ const modules = [
   {
     title: "Objetivo",
     description:
-      "Defina sua prova-alvo, tempo até a prova, horas por dia e disciplina foco.",
+      "Defina sua prova-alvo, tempo até a prova, horas por dia e disciplina foco. O diagnóstico já aparece dentro desse fluxo.",
     href: "/vet/objetivo",
     icon: Target,
-    enabled: true,
-  },
-  {
-    title: "Diagnóstico",
-    description:
-      "Veja disciplina crítica, disciplina forte, conteúdo urgente e risco atual.",
-    href: "/vet/diagnostico",
-    icon: Activity,
     enabled: true,
   },
   {
@@ -103,13 +94,13 @@ export default function VetPage() {
               Monte seu treino com foco na prova certa
             </h2>
             <p className="text-emerald-50 max-w-3xl leading-relaxed">
-              O VET vai cruzar seu objetivo, seu tempo disponível e seu desempenho
-              real para mostrar onde você deve focar primeiro.
+              O VET cruza seu objetivo, seu tempo disponível e seu desempenho
+              para mostrar onde você deve focar primeiro.
             </p>
           </div>
         </Card>
 
-        <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-5">
+        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
           {modules.map((module) => {
             const Icon = module.icon;
 
