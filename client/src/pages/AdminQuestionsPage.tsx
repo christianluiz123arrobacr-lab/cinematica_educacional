@@ -16,6 +16,7 @@ import {
   Image,
   Eye,
   EyeOff,
+  Trash2,
 } from "lucide-react";
 
 type AdminQuestionRow = {
@@ -308,6 +309,51 @@ export default function AdminQuestionsPage() {
     }
   }
 
+  async function excluirQuestao(question: AdminQuestionRow) {
+    const confirmado = window.confirm(
+      `Tem certeza que deseja excluir a questão ${question.codigo || question.id}?\n\nIsso também vai apagar as resoluções ligadas a ela.`
+    );
+
+    if (!confirmado) return;
+
+    try {
+      setBusyQuestionId(question.id);
+      setError("");
+
+      const { error: deleteResolutionsError } = await supabase
+        .from("resolucoes")
+        .delete()
+        .eq("questao_id", question.id);
+
+      if (deleteResolutionsError) {
+        console.error("Erro ao excluir resoluções da questão:", deleteResolutionsError);
+        setError("Não foi possível excluir as resoluções vinculadas à questão.");
+        return;
+      }
+
+      const { error: deleteQuestionError } = await supabase
+        .from("questoes")
+        .delete()
+        .eq("id", question.id);
+
+      if (deleteQuestionError) {
+        console.error("Erro ao excluir questão:", deleteQuestionError);
+        setError("Não foi possível excluir a questão.");
+        return;
+      }
+
+      setQuestions((prev) => prev.filter((item) => item.id !== question.id));
+      setResolutions((prev) =>
+        prev.filter((item) => item.questao_id !== question.id)
+      );
+    } catch (err) {
+      console.error("Erro inesperado ao excluir questão:", err);
+      setError("Ocorreu um erro inesperado ao excluir a questão.");
+    } finally {
+      setBusyQuestionId(null);
+    }
+  }
+
   return (
     <AdminGuard>
       <AdminLayout
@@ -595,6 +641,20 @@ export default function AdminQuestionsPage() {
                           Editar resolução
                         </Button>
                       </Link>
+
+                      <Button
+                        variant="outline"
+                        className="rounded-2xl border-red-200 text-red-600 hover:bg-red-50"
+                        onClick={() => excluirQuestao(question)}
+                        disabled={busy}
+                      >
+                        {busy ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4 mr-2" />
+                        )}
+                        Excluir questão
+                      </Button>
                     </div>
                   </div>
                 </Card>
