@@ -12,6 +12,8 @@ import {
   AlertTriangle,
   Pencil,
   FileText,
+  Blocks,
+  Image,
 } from "lucide-react";
 
 type AdminQuestionRow = {
@@ -29,6 +31,20 @@ type AdminQuestionRow = {
   enunciado?: string | null;
   created_at?: string | null;
 };
+
+type ResolutionRow = {
+  id: string;
+  questao_id: string;
+  tipo?: string | null;
+  url_imagem?: string | null;
+};
+
+type ResolutionSummary = {
+  totalBlocks: number;
+  totalImages: number;
+};
+
+type PublishFilter = "todas" | "publicadas" | "nao_publicadas";
 
 function normalizarDisciplina(row: AdminQuestionRow) {
   return row.disciplina || row.diciplina || "—";
@@ -59,11 +75,40 @@ function corDificuldade(dificuldade?: string | null) {
   return "bg-slate-100 text-slate-700 border-slate-200";
 }
 
+function statusResolucao(summary?: ResolutionSummary) {
+  if (!summary || summary.totalBlocks === 0) {
+    return {
+      label: "Sem resolução",
+      className: "bg-red-100 text-red-700 border-red-200",
+    };
+  }
+
+  if (summary.totalBlocks <= 2) {
+    return {
+      label: "Resolução inicial",
+      className: "bg-yellow-100 text-yellow-700 border-yellow-200",
+    };
+  }
+
+  return {
+    label: "Com resolução",
+    className: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  };
+}
+
 export default function AdminQuestionsPage() {
   const [questions, setQuestions] = useState<AdminQuestionRow[]>([]);
+  const [resolutions, setResolutions] = useState<ResolutionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const [search, setSearch] = useState("");
+  const [disciplinaFiltro, setDisciplinaFiltro] = useState("");
+  const [dificuldadeFiltro, setDificuldadeFiltro] = useState("");
+  const [publicacaoFiltro, setPublicacaoFiltro] =
+    useState<PublishFilter>("todas");
+  const [instituicaoFiltro, setInstituicaoFiltro] = useState("");
+  const [anoFiltro, setAnoFiltro] = useState("");
 
   useEffect(() => {
     async function loadQuestions() {
@@ -71,18 +116,32 @@ export default function AdminQuestionsPage() {
         setLoading(true);
         setError("");
 
-        const { data, error } = await supabase
-          .from("questoes")
-          .select("*")
-          .order("created_at", { ascending: false });
+        const [questionsResult, resolutionsResult] = await Promise.all([
+          supabase
+            .from("questoes")
+            .select("*")
+            .order("created_at", { ascending: false }),
 
-        if (error) {
-          console.error("Erro ao carregar questões ADM:", error);
+          supabase.from("resolucoes").select("id, questao_id, tipo, url_imagem"),
+        ]);
+
+        if (questionsResult.error) {
+          console.error("Erro ao carregar questões ADM:", questionsResult.error);
           setError("Não foi possível carregar as questões.");
           return;
         }
 
-        setQuestions((data as AdminQuestionRow[]) || []);
+        if (resolutionsResult.error) {
+          console.error(
+            "Erro ao carregar resoluções ADM:",
+            resolutionsResult.error
+          );
+          setError("Não foi possível carregar os resumos das resoluções.");
+          return;
+        }
+
+        setQuestions((questionsResult.data as AdminQuestionRow[]) || []);
+        setResolutions((resolutionsResult.data as ResolutionRow[]) || []);
       } catch (err) {
         console.error("Erro inesperado ao carregar questões ADM:", err);
         setError("Ocorreu um erro inesperado ao carregar as questões.");
@@ -94,10 +153,57 @@ export default function AdminQuestionsPage() {
     loadQuestions();
   }, []);
 
+  const resolutionMap = useMemo(() => {
+    const map = new Map<string, ResolutionSummary>();
+
+    for (const item of resolutions) {
+      const current = map.get(item.questao_id) || {
+        totalBlocks: 0,
+        totalImages: 0,
+      };
+
+      current.totalBlocks += 1;
+
+      if (
+        (item.tipo || "").toLowerCase().trim() === "imagem" ||
+        !!item.url_imagem
+      ) {
+        current.totalImages += 1;
+      }
+
+      map.set(item.questao_id, current);
+    }
+
+    return map;
+  }, [resolutions]);
+
+  const disciplinasDisponiveis = useMemo(() => {
+    return [...new Set(questions.map((q) => normalizarDisciplina(q)).filter(Boolean))]
+      .filter((valor) => valor !== "—")
+      .sort((a, b) => a.localeCompare(b));
+  }, [questions]);
+
+  const dificuldadesDisponiveis = useMemo(() => {
+    return [...new Set(questions.map((q) => (q.dificuldade || "").trim()).filter(Boolean))]
+      .sort((a, b) => a.localeCompare(b));
+  }, [questions]);
+
+  const instituicoesDisponiveis = useMemo(() => {
+    return [
+      ...new Set(
+        questions.map((q) => (q.instituição || "").trim()).filter(Boolean)
+      ),
+    ].sort((a, b) => a.localeCompare(b));
+  }, [questions]);
+
+  const anosDisponiveis = useMemo(() => {
+    return [...new Set(questions.map((q) => q.ano).filter(Boolean) as number[])]
+      .sort((a, b) => b - a)
+      .map(String);
+  }, [questions]);
+
   const filteredQuestions = useMemo(() => {
     const termo = search.trim().toLowerCase();
-
-    if (!termo) return questions;
 
     return questions.filter((q) => {
       const disciplina = normalizarDisciplina(q).toLowerCase();
@@ -108,8 +214,10 @@ export default function AdminQuestionsPage() {
       const instituicao = (q.instituição || "").toLowerCase();
       const enunciado = (q.enunciado || "").toLowerCase();
       const ano = String(q.ano || "");
+      const dificuldade = (q.dificuldade || "").toLowerCase();
 
-      return (
+      const passouBusca =
+        !termo ||
         codigo.includes(termo) ||
         disciplina.includes(termo) ||
         conteudo.includes(termo) ||
@@ -117,16 +225,60 @@ export default function AdminQuestionsPage() {
         banca.includes(termo) ||
         instituicao.includes(termo) ||
         enunciado.includes(termo) ||
-        ano.includes(termo)
+        ano.includes(termo);
+
+      const passouDisciplina =
+        !disciplinaFiltro ||
+        normalizarDisciplina(q).toLowerCase() === disciplinaFiltro.toLowerCase();
+
+      const passouDificuldade =
+        !dificuldadeFiltro ||
+        dificuldade === dificuldadeFiltro.toLowerCase();
+
+      const passouInstituicao =
+        !instituicaoFiltro ||
+        (q.instituição || "").toLowerCase() === instituicaoFiltro.toLowerCase();
+
+      const passouAno = !anoFiltro || String(q.ano || "") === anoFiltro;
+
+      const passouPublicacao =
+        publicacaoFiltro === "todas" ||
+        (publicacaoFiltro === "publicadas" && q.publicada === true) ||
+        (publicacaoFiltro === "nao_publicadas" && q.publicada !== true);
+
+      return (
+        passouBusca &&
+        passouDisciplina &&
+        passouDificuldade &&
+        passouInstituicao &&
+        passouAno &&
+        passouPublicacao
       );
     });
-  }, [questions, search]);
+  }, [
+    questions,
+    search,
+    disciplinaFiltro,
+    dificuldadeFiltro,
+    instituicaoFiltro,
+    anoFiltro,
+    publicacaoFiltro,
+  ]);
+
+  function limparFiltros() {
+    setSearch("");
+    setDisciplinaFiltro("");
+    setDificuldadeFiltro("");
+    setPublicacaoFiltro("todas");
+    setInstituicaoFiltro("");
+    setAnoFiltro("");
+  }
 
   return (
     <AdminGuard>
       <AdminLayout
         title="Questões ADM"
-        subtitle="Gerencie as questões do banco com busca, leitura rápida e acesso à edição."
+        subtitle="Gerencie as questões do banco com filtros, leitura rápida e acesso direto à resolução."
       >
         <Card className="p-6 bg-white border-slate-200">
           <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
@@ -152,12 +304,111 @@ export default function AdminQuestionsPage() {
               </div>
 
               <Link href="/admin/questoes/nova">
-                <Button className="rounded-2xl">
+                <Button className="rounded-2xl w-full sm:w-auto">
                   <Plus className="w-4 h-4 mr-2" />
                   Nova questão
                 </Button>
               </Link>
             </div>
+          </div>
+        </Card>
+
+        <Card className="p-6 bg-white border-slate-200">
+          <div className="grid md:grid-cols-2 xl:grid-cols-5 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Disciplina
+              </label>
+              <select
+                value={disciplinaFiltro}
+                onChange={(e) => setDisciplinaFiltro(e.target.value)}
+                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+              >
+                <option value="">Todas</option>
+                {disciplinasDisponiveis.map((disciplina) => (
+                  <option key={disciplina} value={disciplina}>
+                    {disciplina}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Dificuldade
+              </label>
+              <select
+                value={dificuldadeFiltro}
+                onChange={(e) => setDificuldadeFiltro(e.target.value)}
+                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+              >
+                <option value="">Todas</option>
+                {dificuldadesDisponiveis.map((dificuldade) => (
+                  <option key={dificuldade} value={dificuldade}>
+                    {dificuldade}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Publicação
+              </label>
+              <select
+                value={publicacaoFiltro}
+                onChange={(e) =>
+                  setPublicacaoFiltro(e.target.value as PublishFilter)
+                }
+                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+              >
+                <option value="todas">Todas</option>
+                <option value="publicadas">Publicadas</option>
+                <option value="nao_publicadas">Não publicadas</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Instituição
+              </label>
+              <select
+                value={instituicaoFiltro}
+                onChange={(e) => setInstituicaoFiltro(e.target.value)}
+                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+              >
+                <option value="">Todas</option>
+                {instituicoesDisponiveis.map((instituicao) => (
+                  <option key={instituicao} value={instituicao}>
+                    {instituicao}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Ano
+              </label>
+              <select
+                value={anoFiltro}
+                onChange={(e) => setAnoFiltro(e.target.value)}
+                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+              >
+                <option value="">Todos</option>
+                {anosDisponiveis.map((ano) => (
+                  <option key={ano} value={ano}>
+                    {ano}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="mt-4 flex justify-end">
+            <Button variant="outline" className="rounded-2xl" onClick={limparFiltros}>
+              Limpar filtros
+            </Button>
           </div>
         </Card>
 
@@ -185,89 +436,119 @@ export default function AdminQuestionsPage() {
               Nenhuma questão encontrada
             </h2>
             <p className="text-slate-500">
-              Tente outro termo de busca.
+              Ajuste os filtros ou tente outro termo de busca.
             </p>
           </Card>
         ) : (
           <div className="space-y-4">
-            {filteredQuestions.map((question) => (
-              <Card
-                key={question.id}
-                className="p-5 bg-white border-slate-200 shadow-sm"
-              >
-                <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-3">
-                      <span className="px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold">
-                        {question.codigo || "Sem código"}
-                      </span>
+            {filteredQuestions.map((question) => {
+              const summary = resolutionMap.get(question.id);
+              const status = statusResolucao(summary);
 
-                      <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold border border-blue-200">
-                        {normalizarDisciplina(question)}
-                      </span>
+              return (
+                <Card
+                  key={question.id}
+                  className="p-5 bg-white border-slate-200 shadow-sm"
+                >
+                  <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <span className="px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold">
+                          {question.codigo || "Sem código"}
+                        </span>
 
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold border ${corDificuldade(
-                          question.dificuldade
-                        )}`}
-                      >
-                        {question.dificuldade || "sem dificuldade"}
-                      </span>
+                        <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold border border-blue-200">
+                          {normalizarDisciplina(question)}
+                        </span>
 
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold border ${
-                          question.publicada
-                            ? "bg-emerald-100 text-emerald-700 border-emerald-200"
-                            : "bg-slate-100 text-slate-600 border-slate-200"
-                        }`}
-                      >
-                        {question.publicada ? "Publicada" : "Não publicada"}
-                      </span>
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold border ${corDificuldade(
+                            question.dificuldade
+                          )}`}
+                        >
+                          {question.dificuldade || "sem dificuldade"}
+                        </span>
+
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold border ${
+                            question.publicada
+                              ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                              : "bg-slate-100 text-slate-600 border-slate-200"
+                          }`}
+                        >
+                          {question.publicada ? "Publicada" : "Não publicada"}
+                        </span>
+
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold border ${status.className}`}
+                        >
+                          {status.label}
+                        </span>
+                      </div>
+
+                      <p className="text-base font-semibold text-slate-900 mb-2">
+                        {textoCurto(question.enunciado, 140)}
+                      </p>
+
+                      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3 text-sm text-slate-600">
+                        <p>
+                          <span className="font-semibold text-slate-800">Conteúdo:</span>{" "}
+                          {question.conteudo || "—"}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-800">Assunto:</span>{" "}
+                          {question.assunto || "—"}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-800">Banca:</span>{" "}
+                          {question.banca || "—"}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-800">Ano:</span>{" "}
+                          {question.ano || "—"}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-800">Instituição:</span>{" "}
+                          {question.instituição || "—"}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-800">ID:</span>{" "}
+                          {question.id}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap gap-3 mt-4">
+                        <div className="inline-flex items-center gap-2 rounded-2xl bg-orange-50 border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-700">
+                          <Blocks className="w-4 h-4" />
+                          {summary?.totalBlocks || 0} bloco(s)
+                        </div>
+
+                        <div className="inline-flex items-center gap-2 rounded-2xl bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm font-semibold text-emerald-700">
+                          <Image className="w-4 h-4" />
+                          {summary?.totalImages || 0} imagem(ns)
+                        </div>
+                      </div>
                     </div>
 
-                    <p className="text-base font-semibold text-slate-900 mb-2">
-                      {textoCurto(question.enunciado, 140)}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-3 shrink-0">
+                      <Link href={`/admin/questoes/${question.id}`}>
+                        <Button variant="outline" className="rounded-2xl">
+                          <Pencil className="w-4 h-4 mr-2" />
+                          Editar questão
+                        </Button>
+                      </Link>
 
-                    <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3 text-sm text-slate-600">
-                      <p>
-                        <span className="font-semibold text-slate-800">Conteúdo:</span>{" "}
-                        {question.conteudo || "—"}
-                      </p>
-                      <p>
-                        <span className="font-semibold text-slate-800">Assunto:</span>{" "}
-                        {question.assunto || "—"}
-                      </p>
-                      <p>
-                        <span className="font-semibold text-slate-800">Banca:</span>{" "}
-                        {question.banca || "—"}
-                      </p>
-                      <p>
-                        <span className="font-semibold text-slate-800">Ano:</span>{" "}
-                        {question.ano || "—"}
-                      </p>
-                      <p>
-                        <span className="font-semibold text-slate-800">Instituição:</span>{" "}
-                        {question.instituição || "—"}
-                      </p>
-                      <p>
-                        <span className="font-semibold text-slate-800">ID:</span>{" "}
-                        {question.id}
-                      </p>
+                      <Link href={`/admin/resolucoes/${question.id}`}>
+                        <Button className="rounded-2xl">
+                          <Blocks className="w-4 h-4 mr-2" />
+                          Editar resolução
+                        </Button>
+                      </Link>
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-3 shrink-0">
-                    <Link href={`/admin/questoes/${question.id}`}>
-                      <Button variant="outline" className="rounded-2xl">
-                        <Pencil className="w-4 h-4 mr-2" />
-                        Editar
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         )}
       </AdminLayout>
