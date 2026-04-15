@@ -12,6 +12,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from "recharts";
 
 type VetProfileRow = {
   id: string;
@@ -49,6 +57,8 @@ type WeightRow = {
   weight: number;
 };
 
+type PriorityLevel = "alta" | "media" | "manutencao";
+
 type PriorityItem = {
   conteudo: string;
   total: number;
@@ -61,10 +71,12 @@ type PriorityItem = {
   wrongVolumeScore: number;
   noAttemptPenalty: number;
   priorityScore: number;
-  priorityLevel: "alta" | "media" | "manutencao";
+  priorityLevel: PriorityLevel;
   reason: string;
   hasAttempts: boolean;
 };
+
+type PriorityFilter = PriorityLevel;
 
 function normalizeText(value?: string | null) {
   return (value || "")
@@ -112,7 +124,7 @@ function getNoAttemptPenalty(total: number, weight: number) {
   return 1;
 }
 
-function getPriorityLevel(score: number): "alta" | "media" | "manutencao" {
+function getPriorityLevel(score: number): PriorityLevel {
   if (score >= 15) return "alta";
   if (score >= 9) return "media";
   return "manutencao";
@@ -170,11 +182,54 @@ function buildReason(params: {
   return `Prioridade porque ${parts.join(", ")}.`;
 }
 
+function getPriorityMeta(level: PriorityLevel) {
+  if (level === "alta") {
+    return {
+      title: "Alta prioridade",
+      icon: Flame,
+      toneCard: "border-red-200 bg-red-50 text-red-700",
+      badge: "bg-red-100 text-red-700",
+      label: "Alta",
+    };
+  }
+
+  if (level === "media") {
+    return {
+      title: "Média prioridade",
+      icon: CircleDashed,
+      toneCard: "border-yellow-200 bg-yellow-50 text-yellow-700",
+      badge: "bg-yellow-100 text-yellow-700",
+      label: "Média",
+    };
+  }
+
+  return {
+    title: "Manutenção",
+    icon: Shield,
+    toneCard: "border-green-200 bg-green-50 text-green-700",
+    badge: "bg-green-100 text-green-700",
+    label: "Manutenção",
+  };
+}
+
+const COLORS_BY_LEVEL: Record<PriorityLevel, string> = {
+  alta: "#ef4444",
+  media: "#f59e0b",
+  manutencao: "#22c55e",
+};
+
+const FILTER_OPTIONS: { value: PriorityFilter; label: string }[] = [
+  { value: "alta", label: "Alta prioridade" },
+  { value: "media", label: "Média prioridade" },
+  { value: "manutencao", label: "Manutenção" },
+];
+
 export default function VetPrioritiesPage() {
   const { user, loading: authLoading } = useSupabaseAuth();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedLevel, setSelectedLevel] = useState<PriorityFilter>("alta");
 
   const [profile, setProfile] = useState<VetProfileRow | null>(null);
   const [attempts, setAttempts] = useState<AttemptRow[]>([]);
@@ -253,7 +308,8 @@ export default function VetPrioritiesPage() {
 
     if (profile.focus_subject !== "todas") {
       result = result.filter(
-        (attempt) => normalizeText(attempt.subject) === normalizeText(profile.focus_subject)
+        (attempt) =>
+          normalizeText(attempt.subject) === normalizeText(profile.focus_subject)
       );
     }
 
@@ -272,7 +328,11 @@ export default function VetPrioritiesPage() {
       const conteudo = normalizeText(attempt.conteudo);
       if (!conteudo) continue;
 
-      const current = contentMap.get(conteudo) ?? { total: 0, correct: 0, wrong: 0 };
+      const current = contentMap.get(conteudo) ?? {
+        total: 0,
+        correct: 0,
+        wrong: 0,
+      };
       current.total += 1;
       if (attempt.is_correct) current.correct += 1;
       else current.wrong += 1;
@@ -361,100 +421,36 @@ export default function VetPrioritiesPage() {
 
   const highPriority = priorities.filter((item) => item.priorityLevel === "alta");
   const mediumPriority = priorities.filter((item) => item.priorityLevel === "media");
-  const maintenancePriority = priorities.filter((item) => item.priorityLevel === "manutencao");
+  const maintenancePriority = priorities.filter(
+    (item) => item.priorityLevel === "manutencao"
+  );
 
-  function PriorityCard({
-    title,
-    icon: Icon,
-    items,
-    emptyText,
-    tone,
-  }: {
-    title: string;
-    icon: any;
-    items: PriorityItem[];
-    emptyText: string;
-    tone: "red" | "yellow" | "green";
-  }) {
-    const toneClasses =
-      tone === "red"
-        ? "border-red-200 bg-red-50 text-red-700"
-        : tone === "yellow"
-        ? "border-yellow-200 bg-yellow-50 text-yellow-700"
-        : "border-green-200 bg-green-50 text-green-700";
+  const overviewChartData = useMemo(
+    () => [
+      { name: "Alta prioridade", value: highPriority.length, color: COLORS_BY_LEVEL.alta },
+      { name: "Média prioridade", value: mediumPriority.length, color: COLORS_BY_LEVEL.media },
+      { name: "Manutenção", value: maintenancePriority.length, color: COLORS_BY_LEVEL.manutencao },
+    ].filter((item) => item.value > 0),
+    [highPriority.length, mediumPriority.length, maintenancePriority.length]
+  );
 
-    return (
-      <Card className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Icon
-            className={`w-5 h-5 ${
-              tone === "red"
-                ? "text-red-500"
-                : tone === "yellow"
-                ? "text-yellow-500"
-                : "text-green-500"
-            }`}
-          />
-          <h2 className="text-xl font-bold text-slate-900">{title}</h2>
-        </div>
+  const selectedItems = useMemo(() => {
+    if (selectedLevel === "alta") return highPriority;
+    if (selectedLevel === "media") return mediumPriority;
+    return maintenancePriority;
+  }, [selectedLevel, highPriority, mediumPriority, maintenancePriority]);
 
-        {items.length > 0 ? (
-          <div className="space-y-4">
-            {items.map((item, index) => (
-              <div
-                key={`${title}-${item.conteudo}`}
-                className={`rounded-2xl border p-4 ${toneClasses}`}
-              >
-                <div className="flex items-start justify-between gap-4 mb-2">
-                  <div>
-                    <p className="font-bold text-slate-900">
-                      #{index + 1} {prettify(item.conteudo)}
-                    </p>
-                    <p className="text-sm text-slate-600 mt-1">
-                      {item.hasAttempts
-                        ? `${item.correct} acertos • ${item.wrong} erros • ${item.total} tentativas`
-                        : "Ainda não treinado"}
-                    </p>
-                  </div>
+  const contentChartData = useMemo(() => {
+    return selectedItems
+      .slice(0, 8)
+      .map((item) => ({
+        name: prettify(item.conteudo),
+        value: Math.max(item.priorityScore, 1),
+      }))
+      .filter((item) => item.value > 0);
+  }, [selectedItems]);
 
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-slate-900">
-                      Score {item.priorityScore}
-                    </p>
-                    <p className="text-xs text-slate-500">
-                      {item.hasAttempts
-                        ? `${item.accuracy.toFixed(0)}% de acerto`
-                        : "Sem histórico ainda"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-4 gap-2 text-sm text-slate-700 mb-3">
-                  <div>
-                    Peso: <span className="font-semibold">{item.weight}</span>
-                  </div>
-                  <div>
-                    Fraqueza: <span className="font-semibold">{item.weaknessScore}</span>
-                  </div>
-                  <div>
-                    Urgência: <span className="font-semibold">{item.urgencyTimeScore}</span>
-                  </div>
-                  <div>
-                    Sem treino:{" "}
-                    <span className="font-semibold">{item.noAttemptPenalty}</span>
-                  </div>
-                </div>
-
-                <p className="text-sm text-slate-700">{item.reason}</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-slate-500">{emptyText}</p>
-        )}
-      </Card>
-    );
-  }
+  const selectedMeta = getPriorityMeta(selectedLevel);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-50">
@@ -531,29 +527,199 @@ export default function VetPrioritiesPage() {
               </Card>
             </div>
 
-            <PriorityCard
-              title="Alta prioridade"
-              icon={Flame}
-              items={highPriority}
-              emptyText="Nenhum conteúdo entrou em alta prioridade ainda."
-              tone="red"
-            />
+            <div className="grid xl:grid-cols-2 gap-6">
+              <Card className="p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <ListChecks className="w-5 h-5 text-emerald-600" />
+                  <h2 className="text-xl font-bold text-slate-900">
+                    Distribuição das prioridades
+                  </h2>
+                </div>
 
-            <PriorityCard
-              title="Média prioridade"
-              icon={CircleDashed}
-              items={mediumPriority}
-              emptyText="Nenhum conteúdo entrou em média prioridade ainda."
-              tone="yellow"
-            />
+                <p className="text-sm text-slate-500 mb-4">
+                  Visão geral entre conteúdos de alta prioridade, média prioridade e manutenção.
+                </p>
 
-            <PriorityCard
-              title="Manutenção"
-              icon={Shield}
-              items={maintenancePriority}
-              emptyText="Nenhum conteúdo entrou em manutenção ainda."
-              tone="green"
-            />
+                <div className="h-80">
+                  {overviewChartData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={overviewChartData}
+                          dataKey="value"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={70}
+                          outerRadius={110}
+                          paddingAngle={3}
+                        >
+                          {overviewChartData.map((entry) => (
+                            <Cell key={entry.name} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-slate-500">
+                      Sem dados suficientes para gerar o gráfico.
+                    </div>
+                  )}
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center justify-between gap-4 mb-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">
+                      Conteúdos por faixa
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                      Escolha a faixa para ver os conteúdos mais relevantes dentro dela.
+                    </p>
+                  </div>
+
+                  <select
+                    value={selectedLevel}
+                    onChange={(e) => setSelectedLevel(e.target.value as PriorityFilter)}
+                    className="rounded-xl border border-slate-300 px-4 py-2 bg-white text-sm text-slate-700"
+                  >
+                    {FILTER_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="h-80">
+                  {contentChartData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={contentChartData}
+                          dataKey="value"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={70}
+                          outerRadius={110}
+                          paddingAngle={2}
+                        >
+                          {contentChartData.map((_, index) => {
+                            const palette =
+                              selectedLevel === "alta"
+                                ? ["#ef4444", "#f87171", "#fca5a5", "#fecaca", "#dc2626", "#fb7185", "#e11d48", "#fda4af"]
+                                : selectedLevel === "media"
+                                ? ["#f59e0b", "#fbbf24", "#fcd34d", "#fde68a", "#d97706", "#f97316", "#fdba74", "#fb923c"]
+                                : ["#22c55e", "#4ade80", "#86efac", "#bbf7d0", "#16a34a", "#15803d", "#34d399", "#6ee7b7"];
+
+                            return (
+                              <Cell
+                                key={`${selectedLevel}-${index}`}
+                                fill={palette[index % palette.length]}
+                              />
+                            );
+                          })}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-slate-500">
+                      Não há conteúdos nessa faixa ainda.
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </div>
+
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <selectedMeta.icon
+                  className={`w-5 h-5 ${
+                    selectedLevel === "alta"
+                      ? "text-red-500"
+                      : selectedLevel === "media"
+                      ? "text-yellow-500"
+                      : "text-green-500"
+                  }`}
+                />
+                <h2 className="text-xl font-bold text-slate-900">
+                  Detalhamento — {selectedMeta.title}
+                </h2>
+              </div>
+
+              {selectedItems.length > 0 ? (
+                <div className="space-y-4">
+                  {selectedItems.map((item, index) => (
+                    <div
+                      key={`${selectedLevel}-${item.conteudo}`}
+                      className={`rounded-2xl border p-4 ${selectedMeta.toneCard}`}
+                    >
+                      <div className="flex items-start justify-between gap-4 mb-2">
+                        <div>
+                          <p className="font-bold text-slate-900">
+                            #{index + 1} {prettify(item.conteudo)}
+                          </p>
+                          <p className="text-sm text-slate-600 mt-1">
+                            {item.hasAttempts
+                              ? `${item.correct} acertos • ${item.wrong} erros • ${item.total} tentativas`
+                              : "Ainda não treinado"}
+                          </p>
+                        </div>
+
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-slate-900">
+                            Score {item.priorityScore}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {item.hasAttempts
+                              ? `${item.accuracy.toFixed(0)}% de acerto`
+                              : "Sem histórico ainda"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid md:grid-cols-4 gap-2 text-sm text-slate-700 mb-3">
+                        <div>
+                          Peso: <span className="font-semibold">{item.weight}</span>
+                        </div>
+                        <div>
+                          Fraqueza:{" "}
+                          <span className="font-semibold">{item.weaknessScore}</span>
+                        </div>
+                        <div>
+                          Urgência:{" "}
+                          <span className="font-semibold">{item.urgencyTimeScore}</span>
+                        </div>
+                        <div>
+                          Sem treino:{" "}
+                          <span className="font-semibold">{item.noAttemptPenalty}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        <span
+                          className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${selectedMeta.badge}`}
+                        >
+                          {selectedMeta.label}
+                        </span>
+                      </div>
+
+                      <p className="text-sm text-slate-700">{item.reason}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-slate-500">
+                  Não há conteúdos nessa faixa no momento.
+                </p>
+              )}
+            </Card>
 
             <Card className="p-6">
               <div className="flex items-center gap-2 mb-4">
