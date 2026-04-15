@@ -11,7 +11,6 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Landing from "./pages/Landing";
 import VetPage from "./pages/VetPage";
 import VetObjectivePage from "./pages/VetObjectivePage";
-import VetDiagnosisPage from "./pages/VetDiagnosisPage";
 import VetPrioritiesPage from "./pages/VetPrioritiesPage";
 import VetLevelPage from "./pages/VetLevelPage";
 import VetMockPage from "./pages/VetMockPage";
@@ -258,7 +257,6 @@ function Router() {
 
       <Route path="/vet" component={VetPage} />
       <Route path="/vet/objetivo" component={VetObjectivePage} />
-      <Route path="/vet/diagnostico" component={VetDiagnosisPage} />
       <Route path="/vet/prioridades" component={VetPrioritiesPage} />
       <Route path="/vet/treino" component={VetTrainingPage} />
       <Route path="/vet/questoes" component={VetQuestionsPage} />
