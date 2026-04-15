@@ -14,6 +14,8 @@ import {
   FileText,
   Blocks,
   Image,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 type AdminQuestionRow = {
@@ -101,6 +103,7 @@ export default function AdminQuestionsPage() {
   const [resolutions, setResolutions] = useState<ResolutionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [busyQuestionId, setBusyQuestionId] = useState<string | null>(null);
 
   const [search, setSearch] = useState("");
   const [disciplinaFiltro, setDisciplinaFiltro] = useState("");
@@ -274,6 +277,37 @@ export default function AdminQuestionsPage() {
     setAnoFiltro("");
   }
 
+  async function alternarPublicacao(question: AdminQuestionRow) {
+    try {
+      setBusyQuestionId(question.id);
+      setError("");
+
+      const novoStatus = !(question.publicada === true);
+
+      const { error } = await supabase
+        .from("questoes")
+        .update({ publicada: novoStatus })
+        .eq("id", question.id);
+
+      if (error) {
+        console.error("Erro ao alterar publicação:", error);
+        setError("Não foi possível alterar o status de publicação.");
+        return;
+      }
+
+      setQuestions((prev) =>
+        prev.map((item) =>
+          item.id === question.id ? { ...item, publicada: novoStatus } : item
+        )
+      );
+    } catch (err) {
+      console.error("Erro inesperado ao alterar publicação:", err);
+      setError("Ocorreu um erro inesperado ao alterar o status.");
+    } finally {
+      setBusyQuestionId(null);
+    }
+  }
+
   return (
     <AdminGuard>
       <AdminLayout
@@ -444,6 +478,7 @@ export default function AdminQuestionsPage() {
             {filteredQuestions.map((question) => {
               const summary = resolutionMap.get(question.id);
               const status = statusResolucao(summary);
+              const busy = busyQuestionId === question.id;
 
               return (
                 <Card
@@ -531,6 +566,22 @@ export default function AdminQuestionsPage() {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 shrink-0">
+                      <Button
+                        variant="outline"
+                        className="rounded-2xl"
+                        onClick={() => alternarPublicacao(question)}
+                        disabled={busy}
+                      >
+                        {busy ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : question.publicada ? (
+                          <EyeOff className="w-4 h-4 mr-2" />
+                        ) : (
+                          <Eye className="w-4 h-4 mr-2" />
+                        )}
+                        {question.publicada ? "Despublicar" : "Publicar"}
+                      </Button>
+
                       <Link href={`/admin/questoes/${question.id}`}>
                         <Button variant="outline" className="rounded-2xl">
                           <Pencil className="w-4 h-4 mr-2" />
