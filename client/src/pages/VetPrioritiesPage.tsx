@@ -426,11 +426,24 @@ export default function VetPrioritiesPage() {
   );
 
   const overviewChartData = useMemo(
-    () => [
-      { name: "Alta prioridade", value: highPriority.length, color: COLORS_BY_LEVEL.alta },
-      { name: "Média prioridade", value: mediumPriority.length, color: COLORS_BY_LEVEL.media },
-      { name: "Manutenção", value: maintenancePriority.length, color: COLORS_BY_LEVEL.manutencao },
-    ].filter((item) => item.value > 0),
+    () =>
+      [
+        {
+          name: "Alta prioridade",
+          value: highPriority.length,
+          color: COLORS_BY_LEVEL.alta,
+        },
+        {
+          name: "Média prioridade",
+          value: mediumPriority.length,
+          color: COLORS_BY_LEVEL.media,
+        },
+        {
+          name: "Manutenção",
+          value: maintenancePriority.length,
+          color: COLORS_BY_LEVEL.manutencao,
+        },
+      ].filter((item) => item.value > 0),
     [highPriority.length, mediumPriority.length, maintenancePriority.length]
   );
 
@@ -527,8 +540,8 @@ export default function VetPrioritiesPage() {
               </Card>
             </div>
 
-            <div className="grid xl:grid-cols-2 gap-6">
-              <Card className="p-6">
+            <div className="grid md:grid-cols-2 gap-6 items-stretch">
+              <Card className="p-6 h-full">
                 <div className="flex items-center gap-2 mb-4">
                   <ListChecks className="w-5 h-5 text-emerald-600" />
                   <h2 className="text-xl font-bold text-slate-900">
@@ -540,18 +553,18 @@ export default function VetPrioritiesPage() {
                   Visão geral entre conteúdos de alta prioridade, média prioridade e manutenção.
                 </p>
 
-                <div className="h-80">
+                <div className="h-[340px] flex items-center justify-center">
                   {overviewChartData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
+                      <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
                         <Pie
                           data={overviewChartData}
                           dataKey="value"
                           nameKey="name"
                           cx="50%"
-                          cy="50%"
-                          innerRadius={70}
-                          outerRadius={110}
+                          cy="45%"
+                          innerRadius={72}
+                          outerRadius={108}
                           paddingAngle={3}
                         >
                           {overviewChartData.map((entry) => (
@@ -559,7 +572,12 @@ export default function VetPrioritiesPage() {
                           ))}
                         </Pie>
                         <Tooltip />
-                        <Legend />
+                        <Legend
+                          verticalAlign="bottom"
+                          align="center"
+                          iconType="circle"
+                          wrapperStyle={{ fontSize: "13px", paddingTop: "10px" }}
+                        />
                       </PieChart>
                     </ResponsiveContainer>
                   ) : (
@@ -570,8 +588,8 @@ export default function VetPrioritiesPage() {
                 </div>
               </Card>
 
-              <Card className="p-6">
-                <div className="flex items-center justify-between gap-4 mb-4">
+              <Card className="p-6 h-full">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                   <div>
                     <h2 className="text-xl font-bold text-slate-900">
                       Conteúdos por faixa
@@ -584,7 +602,7 @@ export default function VetPrioritiesPage() {
                   <select
                     value={selectedLevel}
                     onChange={(e) => setSelectedLevel(e.target.value as PriorityFilter)}
-                    className="rounded-xl border border-slate-300 px-4 py-2 bg-white text-sm text-slate-700"
+                    className="rounded-xl border border-slate-300 px-4 py-2 bg-white text-sm text-slate-700 min-w-[190px]"
                   >
                     {FILTER_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -594,27 +612,54 @@ export default function VetPrioritiesPage() {
                   </select>
                 </div>
 
-                <div className="h-80">
+                <div className="h-[340px] flex items-center justify-center">
                   {contentChartData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
+                      <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
                         <Pie
                           data={contentChartData}
                           dataKey="value"
                           nameKey="name"
                           cx="50%"
-                          cy="50%"
-                          innerRadius={70}
-                          outerRadius={110}
+                          cy="45%"
+                          innerRadius={72}
+                          outerRadius={108}
                           paddingAngle={2}
                         >
                           {contentChartData.map((_, index) => {
                             const palette =
                               selectedLevel === "alta"
-                                ? ["#ef4444", "#f87171", "#fca5a5", "#fecaca", "#dc2626", "#fb7185", "#e11d48", "#fda4af"]
+                                ? [
+                                    "#ef4444",
+                                    "#f87171",
+                                    "#fca5a5",
+                                    "#fecaca",
+                                    "#dc2626",
+                                    "#fb7185",
+                                    "#e11d48",
+                                    "#fda4af",
+                                  ]
                                 : selectedLevel === "media"
-                                ? ["#f59e0b", "#fbbf24", "#fcd34d", "#fde68a", "#d97706", "#f97316", "#fdba74", "#fb923c"]
-                                : ["#22c55e", "#4ade80", "#86efac", "#bbf7d0", "#16a34a", "#15803d", "#34d399", "#6ee7b7"];
+                                ? [
+                                    "#f59e0b",
+                                    "#fbbf24",
+                                    "#fcd34d",
+                                    "#fde68a",
+                                    "#d97706",
+                                    "#f97316",
+                                    "#fdba74",
+                                    "#fb923c",
+                                  ]
+                                : [
+                                    "#22c55e",
+                                    "#4ade80",
+                                    "#86efac",
+                                    "#bbf7d0",
+                                    "#16a34a",
+                                    "#15803d",
+                                    "#34d399",
+                                    "#6ee7b7",
+                                  ];
 
                             return (
                               <Cell
@@ -625,7 +670,12 @@ export default function VetPrioritiesPage() {
                           })}
                         </Pie>
                         <Tooltip />
-                        <Legend />
+                        <Legend
+                          verticalAlign="bottom"
+                          align="center"
+                          iconType="circle"
+                          wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }}
+                        />
                       </PieChart>
                     </ResponsiveContainer>
                   ) : (
