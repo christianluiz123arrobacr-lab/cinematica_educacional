@@ -1,6 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, Save, Target } from "lucide-react";
+import {
+  ArrowLeft,
+  Save,
+  Target,
+  RotateCcw,
+  Activity,
+  TrendingDown,
+  TrendingUp,
+  AlertTriangle,
+  BrainCircuit,
+  ShieldCheck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
@@ -17,6 +28,50 @@ type VetProfileRow = {
   study_weekdays: string[] | null;
 };
 
+type AttemptRow = {
+  id: string;
+  user_id: string;
+  question_id: string;
+  selected_option: string | null;
+  is_correct: boolean;
+  time_spent_seconds: number | null;
+  answered_at: string;
+  attempt_number: number;
+  subject: string | null;
+  conteudo: string | null;
+  assunto: string | null;
+  banca: string | null;
+  ano: number | null;
+  difficulty: string | null;
+};
+
+type WeightRow = {
+  id: string;
+  exam: string;
+  subject: string;
+  conteudo: string;
+  weight: number;
+};
+
+type SubjectStat = {
+  label: string;
+  total: number;
+  correct: number;
+  wrong: number;
+  accuracy: number;
+};
+
+type ContentDiagnosis = {
+  conteudo: string;
+  total: number;
+  correct: number;
+  wrong: number;
+  accuracy: number;
+  weight: number;
+  weaknessScore: number;
+  urgencyScore: number;
+};
+
 const EXAMS = ["EEAR", "EsPCEx", "EFOMM"];
 const SUBJECTS = ["todas", "fisica", "matematica", "quimica"];
 
@@ -30,13 +85,74 @@ const WEEKDAYS = [
   { value: "domingo", label: "Domingo" },
 ];
 
+function normalizeText(value?: string | null) {
+  return (value || "").trim().toLowerCase();
+}
+
+function getWeaknessScore(accuracy: number) {
+  if (accuracy < 40) return 10;
+  if (accuracy < 55) return 7;
+  if (accuracy < 70) return 4;
+  return 1;
+}
+
+function getUrgencyTimeScore(monthsUntilExam: number) {
+  if (monthsUntilExam <= 2) return 5;
+  if (monthsUntilExam <= 4) return 4;
+  if (monthsUntilExam <= 6) return 3;
+  if (monthsUntilExam <= 9) return 2;
+  return 1;
+}
+
+function getWrongVolumeScore(wrong: number) {
+  if (wrong >= 6) return 4;
+  if (wrong >= 4) return 3;
+  if (wrong >= 2) return 2;
+  if (wrong >= 1) return 1;
+  return 0;
+}
+
+function getRiskLabel(score: number) {
+  if (score >= 18) return "alto";
+  if (score >= 12) return "medio";
+  return "baixo";
+}
+
+function groupBySubject(attempts: AttemptRow[]): SubjectStat[] {
+  const map = new Map<string, { total: number; correct: number; wrong: number }>();
+
+  for (const attempt of attempts) {
+    const label = normalizeText(attempt.subject) || "nao informado";
+    const current = map.get(label) ?? { total: 0, correct: 0, wrong: 0 };
+    current.total += 1;
+    if (attempt.is_correct) current.correct += 1;
+    else current.wrong += 1;
+    map.set(label, current);
+  }
+
+  return Array.from(map.entries())
+    .map(([label, value]) => ({
+      label,
+      total: value.total,
+      correct: value.correct,
+      wrong: value.wrong,
+      accuracy: value.total ? (value.correct / value.total) * 100 : 0,
+    }))
+    .sort((a, b) => a.accuracy - b.accuracy || b.total - a.total);
+}
+
 export default function VetObjectivePage() {
   const { user, loading: authLoading } = useSupabaseAuth();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isEditingObjective, setIsEditingObjective] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const [profile, setProfile] = useState<VetProfileRow | null>(null);
+  const [attempts, setAttempts] = useState<AttemptRow[]>([]);
+  const [weights, setWeights] = useState<WeightRow[]>([]);
 
   const [targetExam, setTargetExam] = useState("EEAR");
   const [monthsUntilExam, setMonthsUntilExam] = useState("6");
@@ -46,7 +162,7 @@ export default function VetObjectivePage() {
   const [studyWeekdays, setStudyWeekdays] = useState<string[]>([]);
 
   useEffect(() => {
-    async function loadProfile() {
+    async function loadPageData() {
       if (!user?.id) {
         setLoading(false);
         return;
@@ -56,39 +172,75 @@ export default function VetObjectivePage() {
       setError("");
       setSuccess("");
 
-      const { data, error } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from("user_vet_profiles")
         .select("*")
         .eq("user_id", user.id)
         .maybeSingle();
 
-      if (error) {
-        console.error("Erro ao buscar perfil do VET:", error);
+      if (profileError) {
+        console.error("Erro ao buscar perfil do VET:", profileError);
         setError("Não foi possível carregar seu objetivo atual.");
         setLoading(false);
         return;
       }
 
-      const profile = data as VetProfileRow | null;
+      const currentProfile = (profileData as VetProfileRow | null) ?? null;
+      setProfile(currentProfile);
 
-      if (profile) {
-        setTargetExam(profile.target_exam);
-        setMonthsUntilExam(String(profile.months_until_exam));
-        setHoursPerDay(String(profile.hours_per_day));
-        setFocusSubject(profile.focus_subject);
+      if (currentProfile) {
+        setTargetExam(currentProfile.target_exam);
+        setMonthsUntilExam(String(currentProfile.months_until_exam));
+        setHoursPerDay(String(currentProfile.hours_per_day));
+        setFocusSubject(currentProfile.focus_subject);
         setStudyDaysPerWeek(
-          profile.study_days_per_week !== null && profile.study_days_per_week !== undefined
-            ? String(profile.study_days_per_week)
+          currentProfile.study_days_per_week !== null &&
+            currentProfile.study_days_per_week !== undefined
+            ? String(currentProfile.study_days_per_week)
             : "5"
         );
-        setStudyWeekdays(profile.study_weekdays ?? []);
+        setStudyWeekdays(currentProfile.study_weekdays ?? []);
       }
 
+      if (!currentProfile) {
+        setAttempts([]);
+        setWeights([]);
+        setLoading(false);
+        return;
+      }
+
+      const { data: attemptsData, error: attemptsError } = await supabase
+        .from("user_question_attempts")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("answered_at", { ascending: false });
+
+      if (attemptsError) {
+        console.error("Erro ao carregar tentativas:", attemptsError);
+        setError("Não foi possível carregar o diagnóstico.");
+        setLoading(false);
+        return;
+      }
+
+      const { data: weightsData, error: weightsError } = await supabase
+        .from("vet_exam_content_weights")
+        .select("*")
+        .eq("exam", currentProfile.target_exam);
+
+      if (weightsError) {
+        console.error("Erro ao carregar pesos:", weightsError);
+        setError("Não foi possível carregar os pesos do VET.");
+        setLoading(false);
+        return;
+      }
+
+      setAttempts((attemptsData as AttemptRow[]) ?? []);
+      setWeights((weightsData as WeightRow[]) ?? []);
       setLoading(false);
     }
 
     if (!authLoading) {
-      loadProfile();
+      loadPageData();
     }
   }, [user?.id, authLoading]);
 
@@ -134,7 +286,11 @@ export default function VetObjectivePage() {
       return;
     }
 
-    if (Number.isNaN(parsedDaysPerWeek) || parsedDaysPerWeek < 0 || parsedDaysPerWeek > 7) {
+    if (
+      Number.isNaN(parsedDaysPerWeek) ||
+      parsedDaysPerWeek < 0 ||
+      parsedDaysPerWeek > 7
+    ) {
       setSaving(false);
       setError("Informe um valor válido para dias por semana.");
       return;
@@ -163,16 +319,151 @@ export default function VetObjectivePage() {
       .from("user_vet_profiles")
       .upsert(payload, { onConflict: "user_id" });
 
-    setSaving(false);
-
     if (error) {
       console.error("Erro ao salvar objetivo do VET:", error);
+      setSaving(false);
       setError("Não foi possível salvar o objetivo do VET.");
       return;
     }
 
+    const localProfile: VetProfileRow = {
+      id: profile?.id ?? "",
+      user_id: user.id,
+      target_exam: targetExam,
+      months_until_exam: parsedMonths,
+      hours_per_day: parsedHours,
+      focus_subject: focusSubject,
+      study_days_per_week: parsedDaysPerWeek,
+      study_weekdays: studyWeekdays,
+    };
+
+    setProfile(localProfile);
     setSuccess("Objetivo salvo com sucesso.");
+    setIsEditingObjective(false);
+
+    const { data: weightsData } = await supabase
+      .from("vet_exam_content_weights")
+      .select("*")
+      .eq("exam", targetExam);
+
+    setWeights((weightsData as WeightRow[]) ?? []);
+    setSaving(false);
   }
+
+  const filteredAttempts = useMemo(() => {
+    if (!profile) return [];
+
+    let result = [...attempts];
+
+    if (profile.focus_subject !== "todas") {
+      result = result.filter(
+        (attempt) =>
+          normalizeText(attempt.subject) === normalizeText(profile.focus_subject)
+      );
+    }
+
+    return result;
+  }, [attempts, profile]);
+
+  const subjectStats = useMemo(
+    () => groupBySubject(filteredAttempts),
+    [filteredAttempts]
+  );
+
+  const bestSubject = useMemo(() => {
+    return [...subjectStats]
+      .filter((item) => item.total >= 2)
+      .sort((a, b) => b.accuracy - a.accuracy || b.total - a.total)[0];
+  }, [subjectStats]);
+
+  const worstSubject = useMemo(() => {
+    return [...subjectStats]
+      .filter((item) => item.total >= 2)
+      .sort((a, b) => a.accuracy - b.accuracy || b.total - a.total)[0];
+  }, [subjectStats]);
+
+  const contentDiagnosis = useMemo(() => {
+    if (!profile) return [];
+
+    const contentMap = new Map<
+      string,
+      { total: number; correct: number; wrong: number }
+    >();
+
+    for (const attempt of filteredAttempts) {
+      const conteudo = normalizeText(attempt.conteudo);
+      if (!conteudo) continue;
+
+      const current = contentMap.get(conteudo) ?? {
+        total: 0,
+        correct: 0,
+        wrong: 0,
+      };
+      current.total += 1;
+      if (attempt.is_correct) current.correct += 1;
+      else current.wrong += 1;
+      contentMap.set(conteudo, current);
+    }
+
+    const urgencyTimeScore = getUrgencyTimeScore(profile.months_until_exam);
+
+    return Array.from(contentMap.entries())
+      .map(([conteudo, value]) => {
+        const accuracy = value.total ? (value.correct / value.total) * 100 : 0;
+
+        const matchedWeight = weights.find((row) => {
+          const sameSubject =
+            profile.focus_subject === "todas" ||
+            normalizeText(row.subject) === normalizeText(profile.focus_subject);
+
+          return sameSubject && normalizeText(row.conteudo) === conteudo;
+        });
+
+        const weight = matchedWeight?.weight ?? 3;
+        const weaknessScore = getWeaknessScore(accuracy);
+        const wrongVolumeScore = getWrongVolumeScore(value.wrong);
+        const urgencyScore =
+          weight + weaknessScore + urgencyTimeScore + wrongVolumeScore;
+
+        return {
+          conteudo,
+          total: value.total,
+          correct: value.correct,
+          wrong: value.wrong,
+          accuracy,
+          weight,
+          weaknessScore,
+          urgencyScore,
+        };
+      })
+      .sort((a, b) => b.urgencyScore - a.urgencyScore || a.accuracy - b.accuracy);
+  }, [filteredAttempts, profile, weights]);
+
+  const urgentContent = contentDiagnosis[0] ?? null;
+  const secondContent = contentDiagnosis[1] ?? null;
+  const thirdContent = contentDiagnosis[2] ?? null;
+
+  const currentRisk = urgentContent
+    ? getRiskLabel(urgentContent.urgencyScore)
+    : "baixo";
+
+  const strategicFocus = useMemo(() => {
+    if (!profile || !urgentContent) {
+      return "Configure o objetivo e responda mais questões para o VET gerar um diagnóstico estratégico.";
+    }
+
+    const exam = profile.target_exam;
+    const subject =
+      profile.focus_subject === "todas"
+        ? worstSubject?.label ?? "sua disciplina mais fraca"
+        : profile.focus_subject;
+
+    return `Para ${exam}, seu foco imediato deve estar em ${urgentContent.conteudo}. ${
+      secondContent ? `Em seguida, priorize ${secondContent.conteudo}. ` : ""
+    }Como o tempo até a prova é de ${profile.months_until_exam} mês(es), a recomendação é concentrar esforço em ${subject} com máxima prioridade nos conteúdos de maior incidência e menor aproveitamento.`;
+  }, [profile, urgentContent, secondContent, worstSubject]);
+
+  const showObjectiveForm = !profile || isEditingObjective;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-50">
@@ -188,7 +479,7 @@ export default function VetObjectivePage() {
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Objetivo do VET</h1>
             <p className="text-sm text-slate-500">
-              Defina seu alvo para o treino estratégico
+              Defina seu alvo e veja o diagnóstico no mesmo lugar
             </p>
           </div>
         </div>
@@ -206,155 +497,376 @@ export default function VetObjectivePage() {
             </p>
           </Card>
         ) : (
-          <div className="max-w-3xl mx-auto space-y-6">
-            <Card className="p-6 md:p-8 border-emerald-200 bg-white">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-12 w-12 rounded-2xl bg-emerald-100 flex items-center justify-center">
-                  <Target className="w-6 h-6 text-emerald-700" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-slate-900">
-                    Configure seu objetivo
-                  </h2>
-                  <p className="text-sm text-slate-500">
-                    Essas informações vão guiar o diagnóstico, as prioridades e o treino do VET.
-                  </p>
-                </div>
+          <div className="max-w-5xl mx-auto space-y-6">
+            <Card className="p-6 md:p-8 border-emerald-200 bg-gradient-to-r from-emerald-600 to-teal-600 text-white overflow-hidden relative">
+              <div className="absolute top-0 right-0 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+              <div className="relative">
+                <p className="text-sm uppercase tracking-wide text-emerald-100 mb-2">
+                  Etapa estratégica
+                </p>
+                <h2 className="text-3xl font-bold mb-3">
+                  Objetivo e diagnóstico no mesmo fluxo
+                </h2>
+                <p className="text-emerald-50 max-w-3xl leading-relaxed">
+                  Primeiro você define a meta. Depois o VET usa isso para montar
+                  um diagnóstico estratégico logo abaixo.
+                </p>
+
+                {profile && !showObjectiveForm ? (
+                  <div className="mt-6 flex flex-wrap items-center gap-3">
+                    <div className="rounded-2xl bg-white/15 px-4 py-2 text-sm">
+                      <span className="font-semibold">Objetivo atual:</span>{" "}
+                      {profile.target_exam} • {profile.months_until_exam} mês(es) •{" "}
+                      {profile.hours_per_day}h/dia • foco em {profile.focus_subject}
+                    </div>
+
+                    <Button
+                      variant="secondary"
+                      className="rounded-2xl"
+                      onClick={() => {
+                        setIsEditingObjective(true);
+                        setSuccess("");
+                        setError("");
+                      }}
+                    >
+                      <RotateCcw className="w-4 h-4 mr-2" />
+                      Novo objetivo
+                    </Button>
+                  </div>
+                ) : null}
               </div>
+            </Card>
 
-              <form onSubmit={handleSave} className="space-y-5">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Prova-alvo
-                  </label>
-                  <select
-                    value={targetExam}
-                    onChange={(e) => setTargetExam(e.target.value)}
-                    className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
-                  >
-                    {EXAMS.map((exam) => (
-                      <option key={exam} value={exam}>
-                        {exam}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
-                      Meses até a prova
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={monthsUntilExam}
-                      onChange={(e) => setMonthsUntilExam(e.target.value)}
-                      className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
-                    />
+            {showObjectiveForm ? (
+              <Card className="p-6 md:p-8 border-emerald-200 bg-white">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-12 w-12 rounded-2xl bg-emerald-100 flex items-center justify-center">
+                    <Target className="w-6 h-6 text-emerald-700" />
                   </div>
-
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
-                      Horas por dia
-                    </label>
-                    <input
-                      type="number"
-                      min="0.5"
-                      step="0.5"
-                      value={hoursPerDay}
-                      onChange={(e) => setHoursPerDay(e.target.value)}
-                      className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
-                    />
+                    <h2 className="text-2xl font-bold text-slate-900">
+                      {profile ? "Definir novo objetivo" : "Configure seu objetivo"}
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                      Essas informações vão guiar o diagnóstico, as prioridades e o treino do VET.
+                    </p>
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-5">
+                <form onSubmit={handleSave} className="space-y-5">
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">
-                      Dias por semana que consegue estudar
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="7"
-                      value={studyDaysPerWeek}
-                      onChange={(e) => setStudyDaysPerWeek(e.target.value)}
-                      className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
-                      Disciplina foco
+                      Prova-alvo
                     </label>
                     <select
-                      value={focusSubject}
-                      onChange={(e) => setFocusSubject(e.target.value)}
+                      value={targetExam}
+                      onChange={(e) => setTargetExam(e.target.value)}
                       className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
                     >
-                      {SUBJECTS.map((subject) => (
-                        <option key={subject} value={subject}>
-                          {subject}
+                      {EXAMS.map((exam) => (
+                        <option key={exam} value={exam}>
+                          {exam}
                         </option>
                       ))}
                     </select>
                   </div>
+
+                  <div className="grid md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Meses até a prova
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={monthsUntilExam}
+                        onChange={(e) => setMonthsUntilExam(e.target.value)}
+                        className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Horas por dia
+                      </label>
+                      <input
+                        type="number"
+                        min="0.5"
+                        step="0.5"
+                        value={hoursPerDay}
+                        onChange={(e) => setHoursPerDay(e.target.value)}
+                        className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Dias por semana que consegue estudar
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="7"
+                        value={studyDaysPerWeek}
+                        onChange={(e) => setStudyDaysPerWeek(e.target.value)}
+                        className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Disciplina foco
+                      </label>
+                      <select
+                        value={focusSubject}
+                        onChange={(e) => setFocusSubject(e.target.value)}
+                        className="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white"
+                      >
+                        {SUBJECTS.map((subject) => (
+                          <option key={subject} value={subject}>
+                            {subject}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-3">
+                      Quais dias da semana você consegue estudar?
+                    </label>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {WEEKDAYS.map((day) => {
+                        const selected = studyWeekdays.includes(day.value);
+
+                        return (
+                          <button
+                            key={day.value}
+                            type="button"
+                            onClick={() => handleToggleWeekday(day.value)}
+                            className={`rounded-xl border px-4 py-3 text-sm font-semibold transition-all ${
+                              selected
+                                ? "border-emerald-600 bg-emerald-50 text-emerald-700"
+                                : "border-slate-300 bg-white text-slate-700 hover:border-emerald-400"
+                            }`}
+                          >
+                            {day.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <p className="text-xs text-slate-500 mt-3">
+                      Selecionados: {selectedDaysCount} dia(s)
+                    </p>
+                  </div>
+
+                  {error ? (
+                    <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+                      {error}
+                    </div>
+                  ) : null}
+
+                  {success ? (
+                    <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-700">
+                      {success}
+                    </div>
+                  ) : null}
+
+                  <div className="flex flex-wrap gap-3">
+                    <Button
+                      type="submit"
+                      disabled={saving}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      {saving ? "Salvando..." : "Salvar objetivo"}
+                    </Button>
+
+                    {profile ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          setIsEditingObjective(false);
+                          setError("");
+                          setSuccess("");
+                        }}
+                      >
+                        Cancelar
+                      </Button>
+                    ) : null}
+                  </div>
+                </form>
+              </Card>
+            ) : null}
+
+            {profile && !showObjectiveForm ? (
+              <Card className="p-6 md:p-8 border-emerald-200 bg-white">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-12 w-12 rounded-2xl bg-emerald-100 flex items-center justify-center">
+                    <Activity className="w-6 h-6 text-emerald-700" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-900">
+                      Diagnóstico do seu momento
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                      Depois de definir o objetivo, o VET mostra onde você deve focar agora.
+                    </p>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-3">
-                    Quais dias da semana você consegue estudar?
-                  </label>
+                <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+                  <Card className="p-6 border-red-200 bg-white">
+                    <div className="flex items-center gap-2 mb-3">
+                      <TrendingDown className="w-5 h-5 text-red-500" />
+                      <h3 className="font-bold text-slate-900">Disciplina crítica</h3>
+                    </div>
+                    <p className="text-xl font-bold text-slate-900">
+                      {worstSubject?.label ?? "Sem dados"}
+                    </p>
+                    <p className="text-sm text-slate-500 mt-2">
+                      {worstSubject
+                        ? `${worstSubject.accuracy.toFixed(0)}% de acerto`
+                        : "Responda mais questões"}
+                    </p>
+                  </Card>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {WEEKDAYS.map((day) => {
-                      const selected = studyWeekdays.includes(day.value);
+                  <Card className="p-6 border-green-200 bg-white">
+                    <div className="flex items-center gap-2 mb-3">
+                      <TrendingUp className="w-5 h-5 text-green-500" />
+                      <h3 className="font-bold text-slate-900">Disciplina forte</h3>
+                    </div>
+                    <p className="text-xl font-bold text-slate-900">
+                      {bestSubject?.label ?? "Sem dados"}
+                    </p>
+                    <p className="text-sm text-slate-500 mt-2">
+                      {bestSubject
+                        ? `${bestSubject.accuracy.toFixed(0)}% de acerto`
+                        : "Responda mais questões"}
+                    </p>
+                  </Card>
 
-                      return (
-                        <button
-                          key={day.value}
-                          type="button"
-                          onClick={() => handleToggleWeekday(day.value)}
-                          className={`rounded-xl border px-4 py-3 text-sm font-semibold transition-all ${
-                            selected
-                              ? "border-emerald-600 bg-emerald-50 text-emerald-700"
-                              : "border-slate-300 bg-white text-slate-700 hover:border-emerald-400"
-                          }`}
-                        >
-                          {day.label}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  <Card className="p-6 border-orange-200 bg-white">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Target className="w-5 h-5 text-orange-500" />
+                      <h3 className="font-bold text-slate-900">Conteúdo urgente</h3>
+                    </div>
+                    <p className="text-xl font-bold text-slate-900">
+                      {urgentContent?.conteudo ?? "Sem dados"}
+                    </p>
+                    <p className="text-sm text-slate-500 mt-2">
+                      {urgentContent
+                        ? `Score ${urgentContent.urgencyScore}`
+                        : "Responda mais questões"}
+                    </p>
+                  </Card>
 
-                  <p className="text-xs text-slate-500 mt-3">
-                    Selecionados: {selectedDaysCount} dia(s)
-                  </p>
+                  <Card className="p-6 border-yellow-200 bg-white">
+                    <div className="flex items-center gap-2 mb-3">
+                      <AlertTriangle className="w-5 h-5 text-yellow-500" />
+                      <h3 className="font-bold text-slate-900">Risco atual</h3>
+                    </div>
+                    <p className="text-xl font-bold text-slate-900 capitalize">
+                      {currentRisk}
+                    </p>
+                    <p className="text-sm text-slate-500 mt-2">
+                      Baseado no conteúdo mais urgente e no tempo restante
+                    </p>
+                  </Card>
                 </div>
 
-                {error && (
-                  <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
-                    {error}
+                <Card className="p-6 mt-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <BrainCircuit className="w-5 h-5 text-emerald-600" />
+                    <h2 className="text-xl font-bold text-slate-900">
+                      Foco recomendado
+                    </h2>
                   </div>
-                )}
+                  <p className="text-slate-700 leading-relaxed">{strategicFocus}</p>
+                </Card>
 
-                {success && (
-                  <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-700">
-                    {success}
-                  </div>
-                )}
+                <div className="grid xl:grid-cols-2 gap-6 mt-6">
+                  <Card className="p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Activity className="w-5 h-5 text-slate-700" />
+                      <h2 className="text-xl font-bold text-slate-900">
+                        Top prioridades
+                      </h2>
+                    </div>
 
-                <Button
-                  type="submit"
-                  disabled={saving}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  {saving ? "Salvando..." : "Salvar objetivo"}
-                </Button>
-              </form>
-            </Card>
+                    <div className="space-y-4">
+                      {[urgentContent, secondContent, thirdContent]
+                        .filter(Boolean)
+                        .map((item, index) => {
+                          const content = item as ContentDiagnosis;
+                          return (
+                            <div
+                              key={content.conteudo}
+                              className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                            >
+                              <div className="flex items-center justify-between gap-4 mb-2">
+                                <p className="font-bold text-slate-900">
+                                  #{index + 1} {content.conteudo}
+                                </p>
+                                <span className="text-sm font-bold text-emerald-700">
+                                  Score {content.urgencyScore}
+                                </span>
+                              </div>
+                              <p className="text-sm text-slate-600">
+                                Peso na prova: {content.weight} • Aproveitamento:{" "}
+                                {content.accuracy.toFixed(0)}% • Erros: {content.wrong}
+                              </p>
+                            </div>
+                          );
+                        })}
+
+                      {contentDiagnosis.length === 0 ? (
+                        <p className="text-slate-500">
+                          Ainda não há dados suficientes para gerar prioridades.
+                        </p>
+                      ) : null}
+                    </div>
+                  </Card>
+
+                  <Card className="p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <ShieldCheck className="w-5 h-5 text-slate-700" />
+                      <h2 className="text-xl font-bold text-slate-900">
+                        Leitura do diagnóstico
+                      </h2>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="rounded-xl bg-white border border-slate-200 p-4">
+                        <p className="font-semibold text-slate-900">O que mais pesa agora</p>
+                        <p className="text-sm text-slate-600 mt-1">
+                          O VET prioriza conteúdos com maior incidência na prova e menor aproveitamento seu.
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl bg-white border border-slate-200 p-4">
+                        <p className="font-semibold text-slate-900">Como o tempo influencia</p>
+                        <p className="text-sm text-slate-600 mt-1">
+                          Quanto menos meses faltam, mais o sistema aumenta o peso dos conteúdos com retorno mais rápido.
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl bg-white border border-slate-200 p-4">
+                        <p className="font-semibold text-slate-900">Próximo passo</p>
+                        <p className="text-sm text-slate-600 mt-1">
+                          Agora você já pode seguir para prioridades, treino, nivelamento ou simulado.
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              </Card>
+            ) : null}
           </div>
         )}
       </main>
