@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
@@ -11,53 +11,96 @@ interface NewtonSecondLawSimulatorProps {
   resetTrigger: number;
 }
 
-export const NewtonSecondLawSimulator: React.FC<NewtonSecondLawSimulatorProps> = ({
-  isRunning,
-  resetTrigger,
-}) => {
+type Scenario =
+  | "horizontal"
+  | "friction"
+  | "two_blocks"
+  | "pulley";
+
+const G = 9.8;
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, value));
+
+export const NewtonSecondLawSimulator: React.FC<
+  NewtonSecondLawSimulatorProps
+> = ({ isRunning, resetTrigger }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [force, setForce] = useState(10);
-  const [mass, setMass] = useState(2);
-  const [frictionCoef, setFrictionCoef] = useState(0);
-  
-  const frameCountRef = useRef(0);
   const animationIdRef = useRef<number | null>(null);
   const positionRef = useRef(0);
   const velocityRef = useRef(0);
   const lastTimeRef = useRef(0);
 
-  // Cálculos Físicos
-  const g = 9.8;
-  const normalForce = mass * g;
-  const maxFriction = frictionCoef * normalForce;
-  
-  // Aceleração
-  let acceleration = 0;
-  let frictionForce = 0;
+  const [scenario, setScenario] = useState<Scenario>("horizontal");
 
-  if (Math.abs(velocityRef.current) > 0.001) {
-    // Em movimento: atrito cinético oposto à velocidade
-    frictionForce = frictionCoef * normalForce * Math.sign(velocityRef.current);
-    const netForce = force - frictionForce;
-    acceleration = netForce / mass;
-  } else {
-    // Repouso: atrito estático
-    if (Math.abs(force) > maxFriction) {
-      frictionForce = maxFriction * Math.sign(force);
-      const netForce = force - frictionForce;
-      acceleration = netForce / mass;
-    } else {
-      frictionForce = force;
-      acceleration = 0;
+  const [mass, setMass] = useState(2);
+  const [mass2, setMass2] = useState(1.5);
+  const [force, setForce] = useState(10);
+  const [frictionCoef, setFrictionCoef] = useState(0.2);
+
+  const usesFriction = scenario === "friction" || scenario === "two_blocks";
+
+  const normalForce = useMemo(() => mass * G, [mass]);
+  const frictionMax = useMemo(
+    () => (usesFriction ? frictionCoef * normalForce : 0),
+    [usesFriction, frictionCoef, normalForce]
+  );
+
+  const systemMass = useMemo(() => {
+    if (scenario === "two_blocks") return mass + mass2;
+    if (scenario === "pulley") return mass + mass2;
+    return mass;
+  }, [scenario, mass, mass2]);
+
+  const frictionForce = useMemo(() => {
+    if (!usesFriction) return 0;
+    if (scenario === "two_blocks") {
+      return frictionCoef * (mass + mass2) * G;
     }
-  }
+    return frictionCoef * mass * G;
+  }, [usesFriction, scenario, frictionCoef, mass, mass2]);
+
+  const netForce = useMemo(() => {
+    if (scenario === "horizontal") {
+      return force;
+    }
+
+    if (scenario === "friction") {
+      const frictionOpposes = Math.sign(force || 1) * frictionForce;
+      const result = force - frictionOpposes;
+      return Math.abs(force) <= frictionMax ? 0 : result;
+    }
+
+    if (scenario === "two_blocks") {
+      const frictionOpposes = Math.sign(force || 1) * frictionForce;
+      const result = force - frictionOpposes;
+      return Math.abs(force) <= frictionForce ? 0 : result;
+    }
+
+    // pulley: força motriz = diferença de pesos
+    return (mass2 - mass) * G;
+  }, [scenario, force, frictionForce, frictionMax, mass, mass2]);
+
+  const acceleration = useMemo(() => {
+    if (systemMass <= 0) return 0;
+    return netForce / systemMass;
+  }, [netForce, systemMass]);
+
+  const appliedTension = useMemo(() => {
+    if (scenario !== "pulley") return 0;
+    return mass * (G + acceleration);
+  }, [scenario, mass, acceleration]);
+
+  const contactForce = useMemo(() => {
+    if (scenario !== "two_blocks") return 0;
+    return mass2 * acceleration;
+  }, [scenario, mass2, acceleration]);
 
   useEffect(() => {
     positionRef.current = 0;
     velocityRef.current = 0;
-    frameCountRef.current = 0;
     lastTimeRef.current = performance.now();
-  }, [resetTrigger, mass, force, frictionCoef]);
+  }, [resetTrigger, scenario, mass, mass2, force, frictionCoef]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -67,121 +110,102 @@ export const NewtonSecondLawSimulator: React.FC<NewtonSecondLawSimulatorProps> =
     if (!ctx) return;
 
     const animate = (time: number) => {
-      const dt = (time - lastTimeRef.current) / 1000; // Delta time em segundos
+      const dt = Math.min((time - lastTimeRef.current) / 1000, 0.04);
       lastTimeRef.current = time;
 
       if (isRunning) {
-        // Atualizar física (Euler integration)
-        // Recalcular aceleração a cada frame para lidar com mudanças de sentido do atrito
-        let currentAccel = 0;
-        let currentFriction = 0;
-
-        if (Math.abs(velocityRef.current) > 0.001) {
-            currentFriction = frictionCoef * normalForce * Math.sign(velocityRef.current);
-            currentAccel = (force - currentFriction) / mass;
-        } else {
-             if (Math.abs(force) > maxFriction) {
-                currentFriction = maxFriction * Math.sign(force);
-                currentAccel = (force - currentFriction) / mass;
-            } else {
-                currentFriction = force;
-                currentAccel = 0;
-            }
-        }
-
-        velocityRef.current += currentAccel * dt;
+        velocityRef.current += acceleration * dt;
         positionRef.current += velocityRef.current * dt;
       }
 
-      // Desenhar
       const width = canvas.width;
       const height = canvas.height;
-      
-      // Limpar
-      ctx.clearRect(0, 0, width, height);
+      const centerY = height - 110;
 
-      // Chão
-      ctx.fillStyle = "#e2e8f0";
-      ctx.fillRect(0, height - 100, width, 100);
-      
-      // Marcações de distância
-      ctx.strokeStyle = "#94a3b8";
-      ctx.beginPath();
-      for(let i = 0; i < width; i+=50) {
-          ctx.moveTo(i, height - 100);
-          ctx.lineTo(i, height - 90);
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = "#f8fafc";
+      ctx.fillRect(0, 0, width, height);
+
+      // grade
+      ctx.strokeStyle = "#e2e8f0";
+      ctx.lineWidth = 1;
+      for (let i = 0; i < width; i += 40) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, height);
+        ctx.stroke();
       }
+      for (let j = 0; j < height; j += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, j);
+        ctx.lineTo(width, j);
+        ctx.stroke();
+      }
+
+      // título
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 14px Arial";
+      ctx.fillText(getScenarioLabel(scenario), 20, 28);
+
+      ctx.font = "12px Arial";
+      ctx.fillText(`m₁ = ${formatUnit(mass, "kg")}`, 20, 58);
+      if (scenario === "two_blocks" || scenario === "pulley") {
+        ctx.fillText(`m₂ = ${formatUnit(mass2, "kg")}`, 20, 78);
+      }
+      ctx.fillText(`a = ${formatUnit(acceleration, "m/s²")}`, 20, 118);
+      ctx.fillText(`v = ${formatUnit(velocityRef.current, "m/s")}`, 20, 138);
+      ctx.fillText(`ΣF = ${formatUnit(netForce, "N")}`, 20, 158);
+
+      // desenho do chão
+      ctx.strokeStyle = "#94a3b8";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(40, centerY + 50);
+      ctx.lineTo(width - 40, centerY + 50);
       ctx.stroke();
 
-      // Bloco
-      const scale = 50; // pixels por metro
-      const blockWidth = 60 + mass * 5; // Tamanho visual depende da massa
-      const blockHeight = 40 + mass * 5;
-      
-      // Posição visual (com wrap-around ou câmera seguindo)
-      // Vamos fazer câmera fixa por enquanto, bloco se move
-      const visualX = 50 + positionRef.current * scale;
-      const visualY = height - 100 - blockHeight;
-
-      // Se sair da tela, resetar visualmente (loop infinito) ou limitar?
-      // Vamos limitar visualmente para não sumir
-      const clampedVisualX = Math.min(Math.max(visualX, 0), width - blockWidth);
-
-      ctx.fillStyle = "#3b82f6";
-      ctx.fillRect(clampedVisualX, visualY, blockWidth, blockHeight);
-      ctx.strokeStyle = "#1e40af";
-      ctx.strokeRect(clampedVisualX, visualY, blockWidth, blockHeight);
-      
-      // Texto Massa
-      ctx.fillStyle = "white";
-      ctx.font = "bold 14px Arial";
-      ctx.textAlign = "center";
-      ctx.fillText(`${mass}kg`, clampedVisualX + blockWidth/2, visualY + blockHeight/2 + 5);
-
-      // Vetores de Força
-      const centerX = clampedVisualX + blockWidth/2;
-      const centerY = visualY + blockHeight/2;
-
-      // Força Aplicada (F)
-      if (force !== 0) {
-        drawArrow(ctx, centerX, centerY, centerX + force * 5, centerY, "#ef4444", "F");
+      if (scenario === "horizontal" || scenario === "friction") {
+        drawSingleBlockScene(
+          ctx,
+          width,
+          centerY,
+          mass,
+          force,
+          usesFriction ? frictionForce : 0,
+          normalForce,
+          mass * G,
+          positionRef.current,
+          velocityRef.current
+        );
       }
 
-      // Força de Atrito (Fat)
-      let currentFrictionDraw = 0;
-       if (Math.abs(velocityRef.current) > 0.001) {
-            currentFrictionDraw = frictionCoef * normalForce * Math.sign(velocityRef.current);
-        } else {
-             if (Math.abs(force) > maxFriction) {
-                currentFrictionDraw = maxFriction * Math.sign(force);
-            } else {
-                currentFrictionDraw = force;
-            }
-        }
-      
-      if (currentFrictionDraw !== 0) {
-          // Atrito é oposto ao movimento ou à tendência de movimento
-          // Se v > 0, Fat < 0. Se v=0 e F>0, Fat < 0.
-          // O cálculo acima já dá o sinal correto se usarmos a lógica certa.
-          // Mas para desenhar, queremos a seta saindo do centro ou da base? Centro para simplificar.
-          // O valor calculado `currentFrictionDraw` tem o mesmo sinal da força se estivermos parados?
-          // Não, atrito se opõe.
-          
-          // Correção visual: Atrito sempre oposto à velocidade (se v!=0) ou oposto à Força (se v=0)
-          let frictionDir = 0;
-          if (Math.abs(velocityRef.current) > 0.001) {
-              frictionDir = -Math.sign(velocityRef.current);
-          } else {
-              frictionDir = -Math.sign(force);
-          }
-          
-          const frictionMag = Math.abs(currentFrictionDraw);
-          drawArrow(ctx, centerX, visualY + blockHeight, centerX + frictionDir * frictionMag * 5, visualY + blockHeight, "#d97706", "Fat");
+      if (scenario === "two_blocks") {
+        drawTwoBlocksScene(
+          ctx,
+          width,
+          centerY,
+          mass,
+          mass2,
+          force,
+          frictionForce,
+          contactForce,
+          positionRef.current,
+          velocityRef.current
+        );
       }
 
-      // Normal e Peso
-      drawArrow(ctx, centerX, visualY + blockHeight, centerX, visualY + blockHeight - normalForce * 2, "#22c55e", "N");
-      drawArrow(ctx, centerX, visualY + blockHeight, centerX, visualY + blockHeight + normalForce * 2, "#22c55e", "P");
+      if (scenario === "pulley") {
+        drawPulleyScene(
+          ctx,
+          width,
+          height,
+          mass,
+          mass2,
+          appliedTension,
+          acceleration,
+          positionRef.current
+        );
+      }
 
       animationIdRef.current = requestAnimationFrame(animate);
     };
@@ -189,94 +213,336 @@ export const NewtonSecondLawSimulator: React.FC<NewtonSecondLawSimulatorProps> =
     animationIdRef.current = requestAnimationFrame(animate);
 
     return () => {
-      if (animationIdRef.current) {
-        cancelAnimationFrame(animationIdRef.current);
-      }
+      if (animationIdRef.current) cancelAnimationFrame(animationIdRef.current);
     };
-  }, [isRunning, mass, force, frictionCoef, maxFriction, normalForce]);
+  }, [
+    isRunning,
+    scenario,
+    mass,
+    mass2,
+    force,
+    frictionCoef,
+    acceleration,
+    frictionForce,
+    normalForce,
+    netForce,
+    appliedTension,
+    contactForce,
+    usesFriction,
+  ]);
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex justify-center bg-slate-50 p-4 rounded-lg overflow-x-auto">
-        <canvas
-          ref={canvasRef}
-          width={800}
-          height={400}
-          className="w-full max-w-full border border-slate-300 rounded"
-        />
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+        {/* COLUNA ESQUERDA */}
+        <div className="space-y-4 xl:col-span-4">
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h3 className="text-lg font-bold text-slate-900">
+                Leis de Newton
+              </h3>
+              <p className="mt-1 text-sm text-slate-600">
+                Escolha um cenário físico e analise forças, resultante e aceleração.
+              </p>
+            </div>
+
+            <div className="space-y-5 p-5">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+                  Cenário físico
+                </p>
+                <select
+                  value={scenario}
+                  onChange={(e) => setScenario(e.target.value as Scenario)}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500"
+                >
+                  <option value="horizontal">Superfície horizontal</option>
+                  <option value="friction">Superfície com atrito</option>
+                  <option value="two_blocks">Dois blocos em contato</option>
+                  <option value="pulley">Sistema com polia</option>
+                </select>
+              </div>
+
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <label className="text-sm font-medium text-slate-700">
+                    Massa 1 <span className="text-slate-500">(m₁)</span>
+                  </label>
+                  <span className="text-sm font-bold text-blue-700">
+                    {formatUnit(mass, "kg")}
+                  </span>
+                </div>
+                <Slider
+                  value={[mass]}
+                  onValueChange={(value) => setMass(value[0])}
+                  min={0.5}
+                  max={10}
+                  step={0.1}
+                  className="w-full"
+                />
+              </div>
+
+              {(scenario === "two_blocks" || scenario === "pulley") && (
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <label className="text-sm font-medium text-slate-700">
+                      Massa 2 <span className="text-slate-500">(m₂)</span>
+                    </label>
+                    <span className="text-sm font-bold text-purple-700">
+                      {formatUnit(mass2, "kg")}
+                    </span>
+                  </div>
+                  <Slider
+                    value={[mass2]}
+                    onValueChange={(value) => setMass2(value[0])}
+                    min={0.5}
+                    max={10}
+                    step={0.1}
+                    className="w-full"
+                  />
+                </div>
+              )}
+
+              {scenario !== "pulley" && (
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <label className="text-sm font-medium text-slate-700">
+                      Força aplicada <span className="text-slate-500">(F)</span>
+                    </label>
+                    <span className="text-sm font-bold text-red-700">
+                      {formatUnit(force, "N")}
+                    </span>
+                  </div>
+                  <Slider
+                    value={[force]}
+                    onValueChange={(value) => setForce(value[0])}
+                    min={-50}
+                    max={50}
+                    step={1}
+                    className="w-full"
+                  />
+                </div>
+              )}
+
+              {(scenario === "friction" || scenario === "two_blocks") && (
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <label className="text-sm font-medium text-slate-700">
+                      Coef. de atrito <span className="text-slate-500">(μ)</span>
+                    </label>
+                    <span className="text-sm font-bold text-orange-700">
+                      {formatNumber(frictionCoef)}
+                    </span>
+                  </div>
+                  <Slider
+                    value={[frictionCoef]}
+                    onValueChange={(value) => setFrictionCoef(value[0])}
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    className="w-full"
+                  />
+                </div>
+              )}
+            </div>
+          </Card>
+
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">
+                Resultados Principais
+              </h4>
+            </div>
+
+            <div className="space-y-3 p-5">
+              <MetricCard
+                label={
+                  <>
+                    Força resultante <MathFormula inline formula={String.raw`\Sigma F`} />
+                  </>
+                }
+                value={formatUnit(netForce, "N")}
+              />
+
+              <MetricCard
+                label={
+                  <>
+                    Aceleração <MathFormula inline formula={String.raw`a`} />
+                  </>
+                }
+                value={formatUnit(acceleration, "m/s²")}
+                valueClassName="text-amber-600"
+              />
+
+              <MetricCard
+                label={
+                  <>
+                    Velocidade <MathFormula inline formula={String.raw`v`} />
+                  </>
+                }
+                value={formatUnit(velocityRef.current, "m/s")}
+                valueClassName="text-green-700"
+              />
+
+              {scenario !== "pulley" && (
+                <MetricCard
+                  label={
+                    <>
+                      Normal <MathFormula inline formula={String.raw`N`} />
+                    </>
+                  }
+                  value={formatUnit(normalForce, "N")}
+                />
+              )}
+
+              {(scenario === "friction" || scenario === "two_blocks") && (
+                <MetricCard
+                  label={
+                    <>
+                      Atrito <MathFormula inline formula={String.raw`F_{at}`} />
+                    </>
+                  }
+                  value={formatUnit(frictionForce, "N")}
+                  valueClassName="text-orange-700"
+                />
+              )}
+
+              {scenario === "two_blocks" && (
+                <MetricCard
+                  label={<>Força de contato</>}
+                  value={formatUnit(contactForce, "N")}
+                  valueClassName="text-purple-700"
+                />
+              )}
+
+              {scenario === "pulley" && (
+                <MetricCard
+                  label={
+                    <>
+                      Tração <MathFormula inline formula={String.raw`T`} />
+                    </>
+                  }
+                  value={formatUnit(appliedTension, "N")}
+                  valueClassName="text-sky-700"
+                />
+              )}
+            </div>
+          </Card>
+        </div>
+
+        {/* COLUNA DIREITA */}
+        <div className="space-y-4 xl:col-span-8">
+          <Card className="overflow-hidden border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">Simulação</h4>
+            </div>
+
+            <div className="bg-slate-50 p-4 md:p-5">
+              <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                <div className="overflow-x-auto">
+                  <canvas
+                    ref={canvasRef}
+                    width={980}
+                    height={420}
+                    className="mx-auto w-full min-w-[780px] rounded-lg border border-slate-200 bg-slate-50"
+                  />
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">
+                Diagrama de Corpo Livre
+              </h4>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2">
+              <CalcMiniCard
+                title="Eixo x"
+                values={[
+                  ["ΣF_x", formatUnit(netForce, "N")],
+                  ["a_x", formatUnit(acceleration, "m/s²")],
+                ]}
+              />
+              <CalcMiniCard
+                title="Eixo y"
+                values={[
+                  ["ΣF_y", scenario === "pulley" ? "variável" : "0,00 N"],
+                  ["a_y", scenario === "pulley" ? formatUnit(acceleration, "m/s²") : "0,00 m/s²"],
+                ]}
+              />
+            </div>
+          </Card>
+
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">
+                Cálculos Detalhados
+              </h4>
+            </div>
+
+            <div className="space-y-5 p-5">
+              {scenario === "horizontal" && (
+                <>
+                  <CalcSection
+                    title="Superfície horizontal sem atrito"
+                    formulas={[
+                      String.raw`N = P = mg = ${formatNumber(mass)} \cdot ${formatNumber(G)} = ${formatNumber(normalForce)} \,\text{N}`,
+                      String.raw`\Sigma F_x = F = ${formatNumber(force)} \,\text{N}`,
+                      String.raw`a = \frac{F}{m} = \frac{${formatNumber(force)}}{${formatNumber(mass)}} = ${formatNumber(acceleration)} \,\text{m/s^2}`,
+                    ]}
+                  />
+                </>
+              )}
+
+              {scenario === "friction" && (
+                <>
+                  <CalcSection
+                    title="Superfície horizontal com atrito"
+                    formulas={[
+                      String.raw`N = P = mg = ${formatNumber(mass)} \cdot ${formatNumber(G)} = ${formatNumber(normalForce)} \,\text{N}`,
+                      String.raw`F_{at} = \mu N = ${formatNumber(frictionCoef)} \cdot ${formatNumber(normalForce)} = ${formatNumber(frictionForce)} \,\text{N}`,
+                      String.raw`\Sigma F_x = F - F_{at} = ${formatNumber(force)} - ${formatNumber(frictionForce)} = ${formatNumber(netForce)} \,\text{N}`,
+                      String.raw`a = \frac{\Sigma F_x}{m} = \frac{${formatNumber(netForce)}}{${formatNumber(mass)}} = ${formatNumber(acceleration)} \,\text{m/s^2}`,
+                    ]}
+                  />
+                </>
+              )}
+
+              {scenario === "two_blocks" && (
+                <>
+                  <CalcSection
+                    title="Dois blocos em contato"
+                    formulas={[
+                      String.raw`m_{sistema} = m_1 + m_2 = ${formatNumber(mass)} + ${formatNumber(mass2)} = ${formatNumber(systemMass)} \,\text{kg}`,
+                      String.raw`F_{at} = \mu (m_1+m_2)g = ${formatNumber(frictionCoef)} \cdot ${formatNumber(systemMass)} \cdot ${formatNumber(G)} = ${formatNumber(frictionForce)} \,\text{N}`,
+                      String.raw`\Sigma F = F - F_{at} = ${formatNumber(force)} - ${formatNumber(frictionForce)} = ${formatNumber(netForce)} \,\text{N}`,
+                      String.raw`a = \frac{\Sigma F}{m_1+m_2} = \frac{${formatNumber(netForce)}}{${formatNumber(systemMass)}} = ${formatNumber(acceleration)} \,\text{m/s^2}`,
+                      String.raw`F_{contato} = m_2 a = ${formatNumber(mass2)} \cdot ${formatNumber(acceleration)} = ${formatNumber(contactForce)} \,\text{N}`,
+                    ]}
+                  />
+                </>
+              )}
+
+              {scenario === "pulley" && (
+                <>
+                  <CalcSection
+                    title="Sistema com polia"
+                    formulas={[
+                      String.raw`\Sigma F = (m_2 - m_1)g = (${formatNumber(mass2)} - ${formatNumber(mass)}) \cdot ${formatNumber(G)} = ${formatNumber(netForce)} \,\text{N}`,
+                      String.raw`a = \frac{(m_2-m_1)g}{m_1+m_2} = \frac{${formatNumber(netForce)}}{${formatNumber(systemMass)}} = ${formatNumber(acceleration)} \,\text{m/s^2}`,
+                      String.raw`T = m_1(g+a) = ${formatNumber(mass)} \cdot (${formatNumber(G)} + ${formatNumber(acceleration)}) = ${formatNumber(appliedTension)} \,\text{N}`,
+                    ]}
+                  />
+                </>
+              )}
+            </div>
+          </Card>
+        </div>
       </div>
 
-      <Card className="p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <div className="flex justify-between mb-2">
-              <label className="text-sm font-semibold text-slate-700">Força Aplicada (<MathFormula formula={String.raw`$F$`} />)</label>
-              <span className="text-sm font-bold text-red-600">{formatUnit(force, "N")}</span>
-            </div>
-            <Slider
-              value={[force]}
-              onValueChange={(value) => setForce(value[0])}
-              min={-50}
-              max={50}
-              step={1}
-              className="w-full"
-            />
-          </div>
-
-          <div>
-            <div className="flex justify-between mb-2">
-              <label className="text-sm font-semibold text-slate-700">Massa (<MathFormula formula={String.raw`$m$`} />)</label>
-              <span className="text-sm font-bold text-blue-600">{formatUnit(mass, "kg")}</span>
-            </div>
-            <Slider
-              value={[mass]}
-              onValueChange={(value) => setMass(value[0])}
-              min={1}
-              max={20}
-              step={0.5}
-              className="w-full"
-            />
-          </div>
-
-          <div>
-            <div className="flex justify-between mb-2">
-              <label className="text-sm font-semibold text-slate-700">Coef. Atrito (<MathFormula formula={String.raw`$\mu$`} />)</label>
-              <span className="text-sm font-bold text-orange-600">{formatNumber(frictionCoef, 2)}</span>
-            </div>
-            <Slider
-              value={[frictionCoef]}
-              onValueChange={(value) => setFrictionCoef(value[0])}
-              min={0}
-              max={1}
-              step={0.05}
-              className="w-full"
-            />
-          </div>
-        </div>
-
-        {/* Resultados */}
-        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-4">
-          <h4 className="font-bold text-slate-900">Análise Dinâmica</h4>
-          
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm font-semibold text-slate-700 mb-1">Força Resultante</p>
-              <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
-                <MathFormula formula={String.raw`$$ F_{res} = F - F_{at} = ${formatNumber(force)} - ${formatNumber(Math.abs(frictionForce) * Math.sign(force))} = ${formatUnit(force - (Math.abs(frictionForce) * Math.sign(force)), "N")} $$`} />
-              </div>
-            </div>
-
-            <div>
-              <p className="text-sm font-semibold text-slate-700 mb-1">Aceleração (2ª Lei de Newton)</p>
-              <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
-                <MathFormula formula={String.raw`$$ a = \frac{F_{res}}{m} = \frac{${formatNumber(force - (Math.abs(frictionForce) * Math.sign(force)))}}{${formatNumber(mass)}} = ${formatUnit(acceleration, "m/s^2")} $$`} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Teoria Avançada */}
       <AdvancedTheory
         title={ITADynamicsTheory.title}
         introduction={ITADynamicsTheory.introduction}
@@ -286,33 +552,283 @@ export const NewtonSecondLawSimulator: React.FC<NewtonSecondLawSimulatorProps> =
   );
 };
 
-function drawArrow(ctx: CanvasRenderingContext2D, fromX: number, fromY: number, toX: number, toY: number, color: string, label: string) {
-    const headlen = 10;
-    const dx = toX - fromX;
-    const dy = toY - fromY;
-    const angle = Math.atan2(dy, dx);
-    const length = Math.sqrt(dx*dx + dy*dy);
+function getScenarioLabel(scenario: Scenario) {
+  switch (scenario) {
+    case "horizontal":
+      return "SUPERFÍCIE HORIZONTAL";
+    case "friction":
+      return "SUPERFÍCIE COM ATRITO";
+    case "two_blocks":
+      return "DOIS BLOCOS EM CONTATO";
+    case "pulley":
+      return "SISTEMA COM POLIA";
+    default:
+      return "LEIS DE NEWTON";
+  }
+}
 
-    if (length < 5) return; // Não desenhar setas muito pequenas
+function MetricCard({
+  label,
+  value,
+  valueClassName = "text-slate-900",
+}: {
+  label: React.ReactNode;
+  value: string;
+  valueClassName?: string;
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <p className="text-sm font-medium text-slate-600">{label}</p>
+      <p className={`mt-2 text-lg font-bold ${valueClassName}`}>{value}</p>
+    </div>
+  );
+}
 
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-    ctx.lineWidth = 2;
+function CalcMiniCard({
+  title,
+  values,
+}: {
+  title: string;
+  values: [string, string][];
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <p className="mb-3 text-sm font-bold text-slate-800">{title}</p>
+      <div className="space-y-2">
+        {values.map(([label, value]) => (
+          <div key={label} className="flex items-center justify-between gap-4">
+            <span className="text-sm text-slate-600">{label}</span>
+            <span className="text-sm font-bold text-slate-900">{value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-    ctx.beginPath();
-    ctx.moveTo(fromX, fromY);
-    ctx.lineTo(toX, toY);
-    ctx.stroke();
+function CalcSection({
+  title,
+  formulas,
+}: {
+  title: string;
+  formulas: string[];
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <p className="mb-3 text-sm font-semibold text-slate-700">{title}</p>
+      <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
+        {formulas.map((formula, index) => (
+          <MathFormula key={index} formula={formula} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
-    ctx.beginPath();
-    ctx.moveTo(toX, toY);
-    ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
-    ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
-    ctx.closePath();
-    ctx.fill();
+function drawLabeledArrow(
+  ctx: CanvasRenderingContext2D,
+  fromX: number,
+  fromY: number,
+  toX: number,
+  toY: number,
+  color: string,
+  label: string
+) {
+  const headlen = 10;
+  const angle = Math.atan2(toY - fromY, toX - fromX);
+  const dx = toX - fromX;
+  const dy = toY - fromY;
+  const length = Math.sqrt(dx * dx + dy * dy);
 
-    // Label
-    ctx.fillStyle = color;
-    ctx.font = "bold 12px Arial";
-    ctx.fillText(label, toX + 10, toY);
+  if (length < 5) return;
+
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 2.5;
+
+  ctx.beginPath();
+  ctx.moveTo(fromX, fromY);
+  ctx.lineTo(toX, toY);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(toX, toY);
+  ctx.lineTo(
+    toX - headlen * Math.cos(angle - Math.PI / 6),
+    toY - headlen * Math.sin(angle - Math.PI / 6)
+  );
+  ctx.lineTo(
+    toX - headlen * Math.cos(angle + Math.PI / 6),
+    toY - headlen * Math.sin(angle + Math.PI / 6)
+  );
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.font = "bold 11px Arial";
+  ctx.fillText(label, toX + 8, toY - 4);
+}
+
+function drawBlock(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  fill: string,
+  stroke: string,
+  label: string
+) {
+  ctx.fillStyle = fill;
+  ctx.strokeStyle = stroke;
+  ctx.lineWidth = 3;
+  ctx.fillRect(x, y, width, height);
+  ctx.strokeRect(x, y, width, height);
+
+  ctx.fillStyle = "white";
+  ctx.font = "bold 14px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText(label, x + width / 2, y + height / 2 + 5);
+  ctx.textAlign = "start";
+}
+
+function drawSingleBlockScene(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  centerY: number,
+  mass: number,
+  force: number,
+  frictionForce: number,
+  normalForce: number,
+  weight: number,
+  position: number,
+  velocity: number
+) {
+  const scale = 45;
+  const blockWidth = 70;
+  const blockHeight = 50;
+  const x = clamp(100 + position * scale, 40, width - blockWidth - 40);
+  const y = centerY;
+
+  drawBlock(ctx, x, y, blockWidth, blockHeight, "#3b82f6", "#1d4ed8", `${formatNumber(mass)}kg`);
+
+  const cx = x + blockWidth / 2;
+  const cy = y + blockHeight / 2;
+
+  if (Math.abs(force) > 0.1) {
+    drawLabeledArrow(ctx, cx, cy, cx + force * 3.5, cy, "#ef4444", "F");
+  }
+
+  if (Math.abs(frictionForce) > 0.1) {
+    const dir = Math.sign(force || velocity || 1);
+    drawLabeledArrow(
+      ctx,
+      cx,
+      y + blockHeight,
+      cx - dir * Math.abs(frictionForce) * 3.5,
+      y + blockHeight,
+      "#d97706",
+      "Fat"
+    );
+  }
+
+  drawLabeledArrow(ctx, cx, y + blockHeight, cx, y + blockHeight - normalForce * 1.6, "#16a34a", "N");
+  drawLabeledArrow(ctx, cx, y + blockHeight, cx, y + blockHeight + weight * 1.6, "#16a34a", "P");
+}
+
+function drawTwoBlocksScene(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  centerY: number,
+  m1: number,
+  m2: number,
+  force: number,
+  frictionForce: number,
+  contactForce: number,
+  position: number,
+  velocity: number
+) {
+  const scale = 40;
+  const blockWidth1 = 70;
+  const blockWidth2 = 60;
+  const blockHeight = 50;
+  const baseX = clamp(100 + position * scale, 40, width - 220);
+  const y = centerY;
+
+  drawBlock(ctx, baseX, y, blockWidth1, blockHeight, "#3b82f6", "#1d4ed8", "m₁");
+  drawBlock(ctx, baseX + blockWidth1 + 10, y, blockWidth2, blockHeight, "#8b5cf6", "#6d28d9", "m₂");
+
+  const cx1 = baseX + blockWidth1 / 2;
+  const cx2 = baseX + blockWidth1 + 10 + blockWidth2 / 2;
+  const cy = y + blockHeight / 2;
+
+  if (Math.abs(force) > 0.1) {
+    drawLabeledArrow(ctx, cx1, cy, cx1 + force * 3.2, cy, "#ef4444", "F");
+  }
+
+  if (Math.abs(contactForce) > 0.1) {
+    drawLabeledArrow(ctx, baseX + blockWidth1, cy, baseX + blockWidth1 + 10 + contactForce * 4, cy, "#7c3aed", "Fc");
+  }
+
+  if (Math.abs(frictionForce) > 0.1) {
+    const dir = Math.sign(force || velocity || 1);
+    drawLabeledArrow(
+      ctx,
+      baseX + 60,
+      y + blockHeight,
+      baseX + 60 - dir * Math.abs(frictionForce) * 1.5,
+      y + blockHeight,
+      "#d97706",
+      "Fat"
+    );
+  }
+}
+
+function drawPulleyScene(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  m1: number,
+  m2: number,
+  tension: number,
+  acceleration: number,
+  position: number
+) {
+  const pulleyX = width / 2;
+  const pulleyY = 90;
+  const pulleyR = 28;
+
+  ctx.beginPath();
+  ctx.arc(pulleyX, pulleyY, pulleyR, 0, Math.PI * 2);
+  ctx.fillStyle = "#cbd5e1";
+  ctx.fill();
+  ctx.strokeStyle = "#64748b";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  const travel = clamp(position * 25, -70, 70);
+
+  const leftY = 170 + travel;
+  const rightY = 170 - travel;
+
+  ctx.strokeStyle = "#475569";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(pulleyX - pulleyR, pulleyY);
+  ctx.lineTo(pulleyX - pulleyR, leftY);
+  ctx.moveTo(pulleyX + pulleyR, pulleyY);
+  ctx.lineTo(pulleyX + pulleyR, rightY);
+  ctx.stroke();
+
+  drawBlock(ctx, pulleyX - 90, leftY, 44, 44, "#3b82f6", "#1d4ed8", "m₁");
+  drawBlock(ctx, pulleyX + 46, rightY, 44, 44, "#8b5cf6", "#6d28d9", "m₂");
+
+  drawLabeledArrow(ctx, pulleyX - 68, leftY, pulleyX - 68, leftY - tension * 1.6, "#0ea5e9", "T");
+  drawLabeledArrow(ctx, pulleyX + 68, rightY, pulleyX + 68, rightY - tension * 1.6, "#0ea5e9", "T");
+
+  drawLabeledArrow(ctx, pulleyX - 68, leftY + 44, pulleyX - 68, leftY + 44 + m1 * G * 1.4, "#16a34a", "P₁");
+  drawLabeledArrow(ctx, pulleyX + 68, rightY + 44, pulleyX + 68, rightY + 44 + m2 * G * 1.4, "#16a34a", "P₂");
+
+  ctx.fillStyle = "#0f172a";
+  ctx.font = "bold 12px Arial";
+  ctx.fillText(`a = ${formatNumber(acceleration)} m/s²`, pulleyX - 45, pulleyY + 70);
 }
