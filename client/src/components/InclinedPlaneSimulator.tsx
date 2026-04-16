@@ -225,14 +225,13 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
         `N = ${formatNumber(normalForce)} N`
       );
 
-      if (hasFriction) {
-        const frictionOpposesUp = isPushingUp;
-        const frictionTipX = frictionOpposesUp
-          ? blockCenterX - dx * 66
-          : blockCenterX + dx * 66;
-        const frictionTipY = frictionOpposesUp
-          ? blockCenterY - dy * 66
-          : blockCenterY + dy * 66;
+           if (hasFriction) {
+        const frictionTipX = isPushingUp
+          ? blockCenterX + dx * 66
+          : blockCenterX - dx * 66;
+        const frictionTipY = isPushingUp
+          ? blockCenterY + dy * 66
+          : blockCenterY - dy * 66;
 
         drawLabeledArrow(
           ctx,
