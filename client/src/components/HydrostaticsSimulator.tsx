@@ -2,12 +2,19 @@ import React, { useMemo, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
-import {  Select,  SelectContent,  SelectItem,  SelectTrigger,  SelectValue,} from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { formatNumber, formatUnit } from "@/lib/utils";
 import { AdvancedTheory } from "@/components/AdvancedTheory";
 import { ITAStaticsTheory } from "@/content/statics/ita_statics_theory";
 
 type HydroMode = "stevin" | "empuxo" | "vasos";
+type PressureView = "manometrica" | "absoluta";
 
 const fluidDensities: Record<string, number> = {
   agua: 1000,
@@ -42,8 +49,12 @@ const getFluidColor = (tipoFluido: string) => {
   }
 };
 
+const clamp = (value: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, value));
+
 export const HydrostaticsSimulator: React.FC = () => {
   const [mode, setMode] = useState<HydroMode>("stevin");
+  const [pressureView, setPressureView] = useState<PressureView>("manometrica");
 
   const [tipoFluido, setTipoFluido] = useState("agua");
   const [gravidade, setGravidade] = useState(9.8);
@@ -59,42 +70,39 @@ export const HydrostaticsSimulator: React.FC = () => {
   const [densidadeCorpo, setDensidadeCorpo] = useState(800);
   const [fracaoSubmersa, setFracaoSubmersa] = useState(1);
 
-  // Vasos
+  // Vasos comunicantes
   const [tipoFluido2, setTipoFluido2] = useState("oleo");
   const [alturaEsquerda, setAlturaEsquerda] = useState(1.2);
 
   const rho = fluidDensities[tipoFluido];
   const rho2 = fluidDensities[tipoFluido2];
 
-  const pressureAtDepth = (h: number) => rho * gravidade * h;
-  const absolutePressureAtDepth = (h: number) => pressaoAtm + pressureAtDepth(h);
+  const gaugePressureAtDepth = (h: number) => rho * gravidade * h;
+  const absolutePressureAtDepth = (h: number) => pressaoAtm + gaugePressureAtDepth(h);
 
-  const pressaoA = useMemo(() => pressureAtDepth(profundidadeA), [rho, gravidade, profundidadeA]);
-  const pressaoB = useMemo(() => pressureAtDepth(profundidadeB), [rho, gravidade, profundidadeB]);
-  const pressaoC = useMemo(() => pressureAtDepth(profundidadeC), [rho, gravidade, profundidadeC]);
+  const pressaoA = useMemo(() => gaugePressureAtDepth(profundidadeA), [rho, gravidade, profundidadeA]);
+  const pressaoB = useMemo(() => gaugePressureAtDepth(profundidadeB), [rho, gravidade, profundidadeB]);
+  const pressaoC = useMemo(() => gaugePressureAtDepth(profundidadeC), [rho, gravidade, profundidadeC]);
 
-  const pressaoAbsA = useMemo(
-    () => absolutePressureAtDepth(profundidadeA),
-    [rho, gravidade, pressaoAtm, profundidadeA]
-  );
-  const pressaoAbsB = useMemo(
-    () => absolutePressureAtDepth(profundidadeB),
-    [rho, gravidade, pressaoAtm, profundidadeB]
-  );
-  const pressaoAbsC = useMemo(
-    () => absolutePressureAtDepth(profundidadeC),
-    [rho, gravidade, pressaoAtm, profundidadeC]
-  );
+  const pressaoAbsA = useMemo(() => absolutePressureAtDepth(profundidadeA), [rho, gravidade, pressaoAtm, profundidadeA]);
+  const pressaoAbsB = useMemo(() => absolutePressureAtDepth(profundidadeB), [rho, gravidade, pressaoAtm, profundidadeB]);
+  const pressaoAbsC = useMemo(() => absolutePressureAtDepth(profundidadeC), [rho, gravidade, pressaoAtm, profundidadeC]);
 
   const deltaPAB = useMemo(
     () => rho * gravidade * Math.abs(profundidadeB - profundidadeA),
     [rho, gravidade, profundidadeA, profundidadeB]
   );
 
-  const volumeSubmerso = useMemo(
-    () => volumeCorpo * fracaoSubmersa,
-    [volumeCorpo, fracaoSubmersa]
-  );
+  const sameDepthAB = Math.abs(profundidadeA - profundidadeB) < 0.05;
+  const sameDepthAC = Math.abs(profundidadeA - profundidadeC) < 0.05;
+  const sameDepthBC = Math.abs(profundidadeB - profundidadeC) < 0.05;
+
+  const displayedPA = pressureView === "manometrica" ? pressaoA : pressaoAbsA;
+  const displayedPB = pressureView === "manometrica" ? pressaoB : pressaoAbsB;
+  const displayedPC = pressureView === "manometrica" ? pressaoC : pressaoAbsC;
+
+  // Empuxo
+  const volumeSubmerso = useMemo(() => volumeCorpo * fracaoSubmersa, [volumeCorpo, fracaoSubmersa]);
 
   const empuxo = useMemo(
     () => rho * gravidade * volumeSubmerso,
@@ -127,6 +135,7 @@ export const HydrostaticsSimulator: React.FC = () => {
     return Math.min(densidadeCorpo / rho, 1);
   }, [densidadeCorpo, rho]);
 
+  // Vasos comunicantes
   const alturaDireita = useMemo(() => {
     if (rho2 <= 0) return 0;
     return (rho / rho2) * alturaEsquerda;
@@ -143,6 +152,11 @@ export const HydrostaticsSimulator: React.FC = () => {
   );
 
   const vasosBalanced = Math.abs(pressaoBaseEsquerda - pressaoBaseDireita) < 1;
+  const sameFluid = tipoFluido === tipoFluido2;
+
+  const displayedMaxHeight = useMemo(() => {
+    return Math.max(alturaEsquerda, alturaDireita, 0.6);
+  }, [alturaEsquerda, alturaDireita]);
 
   return (
     <div className="w-full space-y-6">
@@ -190,6 +204,26 @@ export const HydrostaticsSimulator: React.FC = () => {
                   </SelectContent>
                 </Select>
               </div>
+
+              {mode === "stevin" && (
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+                    Exibir pressão
+                  </p>
+                  <Select
+                    value={pressureView}
+                    onValueChange={(value) => setPressureView(value as PressureView)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="manometrica">Manométrica</SelectItem>
+                      <SelectItem value="absoluta">Absoluta</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               <ControlRow
                 label="Gravidade"
@@ -368,22 +402,22 @@ export const HydrostaticsSimulator: React.FC = () => {
             <div className="space-y-3 p-5">
               {mode === "stevin" && (
                 <>
-                  <MetricCard
-                    label={<>Pressão em A</>}
-                    value={formatUnit(pressaoA, "Pa")}
-                  />
-                  <MetricCard
-                    label={<>Pressão em B</>}
-                    value={formatUnit(pressaoB, "Pa")}
-                  />
-                  <MetricCard
-                    label={<>Pressão em C</>}
-                    value={formatUnit(pressaoC, "Pa")}
-                  />
+                  <MetricCard label={<>Pressão em A</>} value={formatUnit(displayedPA, "Pa")} />
+                  <MetricCard label={<>Pressão em B</>} value={formatUnit(displayedPB, "Pa")} />
+                  <MetricCard label={<>Pressão em C</>} value={formatUnit(displayedPC, "Pa")} />
                   <MetricCard
                     label={<>ΔP entre A e B</>}
                     value={formatUnit(deltaPAB, "Pa")}
                     valueClassName="text-blue-700"
+                  />
+                  <MetricCard
+                    label={<>Observação</>}
+                    value={
+                      sameDepthAB || sameDepthAC || sameDepthBC
+                        ? "Pontos na mesma profundidade têm a mesma pressão."
+                        : "Pontos mais profundos têm maior pressão."
+                    }
+                    valueClassName="text-slate-900"
                   />
                 </>
               )}
@@ -423,6 +457,10 @@ export const HydrostaticsSimulator: React.FC = () => {
                         : "text-red-700"
                     }
                   />
+                  <MetricCard
+                    label={<>Fração em equilíbrio</>}
+                    value={`${formatNumber(fracaoEquilibrio * 100, 1)} %`}
+                  />
                 </>
               )}
 
@@ -445,6 +483,14 @@ export const HydrostaticsSimulator: React.FC = () => {
                     label={<>Estado</>}
                     value={vasosBalanced ? "Equilíbrio hidrostático" : "Desequilíbrio"}
                     valueClassName={vasosBalanced ? "text-green-700" : "text-red-700"}
+                  />
+                  <MetricCard
+                    label={<>Leitura física</>}
+                    value={
+                      sameFluid
+                        ? "Mesmo fluido: as alturas tendem a ser iguais."
+                        : "Fluido mais denso exige coluna menor para equilibrar."
+                    }
                   />
                 </>
               )}
@@ -469,20 +515,27 @@ export const HydrostaticsSimulator: React.FC = () => {
                       className="mx-auto w-full min-w-[780px] rounded-lg border border-slate-200 bg-slate-50"
                     >
                       <defs>
-                        <linearGradient id="fluidGradientStevin" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor={getFluidColor(tipoFluido)} stopOpacity="0.35" />
-                          <stop offset="100%" stopColor={getFluidColor(tipoFluido)} stopOpacity="0.9" />
+                        <linearGradient id="fluidGradientStevinNew" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={getFluidColor(tipoFluido)} stopOpacity="0.30" />
+                          <stop offset="100%" stopColor={getFluidColor(tipoFluido)} stopOpacity="0.95" />
                         </linearGradient>
                       </defs>
 
                       <rect x="180" y="40" width="260" height="320" fill="none" stroke="#1e293b" strokeWidth="4" />
-                      <rect x="182" y="70" width="256" height="288" fill="url(#fluidGradientStevin)" />
+                      <rect x="182" y="70" width="256" height="288" fill="url(#fluidGradientStevinNew)" />
 
                       <path
                         d="M 182 70 Q 250 60, 310 70 T 438 70"
                         fill="none"
                         stroke={getFluidColor(tipoFluido)}
                         strokeWidth="3"
+                      />
+
+                      <PressureScale
+                        x={470}
+                        y={70}
+                        height={288}
+                        color={getFluidColor(tipoFluido)}
                       />
 
                       <Ruler />
@@ -507,15 +560,16 @@ export const HydrostaticsSimulator: React.FC = () => {
                       />
 
                       <InfoBox
-                        x={520}
-                        y={70}
-                        width={360}
+                        x={560}
+                        y={60}
+                        width={320}
                         lines={[
                           `Fluido: ${fluidLabels[tipoFluido]} (ρ = ${formatNumber(rho)} kg/m³)`,
-                          `P_A = ${formatNumber(pressaoA)} Pa`,
-                          `P_B = ${formatNumber(pressaoB)} Pa`,
-                          `P_C = ${formatNumber(pressaoC)} Pa`,
-                          `Mesma profundidade => mesma pressão`,
+                          `${pressureView === "manometrica" ? "P manométrica" : "P absoluta"}`,
+                          `P_A = ${formatNumber(displayedPA)} Pa`,
+                          `P_B = ${formatNumber(displayedPB)} Pa`,
+                          `P_C = ${formatNumber(displayedPC)} Pa`,
+                          `ΔP_AB = ${formatNumber(deltaPAB)} Pa`,
                         ]}
                       />
                     </svg>
@@ -543,6 +597,9 @@ export const HydrostaticsSimulator: React.FC = () => {
                         const submergedHeight = objHeight * fracaoSubmersa;
                         const topY = 160;
                         const x = 280;
+                        const upward = Math.min(empuxo * 1.1, 110);
+                        const downward = Math.min(pesoCorpo * 0.9, 110);
+
                         return (
                           <>
                             <rect
@@ -569,12 +626,12 @@ export const HydrostaticsSimulator: React.FC = () => {
                               x1={x + objWidth / 2}
                               y1={topY + objHeight / 2}
                               x2={x + objWidth / 2}
-                              y2={topY + objHeight / 2 - Math.min(empuxo * 1.2, 110)}
+                              y2={topY + objHeight / 2 - upward}
                               stroke="#2563eb"
                               strokeWidth="4"
                             />
                             <polygon
-                              points={`${x + objWidth / 2},${topY + objHeight / 2 - Math.min(empuxo * 1.2, 110) - 10} ${x + objWidth / 2 - 8},${topY + objHeight / 2 - Math.min(empuxo * 1.2, 110) + 6} ${x + objWidth / 2 + 8},${topY + objHeight / 2 - Math.min(empuxo * 1.2, 110) + 6}`}
+                              points={`${x + objWidth / 2},${topY + objHeight / 2 - upward - 10} ${x + objWidth / 2 - 8},${topY + objHeight / 2 - upward + 6} ${x + objWidth / 2 + 8},${topY + objHeight / 2 - upward + 6}`}
                               fill="#2563eb"
                             />
 
@@ -582,17 +639,17 @@ export const HydrostaticsSimulator: React.FC = () => {
                               x1={x + objWidth / 2 + 25}
                               y1={topY + objHeight / 2}
                               x2={x + objWidth / 2 + 25}
-                              y2={topY + objHeight / 2 + Math.min(pesoCorpo * 0.9, 110)}
+                              y2={topY + objHeight / 2 + downward}
                               stroke="#ef4444"
                               strokeWidth="4"
                             />
                             <polygon
-                              points={`${x + objWidth / 2 + 25},${topY + objHeight / 2 + Math.min(pesoCorpo * 0.9, 110) + 10} ${x + objWidth / 2 + 17},${topY + objHeight / 2 + Math.min(pesoCorpo * 0.9, 110) - 6} ${x + objWidth / 2 + 33},${topY + objHeight / 2 + Math.min(pesoCorpo * 0.9, 110) - 6}`}
+                              points={`${x + objWidth / 2 + 25},${topY + objHeight / 2 + downward + 10} ${x + objWidth / 2 + 17},${topY + objHeight / 2 + downward - 6} ${x + objWidth / 2 + 33},${topY + objHeight / 2 + downward - 6}`}
                               fill="#ef4444"
                             />
 
                             <text
-                              x={x + objWidth + 20}
+                              x={x + objWidth + 26}
                               y={topY + 25}
                               fontSize="13"
                               fontWeight="700"
@@ -600,18 +657,35 @@ export const HydrostaticsSimulator: React.FC = () => {
                             >
                               Corpo
                             </text>
+                            <text
+                              x={x + objWidth + 26}
+                              y={topY + 48}
+                              fontSize="12"
+                              fill="#2563eb"
+                            >
+                              E = {formatNumber(empuxo)} N
+                            </text>
+                            <text
+                              x={x + objWidth + 26}
+                              y={topY + 68}
+                              fontSize="12"
+                              fill="#dc2626"
+                            >
+                              P = {formatNumber(pesoCorpo)} N
+                            </text>
                           </>
                         );
                       })()}
 
                       <InfoBox
-                        x={540}
+                        x={560}
                         y={80}
-                        width={310}
+                        width={300}
                         lines={[
                           `ρ fluido = ${formatNumber(rho)} kg/m³`,
                           `ρ corpo = ${formatNumber(densidadeCorpo)} kg/m³`,
-                          `V sub = ${formatNumber(volumeSubmerso, 4)} m³`,
+                          `V = ${formatNumber(volumeCorpo, 4)} m³`,
+                          `Vsub = ${formatNumber(volumeSubmerso, 4)} m³`,
                           `E = ${formatNumber(empuxo)} N`,
                           `P = ${formatNumber(pesoCorpo)} N`,
                           `Estado: ${estadoCorpo}`,
@@ -635,9 +709,12 @@ export const HydrostaticsSimulator: React.FC = () => {
                       />
 
                       {(() => {
-                        const maxH = 3;
-                        const leftSurfaceY = 360 - (alturaEsquerda / maxH) * 250;
-                        const rightSurfaceY = 360 - (alturaDireita / maxH) * 250;
+                        const maxDisplay = clamp(displayedMaxHeight, 0.6, 3);
+                        const leftHeightPx = (alturaEsquerda / maxDisplay) * 250;
+                        const rightHeightPx = (alturaDireita / maxDisplay) * 250;
+                        const leftSurfaceY = 360 - leftHeightPx;
+                        const rightSurfaceY = 360 - rightHeightPx;
+
                         return (
                           <>
                             <rect
@@ -646,7 +723,7 @@ export const HydrostaticsSimulator: React.FC = () => {
                               width="110"
                               height={360 - leftSurfaceY}
                               fill={getFluidColor(tipoFluido)}
-                              opacity="0.5"
+                              opacity="0.55"
                             />
                             <rect
                               x="427"
@@ -654,7 +731,7 @@ export const HydrostaticsSimulator: React.FC = () => {
                               width="110"
                               height={360 - rightSurfaceY}
                               fill={getFluidColor(tipoFluido2)}
-                              opacity="0.5"
+                              opacity="0.55"
                             />
 
                             <path
@@ -669,6 +746,13 @@ export const HydrostaticsSimulator: React.FC = () => {
                               stroke={getFluidColor(tipoFluido2)}
                               strokeWidth="3"
                             />
+
+                            <text x="245" y={leftSurfaceY - 12} fontSize="12" fill="#0f172a" fontWeight="700">
+                              h₁ = {formatNumber(alturaEsquerda)} m
+                            </text>
+                            <text x="445" y={rightSurfaceY - 12} fontSize="12" fill="#0f172a" fontWeight="700">
+                              h₂ = {formatNumber(alturaDireita)} m
+                            </text>
                           </>
                         );
                       })()}
@@ -676,14 +760,15 @@ export const HydrostaticsSimulator: React.FC = () => {
                       <InfoBox
                         x={610}
                         y={80}
-                        width={290}
+                        width={300}
                         lines={[
+                          `Fluido esquerdo: ${fluidLabels[tipoFluido]}`,
+                          `Fluido direito: ${fluidLabels[tipoFluido2]}`,
                           `ρ₁ = ${formatNumber(rho)} kg/m³`,
                           `ρ₂ = ${formatNumber(rho2)} kg/m³`,
                           `h₁ = ${formatNumber(alturaEsquerda)} m`,
                           `h₂ = ${formatNumber(alturaDireita)} m`,
-                          `P base esq = ${formatNumber(pressaoBaseEsquerda)} Pa`,
-                          `P base dir = ${formatNumber(pressaoBaseDireita)} Pa`,
+                          `Base balanceada: ${vasosBalanced ? "sim" : "não"}`,
                         ]}
                       />
                     </svg>
@@ -707,21 +792,21 @@ export const HydrostaticsSimulator: React.FC = () => {
                     title="Ponto A"
                     values={[
                       ["h", formatUnit(profundidadeA, "m")],
-                      ["P", formatUnit(pressaoA, "Pa")],
+                      ["P", formatUnit(displayedPA, "Pa")],
                     ]}
                   />
                   <CalcMiniCard
                     title="Ponto B"
                     values={[
                       ["h", formatUnit(profundidadeB, "m")],
-                      ["P", formatUnit(pressaoB, "Pa")],
+                      ["P", formatUnit(displayedPB, "Pa")],
                     ]}
                   />
                   <CalcMiniCard
                     title="Ponto C"
                     values={[
                       ["h", formatUnit(profundidadeC, "m")],
-                      ["P", formatUnit(pressaoC, "Pa")],
+                      ["P", formatUnit(displayedPC, "Pa")],
                     ]}
                   />
                   <CalcMiniCard
@@ -740,7 +825,7 @@ export const HydrostaticsSimulator: React.FC = () => {
                     title="Corpo"
                     values={[
                       ["m", formatUnit(massaCorpo, "kg")],
-                      ["ρ", formatUnit(densidadeCorpo, "kg/m³")],
+                      ["ρc", formatUnit(densidadeCorpo, "kg/m³")],
                     ]}
                   />
                   <CalcMiniCard
@@ -794,7 +879,7 @@ export const HydrostaticsSimulator: React.FC = () => {
                     title="Equilíbrio"
                     values={[
                       ["Estado", vasosBalanced ? "Balanceado" : "Não balanceado"],
-                      ["P₀", formatUnit(pressaoAtm, "Pa")],
+                      ["Mesmo fluido", sameFluid ? "Sim" : "Não"],
                     ]}
                   />
                 </>
@@ -837,6 +922,9 @@ export const HydrostaticsSimulator: React.FC = () => {
                     formulas={[
                       String.raw`\Delta P = \rho g \Delta h`,
                       String.raw`\Delta P_{AB} = ${formatNumber(rho)} \cdot ${formatNumber(gravidade)} \cdot ${formatNumber(Math.abs(profundidadeB - profundidadeA))} = ${formatNumber(deltaPAB)} \,\text{Pa}`,
+                      sameDepthAB || sameDepthAC || sameDepthBC
+                        ? String.raw`\text{Pontos na mesma profundidade possuem a mesma pressão no mesmo fluido.}`
+                        : String.raw`\text{Quanto maior a profundidade, maior a pressão hidrostática.}`,
                     ]}
                   />
                 </>
@@ -887,6 +975,9 @@ export const HydrostaticsSimulator: React.FC = () => {
                     formulas={[
                       String.raw`\rho_1 g h_1 = \rho_2 g h_2`,
                       String.raw`h_2 = \frac{\rho_1}{\rho_2} h_1 = \frac{${formatNumber(rho)}}{${formatNumber(rho2)}} \cdot ${formatNumber(alturaEsquerda)} = ${formatNumber(alturaDireita)} \,\text{m}`,
+                      sameFluid
+                        ? String.raw`\text{Como } \rho_1 = \rho_2,\ \text{as alturas tendem a ser iguais.}`
+                        : String.raw`\text{O fluido mais denso fica com coluna menor para equilibrar a base.}`,
                     ]}
                   />
                 </>
@@ -1053,6 +1144,31 @@ function Ruler() {
           </g>
         );
       })}
+    </g>
+  );
+}
+
+function PressureScale({
+  x,
+  y,
+  height,
+  color,
+}: {
+  x: number;
+  y: number;
+  height: number;
+  color: string;
+}) {
+  return (
+    <g>
+      <rect x={x} y={y} width={28} height={height} rx="6" fill={color} opacity="0.15" stroke="#cbd5e1" />
+      <rect x={x} y={y} width={28} height={height} rx="6" fill={`url(#none)`} />
+      <text x={x - 4} y={y - 10} fontSize="11" fill="#475569" textAnchor="end">
+        menor
+      </text>
+      <text x={x - 4} y={y + height + 16} fontSize="11" fill="#475569" textAnchor="end">
+        maior
+      </text>
     </g>
   );
 }
