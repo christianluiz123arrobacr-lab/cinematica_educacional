@@ -1,56 +1,86 @@
-import { useRef, useEffect, useState } from "react";
-import { MathFormula } from "@/components/MathFormula";
-import { Slider } from "@/components/ui/slider";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
+import { MathFormula } from "@/components/MathFormula";
 import { formatNumber, formatUnit } from "@/lib/utils";
 import { AdvancedTheory } from "@/components/AdvancedTheory";
 import { ITADynamicsTheory } from "@/content/dynamics/ita_dynamics_theory";
 
 interface InclinedPlaneSimulatorProps {
-  angle?: number;
-  mu?: number;
-  mode?: number; // 0: descendo, 1: subindo, 2: repouso
   isRunning: boolean;
   resetTrigger: number;
 }
 
-export function InclinedPlaneSimulator({
-  angle: initialAngle = 30,
-  mu: initialMu = 0.2,
-  mode: initialMode = 0,
+type FrictionMode = "withoutFriction" | "withFriction";
+
+const G = 9.8;
+
+export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
   isRunning,
   resetTrigger,
-}: InclinedPlaneSimulatorProps) {
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const frameCountRef = useRef(0);
-  const animationIdRef = useRef<number | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const timeRef = useRef(0);
 
-  // Estados locais para permitir edição
-  const [angle, setAngle] = useState(initialAngle);
-  const [mu, setMu] = useState(initialMu);
-  const [mass, setMass] = useState(1); // Massa editável
-  const [mode, setMode] = useState(initialMode);
+  const [frictionMode, setFrictionMode] =
+    useState<FrictionMode>("withoutFriction");
 
-  // Atualizar estados se props mudarem (opcional, mas bom para reset)
+  const [mass, setMass] = useState(2);
+  const [angleDeg, setAngleDeg] = useState(30);
+  const [height, setHeight] = useState(4);
+  const [mu, setMu] = useState(0.2);
+
+  const angleRad = useMemo(() => (angleDeg * Math.PI) / 180, [angleDeg]);
+
+  const rampLength = useMemo(() => {
+    const sinValue = Math.sin(angleRad);
+    if (sinValue <= 0) return 0;
+    return height / sinValue;
+  }, [height, angleRad]);
+
+  const hasFriction = frictionMode === "withFriction";
+
+  const weight = useMemo(() => mass * G, [mass]);
+  const normalForce = useMemo(() => mass * G * Math.cos(angleRad), [mass, angleRad]);
+  const parallelForce = useMemo(() => mass * G * Math.sin(angleRad), [mass, angleRad]);
+
+  const frictionForce = useMemo(() => {
+    if (!hasFriction) return 0;
+    return mu * normalForce;
+  }, [hasFriction, mu, normalForce]);
+
+  const netForce = useMemo(() => {
+    if (!hasFriction) return parallelForce;
+    return parallelForce - frictionForce;
+  }, [hasFriction, parallelForce, frictionForce]);
+
+  const acceleration = useMemo(() => {
+    const a = netForce / mass;
+    return a > 0 ? a : 0;
+  }, [netForce, mass]);
+
+  const canSlide = acceleration > 0 && rampLength > 0;
+
+  const descentTime = useMemo(() => {
+    if (!canSlide) return 0;
+    return Math.sqrt((2 * rampLength) / acceleration);
+  }, [canSlide, rampLength, acceleration]);
+
+  const finalVelocity = useMemo(() => {
+    if (!canSlide) return 0;
+    return Math.sqrt(2 * acceleration * rampLength);
+  }, [canSlide, acceleration, rampLength]);
+
+  const potentialEnergy = useMemo(() => mass * G * height, [mass, height]);
+
+  const kineticEnergyBottom = useMemo(() => {
+    return 0.5 * mass * finalVelocity * finalVelocity;
+  }, [mass, finalVelocity]);
+
   useEffect(() => {
-    setAngle(initialAngle);
-    setMu(initialMu);
-    setMode(initialMode);
-  }, [initialAngle, initialMu, initialMode, resetTrigger]);
-
-  const g = 9.8;
-  const angleRad = (angle * Math.PI) / 180;
-  const P = mass * g;
-  const N = mass * g * Math.cos(angleRad);
-  const Pparallel = mass * g * Math.sin(angleRad);
-  const f = mu * N;
-
-  // Fator de velocidade da animação
-  const speedFactor = 0.5;
-
-  useEffect(() => {
-    frameCountRef.current = 0;
-  }, [resetTrigger, angle, mu, mass, mode]);
+    timeRef.current = 0;
+  }, [resetTrigger, mass, angleDeg, height, mu, frictionMode]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -59,287 +89,542 @@ export function InclinedPlaneSimulator({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    const width = canvas.width;
+    const heightCanvas = canvas.height;
+
     const animate = () => {
-      const width = canvas.width;
-      const height = canvas.height;
+      ctx.clearRect(0, 0, width, heightCanvas);
 
-      // Background
       ctx.fillStyle = "#f8fafc";
-      ctx.fillRect(0, 0, width, height);
+      ctx.fillRect(0, 0, width, heightCanvas);
 
-      // Grid
-      ctx.strokeStyle = "#e2e8f0";
-      ctx.lineWidth = 1;
-      for (let i = 0; i <= width; i += 50) {
-        ctx.beginPath();
-        ctx.moveTo(i, 0);
-        ctx.lineTo(i, height);
-        ctx.stroke();
-      }
-      for (let i = 0; i <= height; i += 50) {
-        ctx.beginPath();
-        ctx.moveTo(0, i);
-        ctx.lineTo(width, i);
-        ctx.stroke();
-      }
+      const marginLeft = 120;
+      const marginBottom = 70;
+      const baseY = heightCanvas - marginBottom;
 
-      // Triângulo retângulo (plano inclinado)
-      const baseX = 80;
-      const baseY = height - 60;
-      const triHeight = 200;
-      const triBase = triHeight / Math.tan(angleRad);
+      const rampVisualLength = 420;
+      const topX = marginLeft + 120;
+      const topY = baseY - 220;
+      const bottomX = topX + rampVisualLength;
+      const bottomY = baseY;
 
-      // Desenhar plano
-      ctx.strokeStyle = "#1f2937";
+      // chão
+      ctx.strokeStyle = "#94a3b8";
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(baseX, baseY);
-      ctx.lineTo(baseX + triBase, baseY);
-      ctx.lineTo(baseX, baseY - triHeight);
-      ctx.closePath();
+      ctx.moveTo(60, baseY);
+      ctx.lineTo(width - 60, baseY);
       ctx.stroke();
 
-      // Desenhar ângulo
-      ctx.fillStyle = "#1f2937";
-      ctx.font = "bold 14px Arial";
-      ctx.fillText(`θ = ${formatNumber(angle, 0)}°`, baseX + triBase - 60, baseY - 10);
-
-      // Posição do objeto no plano
-      const objDist = 120;
-      const objX = baseX + objDist * Math.cos(angleRad);
-      const objY = baseY - objDist * Math.sin(angleRad);
-
-      // Desenhar objeto
-      ctx.fillStyle = "#f59e0b";
+      // rampa
+      ctx.strokeStyle = "#334155";
+      ctx.lineWidth = 5;
       ctx.beginPath();
-      ctx.arc(objX, objY, 15, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.moveTo(topX, topY);
+      ctx.lineTo(bottomX, bottomY);
+      ctx.stroke();
 
-      // Desenhar peso (vertical para baixo)
-      drawArrow(
-        ctx,
-        objX,
-        objY,
-        objX,
-        objY + 50,
-        "#ef4444",
-        "P = mg"
-      );
-
-      // Desenhar normal (perpendicular ao plano)
-      const normalX = objX - N * Math.sin(angleRad) / (mass * 2); // Escala visual ajustada
-      const normalY = objY - N * Math.cos(angleRad) / (mass * 2);
-      drawArrow(ctx, objX, objY, normalX, normalY, "#10b981", "N");
-
-      // Desenhar componentes do peso
+      // altura
       ctx.strokeStyle = "#cbd5e1";
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3, 3]);
-
-      // P paralelo (ao longo do plano)
-      const pParallelX = objX + (Pparallel * Math.cos(angleRad)) / (mass * 2);
-      const pParallelY = objY + (Pparallel * Math.sin(angleRad)) / (mass * 2);
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 6]);
       ctx.beginPath();
-      ctx.moveTo(objX, objY);
-      ctx.lineTo(pParallelX, pParallelY);
+      ctx.moveTo(topX, topY);
+      ctx.lineTo(topX, bottomY);
       ctx.stroke();
-
-      // P perpendicular
-      const pPerpX = objX - (Pparallel * Math.sin(angleRad)) / (mass * 2);
-      const pPerpY = objY + (Pparallel * Math.cos(angleRad)) / (mass * 2);
-      ctx.beginPath();
-      ctx.moveTo(objX, objY);
-      ctx.lineTo(pPerpX, pPerpY);
-      ctx.stroke();
-
       ctx.setLineDash([]);
 
-      // Modo específico
-      if (mode === 0) {
-        // Descendo - atrito para cima (contra o movimento)
-        const frictionX = objX - (f * Math.cos(angleRad)) / (mass * 2);
-        const frictionY = objY + (f * Math.sin(angleRad)) / (mass * 2);
-        drawArrow(ctx, objX, objY, frictionX, frictionY, "#8b5cf6", "f");
+      // marca do ângulo
+      ctx.strokeStyle = "#64748b";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(bottomX, bottomY, 35, Math.PI, Math.PI + angleRad, false);
+      ctx.stroke();
 
-        const a = g * (Math.sin(angleRad) - mu * Math.cos(angleRad));
-        ctx.fillStyle = "#1e293b";
-        ctx.font = "bold 13px Arial";
-        ctx.fillText("Modo: DESCENDO", 10, 25);
-        ctx.fillText(
-          `a = ${formatUnit(a, "m/s²")}`,
-          10,
-          45
-        );
-        ctx.fillText(`f = ${formatUnit(f, "N")} (para cima)`, 10, 65);
-      } else if (mode === 1) {
-        // Subindo - atrito para baixo (contra o movimento)
-        const frictionX = objX + (f * Math.cos(angleRad)) / (mass * 2);
-        const frictionY = objY - (f * Math.sin(angleRad)) / (mass * 2);
-        drawArrow(ctx, objX, objY, frictionX, frictionY, "#8b5cf6", "f");
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 13px Arial";
+      ctx.fillText(`${formatNumber(angleDeg)}°`, bottomX - 50, bottomY - 12);
 
-        const a = -g * (Math.sin(angleRad) + mu * Math.cos(angleRad));
-        ctx.fillStyle = "#1e293b";
-        ctx.font = "bold 13px Arial";
-        ctx.fillText("Modo: SUBINDO", 10, 25);
-        ctx.fillText(
-          `a = ${formatUnit(a, "m/s²")}`,
-          10,
-          45
-        );
-        ctx.fillText(`f = ${formatUnit(f, "N")} (para baixo)`, 10, 65);
+      const totalVisualLength = Math.hypot(bottomX - topX, bottomY - topY);
+
+      let progress = 0;
+      let currentVelocity = 0;
+      let currentAcceleration = acceleration;
+
+      if (canSlide) {
+        const currentTime = timeRef.current;
+        const traveled = 0.5 * acceleration * currentTime * currentTime;
+        const clampedTraveled = Math.min(traveled, rampLength);
+        progress = clampedTraveled / rampLength;
+        currentVelocity = Math.min(acceleration * currentTime, finalVelocity);
+
+        if (isRunning) {
+          if (currentTime >= descentTime + 0.8) {
+            timeRef.current = 0;
+          } else {
+            timeRef.current += 1 / 60;
+          }
+        }
       } else {
-        // Repouso - atrito estático
-        const fStatic = Pparallel;
-        const frictionX = objX - (fStatic * Math.cos(angleRad)) / (mass * 2);
-        const frictionY = objY + (fStatic * Math.sin(angleRad)) / (mass * 2);
-        drawArrow(ctx, objX, objY, frictionX, frictionY, "#8b5cf6", "f_s");
+        progress = 0;
+        currentVelocity = 0;
+        currentAcceleration = 0;
+      }
 
-        ctx.fillStyle = "#1e293b";
-        ctx.font = "bold 13px Arial";
-        ctx.fillText("Modo: REPOUSO", 10, 25);
-        ctx.fillText(`f_s = ${formatUnit(fStatic, "N")}`, 10, 45);
-        ctx.fillText(
-          `f_s,máx = ${formatUnit(mu * N, "N")} (necessária)`,
-          10,
-          65
+      const dx = (bottomX - topX) / totalVisualLength;
+      const dy = (bottomY - topY) / totalVisualLength;
+
+      const blockCenterX = topX + (bottomX - topX) * progress;
+      const blockCenterY = topY + (bottomY - topY) * progress;
+
+      // bloco rotacionado
+      ctx.save();
+      ctx.translate(blockCenterX, blockCenterY);
+      ctx.rotate(Math.atan2(bottomY - topY, bottomX - topX));
+
+      ctx.fillStyle = hasFriction ? "#2563eb" : "#0ea5e9";
+      ctx.strokeStyle = "#1e3a8a";
+      ctx.lineWidth = 3;
+      ctx.fillRect(-24, -18, 48, 36);
+      ctx.strokeRect(-24, -18, 48, 36);
+
+      ctx.restore();
+
+      // vetor peso paralelo
+      drawArrow(
+        ctx,
+        blockCenterX,
+        blockCenterY,
+        blockCenterX + dx * 70,
+        blockCenterY + dy * 70,
+        "#2563eb",
+        3
+      );
+
+      // vetor normal
+      drawArrow(
+        ctx,
+        blockCenterX,
+        blockCenterY,
+        blockCenterX - dy * 55,
+        blockCenterY + dx * 55,
+        "#16a34a",
+        3
+      );
+
+      // atrito
+      if (hasFriction) {
+        drawArrow(
+          ctx,
+          blockCenterX,
+          blockCenterY,
+          blockCenterX - dx * 60,
+          blockCenterY - dy * 60,
+          "#ef4444",
+          3
         );
       }
 
-      // Fórmulas e dados
-      ctx.fillStyle = "#1e293b";
-      ctx.font = "bold 12px Arial";
-      ctx.fillText(`μ = ${formatNumber(mu)}`, 10, 85);
-      ctx.fillText(`N = ${formatUnit(N, "N")}`, 10, 105);
-      ctx.fillText(`P∥ = ${formatUnit(Pparallel, "N")}`, 10, 125);
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 14px Arial";
+      ctx.fillText(
+        hasFriction ? "PLANO INCLINADO COM ATRITO" : "PLANO INCLINADO SEM ATRITO",
+        20,
+        28
+      );
 
-      if (isRunning) {
-        frameCountRef.current += 1;
+      ctx.font = "12px Arial";
+      ctx.fillText(`m = ${formatUnit(mass, "kg")}`, 20, 58);
+      ctx.fillText(`h = ${formatUnit(height, "m")}`, 20, 76);
+      ctx.fillText(`θ = ${formatUnit(angleDeg, "°")}`, 20, 94);
+      ctx.fillText(`a = ${formatUnit(currentAcceleration, "m/s²")}`, 20, 112);
+      ctx.fillText(`v = ${formatUnit(currentVelocity, "m/s")}`, 20, 130);
+
+      if (hasFriction) {
+        ctx.fillText(`μ = ${formatNumber(mu)}`, 20, 148);
       }
 
-      animationIdRef.current = requestAnimationFrame(animate);
+      if (!canSlide) {
+        ctx.fillStyle = "#b91c1c";
+        ctx.font = "bold 13px Arial";
+        ctx.fillText("O bloco não desliza com os valores atuais.", 20, 176);
+      }
+
+      animationFrameRef.current = requestAnimationFrame(animate);
     };
 
     animate();
 
     return () => {
-      if (animationIdRef.current) {
-        cancelAnimationFrame(animationIdRef.current);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [angle, mu, mass, mode, isRunning, P, N, Pparallel, f, angleRad]);
+  }, [
+    isRunning,
+    mass,
+    angleDeg,
+    height,
+    mu,
+    frictionMode,
+    angleRad,
+    acceleration,
+    rampLength,
+    finalVelocity,
+    descentTime,
+    canSlide,
+    hasFriction,
+  ]);
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex justify-center bg-slate-50 p-4 rounded-lg overflow-x-auto">
-        <canvas
-          ref={canvasRef}
-          width={800}
-          height={400}
-          className="w-full max-w-full border border-slate-300 rounded"
-        />
-      </div>
+      <Card className="overflow-hidden border border-slate-200 shadow-sm">
+        <div className="border-b border-slate-200 bg-white px-5 py-4">
+          <h3 className="text-lg font-bold text-slate-900">
+            Simulador de Plano Inclinado
+          </h3>
+          <p className="mt-1 text-sm text-slate-600">
+            Escolha entre o caso ideal, sem atrito, e o caso real, com atrito,
+            para comparar forças, aceleração e energia.
+          </p>
+        </div>
 
-      <Card className="p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <div className="flex justify-between mb-2">
-              <label className="text-sm font-semibold text-slate-700">Ângulo (<MathFormula formula={String.raw`$\theta$`} />)</label>
-              <span className="text-sm font-bold text-blue-600">{formatNumber(angle, 0)}°</span>
-            </div>
-            <Slider
-              value={[angle]}
-              onValueChange={(value) => setAngle(value[0])}
-              min={5}
-              max={85}
-              step={1}
-              className="w-full"
-            />
-          </div>
+        <div className="border-b border-slate-200 bg-slate-50 px-5 py-4">
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => setFrictionMode("withoutFriction")}
+              className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                frictionMode === "withoutFriction"
+                  ? "border-sky-600 bg-sky-600 text-white shadow-sm"
+                  : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
+              }`}
+            >
+              Sem atrito
+            </button>
 
-          <div>
-            <div className="flex justify-between mb-2">
-              <label className="text-sm font-semibold text-slate-700">Coef. Atrito (<MathFormula formula={String.raw`$\mu$`} />)</label>
-              <span className="text-sm font-bold text-green-600">{formatNumber(mu, 2)}</span>
-            </div>
-            <Slider
-              value={[mu]}
-              onValueChange={(value) => setMu(value[0])}
-              min={0}
-              max={1}
-              step={0.05}
-              className="w-full"
-            />
-          </div>
-
-          <div>
-            <div className="flex justify-between mb-2">
-              <label className="text-sm font-semibold text-slate-700">Massa (<MathFormula formula={String.raw`$m$`} />)</label>
-              <span className="text-sm font-bold text-purple-600">{formatUnit(mass, "kg")}</span>
-            </div>
-            <Slider
-              value={[mass]}
-              onValueChange={(value) => setMass(value[0])}
-              min={0.5}
-              max={10}
-              step={0.5}
-              className="w-full"
-            />
+            <button
+              type="button"
+              onClick={() => setFrictionMode("withFriction")}
+              className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                frictionMode === "withFriction"
+                  ? "border-blue-700 bg-blue-700 text-white shadow-sm"
+                  : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
+              }`}
+            >
+              Com atrito
+            </button>
           </div>
         </div>
 
-        {/* Resultados */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
-          <h4 className="font-bold text-slate-900">Forças Calculadas</h4>
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="flex justify-between">
-              <span className="text-slate-600">Peso (<MathFormula formula={String.raw`$P = mg$`} />):</span>
-              <span className="font-bold text-slate-900">{formatUnit(P, "N")}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600">Normal (<MathFormula formula={String.raw`$N = P\cos\theta$`} />):</span>
-              <span className="font-bold text-slate-900">{formatUnit(N, "N")}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600">Peso Paralelo (<MathFormula formula={String.raw`$P_{\parallel} = P\sin\theta$`} />):</span>
-              <span className="font-bold text-slate-900">{formatUnit(Pparallel, "N")}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600">Força de Atrito (<MathFormula formula={String.raw`$f = \mu N$`} />):</span>
-              <span className="font-bold text-slate-900">{formatUnit(f, "N")}</span>
+        <div className="bg-slate-50 p-4 md:p-6">
+          <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+            <div className="overflow-x-auto">
+              <canvas
+                ref={canvasRef}
+                width={980}
+                height={420}
+                className="mx-auto w-full min-w-[780px] rounded-lg border border-slate-200 bg-slate-50"
+              />
             </div>
           </div>
         </div>
+      </Card>
 
-        {/* Cálculos Detalhados */}
-        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-4">
-          <h4 className="font-bold text-slate-900">Cálculos Detalhados</h4>
-          
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm font-semibold text-slate-700 mb-1">Decomposição do Peso</p>
-              <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
-                <MathFormula formula={String.raw`$$ P_{\parallel} = P \sin\theta = ${formatNumber(mass)} \cdot ${formatNumber(g)} \cdot \sin(${formatNumber(angle)}^\circ) = ${formatUnit(Pparallel, "N")} $$`} />
-                <div className="mt-2"></div>
-                <MathFormula formula={String.raw`$$ N = P \cos\theta = ${formatNumber(mass)} \cdot ${formatNumber(g)} \cdot \cos(${formatNumber(angle)}^\circ) = ${formatUnit(N, "N")} $$`} />
+      <Card className="border border-slate-200 shadow-sm">
+        <div className="border-b border-slate-200 px-5 py-4">
+          <h4 className="text-base font-bold text-slate-900">
+            Controles da Simulação
+          </h4>
+          <p className="mt-1 text-sm text-slate-600">
+            Ajuste os parâmetros e veja como a dinâmica do bloco muda na rampa.
+          </p>
+        </div>
+
+        <div className="p-5">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div className="space-y-5">
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <label className="text-sm font-medium text-slate-700">
+                      Massa do bloco <span className="text-slate-500">(m)</span>
+                    </label>
+                    <span className="text-sm font-bold text-slate-900">
+                      {formatUnit(mass, "kg")}
+                    </span>
+                  </div>
+                  <Slider
+                    value={[mass]}
+                    onValueChange={(value) => setMass(value[0])}
+                    min={0.5}
+                    max={10}
+                    step={0.1}
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <label className="text-sm font-medium text-slate-700">
+                      Ângulo da rampa <span className="text-slate-500">(θ)</span>
+                    </label>
+                    <span className="text-sm font-bold text-slate-900">
+                      {formatUnit(angleDeg, "°")}
+                    </span>
+                  </div>
+                  <Slider
+                    value={[angleDeg]}
+                    onValueChange={(value) => setAngleDeg(value[0])}
+                    min={10}
+                    max={60}
+                    step={1}
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <label className="text-sm font-medium text-slate-700">
+                      Altura da rampa <span className="text-slate-500">(h)</span>
+                    </label>
+                    <span className="text-sm font-bold text-slate-900">
+                      {formatUnit(height, "m")}
+                    </span>
+                  </div>
+                  <Slider
+                    value={[height]}
+                    onValueChange={(value) => setHeight(value[0])}
+                    min={1}
+                    max={8}
+                    step={0.1}
+                    className="w-full"
+                  />
+                </div>
+
+                {hasFriction && (
+                  <div>
+                    <div className="mb-2 flex items-center justify-between">
+                      <label className="text-sm font-medium text-slate-700">
+                        Coeficiente de atrito <span className="text-slate-500">(μ)</span>
+                      </label>
+                      <span className="text-sm font-bold text-blue-700">
+                        {formatNumber(mu)}
+                      </span>
+                    </div>
+                    <Slider
+                      value={[mu]}
+                      onValueChange={(value) => setMu(value[0])}
+                      min={0}
+                      max={1}
+                      step={0.01}
+                      className="w-full"
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
-            <div>
-              <p className="text-sm font-semibold text-slate-700 mb-1">Força de Atrito Cinético</p>
-              <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
-                <MathFormula formula={String.raw`$$ f = \mu \cdot N = ${formatNumber(mu)} \cdot ${formatNumber(N)} = ${formatUnit(f, "N")} $$`} />
+            <div className="rounded-xl border border-slate-200 bg-white p-4">
+              <h5 className="mb-4 text-sm font-bold uppercase tracking-wide text-slate-700">
+                Leitura rápida
+              </h5>
+
+              <div className="space-y-3 text-sm text-slate-700">
+                <p>
+                  <span className="font-semibold text-slate-900">Modo:</span>{" "}
+                  {hasFriction ? "Com atrito" : "Sem atrito"}
+                </p>
+                <p>
+                  <span className="font-semibold text-slate-900">Comprimento da rampa:</span>{" "}
+                  {formatUnit(rampLength, "m")}
+                </p>
+                <p>
+                  <span className="font-semibold text-slate-900">Bloco desliza?</span>{" "}
+                  {canSlide ? "Sim" : "Não"}
+                </p>
+                <p>
+                  <span className="font-semibold text-slate-900">Aceleração:</span>{" "}
+                  {formatUnit(acceleration, "m/s²")}
+                </p>
+                <p>
+                  <span className="font-semibold text-slate-900">Tempo de descida:</span>{" "}
+                  {canSlide ? formatUnit(descentTime, "s") : "—"}
+                </p>
+                <p>
+                  <span className="font-semibold text-slate-900">Velocidade final:</span>{" "}
+                  {canSlide ? formatUnit(finalVelocity, "m/s") : "—"}
+                </p>
               </div>
             </div>
           </div>
         </div>
       </Card>
 
-      {/* Teoria Avançada */}
+      <Card className="border border-slate-200 shadow-sm">
+        <div className="border-b border-slate-200 px-5 py-4">
+          <h4 className="text-base font-bold text-slate-900">
+            Resultados Principais
+          </h4>
+        </div>
+
+        <div className="p-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <MetricCard
+              label={
+                <>
+                  Força peso <MathFormula inline formula={String.raw`P`} />
+                </>
+              }
+              value={formatUnit(weight, "N")}
+            />
+
+            <MetricCard
+              label={
+                <>
+                  Normal <MathFormula inline formula={String.raw`N`} />
+                </>
+              }
+              value={formatUnit(normalForce, "N")}
+              valueClassName="text-green-700"
+            />
+
+            <MetricCard
+              label={
+                <>
+                  Componente paralela{" "}
+                  <MathFormula inline formula={String.raw`P_{\parallel}`} />
+                </>
+              }
+              value={formatUnit(parallelForce, "N")}
+              valueClassName="text-blue-700"
+            />
+
+            <MetricCard
+              label={
+                <>
+                  Força de atrito{" "}
+                  <MathFormula inline formula={String.raw`F_{at}`} />
+                </>
+              }
+              value={hasFriction ? formatUnit(frictionForce, "N") : "0,00 N"}
+              valueClassName="text-red-700"
+            />
+
+            <MetricCard
+              label={
+                <>
+                  Força resultante{" "}
+                  <MathFormula inline formula={String.raw`F_{res}`} />
+                </>
+              }
+              value={formatUnit(netForce > 0 ? netForce : 0, "N")}
+            />
+
+            <MetricCard
+              label={
+                <>
+                  Aceleração <MathFormula inline formula={String.raw`a`} />
+                </>
+              }
+              value={formatUnit(acceleration, "m/s²")}
+              valueClassName="text-sky-700"
+            />
+          </div>
+        </div>
+      </Card>
+
+      <Card className="border border-slate-200 shadow-sm">
+        <div className="border-b border-slate-200 px-5 py-4">
+          <h4 className="text-base font-bold text-slate-900">
+            Cálculos do Plano Inclinado
+          </h4>
+        </div>
+
+        <div className="space-y-5 p-5">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <p className="mb-3 text-sm font-semibold text-slate-700">
+              Decomposição das forças
+            </p>
+
+            <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
+              <MathFormula formula={String.raw`P = mg = ${formatNumber(mass)} \cdot ${formatNumber(G)} = ${formatNumber(weight)} \,\text{N}`} />
+              <MathFormula formula={String.raw`N = mg\cos\theta = ${formatNumber(mass)} \cdot ${formatNumber(G)} \cdot \cos(${formatNumber(angleDeg)}^\circ) = ${formatNumber(normalForce)} \,\text{N}`} />
+              <MathFormula formula={String.raw`P_{\parallel} = mg\sin\theta = ${formatNumber(mass)} \cdot ${formatNumber(G)} \cdot \sin(${formatNumber(angleDeg)}^\circ) = ${formatNumber(parallelForce)} \,\text{N}`} />
+            </div>
+          </div>
+
+          {hasFriction && (
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="mb-3 text-sm font-semibold text-slate-700">
+                Atrito e força resultante
+              </p>
+
+              <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
+                <MathFormula formula={String.raw`F_{at} = \mu N = ${formatNumber(mu)} \cdot ${formatNumber(normalForce)} = ${formatNumber(frictionForce)} \,\text{N}`} />
+                <MathFormula formula={String.raw`F_{res} = P_{\parallel} - F_{at} = ${formatNumber(parallelForce)} - ${formatNumber(frictionForce)} = ${formatNumber(netForce > 0 ? netForce : 0)} \,\text{N}`} />
+                <MathFormula formula={String.raw`a = \frac{F_{res}}{m} = \frac{${formatNumber(netForce > 0 ? netForce : 0)}}{${formatNumber(mass)}} = ${formatNumber(acceleration)} \,\text{m/s^2}`} />
+              </div>
+            </div>
+          )}
+
+          {!hasFriction && (
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="mb-3 text-sm font-semibold text-slate-700">
+                Caso sem atrito
+              </p>
+
+              <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
+                <MathFormula formula={String.raw`F_{res} = P_{\parallel} = ${formatNumber(parallelForce)} \,\text{N}`} />
+                <MathFormula formula={String.raw`a = g\sin\theta = ${formatNumber(G)} \cdot \sin(${formatNumber(angleDeg)}^\circ) = ${formatNumber(acceleration)} \,\text{m/s^2}`} />
+              </div>
+            </div>
+          )}
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <p className="mb-3 text-sm font-semibold text-slate-700">
+              Cinemática e energia
+            </p>
+
+            <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
+              <MathFormula formula={String.raw`s = \frac{h}{\sin\theta} = \frac{${formatNumber(height)}}{\sin(${formatNumber(angleDeg)}^\circ)} = ${formatNumber(rampLength)} \,\text{m}`} />
+              {canSlide ? (
+                <>
+                  <MathFormula formula={String.raw`t = \sqrt{\frac{2s}{a}} = \sqrt{\frac{2 \cdot ${formatNumber(rampLength)}}{${formatNumber(acceleration)}}} = ${formatNumber(descentTime)} \,\text{s}`} />
+                  <MathFormula formula={String.raw`v = \sqrt{2as} = \sqrt{2 \cdot ${formatNumber(acceleration)} \cdot ${formatNumber(rampLength)}} = ${formatNumber(finalVelocity)} \,\text{m/s}`} />
+                </>
+              ) : (
+                <MathFormula formula={String.raw`\text{Como }F_{res} \le 0,\ \text{o bloco não entra em movimento.}`} />
+              )}
+              <MathFormula formula={String.raw`E_p = mgh = ${formatNumber(mass)} \cdot ${formatNumber(G)} \cdot ${formatNumber(height)} = ${formatNumber(potentialEnergy)} \,\text{J}`} />
+              <MathFormula formula={String.raw`E_c = \frac12 mv^2 = \frac12 \cdot ${formatNumber(mass)} \cdot (${formatNumber(finalVelocity)})^2 = ${formatNumber(kineticEnergyBottom)} \,\text{J}`} />
+            </div>
+          </div>
+        </div>
+      </Card>
+
       <AdvancedTheory
         title={ITADynamicsTheory.title}
         introduction={ITADynamicsTheory.introduction}
         sections={ITADynamicsTheory.sections}
       />
+    </div>
+  );
+};
+
+function MetricCard({
+  label,
+  value,
+  valueClassName = "text-slate-900",
+}: {
+  label: React.ReactNode;
+  value: string;
+  valueClassName?: string;
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <p className="text-sm font-medium text-slate-600">{label}</p>
+      <p className={`mt-2 text-lg font-bold ${valueClassName}`}>{value}</p>
     </div>
   );
 }
@@ -351,14 +636,14 @@ function drawArrow(
   toX: number,
   toY: number,
   color: string,
-  label: string
+  width: number
 ) {
-  const headlen = 10;
+  const headLength = 12;
   const angle = Math.atan2(toY - fromY, toX - fromX);
 
   ctx.strokeStyle = color;
   ctx.fillStyle = color;
-  ctx.lineWidth = 2;
+  ctx.lineWidth = width;
 
   ctx.beginPath();
   ctx.moveTo(fromX, fromY);
@@ -367,13 +652,14 @@ function drawArrow(
 
   ctx.beginPath();
   ctx.moveTo(toX, toY);
-  ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
-  ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+  ctx.lineTo(
+    toX - headLength * Math.cos(angle - Math.PI / 6),
+    toY - headLength * Math.sin(angle - Math.PI / 6)
+  );
+  ctx.lineTo(
+    toX - headLength * Math.cos(angle + Math.PI / 6),
+    toY - headLength * Math.sin(angle + Math.PI / 6)
+  );
   ctx.closePath();
   ctx.fill();
-
-  // Label
-  ctx.fillStyle = color;
-  ctx.font = "bold 12px Arial";
-  ctx.fillText(label, toX + 10, toY);
 }
