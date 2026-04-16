@@ -28,7 +28,7 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
   const timeRef = useRef(0);
 
   const [frictionMode, setFrictionMode] =
-    useState<FrictionMode>("withoutFriction");
+    useState<FrictionMode>("withFriction");
   const [motionMode, setMotionMode] = useState<MotionMode>("down");
 
   const [mass, setMass] = useState(2);
@@ -90,7 +90,16 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
 
   useEffect(() => {
     timeRef.current = 0;
-  }, [resetTrigger, mass, angleDeg, height, mu, frictionMode, motionMode, pushForce]);
+  }, [
+    resetTrigger,
+    mass,
+    angleDeg,
+    height,
+    mu,
+    frictionMode,
+    motionMode,
+    pushForce,
+  ]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -107,30 +116,41 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
       ctx.fillStyle = "#f8fafc";
       ctx.fillRect(0, 0, width, heightCanvas);
 
-      const marginBottom = 70;
-      const groundY = heightCanvas - marginBottom;
+      const groundY = heightCanvas - 72;
 
       const bottomX = 760;
       const bottomY = groundY;
-
       const rampVisualLength = 430;
+
       const topX = bottomX - rampVisualLength * Math.cos(angleRad);
       const topY = bottomY - rampVisualLength * Math.sin(angleRad);
 
+      // chão
       ctx.strokeStyle = "#94a3b8";
       ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.moveTo(60, groundY);
-      ctx.lineTo(width - 50, groundY);
+      ctx.lineTo(width - 40, groundY);
       ctx.stroke();
 
-      ctx.strokeStyle = "#334155";
+      // rampa
+      ctx.strokeStyle = "#475569";
       ctx.lineWidth = 6;
       ctx.beginPath();
       ctx.moveTo(topX, topY);
       ctx.lineTo(bottomX, bottomY);
       ctx.stroke();
 
+      // preenchimento sutil da rampa
+      ctx.fillStyle = "#e2e8f0";
+      ctx.beginPath();
+      ctx.moveTo(topX, topY);
+      ctx.lineTo(bottomX, bottomY);
+      ctx.lineTo(bottomX, groundY);
+      ctx.closePath();
+      ctx.fill();
+
+      // linha altura
       ctx.strokeStyle = "#cbd5e1";
       ctx.lineWidth = 2;
       ctx.setLineDash([6, 6]);
@@ -140,6 +160,7 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
       ctx.stroke();
       ctx.setLineDash([]);
 
+      // arco ângulo
       ctx.strokeStyle = "#64748b";
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -159,7 +180,10 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
 
       if (canMove) {
         const currentTime = timeRef.current;
-        const traveled = Math.min(0.5 * acceleration * currentTime * currentTime, rampLength);
+        const traveled = Math.min(
+          0.5 * acceleration * currentTime * currentTime,
+          rampLength
+        );
         const normalized = traveled / rampLength;
 
         if (!isPushingUp) {
@@ -184,54 +208,81 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
       const blockCenterX = topX + (bottomX - topX) * progress;
       const blockCenterY = topY + (bottomY - topY) * progress;
 
+      // bloco
       ctx.save();
       ctx.translate(blockCenterX, blockCenterY);
       ctx.rotate(Math.atan2(bottomY - topY, bottomX - topX));
 
-      ctx.fillStyle = hasFriction ? "#2563eb" : "#0ea5e9";
-      ctx.strokeStyle = "#1e3a8a";
+      ctx.fillStyle = "#3b82f6";
+      ctx.strokeStyle = "#1d4ed8";
       ctx.lineWidth = 3;
-      ctx.fillRect(-24, -18, 48, 36);
-      ctx.strokeRect(-24, -18, 48, 36);
+      roundRect(ctx, -26, -18, 52, 36, 6);
+      ctx.fill();
+      ctx.stroke();
 
       ctx.restore();
 
-      const downLabelPointX = blockCenterX + dx * 74;
-      const downLabelPointY = blockCenterY + dy * 74;
+      // título interno
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 14px Arial";
+      ctx.fillText(
+        `${isPushingUp ? "BLOCO EMPURRADO PARA CIMA" : "BLOCO DESCENDO"} ${
+          hasFriction ? "COM ATRITO" : "SEM ATRITO"
+        }`,
+        22,
+        28
+      );
 
-      const upLabelPointX = blockCenterX - dx * 74;
-      const upLabelPointY = blockCenterY - dy * 74;
+      // dados canto esquerdo do canvas
+      ctx.font = "12px Arial";
+      ctx.fillText(`m = ${formatUnit(mass, "kg")}`, 22, 58);
+      ctx.fillText(`h = ${formatUnit(height, "m")}`, 22, 78);
+      ctx.fillText(`θ = ${formatUnit(angleDeg, "°")}`, 22, 98);
+      ctx.fillText(`a = ${formatUnit(acceleration, "m/s²")}`, 22, 118);
+      ctx.fillText(`v = ${formatUnit(currentVelocity, "m/s")}`, 22, 138);
 
-      const normalTipX = blockCenterX - dy * 62;
-      const normalTipY = blockCenterY + dx * 62;
+      if (hasFriction) {
+        ctx.fillText(`μ = ${formatNumber(mu)}`, 22, 158);
+      }
 
+      if (isPushingUp) {
+        ctx.fillText(
+          `F = ${formatUnit(pushForce, "N")}`,
+          22,
+          hasFriction ? 178 : 158
+        );
+      }
+
+      // vetor componente do peso paralela
       drawLabeledArrow(
         ctx,
         blockCenterX,
         blockCenterY,
-        downLabelPointX,
-        downLabelPointY,
+        blockCenterX + dx * 88,
+        blockCenterY + dy * 88,
         "#2563eb",
         `P∥ = ${formatNumber(parallelWeight)} N`
       );
 
+      // normal
       drawLabeledArrow(
         ctx,
         blockCenterX,
         blockCenterY,
-        normalTipX,
-        normalTipY,
+        blockCenterX - dy * 74,
+        blockCenterY + dx * 74,
         "#16a34a",
         `N = ${formatNumber(normalForce)} N`
       );
 
-           if (hasFriction) {
+      // atrito: sempre contra o movimento/tendência de movimento
+      if (hasFriction) {
         const frictionTipX = isPushingUp
-          ? blockCenterX + dx * 66
-          : blockCenterX - dx * 66;
+          ? blockCenterX + dx * 78
+          : blockCenterX - dx * 78;
         const frictionTipY = isPushingUp
-          ? blockCenterY + dy * 66
-          : blockCenterY - dy * 66;
+          ? blockCenterY + dy * 78
+          : blockCenterY - dy * 78;
 
         drawLabeledArrow(
           ctx,
@@ -244,26 +295,27 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
         );
       }
 
+      // força aplicada para cima
       if (isPushingUp) {
         drawLabeledArrow(
           ctx,
           blockCenterX,
           blockCenterY,
-          upLabelPointX,
-          upLabelPointY,
+          blockCenterX - dx * 102,
+          blockCenterY - dy * 102,
           "#7c3aed",
           `F = ${formatNumber(pushForce)} N`
         );
       }
 
-      const accelDirectionPositive = acceleration > 0;
-      if (accelDirectionPositive) {
+      // aceleração
+      if (acceleration > 0) {
         const accelTipX = isPushingUp
-          ? blockCenterX - dx * 95
-          : blockCenterX + dx * 95;
+          ? blockCenterX - dx * 118
+          : blockCenterX + dx * 118;
         const accelTipY = isPushingUp
-          ? blockCenterY - dy * 95
-          : blockCenterY + dy * 95;
+          ? blockCenterY - dy * 118
+          : blockCenterY + dy * 118;
 
         drawLabeledArrow(
           ctx,
@@ -276,33 +328,14 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
         );
       }
 
-      ctx.fillStyle = "#0f172a";
-      ctx.font = "bold 14px Arial";
-      ctx.fillText(
-        `${isPushingUp ? "BLOCO EMPURRADO PARA CIMA" : "BLOCO DESCENDO"} ${hasFriction ? "COM ATRITO" : "SEM ATRITO"}`,
-        20,
-        28
-      );
-
-      ctx.font = "12px Arial";
-      ctx.fillText(`m = ${formatUnit(mass, "kg")}`, 20, 58);
-      ctx.fillText(`h = ${formatUnit(height, "m")}`, 20, 76);
-      ctx.fillText(`θ = ${formatUnit(angleDeg, "°")}`, 20, 94);
-      ctx.fillText(`a = ${formatUnit(acceleration, "m/s²")}`, 20, 112);
-      ctx.fillText(`v = ${formatUnit(currentVelocity, "m/s")}`, 20, 130);
-
-      if (hasFriction) {
-        ctx.fillText(`μ = ${formatNumber(mu)}`, 20, 148);
-      }
-
-      if (isPushingUp) {
-        ctx.fillText(`F = ${formatUnit(pushForce, "N")}`, 20, hasFriction ? 166 : 148);
-      }
-
       if (!canMove) {
         ctx.fillStyle = "#b91c1c";
         ctx.font = "bold 13px Arial";
-        ctx.fillText("Não há força resultante suficiente para mover o bloco.", 20, 196);
+        ctx.fillText(
+          "Não há força resultante suficiente para mover o bloco.",
+          22,
+          208
+        );
       }
 
       animationFrameRef.current = requestAnimationFrame(animate);
@@ -337,433 +370,483 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
 
   return (
     <div className="w-full space-y-6">
-      <Card className="overflow-hidden border border-slate-200 shadow-sm">
-        <div className="border-b border-slate-200 bg-white px-5 py-4">
-          <h3 className="text-lg font-bold text-slate-900">
-            Simulador de Plano Inclinado
-          </h3>
-          <p className="mt-1 text-sm text-slate-600">
-            Agora você pode analisar o bloco descendo ou sendo empurrado para cima,
-            com ou sem atrito, observando forças, aceleração e energia.
-          </p>
-        </div>
-
-        <div className="border-b border-slate-200 bg-slate-50 px-5 py-4">
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <div className="rounded-xl border border-slate-200 bg-white p-4">
-              <p className="mb-3 text-xs font-bold uppercase tracking-wide text-slate-500">
-                Atrito
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+        {/* COLUNA ESQUERDA */}
+        <div className="space-y-4 xl:col-span-4">
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h3 className="text-lg font-bold text-slate-900">
+                Simulador de Plano Inclinado
+              </h3>
+              <p className="mt-1 text-sm text-slate-600">
+                Ajuste os parâmetros e observe a dinâmica do bloco em tempo real.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={() => setFrictionMode("withoutFriction")}
-                  className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
-                    frictionMode === "withoutFriction"
-                      ? "border-sky-600 bg-sky-600 text-white shadow-sm"
-                      : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
-                  }`}
-                >
-                  Sem atrito
-                </button>
+            </div>
 
-                <button
-                  type="button"
-                  onClick={() => setFrictionMode("withFriction")}
-                  className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
-                    frictionMode === "withFriction"
-                      ? "border-blue-700 bg-blue-700 text-white shadow-sm"
-                      : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
-                  }`}
+            <div className="space-y-5 p-5">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+                  Atrito
+                </p>
+                <select
+                  value={frictionMode}
+                  onChange={(e) =>
+                    setFrictionMode(e.target.value as FrictionMode)
+                  }
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500"
                 >
-                  Com atrito
-                </button>
+                  <option value="withoutFriction">Sem atrito</option>
+                  <option value="withFriction">Com atrito</option>
+                </select>
               </div>
-            </div>
 
-            <div className="rounded-xl border border-slate-200 bg-white p-4">
-              <p className="mb-3 text-xs font-bold uppercase tracking-wide text-slate-500">
-                Situação do movimento
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={() => setMotionMode("down")}
-                  className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
-                    motionMode === "down"
-                      ? "border-slate-900 bg-slate-900 text-white shadow-sm"
-                      : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
-                  }`}
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+                  Situação
+                </p>
+                <select
+                  value={motionMode}
+                  onChange={(e) => setMotionMode(e.target.value as MotionMode)}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500"
                 >
-                  Descendo a rampa
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setMotionMode("up")}
-                  className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
-                    motionMode === "up"
-                      ? "border-violet-700 bg-violet-700 text-white shadow-sm"
-                      : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
-                  }`}
-                >
-                  Empurrado para cima
-                </button>
+                  <option value="down">Descendo a rampa</option>
+                  <option value="up">Empurrado para cima</option>
+                </select>
               </div>
-            </div>
-          </div>
-        </div>
 
-        <div className="bg-slate-50 p-4 md:p-6">
-          <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
-            <div className="overflow-x-auto">
-              <canvas
-                ref={canvasRef}
-                width={980}
-                height={420}
-                className="mx-auto w-full min-w-[780px] rounded-lg border border-slate-200 bg-slate-50"
-              />
-            </div>
-          </div>
-        </div>
-      </Card>
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <label className="text-sm font-medium text-slate-700">
+                    Massa do bloco <span className="text-slate-500">(m)</span>
+                  </label>
+                  <span className="text-sm font-bold text-slate-900">
+                    {formatUnit(mass, "kg")}
+                  </span>
+                </div>
+                <Slider
+                  value={[mass]}
+                  onValueChange={(value) => setMass(value[0])}
+                  min={0.5}
+                  max={10}
+                  step={0.1}
+                  className="w-full"
+                />
+              </div>
 
-      <Card className="border border-slate-200 shadow-sm">
-        <div className="border-b border-slate-200 px-5 py-4">
-          <h4 className="text-base font-bold text-slate-900">
-            Controles da Simulação
-          </h4>
-          <p className="mt-1 text-sm text-slate-600">
-            Ajuste a geometria da rampa, o atrito e a força aplicada ao bloco.
-          </p>
-        </div>
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <label className="text-sm font-medium text-slate-700">
+                    Altura da rampa <span className="text-slate-500">(h)</span>
+                  </label>
+                  <span className="text-sm font-bold text-slate-900">
+                    {formatUnit(height, "m")}
+                  </span>
+                </div>
+                <Slider
+                  value={[height]}
+                  onValueChange={(value) => setHeight(value[0])}
+                  min={1}
+                  max={8}
+                  step={0.1}
+                  className="w-full"
+                />
+              </div>
 
-        <div className="p-5">
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <div className="space-y-5">
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <label className="text-sm font-medium text-slate-700">
+                    Ângulo da rampa <span className="text-slate-500">(θ)</span>
+                  </label>
+                  <span className="text-sm font-bold text-slate-900">
+                    {formatUnit(angleDeg, "°")}
+                  </span>
+                </div>
+                <Slider
+                  value={[angleDeg]}
+                  onValueChange={(value) => setAngleDeg(value[0])}
+                  min={10}
+                  max={60}
+                  step={1}
+                  className="w-full"
+                />
+              </div>
+
+              {hasFriction && (
                 <div>
                   <div className="mb-2 flex items-center justify-between">
                     <label className="text-sm font-medium text-slate-700">
-                      Massa do bloco <span className="text-slate-500">(m)</span>
+                      Coeficiente de atrito{" "}
+                      <span className="text-slate-500">(μ)</span>
                     </label>
-                    <span className="text-sm font-bold text-slate-900">
-                      {formatUnit(mass, "kg")}
+                    <span className="text-sm font-bold text-blue-700">
+                      {formatNumber(mu)}
                     </span>
                   </div>
                   <Slider
-                    value={[mass]}
-                    onValueChange={(value) => setMass(value[0])}
-                    min={0.5}
-                    max={10}
-                    step={0.1}
+                    value={[mu]}
+                    onValueChange={(value) => setMu(value[0])}
+                    min={0}
+                    max={1}
+                    step={0.01}
                     className="w-full"
                   />
                 </div>
+              )}
 
+              {isPushingUp && (
                 <div>
                   <div className="mb-2 flex items-center justify-between">
                     <label className="text-sm font-medium text-slate-700">
-                      Ângulo da rampa <span className="text-slate-500">(θ)</span>
+                      Força aplicada <span className="text-slate-500">(F)</span>
                     </label>
-                    <span className="text-sm font-bold text-slate-900">
-                      {formatUnit(angleDeg, "°")}
+                    <span className="text-sm font-bold text-violet-700">
+                      {formatUnit(pushForce, "N")}
                     </span>
                   </div>
                   <Slider
-                    value={[angleDeg]}
-                    onValueChange={(value) => setAngleDeg(value[0])}
-                    min={10}
-                    max={60}
-                    step={1}
-                    className="w-full"
-                  />
-                </div>
-
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <label className="text-sm font-medium text-slate-700">
-                      Altura da rampa <span className="text-slate-500">(h)</span>
-                    </label>
-                    <span className="text-sm font-bold text-slate-900">
-                      {formatUnit(height, "m")}
-                    </span>
-                  </div>
-                  <Slider
-                    value={[height]}
-                    onValueChange={(value) => setHeight(value[0])}
+                    value={[pushForce]}
+                    onValueChange={(value) => setPushForce(value[0])}
                     min={1}
-                    max={8}
-                    step={0.1}
+                    max={120}
+                    step={0.5}
                     className="w-full"
                   />
                 </div>
+              )}
+            </div>
+          </Card>
 
-                {hasFriction && (
-                  <div>
-                    <div className="mb-2 flex items-center justify-between">
-                      <label className="text-sm font-medium text-slate-700">
-                        Coeficiente de atrito <span className="text-slate-500">(μ)</span>
-                      </label>
-                      <span className="text-sm font-bold text-blue-700">
-                        {formatNumber(mu)}
-                      </span>
-                    </div>
-                    <Slider
-                      value={[mu]}
-                      onValueChange={(value) => setMu(value[0])}
-                      min={0}
-                      max={1}
-                      step={0.01}
-                      className="w-full"
-                    />
-                  </div>
-                )}
-
-                {isPushingUp && (
-                  <div>
-                    <div className="mb-2 flex items-center justify-between">
-                      <label className="text-sm font-medium text-slate-700">
-                        Força aplicada <span className="text-slate-500">(F)</span>
-                      </label>
-                      <span className="text-sm font-bold text-violet-700">
-                        {formatUnit(pushForce, "N")}
-                      </span>
-                    </div>
-                    <Slider
-                      value={[pushForce]}
-                      onValueChange={(value) => setPushForce(value[0])}
-                      min={1}
-                      max={120}
-                      step={0.5}
-                      className="w-full"
-                    />
-                  </div>
-                )}
-              </div>
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">
+                Resultados Principais
+              </h4>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-white p-4">
-              <h5 className="mb-4 text-sm font-bold uppercase tracking-wide text-slate-700">
-                Leitura rápida
-              </h5>
-
-              <div className="space-y-3 text-sm text-slate-700">
-                <p>
-                  <span className="font-semibold text-slate-900">Modo:</span>{" "}
-                  {isPushingUp ? "Empurrado para cima" : "Descendo a rampa"}
-                </p>
-                <p>
-                  <span className="font-semibold text-slate-900">Atrito:</span>{" "}
-                  {hasFriction ? "Com atrito" : "Sem atrito"}
-                </p>
-                <p>
-                  <span className="font-semibold text-slate-900">Comprimento da rampa:</span>{" "}
-                  {formatUnit(rampLength, "m")}
-                </p>
-                <p>
-                  <span className="font-semibold text-slate-900">O bloco se move?</span>{" "}
-                  {canMove ? "Sim" : "Não"}
-                </p>
-                <p>
-                  <span className="font-semibold text-slate-900">Aceleração:</span>{" "}
-                  {formatUnit(acceleration, "m/s²")}
-                </p>
-                <p>
-                  <span className="font-semibold text-slate-900">Tempo total:</span>{" "}
-                  {canMove ? formatUnit(travelTime, "s") : "—"}
-                </p>
-                <p>
-                  <span className="font-semibold text-slate-900">Velocidade final:</span>{" "}
-                  {canMove ? formatUnit(finalVelocity, "m/s") : "—"}
-                </p>
-                {isPushingUp && (
-                  <p>
-                    <span className="font-semibold text-slate-900">Força aplicada:</span>{" "}
-                    {formatUnit(pushForce, "N")}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      <Card className="border border-slate-200 shadow-sm">
-        <div className="border-b border-slate-200 px-5 py-4">
-          <h4 className="text-base font-bold text-slate-900">
-            Resultados Principais
-          </h4>
-        </div>
-
-        <div className="p-5">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <MetricCard
-              label={
-                <>
-                  Força peso <MathFormula inline formula={String.raw`P`} />
-                </>
-              }
-              value={formatUnit(weight, "N")}
-            />
-
-            <MetricCard
-              label={
-                <>
-                  Normal <MathFormula inline formula={String.raw`N`} />
-                </>
-              }
-              value={formatUnit(normalForce, "N")}
-              valueClassName="text-green-700"
-            />
-
-            <MetricCard
-              label={
-                <>
-                  Componente paralela{" "}
-                  <MathFormula inline formula={String.raw`P_{\parallel}`} />
-                </>
-              }
-              value={formatUnit(parallelWeight, "N")}
-              valueClassName="text-blue-700"
-            />
-
-            <MetricCard
-              label={
-                <>
-                  Força de atrito{" "}
-                  <MathFormula inline formula={String.raw`F_{at}`} />
-                </>
-              }
-              value={hasFriction ? formatUnit(frictionForce, "N") : "0,00 N"}
-              valueClassName="text-red-700"
-            />
-
-            {isPushingUp && (
+            <div className="space-y-3 p-5">
               <MetricCard
                 label={
                   <>
-                    Força aplicada{" "}
-                    <MathFormula inline formula={String.raw`F`} />
+                    Força peso <MathFormula inline formula={String.raw`P`} />
                   </>
                 }
-                value={formatUnit(pushForce, "N")}
-                valueClassName="text-violet-700"
+                value={formatUnit(weight, "N")}
               />
-            )}
 
-            <MetricCard
-              label={
-                <>
-                  Força resultante{" "}
-                  <MathFormula inline formula={String.raw`F_{res}`} />
-                </>
-              }
-              value={formatUnit(netForce > 0 ? netForce : 0, "N")}
-            />
+              <MetricCard
+                label={
+                  <>
+                    Normal <MathFormula inline formula={String.raw`N`} />
+                  </>
+                }
+                value={formatUnit(normalForce, "N")}
+                valueClassName="text-green-700"
+              />
 
-            <MetricCard
-              label={
-                <>
-                  Aceleração <MathFormula inline formula={String.raw`a`} />
-                </>
-              }
-              value={formatUnit(acceleration, "m/s²")}
-              valueClassName="text-amber-600"
-            />
-          </div>
-        </div>
-      </Card>
+              <MetricCard
+                label={
+                  <>
+                    Componente paralela{" "}
+                    <MathFormula inline formula={String.raw`P_{\parallel}`} />
+                  </>
+                }
+                value={formatUnit(parallelWeight, "N")}
+                valueClassName="text-blue-700"
+              />
 
-      <Card className="border border-slate-200 shadow-sm">
-        <div className="border-b border-slate-200 px-5 py-4">
-          <h4 className="text-base font-bold text-slate-900">
-            Cálculos do Plano Inclinado
-          </h4>
-        </div>
+              <MetricCard
+                label={
+                  <>
+                    Força de atrito{" "}
+                    <MathFormula inline formula={String.raw`F_{at}`} />
+                  </>
+                }
+                value={hasFriction ? formatUnit(frictionForce, "N") : "0,00 N"}
+                valueClassName="text-red-700"
+              />
 
-        <div className="space-y-5 p-5">
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="mb-3 text-sm font-semibold text-slate-700">
-              Decomposição das forças
-            </p>
+              {isPushingUp && (
+                <MetricCard
+                  label={
+                    <>
+                      Força aplicada{" "}
+                      <MathFormula inline formula={String.raw`F`} />
+                    </>
+                  }
+                  value={formatUnit(pushForce, "N")}
+                  valueClassName="text-violet-700"
+                />
+              )}
 
-            <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
-              <MathFormula formula={String.raw`P = mg = ${formatNumber(mass)} \cdot ${formatNumber(G)} = ${formatNumber(weight)} \,\text{N}`} />
-              <MathFormula formula={String.raw`N = mg\cos\theta = ${formatNumber(mass)} \cdot ${formatNumber(G)} \cdot \cos(${formatNumber(angleDeg)}^\circ) = ${formatNumber(normalForce)} \,\text{N}`} />
-              <MathFormula formula={String.raw`P_{\parallel} = mg\sin\theta = ${formatNumber(mass)} \cdot ${formatNumber(G)} \cdot \sin(${formatNumber(angleDeg)}^\circ) = ${formatNumber(parallelWeight)} \,\text{N}`} />
+              <MetricCard
+                label={
+                  <>
+                    Aceleração <MathFormula inline formula={String.raw`a`} />
+                  </>
+                }
+                value={formatUnit(acceleration, "m/s²")}
+                valueClassName="text-amber-600"
+              />
             </div>
-          </div>
+          </Card>
+        </div>
 
-          {hasFriction && (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <p className="mb-3 text-sm font-semibold text-slate-700">
-                Atrito
-              </p>
+        {/* COLUNA DIREITA */}
+        <div className="space-y-4 xl:col-span-8">
+          <Card className="overflow-hidden border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">Simulação</h4>
+            </div>
 
-              <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
-                <MathFormula formula={String.raw`F_{at} = \mu N = ${formatNumber(mu)} \cdot ${formatNumber(normalForce)} = ${formatNumber(frictionForce)} \,\text{N}`} />
+            <div className="bg-slate-50 p-4 md:p-5">
+              <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                <div className="overflow-x-auto">
+                  <canvas
+                    ref={canvasRef}
+                    width={980}
+                    height={420}
+                    className="mx-auto w-full min-w-[780px] rounded-lg border border-slate-200 bg-slate-50"
+                  />
+                </div>
               </div>
             </div>
-          )}
+          </Card>
 
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="mb-3 text-sm font-semibold text-slate-700">
-              Força resultante e aceleração
-            </p>
-
-            <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
-              {!isPushingUp && !hasFriction && (
-                <>
-                  <MathFormula formula={String.raw`F_{res} = P_{\parallel} = ${formatNumber(parallelWeight)} \,\text{N}`} />
-                  <MathFormula formula={String.raw`a = g\sin\theta = ${formatNumber(G)} \cdot \sin(${formatNumber(angleDeg)}^\circ) = ${formatNumber(acceleration)} \,\text{m/s^2}`} />
-                </>
-              )}
-
-              {!isPushingUp && hasFriction && (
-                <>
-                  <MathFormula formula={String.raw`F_{res} = P_{\parallel} - F_{at} = ${formatNumber(parallelWeight)} - ${formatNumber(frictionForce)} = ${formatNumber(netForce > 0 ? netForce : 0)} \,\text{N}`} />
-                  <MathFormula formula={String.raw`a = \frac{F_{res}}{m} = \frac{${formatNumber(netForce > 0 ? netForce : 0)}}{${formatNumber(mass)}} = ${formatNumber(acceleration)} \,\text{m/s^2}`} />
-                </>
-              )}
-
-              {isPushingUp && !hasFriction && (
-                <>
-                  <MathFormula formula={String.raw`F_{res} = F - P_{\parallel} = ${formatNumber(pushForce)} - ${formatNumber(parallelWeight)} = ${formatNumber(netForce > 0 ? netForce : 0)} \,\text{N}`} />
-                  <MathFormula formula={String.raw`a = \frac{F_{res}}{m} = \frac{${formatNumber(netForce > 0 ? netForce : 0)}}{${formatNumber(mass)}} = ${formatNumber(acceleration)} \,\text{m/s^2}`} />
-                </>
-              )}
-
-              {isPushingUp && hasFriction && (
-                <>
-                  <MathFormula formula={String.raw`F_{res} = F - P_{\parallel} - F_{at} = ${formatNumber(pushForce)} - ${formatNumber(parallelWeight)} - ${formatNumber(frictionForce)} = ${formatNumber(netForce > 0 ? netForce : 0)} \,\text{N}`} />
-                  <MathFormula formula={String.raw`a = \frac{F_{res}}{m} = \frac{${formatNumber(netForce > 0 ? netForce : 0)}}{${formatNumber(mass)}} = ${formatNumber(acceleration)} \,\text{m/s^2}`} />
-                </>
-              )}
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">
+                Cálculos Rápidos
+              </h4>
             </div>
-          </div>
 
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="mb-3 text-sm font-semibold text-slate-700">
-              Cinemática e energia
-            </p>
+            <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2">
+              <CalcMiniCard
+                title="Peso e normal"
+                values={[
+                  ["Peso", formatUnit(weight, "N")],
+                  ["Normal", formatUnit(normalForce, "N")],
+                ]}
+              />
 
-            <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
-              <MathFormula formula={String.raw`s = \frac{h}{\sin\theta} = \frac{${formatNumber(height)}}{\sin(${formatNumber(angleDeg)}^\circ)} = ${formatNumber(rampLength)} \,\text{m}`} />
-              {canMove ? (
-                <>
-                  <MathFormula formula={String.raw`t = \sqrt{\frac{2s}{a}} = \sqrt{\frac{2 \cdot ${formatNumber(rampLength)}}{${formatNumber(acceleration)}}} = ${formatNumber(travelTime)} \,\text{s}`} />
-                  <MathFormula formula={String.raw`v = \sqrt{2as} = \sqrt{2 \cdot ${formatNumber(acceleration)} \cdot ${formatNumber(rampLength)}} = ${formatNumber(finalVelocity)} \,\text{m/s}`} />
-                </>
-              ) : (
-                <MathFormula formula={String.raw`\text{Como }F_{res} \le 0,\ \text{o bloco não entra em movimento.}`} />
-              )}
-              <MathFormula formula={String.raw`E_p = mgh = ${formatNumber(mass)} \cdot ${formatNumber(G)} \cdot ${formatNumber(height)} = ${formatNumber(potentialEnergy)} \,\text{J}`} />
-              <MathFormula formula={String.raw`E_c = \frac12 mv^2 = \frac12 \cdot ${formatNumber(mass)} \cdot (${formatNumber(finalVelocity)})^2 = ${formatNumber(kineticEnergy)} \,\text{J}`} />
+              <CalcMiniCard
+                title="Forças paralelas"
+                values={[
+                  ["Componente paralela", formatUnit(parallelWeight, "N")],
+                  ["Atrito", hasFriction ? formatUnit(frictionForce, "N") : "0,00 N"],
+                ]}
+              />
+
+              <CalcMiniCard
+                title="Movimento"
+                values={[
+                  ["Comprimento da rampa", formatUnit(rampLength, "m")],
+                  ["Aceleração", formatUnit(acceleration, "m/s²")],
+                ]}
+              />
+
+              <CalcMiniCard
+                title="Velocidade e energia"
+                values={[
+                  ["Velocidade final", canMove ? formatUnit(finalVelocity, "m/s") : "—"],
+                  ["Energia cinética", formatUnit(kineticEnergy, "J")],
+                ]}
+              />
             </div>
-          </div>
+          </Card>
+
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">
+                Cálculos Detalhados
+              </h4>
+            </div>
+
+            <div className="space-y-5 p-5">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="mb-3 text-sm font-semibold text-slate-700">
+                  Decomposição das forças
+                </p>
+
+                <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
+                  <MathFormula
+                    formula={String.raw`P = mg = ${formatNumber(mass)} \cdot ${formatNumber(
+                      G
+                    )} = ${formatNumber(weight)} \,\text{N}`}
+                  />
+                  <MathFormula
+                    formula={String.raw`N = mg\cos\theta = ${formatNumber(
+                      mass
+                    )} \cdot ${formatNumber(G)} \cdot \cos(${formatNumber(
+                      angleDeg
+                    )}^\circ) = ${formatNumber(normalForce)} \,\text{N}`}
+                  />
+                  <MathFormula
+                    formula={String.raw`P_{\parallel} = mg\sin\theta = ${formatNumber(
+                      mass
+                    )} \cdot ${formatNumber(G)} \cdot \sin(${formatNumber(
+                      angleDeg
+                    )}^\circ) = ${formatNumber(parallelWeight)} \,\text{N}`}
+                  />
+                </div>
+              </div>
+
+              {hasFriction && (
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="mb-3 text-sm font-semibold text-slate-700">
+                    Força de atrito
+                  </p>
+
+                  <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
+                    <MathFormula
+                      formula={String.raw`F_{at} = \mu N = ${formatNumber(
+                        mu
+                      )} \cdot ${formatNumber(normalForce)} = ${formatNumber(
+                        frictionForce
+                      )} \,\text{N}`}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="mb-3 text-sm font-semibold text-slate-700">
+                  Força resultante e aceleração
+                </p>
+
+                <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
+                  {!isPushingUp && !hasFriction && (
+                    <>
+                      <MathFormula
+                        formula={String.raw`F_{res} = P_{\parallel} = ${formatNumber(
+                          parallelWeight
+                        )} \,\text{N}`}
+                      />
+                      <MathFormula
+                        formula={String.raw`a = g\sin\theta = ${formatNumber(
+                          G
+                        )} \cdot \sin(${formatNumber(
+                          angleDeg
+                        )}^\circ) = ${formatNumber(acceleration)} \,\text{m/s^2}`}
+                      />
+                    </>
+                  )}
+
+                  {!isPushingUp && hasFriction && (
+                    <>
+                      <MathFormula
+                        formula={String.raw`F_{res} = P_{\parallel} - F_{at} = ${formatNumber(
+                          parallelWeight
+                        )} - ${formatNumber(frictionForce)} = ${formatNumber(
+                          Math.max(netForce, 0)
+                        )} \,\text{N}`}
+                      />
+                      <MathFormula
+                        formula={String.raw`a = \frac{F_{res}}{m} = \frac{${formatNumber(
+                          Math.max(netForce, 0)
+                        )}}{${formatNumber(mass)}} = ${formatNumber(
+                          acceleration
+                        )} \,\text{m/s^2}`}
+                      />
+                    </>
+                  )}
+
+                  {isPushingUp && !hasFriction && (
+                    <>
+                      <MathFormula
+                        formula={String.raw`F_{res} = F - P_{\parallel} = ${formatNumber(
+                          pushForce
+                        )} - ${formatNumber(parallelWeight)} = ${formatNumber(
+                          Math.max(netForce, 0)
+                        )} \,\text{N}`}
+                      />
+                      <MathFormula
+                        formula={String.raw`a = \frac{F_{res}}{m} = \frac{${formatNumber(
+                          Math.max(netForce, 0)
+                        )}}{${formatNumber(mass)}} = ${formatNumber(
+                          acceleration
+                        )} \,\text{m/s^2}`}
+                      />
+                    </>
+                  )}
+
+                  {isPushingUp && hasFriction && (
+                    <>
+                      <MathFormula
+                        formula={String.raw`F_{res} = F - P_{\parallel} - F_{at} = ${formatNumber(
+                          pushForce
+                        )} - ${formatNumber(parallelWeight)} - ${formatNumber(
+                          frictionForce
+                        )} = ${formatNumber(Math.max(netForce, 0))} \,\text{N}`}
+                      />
+                      <MathFormula
+                        formula={String.raw`a = \frac{F_{res}}{m} = \frac{${formatNumber(
+                          Math.max(netForce, 0)
+                        )}}{${formatNumber(mass)}} = ${formatNumber(
+                          acceleration
+                        )} \,\text{m/s^2}`}
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="mb-3 text-sm font-semibold text-slate-700">
+                  Cinemática e energia
+                </p>
+
+                <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
+                  <MathFormula
+                    formula={String.raw`s = \frac{h}{\sin\theta} = \frac{${formatNumber(
+                      height
+                    )}}{\sin(${formatNumber(angleDeg)}^\circ)} = ${formatNumber(
+                      rampLength
+                    )} \,\text{m}`}
+                  />
+
+                  {canMove ? (
+                    <>
+                      <MathFormula
+                        formula={String.raw`t = \sqrt{\frac{2s}{a}} = \sqrt{\frac{2 \cdot ${formatNumber(
+                          rampLength
+                        )}}{${formatNumber(acceleration)}}} = ${formatNumber(
+                          travelTime
+                        )} \,\text{s}`}
+                      />
+                      <MathFormula
+                        formula={String.raw`v = \sqrt{2as} = \sqrt{2 \cdot ${formatNumber(
+                          acceleration
+                        )} \cdot ${formatNumber(rampLength)}} = ${formatNumber(
+                          finalVelocity
+                        )} \,\text{m/s}`}
+                      />
+                    </>
+                  ) : (
+                    <MathFormula
+                      formula={String.raw`\text{Como }F_{res} \le 0,\ \text{o bloco não entra em movimento.}`}
+                    />
+                  )}
+
+                  <MathFormula
+                    formula={String.raw`E_p = mgh = ${formatNumber(
+                      mass
+                    )} \cdot ${formatNumber(G)} \cdot ${formatNumber(
+                      height
+                    )} = ${formatNumber(potentialEnergy)} \,\text{J}`}
+                  />
+                  <MathFormula
+                    formula={String.raw`E_c = \frac12 mv^2 = \frac12 \cdot ${formatNumber(
+                      mass
+                    )} \cdot (${formatNumber(finalVelocity)})^2 = ${formatNumber(
+                      kineticEnergy
+                    )} \,\text{J}`}
+                  />
+                </div>
+              </div>
+            </div>
+          </Card>
         </div>
-      </Card>
+      </div>
 
       <AdvancedTheory
         title={ITADynamicsTheory.title}
@@ -784,9 +867,31 @@ function MetricCard({
   valueClassName?: string;
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
       <p className="text-sm font-medium text-slate-600">{label}</p>
       <p className={`mt-2 text-lg font-bold ${valueClassName}`}>{value}</p>
+    </div>
+  );
+}
+
+function CalcMiniCard({
+  title,
+  values,
+}: {
+  title: string;
+  values: [string, string][];
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <p className="mb-3 text-sm font-bold text-slate-800">{title}</p>
+      <div className="space-y-2">
+        {values.map(([label, value]) => (
+          <div key={label} className="flex items-center justify-between gap-4">
+            <span className="text-sm text-slate-600">{label}</span>
+            <span className="text-sm font-bold text-slate-900">{value}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -825,10 +930,31 @@ function drawLabeledArrow(
   ctx.closePath();
   ctx.fill();
 
-  const labelX = toX + 8 * Math.cos(angle);
-  const labelY = toY + 8 * Math.sin(angle);
+  const labelX = toX + 10 * Math.cos(angle);
+  const labelY = toY + 10 * Math.sin(angle);
 
   ctx.fillStyle = color;
   ctx.font = "bold 11px Arial";
   ctx.fillText(label, labelX, labelY);
+}
+
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number
+) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
 }
