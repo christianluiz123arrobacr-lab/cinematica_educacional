@@ -34,7 +34,8 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
   const [mass, setMass] = useState(2);
   const [angleDeg, setAngleDeg] = useState(30);
   const [height, setHeight] = useState(4);
-  const [mu, setMu] = useState(0.2);
+  const [muStatic, setMuStatic] = useState(0.35);
+  const [muKinetic, setMuKinetic] = useState(0.2);
   const [pushForce, setPushForce] = useState(20);
 
   const hasFriction = frictionMode === "withFriction";
@@ -51,35 +52,73 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
   const weight = useMemo(() => mass * G, [mass]);
   const normalForce = useMemo(() => mass * G * Math.cos(angleRad), [mass, angleRad]);
   const parallelWeight = useMemo(() => mass * G * Math.sin(angleRad), [mass, angleRad]);
+  const perpendicularWeight = useMemo(() => mass * G * Math.cos(angleRad), [mass, angleRad]);
+
+  const maxStaticFriction = useMemo(() => {
+    if (!hasFriction) return 0;
+    return muStatic * normalForce;
+  }, [hasFriction, muStatic, normalForce]);
+
+  const kineticFriction = useMemo(() => {
+    if (!hasFriction) return 0;
+    return muKinetic * normalForce;
+  }, [hasFriction, muKinetic, normalForce]);
+
+  const drivingForceNoFriction = useMemo(() => {
+    if (!isPushingUp) return parallelWeight;
+    return pushForce - parallelWeight;
+  }, [isPushingUp, parallelWeight, pushForce]);
+
+  const motionStarts = useMemo(() => {
+    if (!hasFriction) return Math.abs(drivingForceNoFriction) > 1e-9;
+    return Math.abs(drivingForceNoFriction) > maxStaticFriction + 1e-9;
+  }, [hasFriction, drivingForceNoFriction, maxStaticFriction]);
+
+  const staticFrictionUsed = useMemo(() => {
+    if (!hasFriction || motionStarts) return 0;
+    return Math.abs(drivingForceNoFriction);
+  }, [hasFriction, motionStarts, drivingForceNoFriction]);
 
   const frictionForce = useMemo(() => {
     if (!hasFriction) return 0;
-    return mu * normalForce;
-  }, [hasFriction, mu, normalForce]);
+    if (!motionStarts) return staticFrictionUsed;
+    return kineticFriction;
+  }, [hasFriction, motionStarts, staticFrictionUsed, kineticFriction]);
 
-  const netForce = useMemo(() => {
+  const netForceSigned = useMemo(() => {
+    if (!hasFriction) return drivingForceNoFriction;
+    if (!motionStarts) return 0;
+
     if (!isPushingUp) {
-      return hasFriction ? parallelWeight - frictionForce : parallelWeight;
+      return parallelWeight - kineticFriction;
     }
 
-    return pushForce - parallelWeight - (hasFriction ? frictionForce : 0);
-  }, [isPushingUp, hasFriction, parallelWeight, frictionForce, pushForce]);
+    return pushForce - parallelWeight - kineticFriction;
+  }, [
+    hasFriction,
+    motionStarts,
+    isPushingUp,
+    parallelWeight,
+    kineticFriction,
+    pushForce,
+    drivingForceNoFriction,
+  ]);
 
   const acceleration = useMemo(() => {
-    const value = netForce / mass;
-    return value > 0 ? value : 0;
-  }, [netForce, mass]);
+    if (mass <= 0) return 0;
+    return netForceSigned / mass;
+  }, [netForceSigned, mass]);
 
-  const canMove = rampLength > 0 && acceleration > 0;
+  const canMove = rampLength > 0 && Math.abs(acceleration) > 1e-9 && motionStarts;
 
   const travelTime = useMemo(() => {
     if (!canMove) return 0;
-    return Math.sqrt((2 * rampLength) / acceleration);
+    return Math.sqrt((2 * rampLength) / Math.abs(acceleration));
   }, [canMove, rampLength, acceleration]);
 
   const finalVelocity = useMemo(() => {
     if (!canMove) return 0;
-    return Math.sqrt(2 * acceleration * rampLength);
+    return Math.sqrt(2 * Math.abs(acceleration) * rampLength);
   }, [canMove, acceleration, rampLength]);
 
   const potentialEnergy = useMemo(() => mass * G * height, [mass, height]);
@@ -88,6 +127,34 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
     [mass, finalVelocity]
   );
 
+  const motionDescription = useMemo(() => {
+    if (!hasFriction) {
+      return isPushingUp
+        ? acceleration > 0
+          ? "O bloco sobe acelerando."
+          : acceleration < 0
+          ? "O bloco tenderia a descer."
+          : "O bloco permanece em equilíbrio."
+        : acceleration > 0
+        ? "O bloco desce acelerando."
+        : "O bloco permanece em equilíbrio.";
+    }
+
+    if (!motionStarts) {
+      return "O atrito estático impede o movimento.";
+    }
+
+    if (!isPushingUp) {
+      return acceleration > 0
+        ? "O bloco desce com atrito cinético."
+        : "O bloco não consegue descer.";
+    }
+
+    return acceleration > 0
+      ? "O bloco sobe com atrito cinético."
+      : "A força aplicada não vence peso + atrito.";
+  }, [hasFriction, isPushingUp, motionStarts, acceleration]);
+
   useEffect(() => {
     timeRef.current = 0;
   }, [
@@ -95,7 +162,8 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
     mass,
     angleDeg,
     height,
-    mu,
+    muStatic,
+    muKinetic,
     frictionMode,
     motionMode,
     pushForce,
@@ -117,7 +185,6 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
       ctx.fillRect(0, 0, width, heightCanvas);
 
       const groundY = heightCanvas - 72;
-
       const bottomX = 760;
       const bottomY = groundY;
       const rampVisualLength = 430;
@@ -125,7 +192,6 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
       const topX = bottomX - rampVisualLength * Math.cos(angleRad);
       const topY = bottomY - rampVisualLength * Math.sin(angleRad);
 
-      // chão
       ctx.strokeStyle = "#94a3b8";
       ctx.lineWidth = 3;
       ctx.beginPath();
@@ -133,7 +199,6 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
       ctx.lineTo(width - 40, groundY);
       ctx.stroke();
 
-      // rampa
       ctx.strokeStyle = "#475569";
       ctx.lineWidth = 6;
       ctx.beginPath();
@@ -141,7 +206,6 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
       ctx.lineTo(bottomX, bottomY);
       ctx.stroke();
 
-      // preenchimento sutil da rampa
       ctx.fillStyle = "#e2e8f0";
       ctx.beginPath();
       ctx.moveTo(topX, topY);
@@ -150,7 +214,6 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
       ctx.closePath();
       ctx.fill();
 
-      // linha altura
       ctx.strokeStyle = "#cbd5e1";
       ctx.lineWidth = 2;
       ctx.setLineDash([6, 6]);
@@ -160,7 +223,6 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // arco ângulo
       ctx.strokeStyle = "#64748b";
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -175,23 +237,26 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
       const dx = (bottomX - topX) / totalVisualLength;
       const dy = (bottomY - topY) / totalVisualLength;
 
+      const normalX = -dy;
+      const normalY = dx;
+
       let progress = isPushingUp ? 1 : 0;
       let currentVelocity = 0;
 
       if (canMove) {
         const currentTime = timeRef.current;
         const traveled = Math.min(
-          0.5 * acceleration * currentTime * currentTime,
+          0.5 * Math.abs(acceleration) * currentTime * currentTime,
           rampLength
         );
         const normalized = traveled / rampLength;
 
         if (!isPushingUp) {
           progress = normalized;
-          currentVelocity = Math.min(acceleration * currentTime, finalVelocity);
+          currentVelocity = Math.min(Math.abs(acceleration) * currentTime, finalVelocity);
         } else {
           progress = 1 - normalized;
-          currentVelocity = Math.min(acceleration * currentTime, finalVelocity);
+          currentVelocity = Math.min(Math.abs(acceleration) * currentTime, finalVelocity);
         }
 
         if (isRunning) {
@@ -208,7 +273,6 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
       const blockCenterX = topX + (bottomX - topX) * progress;
       const blockCenterY = topY + (bottomY - topY) * progress;
 
-      // bloco
       ctx.save();
       ctx.translate(blockCenterX, blockCenterY);
       ctx.rotate(Math.atan2(bottomY - topY, bottomX - topX));
@@ -222,18 +286,16 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
 
       ctx.restore();
 
-      // título interno
       ctx.fillStyle = "#0f172a";
       ctx.font = "bold 14px Arial";
       ctx.fillText(
-        `${isPushingUp ? "BLOCO EMPURRADO PARA CIMA" : "BLOCO DESCENDO"} ${
+        `${isPushingUp ? "BLOCO EMPURRADO PARA CIMA" : "BLOCO NA RAMPA"} ${
           hasFriction ? "COM ATRITO" : "SEM ATRITO"
         }`,
         22,
         28
       );
 
-      // dados canto esquerdo do canvas
       ctx.font = "12px Arial";
       ctx.fillText(`m = ${formatUnit(mass, "kg")}`, 22, 58);
       ctx.fillText(`h = ${formatUnit(height, "m")}`, 22, 78);
@@ -242,18 +304,30 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
       ctx.fillText(`v = ${formatUnit(currentVelocity, "m/s")}`, 22, 138);
 
       if (hasFriction) {
-        ctx.fillText(`μ = ${formatNumber(mu)}`, 22, 158);
+        ctx.fillText(`μe = ${formatNumber(muStatic)}`, 22, 158);
+        ctx.fillText(`μc = ${formatNumber(muKinetic)}`, 22, 178);
       }
 
       if (isPushingUp) {
         ctx.fillText(
           `F = ${formatUnit(pushForce, "N")}`,
           22,
-          hasFriction ? 178 : 158
+          hasFriction ? 198 : 158
         );
       }
 
-      // vetor componente do peso paralela
+      // peso total
+      drawLabeledArrow(
+        ctx,
+        blockCenterX,
+        blockCenterY,
+        blockCenterX,
+        blockCenterY + 105,
+        "#475569",
+        `P = ${formatNumber(weight)} N`
+      );
+
+      // componente paralela
       drawLabeledArrow(
         ctx,
         blockCenterX,
@@ -264,19 +338,35 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
         `P∥ = ${formatNumber(parallelWeight)} N`
       );
 
+      // componente perpendicular
+      drawLabeledArrow(
+        ctx,
+        blockCenterX,
+        blockCenterY,
+        blockCenterX - normalX * 78,
+        blockCenterY - normalY * 78,
+        "#0ea5e9",
+        `P⊥ = ${formatNumber(perpendicularWeight)} N`
+      );
+
       // normal
       drawLabeledArrow(
         ctx,
         blockCenterX,
         blockCenterY,
-        blockCenterX - dy * 74,
-        blockCenterY + dx * 74,
+        blockCenterX + normalX * 86,
+        blockCenterY + normalY * 86,
         "#16a34a",
         `N = ${formatNumber(normalForce)} N`
       );
 
-      // atrito: sempre contra o movimento/tendência de movimento
+      // atrito
       if (hasFriction) {
+        const frictionMagnitude = !motionStarts ? staticFrictionUsed : kineticFriction;
+        const frictionLabel = !motionStarts
+          ? `Fat(est) = ${formatNumber(frictionMagnitude)} N`
+          : `Fat(cin) = ${formatNumber(frictionMagnitude)} N`;
+
         const frictionTipX = isPushingUp
           ? blockCenterX + dx * 78
           : blockCenterX - dx * 78;
@@ -291,11 +381,11 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
           frictionTipX,
           frictionTipY,
           "#ef4444",
-          `Fat = ${formatNumber(frictionForce)} N`
+          frictionLabel
         );
       }
 
-      // força aplicada para cima
+      // força aplicada
       if (isPushingUp) {
         drawLabeledArrow(
           ctx,
@@ -309,7 +399,7 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
       }
 
       // aceleração
-      if (acceleration > 0) {
+      if (Math.abs(acceleration) > 1e-9) {
         const accelTipX = isPushingUp
           ? blockCenterX - dx * 118
           : blockCenterX + dx * 118;
@@ -328,15 +418,9 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
         );
       }
 
-      if (!canMove) {
-        ctx.fillStyle = "#b91c1c";
-        ctx.font = "bold 13px Arial";
-        ctx.fillText(
-          "Não há força resultante suficiente para mover o bloco.",
-          22,
-          208
-        );
-      }
+      ctx.fillStyle = motionStarts ? "#0f172a" : "#b91c1c";
+      ctx.font = "bold 13px Arial";
+      ctx.fillText(motionDescription, 22, 236);
 
       animationFrameRef.current = requestAnimationFrame(animate);
     };
@@ -355,31 +439,37 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
     isPushingUp,
     mass,
     height,
-    mu,
+    muStatic,
+    muKinetic,
     pushForce,
+    weight,
     normalForce,
     parallelWeight,
-    frictionForce,
+    perpendicularWeight,
+    staticFrictionUsed,
+    kineticFriction,
     acceleration,
     canMove,
     finalVelocity,
     travelTime,
     rampLength,
     isRunning,
+    motionStarts,
+    motionDescription,
   ]);
 
   return (
     <div className="w-full space-y-6">
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-        {/* COLUNA ESQUERDA */}
         <div className="space-y-4 xl:col-span-4">
           <Card className="border border-slate-200 shadow-sm">
-            <div className="border-b border-slate-200 px-5 py-4">
+            <div className="border-b border-slate-200 bg-white px-5 py-4">
               <h3 className="text-lg font-bold text-slate-900">
                 Simulador de Plano Inclinado
               </h3>
               <p className="mt-1 text-sm text-slate-600">
-                Ajuste os parâmetros e observe a dinâmica do bloco em tempo real.
+                Agora com decomposição completa do peso e distinção entre atrito
+                estático e cinético.
               </p>
             </div>
 
@@ -414,15 +504,11 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
                 </select>
               </div>
 
-              <div>
-                <div className="mb-2 flex items-center justify-between">
-                  <label className="text-sm font-medium text-slate-700">
-                    Massa do bloco <span className="text-slate-500">(m)</span>
-                  </label>
-                  <span className="text-sm font-bold text-slate-900">
-                    {formatUnit(mass, "kg")}
-                  </span>
-                </div>
+              <ControlRow
+                label="Massa do bloco"
+                symbol="m"
+                value={formatUnit(mass, "kg")}
+              >
                 <Slider
                   value={[mass]}
                   onValueChange={(value) => setMass(value[0])}
@@ -431,17 +517,13 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
                   step={0.1}
                   className="w-full"
                 />
-              </div>
+              </ControlRow>
 
-              <div>
-                <div className="mb-2 flex items-center justify-between">
-                  <label className="text-sm font-medium text-slate-700">
-                    Altura da rampa <span className="text-slate-500">(h)</span>
-                  </label>
-                  <span className="text-sm font-bold text-slate-900">
-                    {formatUnit(height, "m")}
-                  </span>
-                </div>
+              <ControlRow
+                label="Altura da rampa"
+                symbol="h"
+                value={formatUnit(height, "m")}
+              >
                 <Slider
                   value={[height]}
                   onValueChange={(value) => setHeight(value[0])}
@@ -450,17 +532,13 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
                   step={0.1}
                   className="w-full"
                 />
-              </div>
+              </ControlRow>
 
-              <div>
-                <div className="mb-2 flex items-center justify-between">
-                  <label className="text-sm font-medium text-slate-700">
-                    Ângulo da rampa <span className="text-slate-500">(θ)</span>
-                  </label>
-                  <span className="text-sm font-bold text-slate-900">
-                    {formatUnit(angleDeg, "°")}
-                  </span>
-                </div>
+              <ControlRow
+                label="Ângulo da rampa"
+                symbol="θ"
+                value={formatUnit(angleDeg, "°")}
+              >
                 <Slider
                   value={[angleDeg]}
                   onValueChange={(value) => setAngleDeg(value[0])}
@@ -469,40 +547,48 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
                   step={1}
                   className="w-full"
                 />
-              </div>
+              </ControlRow>
 
               {hasFriction && (
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <label className="text-sm font-medium text-slate-700">
-                      Coeficiente de atrito{" "}
-                      <span className="text-slate-500">(μ)</span>
-                    </label>
-                    <span className="text-sm font-bold text-blue-700">
-                      {formatNumber(mu)}
-                    </span>
-                  </div>
-                  <Slider
-                    value={[mu]}
-                    onValueChange={(value) => setMu(value[0])}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    className="w-full"
-                  />
-                </div>
+                <>
+                  <ControlRow
+                    label="Atrito estático"
+                    symbol="μe"
+                    value={formatNumber(muStatic)}
+                  >
+                    <Slider
+                      value={[muStatic]}
+                      onValueChange={(value) => setMuStatic(value[0])}
+                      min={0}
+                      max={1.2}
+                      step={0.01}
+                      className="w-full"
+                    />
+                  </ControlRow>
+
+                  <ControlRow
+                    label="Atrito cinético"
+                    symbol="μc"
+                    value={formatNumber(muKinetic)}
+                  >
+                    <Slider
+                      value={[muKinetic]}
+                      onValueChange={(value) => setMuKinetic(value[0])}
+                      min={0}
+                      max={1}
+                      step={0.01}
+                      className="w-full"
+                    />
+                  </ControlRow>
+                </>
               )}
 
               {isPushingUp && (
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <label className="text-sm font-medium text-slate-700">
-                      Força aplicada <span className="text-slate-500">(F)</span>
-                    </label>
-                    <span className="text-sm font-bold text-violet-700">
-                      {formatUnit(pushForce, "N")}
-                    </span>
-                  </div>
+                <ControlRow
+                  label="Força aplicada"
+                  symbol="F"
+                  value={formatUnit(pushForce, "N")}
+                >
                   <Slider
                     value={[pushForce]}
                     onValueChange={(value) => setPushForce(value[0])}
@@ -511,7 +597,7 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
                     step={0.5}
                     className="w-full"
                   />
-                </div>
+                </ControlRow>
               )}
             </div>
           </Card>
@@ -527,20 +613,10 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
               <MetricCard
                 label={
                   <>
-                    Força peso <MathFormula inline formula={String.raw`P`} />
+                    Peso <MathFormula inline formula={String.raw`P`} />
                   </>
                 }
                 value={formatUnit(weight, "N")}
-              />
-
-              <MetricCard
-                label={
-                  <>
-                    Normal <MathFormula inline formula={String.raw`N`} />
-                  </>
-                }
-                value={formatUnit(normalForce, "N")}
-                valueClassName="text-green-700"
               />
 
               <MetricCard
@@ -557,26 +633,33 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
               <MetricCard
                 label={
                   <>
-                    Força de atrito{" "}
-                    <MathFormula inline formula={String.raw`F_{at}`} />
+                    Componente perpendicular{" "}
+                    <MathFormula inline formula={String.raw`P_{\perp}`} />
                   </>
                 }
-                value={hasFriction ? formatUnit(frictionForce, "N") : "0,00 N"}
-                valueClassName="text-red-700"
+                value={formatUnit(perpendicularWeight, "N")}
+                valueClassName="text-sky-700"
               />
 
-              {isPushingUp && (
-                <MetricCard
-                  label={
-                    <>
-                      Força aplicada{" "}
-                      <MathFormula inline formula={String.raw`F`} />
-                    </>
-                  }
-                  value={formatUnit(pushForce, "N")}
-                  valueClassName="text-violet-700"
-                />
-              )}
+              <MetricCard
+                label={
+                  <>
+                    Normal <MathFormula inline formula={String.raw`N`} />
+                  </>
+                }
+                value={formatUnit(normalForce, "N")}
+                valueClassName="text-green-700"
+              />
+
+              <MetricCard
+                label={<>Atrito usado</>}
+                value={
+                  hasFriction
+                    ? formatUnit(motionStarts ? kineticFriction : staticFrictionUsed, "N")
+                    : "0,00 N"
+                }
+                valueClassName="text-red-700"
+              />
 
               <MetricCard
                 label={
@@ -591,7 +674,6 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
           </Card>
         </div>
 
-        {/* COLUNA DIREITA */}
         <div className="space-y-4 xl:col-span-8">
           <Card className="overflow-hidden border border-slate-200 shadow-sm">
             <div className="border-b border-slate-200 px-5 py-4">
@@ -621,34 +703,34 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
 
             <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2">
               <CalcMiniCard
-                title="Peso e normal"
+                title="Decomposição"
                 values={[
-                  ["Peso", formatUnit(weight, "N")],
-                  ["Normal", formatUnit(normalForce, "N")],
+                  ["P", formatUnit(weight, "N")],
+                  ["P∥", formatUnit(parallelWeight, "N")],
                 ]}
               />
 
               <CalcMiniCard
-                title="Forças paralelas"
+                title="Normal e perpendicular"
                 values={[
-                  ["Componente paralela", formatUnit(parallelWeight, "N")],
-                  ["Atrito", hasFriction ? formatUnit(frictionForce, "N") : "0,00 N"],
+                  ["P⊥", formatUnit(perpendicularWeight, "N")],
+                  ["N", formatUnit(normalForce, "N")],
+                ]}
+              />
+
+              <CalcMiniCard
+                title="Atrito"
+                values={[
+                  ["Fat máx. estático", formatUnit(maxStaticFriction, "N")],
+                  ["Fat cinético", formatUnit(kineticFriction, "N")],
                 ]}
               />
 
               <CalcMiniCard
                 title="Movimento"
                 values={[
-                  ["Comprimento da rampa", formatUnit(rampLength, "m")],
-                  ["Aceleração", formatUnit(acceleration, "m/s²")],
-                ]}
-              />
-
-              <CalcMiniCard
-                title="Velocidade e energia"
-                values={[
-                  ["Velocidade final", canMove ? formatUnit(finalVelocity, "m/s") : "—"],
-                  ["Energia cinética", formatUnit(kineticEnergy, "J")],
+                  ["a", formatUnit(acceleration, "m/s²")],
+                  ["v final", canMove ? formatUnit(finalVelocity, "m/s") : "—"],
                 ]}
               />
             </div>
@@ -662,187 +744,62 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
             </div>
 
             <div className="space-y-5 p-5">
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <p className="mb-3 text-sm font-semibold text-slate-700">
-                  Decomposição das forças
-                </p>
-
-                <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
-                  <MathFormula
-                    formula={String.raw`P = mg = ${formatNumber(mass)} \cdot ${formatNumber(
-                      G
-                    )} = ${formatNumber(weight)} \,\text{N}`}
-                  />
-                  <MathFormula
-                    formula={String.raw`N = mg\cos\theta = ${formatNumber(
-                      mass
-                    )} \cdot ${formatNumber(G)} \cdot \cos(${formatNumber(
-                      angleDeg
-                    )}^\circ) = ${formatNumber(normalForce)} \,\text{N}`}
-                  />
-                  <MathFormula
-                    formula={String.raw`P_{\parallel} = mg\sin\theta = ${formatNumber(
-                      mass
-                    )} \cdot ${formatNumber(G)} \cdot \sin(${formatNumber(
-                      angleDeg
-                    )}^\circ) = ${formatNumber(parallelWeight)} \,\text{N}`}
-                  />
-                </div>
-              </div>
+              <CalcSection
+                title="Decomposição do peso"
+                formulas={[
+                  String.raw`P = mg = ${formatNumber(mass)} \cdot ${formatNumber(G)} = ${formatNumber(weight)} \,\text{N}`,
+                  String.raw`P_{\parallel} = mg\sin\theta = ${formatNumber(mass)} \cdot ${formatNumber(G)} \cdot \sin(${formatNumber(angleDeg)}^\circ) = ${formatNumber(parallelWeight)} \,\text{N}`,
+                  String.raw`P_{\perp} = mg\cos\theta = ${formatNumber(mass)} \cdot ${formatNumber(G)} \cdot \cos(${formatNumber(angleDeg)}^\circ) = ${formatNumber(perpendicularWeight)} \,\text{N}`,
+                  String.raw`N = P_{\perp} = ${formatNumber(normalForce)} \,\text{N}`,
+                ]}
+              />
 
               {hasFriction && (
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="mb-3 text-sm font-semibold text-slate-700">
-                    Força de atrito
-                  </p>
-
-                  <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
-                    <MathFormula
-                      formula={String.raw`F_{at} = \mu N = ${formatNumber(
-                        mu
-                      )} \cdot ${formatNumber(normalForce)} = ${formatNumber(
-                        frictionForce
-                      )} \,\text{N}`}
-                    />
-                  </div>
-                </div>
+                <CalcSection
+                  title="Atrito estático e cinético"
+                  formulas={[
+                    String.raw`F_{at,\max}^{(est)} = \mu_e N = ${formatNumber(muStatic)} \cdot ${formatNumber(normalForce)} = ${formatNumber(maxStaticFriction)} \,\text{N}`,
+                    String.raw`F_{at}^{(cin)} = \mu_c N = ${formatNumber(muKinetic)} \cdot ${formatNumber(normalForce)} = ${formatNumber(kineticFriction)} \,\text{N}`,
+                    !motionStarts
+                      ? String.raw`\text{Como a força motriz é menor que }F_{at,\max}^{(est)},\ \text{o bloco permanece em repouso.}`
+                      : String.raw`\text{Como a força motriz supera o atrito estático máximo, o bloco entra em movimento e passa a atuar o atrito cinético.}`,
+                  ]}
+                />
               )}
 
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <p className="mb-3 text-sm font-semibold text-slate-700">
-                  Força resultante e aceleração
-                </p>
+              <CalcSection
+                title="Equações por eixo"
+                formulas={[
+                  String.raw`\Sigma F_{\perp} = 0 \Rightarrow N - P_{\perp} = 0`,
+                  !isPushingUp
+                    ? hasFriction
+                      ? !motionStarts
+                        ? String.raw`\Sigma F_{\parallel} = P_{\parallel} - F_{at}^{(est)} = 0`
+                        : String.raw`\Sigma F_{\parallel} = P_{\parallel} - F_{at}^{(cin)} = ${formatNumber(netForceSigned)} \,\text{N}`
+                      : String.raw`\Sigma F_{\parallel} = P_{\parallel} = ${formatNumber(netForceSigned)} \,\text{N}`
+                    : hasFriction
+                    ? !motionStarts
+                      ? String.raw`\Sigma F_{\parallel} = F - P_{\parallel} - F_{at}^{(est)} = 0`
+                      : String.raw`\Sigma F_{\parallel} = F - P_{\parallel} - F_{at}^{(cin)} = ${formatNumber(netForceSigned)} \,\text{N}`
+                    : String.raw`\Sigma F_{\parallel} = F - P_{\parallel} = ${formatNumber(netForceSigned)} \,\text{N}`,
+                  String.raw`a = \frac{\Sigma F_{\parallel}}{m} = \frac{${formatNumber(netForceSigned)}}{${formatNumber(mass)}} = ${formatNumber(acceleration)} \,\text{m/s^2}`,
+                ]}
+              />
 
-                <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
-                  {!isPushingUp && !hasFriction && (
-                    <>
-                      <MathFormula
-                        formula={String.raw`F_{res} = P_{\parallel} = ${formatNumber(
-                          parallelWeight
-                        )} \,\text{N}`}
-                      />
-                      <MathFormula
-                        formula={String.raw`a = g\sin\theta = ${formatNumber(
-                          G
-                        )} \cdot \sin(${formatNumber(
-                          angleDeg
-                        )}^\circ) = ${formatNumber(acceleration)} \,\text{m/s^2}`}
-                      />
-                    </>
-                  )}
-
-                  {!isPushingUp && hasFriction && (
-                    <>
-                      <MathFormula
-                        formula={String.raw`F_{res} = P_{\parallel} - F_{at} = ${formatNumber(
-                          parallelWeight
-                        )} - ${formatNumber(frictionForce)} = ${formatNumber(
-                          Math.max(netForce, 0)
-                        )} \,\text{N}`}
-                      />
-                      <MathFormula
-                        formula={String.raw`a = \frac{F_{res}}{m} = \frac{${formatNumber(
-                          Math.max(netForce, 0)
-                        )}}{${formatNumber(mass)}} = ${formatNumber(
-                          acceleration
-                        )} \,\text{m/s^2}`}
-                      />
-                    </>
-                  )}
-
-                  {isPushingUp && !hasFriction && (
-                    <>
-                      <MathFormula
-                        formula={String.raw`F_{res} = F - P_{\parallel} = ${formatNumber(
-                          pushForce
-                        )} - ${formatNumber(parallelWeight)} = ${formatNumber(
-                          Math.max(netForce, 0)
-                        )} \,\text{N}`}
-                      />
-                      <MathFormula
-                        formula={String.raw`a = \frac{F_{res}}{m} = \frac{${formatNumber(
-                          Math.max(netForce, 0)
-                        )}}{${formatNumber(mass)}} = ${formatNumber(
-                          acceleration
-                        )} \,\text{m/s^2}`}
-                      />
-                    </>
-                  )}
-
-                  {isPushingUp && hasFriction && (
-                    <>
-                      <MathFormula
-                        formula={String.raw`F_{res} = F - P_{\parallel} - F_{at} = ${formatNumber(
-                          pushForce
-                        )} - ${formatNumber(parallelWeight)} - ${formatNumber(
-                          frictionForce
-                        )} = ${formatNumber(Math.max(netForce, 0))} \,\text{N}`}
-                      />
-                      <MathFormula
-                        formula={String.raw`a = \frac{F_{res}}{m} = \frac{${formatNumber(
-                          Math.max(netForce, 0)
-                        )}}{${formatNumber(mass)}} = ${formatNumber(
-                          acceleration
-                        )} \,\text{m/s^2}`}
-                      />
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <p className="mb-3 text-sm font-semibold text-slate-700">
-                  Cinemática e energia
-                </p>
-
-                <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
-                  <MathFormula
-                    formula={String.raw`s = \frac{h}{\sin\theta} = \frac{${formatNumber(
-                      height
-                    )}}{\sin(${formatNumber(angleDeg)}^\circ)} = ${formatNumber(
-                      rampLength
-                    )} \,\text{m}`}
-                  />
-
-                  {canMove ? (
-                    <>
-                      <MathFormula
-                        formula={String.raw`t = \sqrt{\frac{2s}{a}} = \sqrt{\frac{2 \cdot ${formatNumber(
-                          rampLength
-                        )}}{${formatNumber(acceleration)}}} = ${formatNumber(
-                          travelTime
-                        )} \,\text{s}`}
-                      />
-                      <MathFormula
-                        formula={String.raw`v = \sqrt{2as} = \sqrt{2 \cdot ${formatNumber(
-                          acceleration
-                        )} \cdot ${formatNumber(rampLength)}} = ${formatNumber(
-                          finalVelocity
-                        )} \,\text{m/s}`}
-                      />
-                    </>
-                  ) : (
-                    <MathFormula
-                      formula={String.raw`\text{Como }F_{res} \le 0,\ \text{o bloco não entra em movimento.}`}
-                    />
-                  )}
-
-                  <MathFormula
-                    formula={String.raw`E_p = mgh = ${formatNumber(
-                      mass
-                    )} \cdot ${formatNumber(G)} \cdot ${formatNumber(
-                      height
-                    )} = ${formatNumber(potentialEnergy)} \,\text{J}`}
-                  />
-                  <MathFormula
-                    formula={String.raw`E_c = \frac12 mv^2 = \frac12 \cdot ${formatNumber(
-                      mass
-                    )} \cdot (${formatNumber(finalVelocity)})^2 = ${formatNumber(
-                      kineticEnergy
-                    )} \,\text{J}`}
-                  />
-                </div>
-              </div>
+              <CalcSection
+                title="Cinemática e energia"
+                formulas={[
+                  String.raw`s = \frac{h}{\sin\theta} = \frac{${formatNumber(height)}}{\sin(${formatNumber(angleDeg)}^\circ)} = ${formatNumber(rampLength)} \,\text{m}`,
+                  canMove
+                    ? String.raw`t = \sqrt{\frac{2s}{|a|}} = \sqrt{\frac{2 \cdot ${formatNumber(rampLength)}}{${formatNumber(Math.abs(acceleration))}}} = ${formatNumber(travelTime)} \,\text{s}`
+                    : String.raw`\text{Sem movimento, não há tempo de percurso.}`,
+                  canMove
+                    ? String.raw`v = \sqrt{2|a|s} = \sqrt{2 \cdot ${formatNumber(Math.abs(acceleration))} \cdot ${formatNumber(rampLength)}} = ${formatNumber(finalVelocity)} \,\text{m/s}`
+                    : String.raw`\text{Sem movimento, a velocidade final permanece nula.}`,
+                  String.raw`E_p = mgh = ${formatNumber(mass)} \cdot ${formatNumber(G)} \cdot ${formatNumber(height)} = ${formatNumber(potentialEnergy)} \,\text{J}`,
+                  String.raw`E_c = \frac12 mv^2 = \frac12 \cdot ${formatNumber(mass)} \cdot (${formatNumber(finalVelocity)})^2 = ${formatNumber(kineticEnergy)} \,\text{J}`,
+                ]}
+              />
             </div>
           </Card>
         </div>
@@ -856,6 +813,30 @@ export const InclinedPlaneSimulator: React.FC<InclinedPlaneSimulatorProps> = ({
     </div>
   );
 };
+
+function ControlRow({
+  label,
+  symbol,
+  value,
+  children,
+}: {
+  label: string;
+  symbol: string;
+  value: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between">
+        <label className="text-sm font-medium text-slate-700">
+          {label} <span className="text-slate-500">({symbol})</span>
+        </label>
+        <span className="text-sm font-bold text-slate-900">{value}</span>
+      </div>
+      {children}
+    </div>
+  );
+}
 
 function MetricCard({
   label,
@@ -890,6 +871,25 @@ function CalcMiniCard({
             <span className="text-sm text-slate-600">{label}</span>
             <span className="text-sm font-bold text-slate-900">{value}</span>
           </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CalcSection({
+  title,
+  formulas,
+}: {
+  title: string;
+  formulas: string[];
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <p className="mb-3 text-sm font-semibold text-slate-700">{title}</p>
+      <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
+        {formulas.map((formula, index) => (
+          <MathFormula key={index} formula={formula} />
         ))}
       </div>
     </div>
