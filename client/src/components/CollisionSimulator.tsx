@@ -45,11 +45,11 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
 
   const ecInitial = useMemo(() => {
     return 0.5 * m1 * v1Initial ** 2 + 0.5 * m2 * v2Initial ** 2;
-  }, [m1, v1Initial, m2, v2Initial]);
+  }, [m1, m2, v1Initial, v2Initial]);
 
   const ecFinal = useMemo(() => {
     return 0.5 * m1 * v1After ** 2 + 0.5 * m2 * v2After ** 2;
-  }, [m1, v1After, m2, v2After]);
+  }, [m1, m2, v1After, v2After]);
 
   useEffect(() => {
     timeRef.current = 0;
@@ -82,13 +82,16 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
       const gapAtStart = (startX2 - r2) - (startX1 + r1);
 
       const collisionTime =
-        relativeSpeed > 0 ? gapAtStart / relativeSpeed : Number.POSITIVE_INFINITY;
+        relativeSpeed > 0
+          ? gapAtStart / relativeSpeed
+          : Number.POSITIVE_INFINITY;
 
       const x1Collision = startX1 + v1Initial * pixelsPerSpeed * collisionTime;
       const x2Collision = startX2 - v2Initial * pixelsPerSpeed * collisionTime;
 
       const currentTime = timeRef.current;
-      const collided = currentTime >= collisionTime && Number.isFinite(collisionTime);
+      const collided =
+        currentTime >= collisionTime && Number.isFinite(collisionTime);
 
       let x1 = startX1;
       let x2 = startX2;
@@ -115,7 +118,6 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
       x2 = clamp(x2, leftPadding + r2, rightPadding - r2);
 
       ctx.clearRect(0, 0, width, height);
-
       ctx.fillStyle = "#f8fafc";
       ctx.fillRect(0, 0, width, height);
 
@@ -142,27 +144,19 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
       ctx.font = "12px Arial";
       ctx.fillText(`p_inicial = ${formatUnit(pInitial, "kg·m/s")}`, 14, 50);
       ctx.fillText(`p_final = ${formatUnit(pFinal, "kg·m/s")}`, 14, 68);
-      ctx.fillText(`Δp = ${formatUnit(Math.abs(pFinal - pInitial), "kg·m/s")}`, 14, 86);
+      ctx.fillText(
+        `Δp = ${formatUnit(Math.abs(pFinal - pInitial), "kg·m/s")}`,
+        14,
+        86
+      );
       ctx.fillText(`EC_inicial = ${formatUnit(ecInitial, "J")}`, 14, 104);
       ctx.fillText(`EC_final = ${formatUnit(ecFinal, "J")}`, 14, 122);
 
       drawBall(ctx, x1, groundY, r1, "#3b82f6", "#1d4ed8");
       drawBall(ctx, x2, groundY, r2, "#ef4444", "#dc2626");
 
-      drawVelocityArrow(
-        ctx,
-        x1,
-        groundY - r1 - 28,
-        v1Current,
-        "#3b82f6"
-      );
-      drawVelocityArrow(
-        ctx,
-        x2,
-        groundY - r2 - 28,
-        v2Current,
-        "#ef4444"
-      );
+      drawVelocityArrow(ctx, x1, groundY - r1 - 28, v1Current, "#3b82f6");
+      drawVelocityArrow(ctx, x2, groundY - r2 - 28, v2Current, "#ef4444");
 
       ctx.fillStyle = "#0f172a";
       ctx.font = "bold 12px Arial";
@@ -197,271 +191,354 @@ export const CollisionSimulator: React.FC<CollisionSimulatorProps> = ({
         cancelAnimationFrame(animationIdRef.current);
       }
     };
-  }, [isRunning, m1, m2, v1Initial, v2Initial, v1After, v2After, pInitial, pFinal, ecInitial, ecFinal]);
+  }, [
+    isRunning,
+    m1,
+    m2,
+    v1Initial,
+    v2Initial,
+    v1After,
+    v2After,
+    pInitial,
+    pFinal,
+    ecInitial,
+    ecFinal,
+  ]);
 
   return (
     <div className="w-full space-y-6">
-      <Card className="overflow-hidden border border-slate-200 shadow-sm">
-        <div className="border-b border-slate-200 bg-white px-5 py-4">
-          <h3 className="text-lg font-bold text-slate-900">
-            Simulador de Colisão Unidimensional
-          </h3>
-          <p className="mt-1 text-sm text-slate-600">
-            Conservação da quantidade de movimento e colisão elástica entre dois corpos.
-          </p>
-        </div>
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+        {/* COLUNA ESQUERDA */}
+        <div className="space-y-4 xl:col-span-4">
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h3 className="text-lg font-bold text-slate-900">
+                Colisão Unidimensional
+              </h3>
+              <p className="mt-1 text-sm text-slate-600">
+                Ajuste massas e velocidades iniciais para observar a colisão
+                elástica entre dois corpos.
+              </p>
+            </div>
 
-        <div className="bg-slate-50 p-4 md:p-6">
-          <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
-            <div className="overflow-x-auto">
-              <canvas
-                ref={canvasRef}
-                width={900}
-                height={360}
-                className="mx-auto w-full min-w-[760px] rounded-lg border border-slate-200 bg-slate-50"
+            <div className="space-y-5 p-5">
+              <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-4">
+                <h5 className="mb-4 text-sm font-bold uppercase tracking-wide text-blue-800">
+                  Objeto 1 — Azul
+                </h5>
+
+                <div className="space-y-5">
+                  <div>
+                    <div className="mb-2 flex items-center justify-between">
+                      <label className="text-sm font-medium text-slate-700">
+                        Massa <span className="text-slate-500">(m₁)</span>
+                      </label>
+                      <span className="text-sm font-bold text-blue-700">
+                        {formatUnit(m1, "kg")}
+                      </span>
+                    </div>
+                    <Slider
+                      value={[m1]}
+                      onValueChange={(value) => setM1(value[0])}
+                      min={0.5}
+                      max={5}
+                      step={0.1}
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="mb-2 flex items-center justify-between">
+                      <label className="text-sm font-medium text-slate-700">
+                        Velocidade inicial <span className="text-slate-500">(v₁)</span>
+                      </label>
+                      <span className="text-sm font-bold text-blue-700">
+                        {formatUnit(v1Initial, "m/s")}
+                      </span>
+                    </div>
+                    <Slider
+                      value={[v1Initial]}
+                      onValueChange={(value) => setV1Initial(value[0])}
+                      min={0}
+                      max={8}
+                      step={0.1}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-rose-200 bg-rose-50/60 p-4">
+                <h5 className="mb-4 text-sm font-bold uppercase tracking-wide text-rose-800">
+                  Objeto 2 — Vermelho
+                </h5>
+
+                <div className="space-y-5">
+                  <div>
+                    <div className="mb-2 flex items-center justify-between">
+                      <label className="text-sm font-medium text-slate-700">
+                        Massa <span className="text-slate-500">(m₂)</span>
+                      </label>
+                      <span className="text-sm font-bold text-rose-700">
+                        {formatUnit(m2, "kg")}
+                      </span>
+                    </div>
+                    <Slider
+                      value={[m2]}
+                      onValueChange={(value) => setM2(value[0])}
+                      min={0.5}
+                      max={5}
+                      step={0.1}
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="mb-2 flex items-center justify-between">
+                      <label className="text-sm font-medium text-slate-700">
+                        Velocidade inicial <span className="text-slate-500">(v₂)</span>
+                      </label>
+                      <span className="text-sm font-bold text-rose-700">
+                        {formatUnit(v2Initial, "m/s")}
+                      </span>
+                    </div>
+                    <Slider
+                      value={[v2Initial]}
+                      onValueChange={(value) => setV2Initial(value[0])}
+                      min={0}
+                      max={8}
+                      step={0.1}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">
+                Resultados Principais
+              </h4>
+            </div>
+
+            <div className="space-y-3 p-5">
+              <MetricCard
+                label={
+                  <>
+                    Velocidade 1 após{" "}
+                    <MathFormula inline formula={String.raw`v'_1`} />
+                  </>
+                }
+                value={formatUnit(v1After, "m/s")}
+                valueClassName="text-blue-700"
+              />
+
+              <MetricCard
+                label={
+                  <>
+                    Velocidade 2 após{" "}
+                    <MathFormula inline formula={String.raw`v'_2`} />
+                  </>
+                }
+                value={formatUnit(v2After, "m/s")}
+                valueClassName="text-rose-700"
+              />
+
+              <MetricCard
+                label={
+                  <>
+                    Momento inicial{" "}
+                    <MathFormula inline formula={String.raw`p_i`} />
+                  </>
+                }
+                value={formatUnit(pInitial, "kg·m/s")}
+              />
+
+              <MetricCard
+                label={
+                  <>
+                    Momento final{" "}
+                    <MathFormula inline formula={String.raw`p_f`} />
+                  </>
+                }
+                value={formatUnit(pFinal, "kg·m/s")}
+              />
+
+              <MetricCard
+                label={
+                  <>
+                    Energia cinética inicial{" "}
+                    <MathFormula inline formula={String.raw`E_{ci}`} />
+                  </>
+                }
+                value={formatUnit(ecInitial, "J")}
+              />
+
+              <MetricCard
+                label={
+                  <>
+                    Energia cinética final{" "}
+                    <MathFormula inline formula={String.raw`E_{cf}`} />
+                  </>
+                }
+                value={formatUnit(ecFinal, "J")}
               />
             </div>
-          </div>
-        </div>
-      </Card>
-
-      <Card className="border border-slate-200 shadow-sm">
-        <div className="border-b border-slate-200 px-5 py-4">
-          <h4 className="text-base font-bold text-slate-900">Controles da Simulação</h4>
-          <p className="mt-1 text-sm text-slate-600">
-            Ajuste massas e velocidades iniciais para observar como a colisão muda.
-          </p>
+          </Card>
         </div>
 
-        <div className="p-5">
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-            <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-4">
-              <h5 className="mb-4 text-sm font-bold uppercase tracking-wide text-blue-800">
-                Objeto 1 — Azul
-              </h5>
+        {/* COLUNA DIREITA */}
+        <div className="space-y-4 xl:col-span-8">
+          <Card className="overflow-hidden border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">Simulação</h4>
+            </div>
 
-              <div className="space-y-5">
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <label className="text-sm font-medium text-slate-700">
-                      Massa <span className="text-slate-500">(m₁)</span>
-                    </label>
-                    <span className="text-sm font-bold text-blue-700">
-                      {formatUnit(m1, "kg")}
-                    </span>
-                  </div>
-                  <Slider
-                    value={[m1]}
-                    onValueChange={(value) => setM1(value[0])}
-                    min={0.5}
-                    max={5}
-                    step={0.1}
-                    className="w-full"
-                  />
-                </div>
-
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <label className="text-sm font-medium text-slate-700">
-                      Velocidade inicial <span className="text-slate-500">(v₁)</span>
-                    </label>
-                    <span className="text-sm font-bold text-blue-700">
-                      {formatUnit(v1Initial, "m/s")}
-                    </span>
-                  </div>
-                  <Slider
-                    value={[v1Initial]}
-                    onValueChange={(value) => setV1Initial(value[0])}
-                    min={0}
-                    max={8}
-                    step={0.1}
-                    className="w-full"
+            <div className="bg-slate-50 p-4 md:p-5">
+              <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                <div className="overflow-x-auto">
+                  <canvas
+                    ref={canvasRef}
+                    width={900}
+                    height={360}
+                    className="mx-auto w-full min-w-[760px] rounded-lg border border-slate-200 bg-slate-50"
                   />
                 </div>
               </div>
             </div>
+          </Card>
 
-            <div className="rounded-xl border border-rose-200 bg-rose-50/60 p-4">
-              <h5 className="mb-4 text-sm font-bold uppercase tracking-wide text-rose-800">
-                Objeto 2 — Vermelho
-              </h5>
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">
+                Cálculos Rápidos
+              </h4>
+            </div>
 
-              <div className="space-y-5">
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <label className="text-sm font-medium text-slate-700">
-                      Massa <span className="text-slate-500">(m₂)</span>
-                    </label>
-                    <span className="text-sm font-bold text-rose-700">
-                      {formatUnit(m2, "kg")}
-                    </span>
-                  </div>
-                  <Slider
-                    value={[m2]}
-                    onValueChange={(value) => setM2(value[0])}
-                    min={0.5}
-                    max={5}
-                    step={0.1}
-                    className="w-full"
+            <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2">
+              <CalcMiniCard
+                title="Velocidades"
+                values={[
+                  ["v₁ inicial", formatUnit(v1Initial, "m/s")],
+                  ["v₂ inicial", formatUnit(v2Initial, "m/s")],
+                ]}
+              />
+
+              <CalcMiniCard
+                title="Após a colisão"
+                values={[
+                  ["v₁ final", formatUnit(v1After, "m/s")],
+                  ["v₂ final", formatUnit(v2After, "m/s")],
+                ]}
+              />
+
+              <CalcMiniCard
+                title="Quantidade de movimento"
+                values={[
+                  ["p inicial", formatUnit(pInitial, "kg·m/s")],
+                  ["p final", formatUnit(pFinal, "kg·m/s")],
+                ]}
+              />
+
+              <CalcMiniCard
+                title="Energia cinética"
+                values={[
+                  ["EC inicial", formatUnit(ecInitial, "J")],
+                  ["EC final", formatUnit(ecFinal, "J")],
+                ]}
+              />
+            </div>
+          </Card>
+
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">
+                Cálculos Detalhados
+              </h4>
+            </div>
+
+            <div className="space-y-5 p-5">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="mb-3 text-sm font-semibold text-slate-700">
+                  Conservação da quantidade de movimento
+                </p>
+
+                <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
+                  <MathFormula
+                    formula={String.raw`m_1 v_1 + m_2 v_2 = m_1 v'_1 + m_2 v'_2`}
+                  />
+                  <MathFormula
+                    formula={String.raw`${formatNumber(m1)} \cdot ${formatNumber(
+                      v1Initial
+                    )} + ${formatNumber(m2)} \cdot ${formatNumber(
+                      v2Initial
+                    )} = ${formatNumber(pInitial)} \,\text{kg·m/s}`}
                   />
                 </div>
+              </div>
 
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <label className="text-sm font-medium text-slate-700">
-                      Velocidade inicial <span className="text-slate-500">(v₂)</span>
-                    </label>
-                    <span className="text-sm font-bold text-rose-700">
-                      {formatUnit(v2Initial, "m/s")}
-                    </span>
-                  </div>
-                  <Slider
-                    value={[v2Initial]}
-                    onValueChange={(value) => setV2Initial(value[0])}
-                    min={0}
-                    max={8}
-                    step={0.1}
-                    className="w-full"
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="mb-3 text-sm font-semibold text-slate-700">
+                  Velocidades finais na colisão elástica
+                </p>
+
+                <div className="space-y-4 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
+                  <MathFormula
+                    formula={String.raw`
+                    v'_1 = \frac{(m_1 - m_2)v_1 + 2m_2v_2}{m_1 + m_2}
+                    = \frac{(${formatNumber(m1)} - ${formatNumber(
+                      m2
+                    )}) \cdot ${formatNumber(v1Initial)} + 2 \cdot ${formatNumber(
+                      m2
+                    )} \cdot ${formatNumber(v2Initial)}}{${formatNumber(
+                      m1
+                    )} + ${formatNumber(m2)}}
+                    = ${formatNumber(v1After)} \,\text{m/s}
+                    `}
+                  />
+
+                  <MathFormula
+                    formula={String.raw`
+                    v'_2 = \frac{(m_2 - m_1)v_2 + 2m_1v_1}{m_1 + m_2}
+                    = \frac{(${formatNumber(m2)} - ${formatNumber(
+                      m1
+                    )}) \cdot ${formatNumber(v2Initial)} + 2 \cdot ${formatNumber(
+                      m1
+                    )} \cdot ${formatNumber(v1Initial)}}{${formatNumber(
+                      m1
+                    )} + ${formatNumber(m2)}}
+                    = ${formatNumber(v2After)} \,\text{m/s}
+                    `}
+                  />
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="mb-3 text-sm font-semibold text-slate-700">
+                  Energia cinética
+                </p>
+
+                <div className="space-y-4 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
+                  <MathFormula
+                    formula={String.raw`
+                    E_{ci} = \frac{1}{2}m_1v_1^2 + \frac{1}{2}m_2v_2^2
+                    = ${formatNumber(ecInitial)} \,\text{J}
+                    `}
+                  />
+                  <MathFormula
+                    formula={String.raw`
+                    E_{cf} = \frac{1}{2}m_1v'^2_1 + \frac{1}{2}m_2v'^2_2
+                    = ${formatNumber(ecFinal)} \,\text{J}
+                    `}
                   />
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
-      </Card>
-
-      <Card className="border border-slate-200 shadow-sm">
-        <div className="border-b border-slate-200 px-5 py-4">
-          <h4 className="text-base font-bold text-slate-900">Resultados da Colisão</h4>
-        </div>
-
-        <div className="p-5">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <MetricCard
-              label={
-                <>
-                  Velocidade 1 após{" "}
-                  <MathFormula inline formula={String.raw`v'_1`} />
-                </>
-              }
-              value={formatUnit(v1After, "m/s")}
-              valueClassName="text-blue-700"
-            />
-
-            <MetricCard
-              label={
-                <>
-                  Velocidade 2 após{" "}
-                  <MathFormula inline formula={String.raw`v'_2`} />
-                </>
-              }
-              value={formatUnit(v2After, "m/s")}
-              valueClassName="text-rose-700"
-            />
-
-            <MetricCard
-              label={
-                <>
-                  Momento inicial{" "}
-                  <MathFormula inline formula={String.raw`p_i`} />
-                </>
-              }
-              value={formatUnit(pInitial, "kg·m/s")}
-            />
-
-            <MetricCard
-              label={
-                <>
-                  Momento final{" "}
-                  <MathFormula inline formula={String.raw`p_f`} />
-                </>
-              }
-              value={formatUnit(pFinal, "kg·m/s")}
-            />
-
-            <MetricCard
-              label={
-                <>
-                  Energia cinética inicial{" "}
-                  <MathFormula inline formula={String.raw`E_{ci}`} />
-                </>
-              }
-              value={formatUnit(ecInitial, "J")}
-            />
-
-            <MetricCard
-              label={
-                <>
-                  Energia cinética final{" "}
-                  <MathFormula inline formula={String.raw`E_{cf}`} />
-                </>
-              }
-              value={formatUnit(ecFinal, "J")}
-            />
-          </div>
-        </div>
-      </Card>
-
-      <Card className="border border-slate-200 shadow-sm">
-        <div className="border-b border-slate-200 px-5 py-4">
-          <h4 className="text-base font-bold text-slate-900">Cálculos Detalhados</h4>
-        </div>
-
-        <div className="space-y-5 p-5">
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="mb-3 text-sm font-semibold text-slate-700">
-              Conservação da Quantidade de Movimento
-            </p>
-
-            <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
-              <MathFormula formula={String.raw`m_1 v_1 + m_2 v_2 = m_1 v'_1 + m_2 v'_2`} />
-              <MathFormula
-                formula={String.raw`${formatNumber(m1)} \cdot ${formatNumber(
-                  v1Initial
-                )} + ${formatNumber(m2)} \cdot ${formatNumber(
-                  v2Initial
-                )} = ${formatNumber(pInitial)} \,\text{kg·m/s}`}
-              />
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="mb-3 text-sm font-semibold text-slate-700">
-              Velocidades Finais na Colisão Elástica
-            </p>
-
-            <div className="space-y-4 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
-              <MathFormula
-                formula={String.raw`
-                v'_1 = \frac{(m_1 - m_2)v_1 + 2m_2v_2}{m_1 + m_2}
-                = \frac{(${formatNumber(m1)} - ${formatNumber(
-                  m2
-                )}) \cdot ${formatNumber(v1Initial)} + 2 \cdot ${formatNumber(
-                  m2
-                )} \cdot ${formatNumber(v2Initial)}}{${formatNumber(
-                  m1
-                )} + ${formatNumber(m2)}}
-                = ${formatNumber(v1After)} \,\text{m/s}
-                `}
-              />
-
-              <MathFormula
-                formula={String.raw`
-                v'_2 = \frac{(m_2 - m_1)v_2 + 2m_1v_1}{m_1 + m_2}
-                = \frac{(${formatNumber(m2)} - ${formatNumber(
-                  m1
-                )}) \cdot ${formatNumber(v2Initial)} + 2 \cdot ${formatNumber(
-                  m1
-                )} \cdot ${formatNumber(v1Initial)}}{${formatNumber(
-                  m1
-                )} + ${formatNumber(m2)}}
-                = ${formatNumber(v2After)} \,\text{m/s}
-                `}
-              />
-            </div>
-          </div>
-        </div>
-      </Card>
+      </div>
 
       <AdvancedTheory
         title={ITADynamicsTheory.title}
@@ -482,9 +559,31 @@ function MetricCard({
   valueClassName?: string;
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
       <p className="text-sm font-medium text-slate-600">{label}</p>
       <p className={`mt-2 text-lg font-bold ${valueClassName}`}>{value}</p>
+    </div>
+  );
+}
+
+function CalcMiniCard({
+  title,
+  values,
+}: {
+  title: string;
+  values: [string, string][];
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <p className="mb-3 text-sm font-bold text-slate-800">{title}</p>
+      <div className="space-y-2">
+        {values.map(([label, value]) => (
+          <div key={label} className="flex items-center justify-between gap-4">
+            <span className="text-sm text-slate-600">{label}</span>
+            <span className="text-sm font-bold text-slate-900">{value}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
