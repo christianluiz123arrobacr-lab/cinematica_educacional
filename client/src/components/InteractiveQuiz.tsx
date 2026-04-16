@@ -4,7 +4,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import { MathFormula } from "./MathFormula";
-import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { CheckCircle, XCircle, AlertCircle, UserSquare2 } from "lucide-react";
 import type { Question } from "@/types/question";
 import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
@@ -25,6 +25,11 @@ type InteractiveQuizProps = {
   onComplete?: (data: QuizCompletionData) => void;
 };
 
+type ResolutionMetaRow = {
+  questao_id: string;
+  autor_nome?: string | null;
+};
+
 export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps) {
   const { user } = useSupabaseAuth();
 
@@ -33,6 +38,9 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
   const [showExplanationByQuestion, setShowExplanationByQuestion] = useState<Record<number, boolean>>({});
   const [questionStartedAt, setQuestionStartedAt] = useState<number>(Date.now());
   const [hasSentCompletion, setHasSentCompletion] = useState(false);
+  const [resolutionAuthorsByQuestionId, setResolutionAuthorsByQuestionId] = useState<
+    Record<string, string>
+  >({});
 
   useEffect(() => {
     if (!questions.length) {
@@ -51,6 +59,45 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
 
   useEffect(() => {
     setHasSentCompletion(false);
+  }, [questions]);
+
+  useEffect(() => {
+    async function loadResolutionAuthors() {
+      try {
+        const uniqueQuestionIds = Array.from(
+          new Set(questions.map((question) => question.id).filter(Boolean))
+        );
+
+        if (!uniqueQuestionIds.length) {
+          setResolutionAuthorsByQuestionId({});
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("resolucoes_meta")
+          .select("questao_id, autor_nome")
+          .in("questao_id", uniqueQuestionIds);
+
+        if (error) {
+          console.error("Erro ao carregar autores das resoluções:", error);
+          return;
+        }
+
+        const authorMap: Record<string, string> = {};
+
+        ((data as ResolutionMetaRow[]) || []).forEach((item) => {
+          if (item.questao_id && item.autor_nome) {
+            authorMap[item.questao_id] = item.autor_nome;
+          }
+        });
+
+        setResolutionAuthorsByQuestionId(authorMap);
+      } catch (error) {
+        console.error("Erro inesperado ao carregar autores das resoluções:", error);
+      }
+    }
+
+    loadResolutionAuthors();
   }, [questions]);
 
   if (!questions.length) {
@@ -77,6 +124,7 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
   const answered = selectedAnswer !== null;
   const showExplanation = showExplanationByQuestion[currentQuestion] ?? false;
   const isCorrect = selectedAnswer === question.correctOptionId;
+  const resolutionAuthor = resolutionAuthorsByQuestionId[question.id] ?? "";
 
   const score = useMemo(() => {
     return questions.reduce((total, q, index) => {
@@ -399,105 +447,117 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
       </div>
 
       {showExplanation && (
-  <div
-    className={`p-6 rounded-lg border-2 mb-8 ${
-      isCorrect ? "bg-green-50 border-green-300" : "bg-yellow-50 border-yellow-300"
-    }`}
-  >
-    <div className="flex gap-3 items-start">
-      {isCorrect ? (
-        <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-      ) : (
-        <AlertCircle className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
-      )}
+        <div
+          className={`p-6 rounded-lg border-2 mb-8 ${
+            isCorrect ? "bg-green-50 border-green-300" : "bg-yellow-50 border-yellow-300"
+          }`}
+        >
+          <div className="flex gap-3 items-start">
+            {isCorrect ? (
+              <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+            ) : (
+              <AlertCircle className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
+            )}
 
-      <div className="w-full">
-        <p className={`font-bold mb-3 ${isCorrect ? "text-green-900" : "text-yellow-900"}`}>
-          {isCorrect ? "✅ Correto!" : "❌ Incorreto"}
-        </p>
+            <div className="w-full">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
+                <p className={`font-bold ${isCorrect ? "text-green-900" : "text-yellow-900"}`}>
+                  {isCorrect ? "✅ Correto!" : "❌ Incorreto"}
+                </p>
 
-        <div className={`text-sm ${isCorrect ? "text-green-800" : "text-yellow-800"}`}>
-          {question.explanationBlocks && question.explanationBlocks.length > 0 ? (
-            <div className="space-y-4">
-              {question.explanationBlocks
-                .sort((a, b) => a.order - b.order)
-                .map((block, index) => {
-                  if (block.type === "imagem" && block.imageUrl) {
-                    return (
-                      <div key={`${block.type}-${block.order}-${index}`} className="rounded-xl overflow-hidden border border-slate-200 bg-white p-3">
-                        <img
-                          src={block.imageUrl}
-                          alt={`Imagem da resolução ${index + 1}`}
-                          className="max-w-full rounded-lg mx-auto"
-                        />
-                      </div>
-                    );
-                  }
+                {resolutionAuthor ? (
+                  <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-white/80 border border-slate-200 text-slate-700 text-xs font-semibold self-start">
+                    <UserSquare2 className="w-4 h-4" />
+                    Resolução por: {resolutionAuthor}
+                  </div>
+                ) : null}
+              </div>
 
-                  if (block.type === "latex" && block.content) {
-                    return (
-                      <div
-                        key={`${block.type}-${block.order}-${index}`}
-                        className="rounded-xl border border-slate-200 bg-white p-4"
-                      >
-                        <ReactMarkdown
-                          remarkPlugins={[remarkMath]}
-                          rehypePlugins={[rehypeKatex]}
-                          components={{
-                            p: ({ children }) => <p className="mb-0">{children}</p>,
-                            strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-                          }}
-                        >
-                          {block.content}
-                        </ReactMarkdown>
-                      </div>
-                    );
-                  }
+              <div className={`text-sm ${isCorrect ? "text-green-800" : "text-yellow-800"}`}>
+                {question.explanationBlocks && question.explanationBlocks.length > 0 ? (
+                  <div className="space-y-4">
+                    {question.explanationBlocks
+                      .sort((a, b) => a.order - b.order)
+                      .map((block, index) => {
+                        if (block.type === "imagem" && block.imageUrl) {
+                          return (
+                            <div
+                              key={`${block.type}-${block.order}-${index}`}
+                              className="rounded-xl overflow-hidden border border-slate-200 bg-white p-3"
+                            >
+                              <img
+                                src={block.imageUrl}
+                                alt={`Imagem da resolução ${index + 1}`}
+                                className="max-w-full rounded-lg mx-auto"
+                              />
+                            </div>
+                          );
+                        }
 
-                  if (block.content) {
-                    return (
-                      <ReactMarkdown
-                        key={`${block.type}-${block.order}-${index}`}
-                        remarkPlugins={[remarkMath]}
-                        rehypePlugins={[rehypeKatex]}
-                        components={{
-                          p: ({ children }) => (
-                            <p className="mb-3 whitespace-pre-line">{children}</p>
-                          ),
-                          strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-                          ul: ({ children }) => <ul className="list-disc pl-5 mb-3">{children}</ul>,
-                          ol: ({ children }) => <ol className="list-decimal pl-5 mb-3">{children}</ol>,
-                          li: ({ children }) => <li className="mb-1">{children}</li>,
-                        }}
-                      >
-                        {block.content}
-                      </ReactMarkdown>
-                    );
-                  }
+                        if (block.type === "latex" && block.content) {
+                          return (
+                            <div
+                              key={`${block.type}-${block.order}-${index}`}
+                              className="rounded-xl border border-slate-200 bg-white p-4"
+                            >
+                              <ReactMarkdown
+                                remarkPlugins={[remarkMath]}
+                                rehypePlugins={[rehypeKatex]}
+                                components={{
+                                  p: ({ children }) => <p className="mb-0">{children}</p>,
+                                  strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                                }}
+                              >
+                                {block.content}
+                              </ReactMarkdown>
+                            </div>
+                          );
+                        }
 
-                  return null;
-                })}
+                        if (block.content) {
+                          return (
+                            <ReactMarkdown
+                              key={`${block.type}-${block.order}-${index}`}
+                              remarkPlugins={[remarkMath]}
+                              rehypePlugins={[rehypeKatex]}
+                              components={{
+                                p: ({ children }) => (
+                                  <p className="mb-3 whitespace-pre-line">{children}</p>
+                                ),
+                                strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                                ul: ({ children }) => <ul className="list-disc pl-5 mb-3">{children}</ul>,
+                                ol: ({ children }) => <ol className="list-decimal pl-5 mb-3">{children}</ol>,
+                                li: ({ children }) => <li className="mb-1">{children}</li>,
+                              }}
+                            >
+                              {block.content}
+                            </ReactMarkdown>
+                          );
+                        }
+
+                        return null;
+                      })}
+                  </div>
+                ) : (
+                  <ReactMarkdown
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                    components={{
+                      p: ({ children }) => <p className="mb-3 whitespace-pre-line">{children}</p>,
+                      strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                      ul: ({ children }) => <ul className="list-disc pl-5 mb-3">{children}</ul>,
+                      ol: ({ children }) => <ol className="list-decimal pl-5 mb-3">{children}</ol>,
+                      li: ({ children }) => <li className="mb-1">{children}</li>,
+                    }}
+                  >
+                    {question.explanation || "Sem resolução cadastrada."}
+                  </ReactMarkdown>
+                )}
+              </div>
             </div>
-          ) : (
-            <ReactMarkdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-              components={{
-                p: ({ children }) => <p className="mb-3 whitespace-pre-line">{children}</p>,
-                strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-                ul: ({ children }) => <ul className="list-disc pl-5 mb-3">{children}</ul>,
-                ol: ({ children }) => <ol className="list-decimal pl-5 mb-3">{children}</ol>,
-                li: ({ children }) => <li className="mb-1">{children}</li>,
-              }}
-            >
-              {question.explanation || "Sem resolução cadastrada."}
-            </ReactMarkdown>
-          )}
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-)}
+      )}
 
       <div className="flex gap-4">
         {currentQuestion > 0 && (
@@ -518,29 +578,15 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
           </button>
         )}
 
-        {isQuizComplete && currentQuestion === questions.length - 1 && (
+        {currentQuestion === questions.length - 1 && (
           <button
             onClick={handleRestart}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-all"
+            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition-all"
           >
-            Recomeçar Quiz
+            Reiniciar Quiz
           </button>
         )}
       </div>
-
-      {isQuizComplete && completionData && (
-        <div className="mt-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border-2 border-purple-300">
-          <h4 className="text-xl font-bold text-slate-900 mb-4">🏆 Resultado Final</h4>
-          <div className="text-center">
-            <p className="text-4xl font-bold text-purple-900 mb-2">
-              {score}/{questions.length}
-            </p>
-            <p className="text-lg font-bold text-slate-700 mb-4">
-              {completionData.accuracy.toFixed(0)}% de acerto
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
