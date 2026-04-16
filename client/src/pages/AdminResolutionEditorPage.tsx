@@ -24,12 +24,21 @@ import {
   AlertTriangle,
   CheckCircle2,
   Upload,
+  UserSquare2,
 } from "lucide-react";
 
 type QuestionInfo = {
   id: string;
   codigo?: string | null;
   enunciado?: string | null;
+};
+
+type ResolutionMeta = {
+  id: string;
+  questao_id: string;
+  autor_nome?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 };
 
 type ResolutionBlock = {
@@ -54,6 +63,7 @@ type EditableBlock = {
 };
 
 const STORAGE_BUCKET = "resolucoes-imagens";
+const AUTORES_RESOLUCAO = ["Christian", "Maurício"];
 
 function textoCurto(texto?: string | null, limite = 140) {
   const valor = (texto || "").trim();
@@ -99,6 +109,10 @@ export default function AdminResolutionEditorPage() {
   const questaoId = match ? params.questaoId : null;
 
   const [question, setQuestion] = useState<QuestionInfo | null>(null);
+  const [resolutionMeta, setResolutionMeta] = useState<ResolutionMeta | null>(null);
+  const [authorName, setAuthorName] = useState("");
+  const [savingAuthor, setSavingAuthor] = useState(false);
+
   const [blocks, setBlocks] = useState<EditableBlock[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingAll, setSavingAll] = useState(false);
@@ -119,7 +133,7 @@ export default function AdminResolutionEditorPage() {
         setError("");
         setSuccessMessage("");
 
-        const [questionResult, resolutionsResult] = await Promise.all([
+        const [questionResult, resolutionsResult, metaResult] = await Promise.all([
           supabase
             .from("questoes")
             .select("id, codigo, enunciado")
@@ -133,6 +147,12 @@ export default function AdminResolutionEditorPage() {
             )
             .eq("questao_id", questaoId)
             .order("ordem", { ascending: true }),
+
+          supabase
+            .from("resolucoes_meta")
+            .select("*")
+            .eq("questao_id", questaoId)
+            .maybeSingle(),
         ]);
 
         if (questionResult.error || !questionResult.data) {
@@ -153,7 +173,20 @@ export default function AdminResolutionEditorPage() {
           return;
         }
 
+        if (metaResult.error) {
+          console.error(
+            "Erro ao carregar metadados da resolução:",
+            metaResult.error
+          );
+          setError("Não foi possível carregar os dados gerais da resolução.");
+          return;
+        }
+
         setQuestion(questionResult.data as QuestionInfo);
+
+        const meta = (metaResult.data as ResolutionMeta | null) ?? null;
+        setResolutionMeta(meta);
+        setAuthorName(meta?.autor_nome || "");
 
         const mappedBlocks: EditableBlock[] = (
           (resolutionsResult.data as ResolutionBlock[]) || []
@@ -284,6 +317,64 @@ export default function AdminResolutionEditorPage() {
     setError("");
   }
 
+  async function handleSaveAuthor() {
+    if (!questaoId) return;
+
+    try {
+      setSavingAuthor(true);
+      setError("");
+      setSuccessMessage("");
+
+      const autor = authorName.trim();
+
+      if (!autor) {
+        setError("Selecione um autor da resolução.");
+        return;
+      }
+
+      const payload = {
+        questao_id: questaoId,
+        autor_nome: autor,
+      };
+
+      const { data, error } = await supabase
+        .from("resolucoes_meta")
+        .upsert(payload, { onConflict: "questao_id" })
+        .select("*")
+        .single();
+
+      if (error) {
+        console.error("Erro ao salvar autor da resolução:", error);
+        setError("Não foi possível salvar o autor da resolução.");
+        return;
+      }
+
+      setResolutionMeta((data as ResolutionMeta) || null);
+
+      await logAdminAction({
+        action: "resolution_author_saved",
+        entityType: "resolucao_meta",
+        entityId: questaoId,
+        description: `Autor da resolução da questão ${
+          question?.codigo || questaoId
+        } definido como ${autor}`,
+        level: "info",
+        metadata: {
+          questaoId,
+          questaoCodigo: question?.codigo || null,
+          autorNome: autor,
+        },
+      });
+
+      setSuccessMessage("Autor da resolução salvo com sucesso.");
+    } catch (err) {
+      console.error("Erro inesperado ao salvar autor:", err);
+      setError("Ocorreu um erro inesperado ao salvar o autor.");
+    } finally {
+      setSavingAuthor(false);
+    }
+  }
+
   async function deletePersistedBlock(localId: string, id?: string) {
     if (!id) {
       removeLocalBlock(localId);
@@ -397,6 +488,7 @@ export default function AdminResolutionEditorPage() {
           ordem: block.ordem,
           isNew: !wasExisting,
           hasImage: block.tipo === "imagem",
+          autorNome: authorName || null,
         },
       });
 
@@ -470,6 +562,7 @@ export default function AdminResolutionEditorPage() {
           totalBlocos: updatedBlocks.length,
           criados: createdCount,
           atualizados: updatedCount,
+          autorNome: authorName || null,
         },
       });
 
@@ -540,6 +633,7 @@ export default function AdminResolutionEditorPage() {
           path,
           fileName: file.name,
           publicUrl: data.publicUrl,
+          autorNome: authorName || null,
         },
       });
 
@@ -560,7 +654,7 @@ export default function AdminResolutionEditorPage() {
         subtitle="Monte a resolução por blocos de texto, latex e imagem, na ordem que quiser."
       >
         <Card className="p-6 bg-white border-slate-200">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
             <div>
               <p className="text-sm text-slate-500 mb-1">Questão</p>
               <p className="font-semibold text-slate-900">
@@ -574,37 +668,83 @@ export default function AdminResolutionEditorPage() {
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              <Link href="/admin/resolucoes">
-                <Button variant="outline" className="rounded-2xl">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Voltar
+            <div className="w-full lg:max-w-md rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <UserSquare2 className="w-4 h-4 text-slate-600" />
+                <p className="text-sm font-semibold text-slate-800">
+                  Autor da resolução
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <select
+                  value={authorName}
+                  onChange={(e) => setAuthorName(e.target.value)}
+                  className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                >
+                  <option value="">Selecione o autor</option>
+                  {AUTORES_RESOLUCAO.map((autor) => (
+                    <option key={autor} value={autor}>
+                      {autor}
+                    </option>
+                  ))}
+                </select>
+
+                <Button
+                  onClick={handleSaveAuthor}
+                  disabled={savingAuthor || !questaoId}
+                  className="rounded-2xl whitespace-nowrap"
+                >
+                  {savingAuthor ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Salvando...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Salvar autor
+                    </>
+                  )}
                 </Button>
-              </Link>
+              </div>
 
-              <Button onClick={addNewBlock} className="rounded-2xl">
-                <Plus className="w-4 h-4 mr-2" />
-                Adicionar bloco
-              </Button>
-
-              <Button
-                onClick={handleSaveAll}
-                disabled={savingAll || orderedBlocks.length === 0}
-                className="rounded-2xl"
-              >
-                {savingAll ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Salvando tudo...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-4 h-4 mr-2" />
-                    Salvar tudo
-                  </>
-                )}
-              </Button>
+              <p className="text-xs text-slate-500 mt-3">
+                Atual: {resolutionMeta?.autor_nome || "Nenhum autor definido"}
+              </p>
             </div>
+          </div>
+
+          <div className="flex flex-wrap gap-3 mt-6">
+            <Link href="/admin/resolucoes">
+              <Button variant="outline" className="rounded-2xl">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Voltar
+              </Button>
+            </Link>
+
+            <Button onClick={addNewBlock} className="rounded-2xl">
+              <Plus className="w-4 h-4 mr-2" />
+              Adicionar bloco
+            </Button>
+
+            <Button
+              onClick={handleSaveAll}
+              disabled={savingAll || orderedBlocks.length === 0}
+              className="rounded-2xl"
+            >
+              {savingAll ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Salvando tudo...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Salvar tudo
+                </>
+              )}
+            </Button>
           </div>
         </Card>
 
@@ -906,4 +1046,5 @@ export default function AdminResolutionEditorPage() {
       </AdminLayout>
     </AdminGuard>
   );
-}
+                      }
+                    
