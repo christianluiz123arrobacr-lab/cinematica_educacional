@@ -1,6 +1,7 @@
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Link, useRoute } from "wouter";
 import { supabase } from "@/lib/supabase";
+import { logAdminAction } from "@/lib/adminLogs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -301,6 +302,22 @@ export default function AdminResolutionEditorPage() {
         return;
       }
 
+      await logAdminAction({
+        action: "resolution_block_deleted",
+        entityType: "resolucao",
+        entityId: id,
+        description: `Bloco de resolução excluído da questão ${
+          question?.codigo || questaoId
+        }`,
+        level: "warning",
+        metadata: {
+          questaoId,
+          questaoCodigo: question?.codigo || null,
+          blocoId: id,
+          localId,
+        },
+      });
+
       removeLocalBlock(localId);
       setSuccessMessage("Bloco excluído com sucesso.");
     } catch (err) {
@@ -361,7 +378,27 @@ export default function AdminResolutionEditorPage() {
         return;
       }
 
+      const wasExisting = !!block.id;
       const savedId = await saveBlock(block);
+
+      await logAdminAction({
+        action: "resolution_block_saved",
+        entityType: "resolucao",
+        entityId: savedId,
+        description: `Bloco ${
+          wasExisting ? "atualizado" : "criado"
+        } na resolução da questão ${question?.codigo || questaoId}`,
+        level: "info",
+        metadata: {
+          questaoId,
+          questaoCodigo: question?.codigo || null,
+          blocoId: savedId,
+          tipo: block.tipo,
+          ordem: block.ordem,
+          isNew: !wasExisting,
+          hasImage: block.tipo === "imagem",
+        },
+      });
 
       setBlocks((prev) =>
         prev.map((item) =>
@@ -402,15 +439,39 @@ export default function AdminResolutionEditorPage() {
       }
 
       const updatedBlocks: EditableBlock[] = [];
+      let createdCount = 0;
+      let updatedCount = 0;
 
       for (const block of orderedBlocks) {
+        const wasExisting = !!block.id;
         const savedId = await saveBlock(block);
+
+        if (wasExisting) updatedCount += 1;
+        else createdCount += 1;
+
         updatedBlocks.push({
           ...block,
           id: savedId,
           isNew: false,
         });
       }
+
+      await logAdminAction({
+        action: "resolution_blocks_saved",
+        entityType: "resolucao",
+        entityId: questaoId,
+        description: `Todos os blocos da resolução da questão ${
+          question?.codigo || questaoId
+        } foram salvos`,
+        level: "info",
+        metadata: {
+          questaoId,
+          questaoCodigo: question?.codigo || null,
+          totalBlocos: updatedBlocks.length,
+          criados: createdCount,
+          atualizados: updatedCount,
+        },
+      });
 
       setBlocks(updatedBlocks);
       setSuccessMessage("Todos os blocos foram salvos com sucesso.");
@@ -461,6 +522,25 @@ export default function AdminResolutionEditorPage() {
       updateBlock(localId, {
         tipo: "imagem",
         url_imagem: data.publicUrl,
+      });
+
+      await logAdminAction({
+        action: "resolution_image_uploaded",
+        entityType: "resolucao",
+        entityId: questaoId,
+        description: `Imagem enviada para a resolução da questão ${
+          question?.codigo || questaoId
+        }`,
+        level: "info",
+        metadata: {
+          questaoId,
+          questaoCodigo: question?.codigo || null,
+          localId,
+          bucket: STORAGE_BUCKET,
+          path,
+          fileName: file.name,
+          publicUrl: data.publicUrl,
+        },
       });
 
       setSuccessMessage("Imagem enviada com sucesso.");
