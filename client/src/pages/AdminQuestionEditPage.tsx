@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRoute, useLocation, Link } from "wouter";
 import { supabase } from "@/lib/supabase";
+import { logAdminAction } from "@/lib/adminLogs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -265,6 +266,25 @@ export default function AdminQuestionEditPage() {
       );
       return { ok: false };
     }
+
+    await logAdminAction({
+      action: "question_updated",
+      entityType: "questao",
+      entityId: questionId,
+      description: `Questão ${form.codigo || questionId} editada no ADM`,
+      level: "info",
+      metadata: {
+        codigo: form.codigo || null,
+        disciplina: form.disciplina || null,
+        conteudo: form.conteudo || null,
+        assunto: form.assunto || null,
+        banca: form.banca || null,
+        ano: form.ano ? Number(form.ano) : null,
+        dificuldade: form.dificuldade || null,
+        instituicao: form.instituicao || null,
+        publicada: form.publicada,
+      },
+    });
 
     return { ok: true };
   }
