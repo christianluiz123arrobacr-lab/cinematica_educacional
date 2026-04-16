@@ -11,6 +11,8 @@ interface CentripetalForceSimulatorProps {
   resetTrigger: number;
 }
 
+type InputMode = "omega" | "velocity" | "period" | "frequency";
+
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
 
@@ -23,23 +25,40 @@ export const CentripetalForceSimulator: React.FC<
   const lastTimeRef = useRef(0);
 
   const [radiusPx, setRadiusPx] = useState(110);
-  const [angularVelocity, setAngularVelocity] = useState(2);
   const [mass, setMass] = useState(1.5);
 
+  const [inputMode, setInputMode] = useState<InputMode>("omega");
+  const [inputValue, setInputValue] = useState(2);
+
   const radiusMeters = useMemo(() => radiusPx / 50, [radiusPx]);
-  const linearVelocity = useMemo(
-    () => angularVelocity * radiusMeters,
-    [angularVelocity, radiusMeters]
-  );
+
+  const angularVelocity = useMemo(() => {
+    switch (inputMode) {
+      case "omega":
+        return inputValue;
+      case "velocity":
+        return radiusMeters > 0 ? inputValue / radiusMeters : 0;
+      case "period":
+        return inputValue > 0 ? (2 * Math.PI) / inputValue : 0;
+      case "frequency":
+        return 2 * Math.PI * inputValue;
+      default:
+        return 0;
+    }
+  }, [inputMode, inputValue, radiusMeters]);
+
+  const linearVelocity = useMemo(() => {
+    return angularVelocity * radiusMeters;
+  }, [angularVelocity, radiusMeters]);
+
   const centripetalAccel = useMemo(() => {
     if (radiusMeters <= 0) return 0;
     return (linearVelocity * linearVelocity) / radiusMeters;
   }, [linearVelocity, radiusMeters]);
 
-  const centripetalForce = useMemo(
-    () => mass * centripetalAccel,
-    [mass, centripetalAccel]
-  );
+  const centripetalForce = useMemo(() => {
+    return mass * centripetalAccel;
+  }, [mass, centripetalAccel]);
 
   const period = useMemo(() => {
     if (angularVelocity <= 0) return 0;
@@ -54,7 +73,7 @@ export const CentripetalForceSimulator: React.FC<
   useEffect(() => {
     angleRef.current = 0;
     lastTimeRef.current = performance.now();
-  }, [resetTrigger, radiusPx, angularVelocity, mass]);
+  }, [resetTrigger, radiusPx, mass, inputMode, inputValue]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -96,7 +115,7 @@ export const CentripetalForceSimulator: React.FC<
         ctx.stroke();
       }
 
-      // trajetória circular
+      // trajetória
       ctx.beginPath();
       ctx.arc(centerX, centerY, radiusPx, 0, Math.PI * 2);
       ctx.strokeStyle = "#cbd5e1";
@@ -105,7 +124,7 @@ export const CentripetalForceSimulator: React.FC<
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // eixos discretos
+      // eixos
       ctx.strokeStyle = "#e2e8f0";
       ctx.lineWidth = 1.5;
       ctx.beginPath();
@@ -219,13 +238,63 @@ export const CentripetalForceSimulator: React.FC<
   }, [
     isRunning,
     radiusPx,
-    angularVelocity,
     mass,
+    angularVelocity,
     radiusMeters,
     linearVelocity,
     centripetalAccel,
     centripetalForce,
   ]);
+
+  const sliderConfig = useMemo(() => {
+    switch (inputMode) {
+      case "omega":
+        return {
+          label: "Velocidade angular",
+          symbol: "ω",
+          valueLabel: formatUnit(inputValue, "rad/s"),
+          min: 0.5,
+          max: 5,
+          step: 0.1,
+        };
+      case "velocity":
+        return {
+          label: "Velocidade linear",
+          symbol: "v",
+          valueLabel: formatUnit(inputValue, "m/s"),
+          min: 0.5,
+          max: 20,
+          step: 0.1,
+        };
+      case "period":
+        return {
+          label: "Período",
+          symbol: "T",
+          valueLabel: formatUnit(inputValue, "s"),
+          min: 0.5,
+          max: 12,
+          step: 0.1,
+        };
+      case "frequency":
+        return {
+          label: "Frequência",
+          symbol: "f",
+          valueLabel: formatUnit(inputValue, "Hz"),
+          min: 0.1,
+          max: 5,
+          step: 0.1,
+        };
+      default:
+        return {
+          label: "Velocidade angular",
+          symbol: "ω",
+          valueLabel: formatUnit(inputValue, "rad/s"),
+          min: 0.5,
+          max: 5,
+          step: 0.1,
+        };
+    }
+  }, [inputMode, inputValue]);
 
   return (
     <div className="w-full space-y-6">
@@ -238,12 +307,36 @@ export const CentripetalForceSimulator: React.FC<
                 Dinâmica Circular
               </h3>
               <p className="mt-1 text-sm text-slate-600">
-                Ajuste massa, raio e velocidade angular para analisar a força
-                centrípeta.
+                Controle o MCU por diferentes grandezas e observe o impacto nas
+                demais.
               </p>
             </div>
 
             <div className="space-y-5 p-5">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+                  Grandeza de entrada
+                </p>
+                <select
+                  value={inputMode}
+                  onChange={(e) => {
+                    const newMode = e.target.value as InputMode;
+                    setInputMode(newMode);
+
+                    if (newMode === "omega") setInputValue(2);
+                    if (newMode === "velocity") setInputValue(4);
+                    if (newMode === "period") setInputValue(3);
+                    if (newMode === "frequency") setInputValue(1);
+                  }}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500"
+                >
+                  <option value="omega">Velocidade angular (ω)</option>
+                  <option value="velocity">Velocidade linear (v)</option>
+                  <option value="period">Período (T)</option>
+                  <option value="frequency">Frequência (f)</option>
+                </select>
+              </div>
+
               <div>
                 <div className="mb-2 flex items-center justify-between">
                   <label className="text-sm font-medium text-slate-700">
@@ -266,26 +359,6 @@ export const CentripetalForceSimulator: React.FC<
               <div>
                 <div className="mb-2 flex items-center justify-between">
                   <label className="text-sm font-medium text-slate-700">
-                    Velocidade angular{" "}
-                    <span className="text-slate-500">(ω)</span>
-                  </label>
-                  <span className="text-sm font-bold text-green-700">
-                    {formatUnit(angularVelocity, "rad/s")}
-                  </span>
-                </div>
-                <Slider
-                  value={[angularVelocity]}
-                  onValueChange={(value) => setAngularVelocity(value[0])}
-                  min={0.5}
-                  max={5}
-                  step={0.1}
-                  className="w-full"
-                />
-              </div>
-
-              <div>
-                <div className="mb-2 flex items-center justify-between">
-                  <label className="text-sm font-medium text-slate-700">
                     Massa <span className="text-slate-500">(m)</span>
                   </label>
                   <span className="text-sm font-bold text-purple-700">
@@ -301,6 +374,26 @@ export const CentripetalForceSimulator: React.FC<
                   className="w-full"
                 />
               </div>
+
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <label className="text-sm font-medium text-slate-700">
+                    {sliderConfig.label}{" "}
+                    <span className="text-slate-500">({sliderConfig.symbol})</span>
+                  </label>
+                  <span className="text-sm font-bold text-green-700">
+                    {sliderConfig.valueLabel}
+                  </span>
+                </div>
+                <Slider
+                  value={[inputValue]}
+                  onValueChange={(value) => setInputValue(value[0])}
+                  min={sliderConfig.min}
+                  max={sliderConfig.max}
+                  step={sliderConfig.step}
+                  className="w-full"
+                />
+              </div>
             </div>
           </Card>
 
@@ -312,6 +405,16 @@ export const CentripetalForceSimulator: React.FC<
             </div>
 
             <div className="space-y-3 p-5">
+              <MetricCard
+                label={
+                  <>
+                    Velocidade angular{" "}
+                    <MathFormula inline formula={String.raw`\omega`} />
+                  </>
+                }
+                value={formatUnit(angularVelocity, "rad/s")}
+              />
+
               <MetricCard
                 label={
                   <>
@@ -436,7 +539,7 @@ export const CentripetalForceSimulator: React.FC<
             <div className="space-y-5 p-5">
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                 <p className="mb-3 text-sm font-semibold text-slate-700">
-                  Velocidade linear
+                  Relações fundamentais
                 </p>
                 <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
                   <MathFormula
@@ -445,6 +548,16 @@ export const CentripetalForceSimulator: React.FC<
                     )} \cdot ${formatNumber(radiusMeters)} = ${formatNumber(
                       linearVelocity
                     )} \,\text{m/s}`}
+                  />
+                  <MathFormula
+                    formula={String.raw`T = \frac{2\pi}{\omega} = \frac{2\pi}{${formatNumber(
+                      angularVelocity
+                    )}} = ${formatNumber(period)} \,\text{s}`}
+                  />
+                  <MathFormula
+                    formula={String.raw`f = \frac{1}{T} = \frac{1}{${formatNumber(
+                      period
+                    )}} = ${formatNumber(frequency)} \,\text{Hz}`}
                   />
                 </div>
               </div>
@@ -488,19 +601,29 @@ export const CentripetalForceSimulator: React.FC<
 
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                 <p className="mb-3 text-sm font-semibold text-slate-700">
-                  Período e frequência
+                  Fórmula ativa da entrada
                 </p>
                 <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
-                  <MathFormula
-                    formula={String.raw`T = \frac{2\pi}{\omega} = \frac{2\pi}{${formatNumber(
-                      angularVelocity
-                    )}} = ${formatNumber(period)} \,\text{s}`}
-                  />
-                  <MathFormula
-                    formula={String.raw`f = \frac{1}{T} = \frac{1}{${formatNumber(
-                      period
-                    )}} = ${formatNumber(frequency)} \,\text{Hz}`}
-                  />
+                  {inputMode === "omega" && (
+                    <MathFormula
+                      formula={String.raw`\omega = ${formatNumber(inputValue)} \,\text{rad/s}`}
+                    />
+                  )}
+                  {inputMode === "velocity" && (
+                    <MathFormula
+                      formula={String.raw`v = ${formatNumber(inputValue)} \,\text{m/s}`}
+                    />
+                  )}
+                  {inputMode === "period" && (
+                    <MathFormula
+                      formula={String.raw`T = ${formatNumber(inputValue)} \,\text{s}`}
+                    />
+                  )}
+                  {inputMode === "frequency" && (
+                    <MathFormula
+                      formula={String.raw`f = ${formatNumber(inputValue)} \,\text{Hz}`}
+                    />
+                  )}
                 </div>
               </div>
             </div>
