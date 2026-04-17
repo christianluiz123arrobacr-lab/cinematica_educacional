@@ -40,6 +40,11 @@ type QuestaoRow = {
   C?: string | null;
   D?: string | null;
   E?: string | null;
+  a_url_imagem?: string | null;
+  b_url_imagem?: string | null;
+  c_url_imagem?: string | null;
+  d_url_imagem?: string | null;
+  e_url_imagem?: string | null;
   alternativa_correta: string;
   instituição?: string | null;
   fonte?: string | null;
@@ -69,11 +74,46 @@ function normalizarAlternativas(row: QuestaoRow): Question["options"] {
   const altE = row.e ?? row.E ?? "";
 
   return [
-    altA ? { id: "a", label: "A", text: altA } : null,
-    altB ? { id: "b", label: "B", text: altB } : null,
-    altC ? { id: "c", label: "C", text: altC } : null,
-    altD ? { id: "d", label: "D", text: altD } : null,
-    altE ? { id: "e", label: "E", text: altE } : null,
+    altA || row.a_url_imagem
+      ? {
+          id: "a",
+          label: "A",
+          text: altA || undefined,
+          imageUrl: row.a_url_imagem ?? undefined,
+        }
+      : null,
+    altB || row.b_url_imagem
+      ? {
+          id: "b",
+          label: "B",
+          text: altB || undefined,
+          imageUrl: row.b_url_imagem ?? undefined,
+        }
+      : null,
+    altC || row.c_url_imagem
+      ? {
+          id: "c",
+          label: "C",
+          text: altC || undefined,
+          imageUrl: row.c_url_imagem ?? undefined,
+        }
+      : null,
+    altD || row.d_url_imagem
+      ? {
+          id: "d",
+          label: "D",
+          text: altD || undefined,
+          imageUrl: row.d_url_imagem ?? undefined,
+        }
+      : null,
+    altE || row.e_url_imagem
+      ? {
+          id: "e",
+          label: "E",
+          text: altE || undefined,
+          imageUrl: row.e_url_imagem ?? undefined,
+        }
+      : null,
   ].filter(Boolean) as Question["options"];
 }
 
@@ -153,15 +193,15 @@ export async function getQuestions(
   filters?: QuestionFilters
 ): Promise<Question[]> {
   let query = supabase.from("questoes").select(`
-      *,
-      resolucoes (
-        id,
-        tipo,
-        texto,
-        ordem,
-        url_imagem
-      )
-    `);
+    *,
+    resolucoes (
+      id,
+      tipo,
+      texto,
+      ordem,
+      url_imagem
+    )
+  `);
 
   if (filters?.subject) {
     query = query.or(
@@ -231,4 +271,4 @@ export async function getQuestionById(id: string): Promise<Question | null> {
   }
 
   return mapQuestao(data as QuestaoRow);
-      }
+}
