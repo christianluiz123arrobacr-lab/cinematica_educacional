@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { supabase } from "@/lib/supabase";
+import { logAdminAction } from "@/lib/adminLogs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -182,14 +183,19 @@ export default function AdminQuestionsPage() {
   }, [resolutions]);
 
   const disciplinasDisponiveis = useMemo(() => {
-    return [...new Set(questions.map((q) => normalizarDisciplina(q)).filter(Boolean))]
+    return [
+      ...new Set(questions.map((q) => normalizarDisciplina(q)).filter(Boolean)),
+    ]
       .filter((valor) => valor !== "—")
       .sort((a, b) => a.localeCompare(b));
   }, [questions]);
 
   const dificuldadesDisponiveis = useMemo(() => {
-    return [...new Set(questions.map((q) => (q.dificuldade || "").trim()).filter(Boolean))]
-      .sort((a, b) => a.localeCompare(b));
+    return [
+      ...new Set(
+        questions.map((q) => (q.dificuldade || "").trim()).filter(Boolean)
+      ),
+    ].sort((a, b) => a.localeCompare(b));
   }, [questions]);
 
   const instituicoesDisponiveis = useMemo(() => {
@@ -241,7 +247,8 @@ export default function AdminQuestionsPage() {
 
       const passouInstituicao =
         !instituicaoFiltro ||
-        (q.instituição || "").toLowerCase() === instituicaoFiltro.toLowerCase();
+        (q.instituição || "").toLowerCase() ===
+          instituicaoFiltro.toLowerCase();
 
       const passouAno = !anoFiltro || String(q.ano || "") === anoFiltro;
 
@@ -296,6 +303,27 @@ export default function AdminQuestionsPage() {
         return;
       }
 
+      await logAdminAction({
+        action: novoStatus ? "question_published" : "question_unpublished",
+        entityType: "questao",
+        entityId: question.id,
+        description: `Questão ${question.codigo || question.id} ${
+          novoStatus ? "publicada" : "despublicada"
+        } no ADM`,
+        level: "info",
+        metadata: {
+          codigo: question.codigo || null,
+          disciplina: normalizarDisciplina(question),
+          conteudo: question.conteudo || null,
+          assunto: question.assunto || null,
+          banca: question.banca || null,
+          ano: question.ano || null,
+          dificuldade: question.dificuldade || null,
+          instituicao: question.instituição || null,
+          publicada: novoStatus,
+        },
+      });
+
       setQuestions((prev) =>
         prev.map((item) =>
           item.id === question.id ? { ...item, publicada: novoStatus } : item
@@ -320,13 +348,30 @@ export default function AdminQuestionsPage() {
       setBusyQuestionId(question.id);
       setError("");
 
+      const { error: deleteResolutionsMetaError } = await supabase
+        .from("resolucoes_meta")
+        .delete()
+        .eq("questao_id", question.id);
+
+      if (deleteResolutionsMetaError) {
+        console.error(
+          "Erro ao excluir meta da resolução:",
+          deleteResolutionsMetaError
+        );
+        setError("Não foi possível excluir os metadados da resolução.");
+        return;
+      }
+
       const { error: deleteResolutionsError } = await supabase
         .from("resolucoes")
         .delete()
         .eq("questao_id", question.id);
 
       if (deleteResolutionsError) {
-        console.error("Erro ao excluir resoluções da questão:", deleteResolutionsError);
+        console.error(
+          "Erro ao excluir resoluções da questão:",
+          deleteResolutionsError
+        );
         setError("Não foi possível excluir as resoluções vinculadas à questão.");
         return;
       }
@@ -341,6 +386,24 @@ export default function AdminQuestionsPage() {
         setError("Não foi possível excluir a questão.");
         return;
       }
+
+      await logAdminAction({
+        action: "question_deleted",
+        entityType: "questao",
+        entityId: question.id,
+        description: `Questão ${question.codigo || question.id} excluída no ADM`,
+        level: "warning",
+        metadata: {
+          codigo: question.codigo || null,
+          disciplina: normalizarDisciplina(question),
+          conteudo: question.conteudo || null,
+          assunto: question.assunto || null,
+          banca: question.banca || null,
+          ano: question.ano || null,
+          dificuldade: question.dificuldade || null,
+          instituicao: question.instituição || null,
+        },
+      });
 
       setQuestions((prev) => prev.filter((item) => item.id !== question.id));
       setResolutions((prev) =>
@@ -367,7 +430,8 @@ export default function AdminQuestionsPage() {
                 Banco de questões administrativo
               </h2>
               <p className="text-sm text-slate-500">
-                Total carregado: {filteredQuestions.length} de {questions.length} questões
+                Total carregado: {filteredQuestions.length} de {questions.length}{" "}
+                questões
               </p>
             </div>
 
@@ -486,7 +550,11 @@ export default function AdminQuestionsPage() {
           </div>
 
           <div className="mt-4 flex justify-end">
-            <Button variant="outline" className="rounded-2xl" onClick={limparFiltros}>
+            <Button
+              variant="outline"
+              className="rounded-2xl"
+              onClick={limparFiltros}
+            >
               Limpar filtros
             </Button>
           </div>
@@ -573,27 +641,39 @@ export default function AdminQuestionsPage() {
 
                       <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3 text-sm text-slate-600">
                         <p>
-                          <span className="font-semibold text-slate-800">Conteúdo:</span>{" "}
+                          <span className="font-semibold text-slate-800">
+                            Conteúdo:
+                          </span>{" "}
                           {question.conteudo || "—"}
                         </p>
                         <p>
-                          <span className="font-semibold text-slate-800">Assunto:</span>{" "}
+                          <span className="font-semibold text-slate-800">
+                            Assunto:
+                          </span>{" "}
                           {question.assunto || "—"}
                         </p>
                         <p>
-                          <span className="font-semibold text-slate-800">Banca:</span>{" "}
+                          <span className="font-semibold text-slate-800">
+                            Banca:
+                          </span>{" "}
                           {question.banca || "—"}
                         </p>
                         <p>
-                          <span className="font-semibold text-slate-800">Ano:</span>{" "}
+                          <span className="font-semibold text-slate-800">
+                            Ano:
+                          </span>{" "}
                           {question.ano || "—"}
                         </p>
                         <p>
-                          <span className="font-semibold text-slate-800">Instituição:</span>{" "}
+                          <span className="font-semibold text-slate-800">
+                            Instituição:
+                          </span>{" "}
                           {question.instituição || "—"}
                         </p>
                         <p>
-                          <span className="font-semibold text-slate-800">ID:</span>{" "}
+                          <span className="font-semibold text-slate-800">
+                            ID:
+                          </span>{" "}
                           {question.id}
                         </p>
                       </div>
