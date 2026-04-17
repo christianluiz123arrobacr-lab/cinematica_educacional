@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { supabase } from "@/lib/supabase";
+import { logAdminAction } from "@/lib/adminLogs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -63,17 +64,9 @@ function textoCurto(texto?: string | null, limite = 90) {
 function corDificuldade(dificuldade?: string | null) {
   const valor = (dificuldade || "").toLowerCase().trim();
 
-  if (valor === "facil") {
-    return "bg-green-100 text-green-700 border-green-200";
-  }
-
-  if (valor === "medio") {
-    return "bg-yellow-100 text-yellow-700 border-yellow-200";
-  }
-
-  if (valor === "dificil") {
-    return "bg-red-100 text-red-700 border-red-200";
-  }
+  if (valor === "facil") return "bg-green-100 text-green-700 border-green-200";
+  if (valor === "medio") return "bg-yellow-100 text-yellow-700 border-yellow-200";
+  if (valor === "dificil") return "bg-red-100 text-red-700 border-red-200";
 
   return "bg-slate-100 text-slate-700 border-slate-200";
 }
@@ -121,11 +114,7 @@ export default function AdminQuestionsPage() {
         setError("");
 
         const [questionsResult, resolutionsResult] = await Promise.all([
-          supabase
-            .from("questoes")
-            .select("*")
-            .order("created_at", { ascending: false }),
-
+          supabase.from("questoes").select("*").order("created_at", { ascending: false }),
           supabase.from("resolucoes").select("id, questao_id, tipo, url_imagem"),
         ]);
 
@@ -136,10 +125,7 @@ export default function AdminQuestionsPage() {
         }
 
         if (resolutionsResult.error) {
-          console.error(
-            "Erro ao carregar resoluções ADM:",
-            resolutionsResult.error
-          );
+          console.error("Erro ao carregar resoluções ADM:", resolutionsResult.error);
           setError("Não foi possível carregar os resumos das resoluções.");
           return;
         }
@@ -168,10 +154,7 @@ export default function AdminQuestionsPage() {
 
       current.totalBlocks += 1;
 
-      if (
-        (item.tipo || "").toLowerCase().trim() === "imagem" ||
-        !!item.url_imagem
-      ) {
+      if ((item.tipo || "").toLowerCase().trim() === "imagem" || !!item.url_imagem) {
         current.totalImages += 1;
       }
 
@@ -194,9 +177,7 @@ export default function AdminQuestionsPage() {
 
   const instituicoesDisponiveis = useMemo(() => {
     return [
-      ...new Set(
-        questions.map((q) => (q.instituição || "").trim()).filter(Boolean)
-      ),
+      ...new Set(questions.map((q) => (q.instituição || "").trim()).filter(Boolean)),
     ].sort((a, b) => a.localeCompare(b));
   }, [questions]);
 
@@ -236,8 +217,7 @@ export default function AdminQuestionsPage() {
         normalizarDisciplina(q).toLowerCase() === disciplinaFiltro.toLowerCase();
 
       const passouDificuldade =
-        !dificuldadeFiltro ||
-        dificuldade === dificuldadeFiltro.toLowerCase();
+        !dificuldadeFiltro || dificuldade === dificuldadeFiltro.toLowerCase();
 
       const passouInstituicao =
         !instituicaoFiltro ||
@@ -296,6 +276,24 @@ export default function AdminQuestionsPage() {
         return;
       }
 
+      await logAdminAction({
+        action: novoStatus ? "question_published" : "question_unpublished",
+        entityType: "questao",
+        entityId: question.id,
+        description: `Questão ${question.codigo || question.id} ${
+          novoStatus ? "publicada" : "despublicada"
+        } no ADM`,
+        level: "info",
+        metadata: {
+          codigo: question.codigo || null,
+          disciplina: normalizarDisciplina(question),
+          conteudo: question.conteudo || null,
+          assunto: question.assunto || null,
+          ano: question.ano || null,
+          publicada: novoStatus,
+        },
+      });
+
       setQuestions((prev) =>
         prev.map((item) =>
           item.id === question.id ? { ...item, publicada: novoStatus } : item
@@ -320,6 +318,17 @@ export default function AdminQuestionsPage() {
       setBusyQuestionId(question.id);
       setError("");
 
+      const { error: deleteResolutionsMetaError } = await supabase
+        .from("resolucoes_meta")
+        .delete()
+        .eq("questao_id", question.id);
+
+      if (deleteResolutionsMetaError) {
+        console.error("Erro ao excluir meta da resolução:", deleteResolutionsMetaError);
+        setError("Não foi possível excluir os metadados da resolução.");
+        return;
+      }
+
       const { error: deleteResolutionsError } = await supabase
         .from("resolucoes")
         .delete()
@@ -342,10 +351,26 @@ export default function AdminQuestionsPage() {
         return;
       }
 
+      await logAdminAction({
+        action: "question_deleted",
+        entityType: "questao",
+        entityId: question.id,
+        description: `Questão ${question.codigo || question.id} excluída no ADM`,
+        level: "warning",
+        metadata: {
+          codigo: question.codigo || null,
+          disciplina: normalizarDisciplina(question),
+          conteudo: question.conteudo || null,
+          assunto: question.assunto || null,
+          banca: question.banca || null,
+          ano: question.ano || null,
+          dificuldade: question.dificuldade || null,
+          instituicao: question.instituição || null,
+        },
+      });
+
       setQuestions((prev) => prev.filter((item) => item.id !== question.id));
-      setResolutions((prev) =>
-        prev.filter((item) => item.questao_id !== question.id)
-      );
+      setResolutions((prev) => prev.filter((item) => item.questao_id !== question.id));
     } catch (err) {
       console.error("Erro inesperado ao excluir questão:", err);
       setError("Ocorreu um erro inesperado ao excluir a questão.");
@@ -437,9 +462,7 @@ export default function AdminQuestionsPage() {
               </label>
               <select
                 value={publicacaoFiltro}
-                onChange={(e) =>
-                  setPublicacaoFiltro(e.target.value as PublishFilter)
-                }
+                onChange={(e) => setPublicacaoFiltro(e.target.value as PublishFilter)}
                 className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
               >
                 <option value="todas">Todas</option>
@@ -527,10 +550,7 @@ export default function AdminQuestionsPage() {
               const busy = busyQuestionId === question.id;
 
               return (
-                <Card
-                  key={question.id}
-                  className="p-5 bg-white border-slate-200 shadow-sm"
-                >
+                <Card key={question.id} className="p-5 bg-white border-slate-200 shadow-sm">
                   <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -572,30 +592,12 @@ export default function AdminQuestionsPage() {
                       </p>
 
                       <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3 text-sm text-slate-600">
-                        <p>
-                          <span className="font-semibold text-slate-800">Conteúdo:</span>{" "}
-                          {question.conteudo || "—"}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-800">Assunto:</span>{" "}
-                          {question.assunto || "—"}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-800">Banca:</span>{" "}
-                          {question.banca || "—"}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-800">Ano:</span>{" "}
-                          {question.ano || "—"}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-800">Instituição:</span>{" "}
-                          {question.instituição || "—"}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-800">ID:</span>{" "}
-                          {question.id}
-                        </p>
+                        <p><span className="font-semibold text-slate-800">Conteúdo:</span> {question.conteudo || "—"}</p>
+                        <p><span className="font-semibold text-slate-800">Assunto:</span> {question.assunto || "—"}</p>
+                        <p><span className="font-semibold text-slate-800">Banca:</span> {question.banca || "—"}</p>
+                        <p><span className="font-semibold text-slate-800">Ano:</span> {question.ano || "—"}</p>
+                        <p><span className="font-semibold text-slate-800">Instituição:</span> {question.instituição || "—"}</p>
+                        <p><span className="font-semibold text-slate-800">ID:</span> {question.id}</p>
                       </div>
 
                       <div className="flex flex-wrap gap-3 mt-4">
