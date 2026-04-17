@@ -194,6 +194,26 @@ export default function AdminQuestionCreatePage() {
       }
 
       updateField("url_imagem", data.publicUrl);
+
+      await logAdminAction({
+        action: "question_image_uploaded",
+        entityType: "questao_imagem",
+        entityId: null,
+        description: `Imagem principal enviada para nova questão ${form.codigo || "sem código"}`,
+        level: "info",
+        metadata: {
+          codigo: form.codigo || null,
+          disciplina: form.disciplina || null,
+          conteudo: form.conteudo || null,
+          assunto: form.assunto || null,
+          bucket: QUESTION_IMAGES_BUCKET,
+          path,
+          fileName: file.name,
+          publicUrl: data.publicUrl,
+          tipoImagem: "enunciado",
+        },
+      });
+
       setSuccessMessage("Imagem da questão enviada com sucesso.");
     } catch (err) {
       console.error("Erro inesperado ao enviar imagem da questão:", err);
@@ -252,6 +272,39 @@ export default function AdminQuestionCreatePage() {
       }
 
       updateField(field, data.publicUrl);
+
+      const letraAlternativa =
+        field === "alternativa_a_imagem"
+          ? "A"
+          : field === "alternativa_b_imagem"
+            ? "B"
+            : field === "alternativa_c_imagem"
+              ? "C"
+              : field === "alternativa_d_imagem"
+                ? "D"
+                : "E";
+
+      await logAdminAction({
+        action: "question_alternative_image_uploaded",
+        entityType: "questao_alternativa_imagem",
+        entityId: null,
+        description: `Imagem enviada para a alternativa ${letraAlternativa} da nova questão ${form.codigo || "sem código"}`,
+        level: "info",
+        metadata: {
+          codigo: form.codigo || null,
+          disciplina: form.disciplina || null,
+          conteudo: form.conteudo || null,
+          assunto: form.assunto || null,
+          alternativa: letraAlternativa,
+          field,
+          bucket: QUESTION_IMAGES_BUCKET,
+          path,
+          fileName: file.name,
+          publicUrl: data.publicUrl,
+          tipoImagem: "alternativa",
+        },
+      });
+
       setSuccessMessage("Imagem da alternativa enviada com sucesso.");
     } catch (err) {
       console.error("Erro inesperado ao enviar imagem da alternativa:", err);
