@@ -67,6 +67,36 @@ type PieDatum = {
   percent: number;
 };
 
+type ComparisonMetric = {
+  current: number;
+  previous: number;
+  delta: number;
+  deltaPercent?: number;
+};
+
+type StreakInfo = {
+  currentStreak: number;
+  bestStreak: number;
+  activeDays7: number;
+  activeDays30: number;
+};
+
+type EvolutionRow = {
+  label: string;
+  currentAccuracy: number;
+  previousAccuracy: number;
+  delta: number;
+  totalCurrent: number;
+  totalPrevious: number;
+};
+
+type CoverageInfo = {
+  uniqueQuestions: number;
+  uniqueSubjects: number;
+  uniqueConteudos: number;
+  uniqueAssuntos: number;
+};
+
 const PIE_COLORS = [
   "#2563eb",
   "#7c3aed",
@@ -174,8 +204,56 @@ function getCutoffDate(period: string): Date | null {
   return null;
 }
 
+function getPreviousPeriodRange(period: string): { start: Date; end: Date } | null {
+  const now = new Date();
+
+  if (period === "7d") {
+    const end = new Date(now);
+    end.setDate(end.getDate() - 7);
+
+    const start = new Date(now);
+    start.setDate(start.getDate() - 14);
+
+    return { start, end };
+  }
+
+  if (period === "30d") {
+    const end = new Date(now);
+    end.setDate(end.getDate() - 30);
+
+    const start = new Date(now);
+    start.setDate(start.getDate() - 60);
+
+    return { start, end };
+  }
+
+  if (period === "90d") {
+    const end = new Date(now);
+    end.setDate(end.getDate() - 90);
+
+    const start = new Date(now);
+    start.setDate(start.getDate() - 180);
+
+    return { start, end };
+  }
+
+  return null;
+}
+
+function getComparisonMetric(current: number, previous: number): ComparisonMetric {
+  const delta = current - previous;
+  const deltaPercent = previous > 0 ? (delta / previous) * 100 : undefined;
+
+  return {
+    current,
+    previous,
+    delta,
+    deltaPercent,
+  };
+}
+
 function buildDailyStats(attempts: AttemptRow[]): DailyStat[] {
-  const map = new Map<string, { total: number, correct: number, wrong: number }>();
+  const map = new Map<string, { total: number; correct: number; wrong: number }>();
 
   for (const attempt of attempts) {
     const date = new Date(attempt.answered_at).toLocaleDateString("pt-BR");
@@ -323,6 +401,141 @@ function PieCard({
   );
 }
 
+function getActiveDateKeys(attempts: AttemptRow[]) {
+  return Array.from(
+    new Set(
+      attempts.map((attempt) => {
+        const date = new Date(attempt.answered_at);
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+      })
+    )
+  ).sort();
+}
+
+function buildStreakInfo(attempts: AttemptRow[]): StreakInfo {
+  const activeKeys = getActiveDateKeys(attempts);
+
+  if (!activeKeys.length) {
+    return {
+      currentStreak: 0,
+      bestStreak: 0,
+      activeDays7: 0,
+      activeDays30: 0,
+    };
+  }
+
+  const today = new Date();
+  const normalizedToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  const last7 = new Date(normalizedToday);
+  last7.setDate(last7.getDate() - 6);
+
+  const last30 = new Date(normalizedToday);
+  last30.setDate(last30.getDate() - 29);
+
+  const activeDays7 = activeKeys.filter((key) => new Date(`${key}T00:00:00`) >= last7).length;
+  const activeDays30 = activeKeys.filter((key) => new Date(`${key}T00:00:00`) >= last30).length;
+
+  let bestStreak = 1;
+  let currentRun = 1;
+
+  for (let i = 1; i < activeKeys.length; i++) {
+    const prev = new Date(`${activeKeys[i - 1]}T00:00:00`);
+    const curr = new Date(`${activeKeys[i]}T00:00:00`);
+    const diffDays = Math.round((curr.getTime() - prev.getTime()) / 86400000);
+
+    if (diffDays === 1) {
+      currentRun += 1;
+      bestStreak = Math.max(bestStreak, currentRun);
+    } else {
+      currentRun = 1;
+    }
+  }
+
+  let currentStreak = 0;
+  const reversed = [...activeKeys].reverse();
+
+  for (let i = 0; i < reversed.length; i++) {
+    const curr = new Date(`${reversed[i]}T00:00:00`);
+
+    if (i === 0) {
+      const diffToToday = Math.round((normalizedToday.getTime() - curr.getTime()) / 86400000);
+
+      if (diffToToday <= 1) {
+        currentStreak = 1;
+      } else {
+        break;
+      }
+    } else {
+      const prev = new Date(`${reversed[i - 1]}T00:00:00`);
+      const diffDays = Math.round((prev.getTime() - curr.getTime()) / 86400000);
+
+      if (diffDays === 1) {
+        currentStreak += 1;
+      } else {
+        break;
+      }
+    }
+  }
+
+  return {
+    currentStreak,
+    bestStreak,
+    activeDays7,
+    activeDays30,
+  };
+}
+
+function buildEvolutionRows(
+  currentAttempts: AttemptRow[],
+  previousAttempts: AttemptRow[],
+  key: (attempt: AttemptRow) => string | null | undefined
+): EvolutionRow[] {
+  const currentStats = groupAttempts(currentAttempts, key);
+  const previousStats = groupAttempts(previousAttempts, key);
+
+  const currentMap = new Map(currentStats.map((item) => [item.label, item]));
+  const previousMap = new Map(previousStats.map((item) => [item.label, item]));
+
+  const labels = Array.from(new Set([...currentMap.keys(), ...previousMap.keys()]));
+
+  return labels
+    .map((label) => {
+      const current = currentMap.get(label);
+      const previous = previousMap.get(label);
+
+      return {
+        label,
+        currentAccuracy: current?.accuracy ?? 0,
+        previousAccuracy: previous?.accuracy ?? 0,
+        delta: (current?.accuracy ?? 0) - (previous?.accuracy ?? 0),
+        totalCurrent: current?.total ?? 0,
+        totalPrevious: previous?.total ?? 0,
+      };
+    })
+    .filter((item) => item.totalCurrent >= 2 || item.totalPrevious >= 2)
+    .sort((a, b) => b.delta - a.delta);
+}
+
+function buildCoverageInfo(attempts: AttemptRow[]): CoverageInfo {
+  return {
+    uniqueQuestions: new Set(attempts.map((a) => a.question_id).filter(Boolean)).size,
+    uniqueSubjects: new Set(attempts.map((a) => a.subject?.trim()).filter(Boolean)).size,
+    uniqueConteudos: new Set(attempts.map((a) => a.conteudo?.trim()).filter(Boolean)).size,
+    uniqueAssuntos: new Set(attempts.map((a) => a.assunto?.trim()).filter(Boolean)).size,
+  };
+}
+
+function formatDelta(delta: number, suffix = " pts") {
+  const rounded = Math.round(delta * 10) / 10;
+  if (rounded > 0) return `+${rounded}${suffix}`;
+  if (rounded < 0) return `${rounded}${suffix}`;
+  return `0${suffix}`;
+}
+
 export default function Progress() {
   const { user, loading: authLoading } = useSupabaseAuth();
   const [attempts, setAttempts] = useState<AttemptRow[]>([]);
@@ -398,6 +611,22 @@ export default function Progress() {
     return result;
   }, [periodFilteredAttempts, subjectFilter]);
 
+  const previousPeriodAttempts = useMemo(() => {
+    const range = getPreviousPeriodRange(periodFilter);
+    if (!range) return [];
+
+    let result = attempts.filter((attempt) => {
+      const date = new Date(attempt.answered_at);
+      return date >= range.start && date < range.end;
+    });
+
+    if (subjectFilter !== "todas") {
+      result = result.filter((attempt) => (attempt.subject?.trim() || "") === subjectFilter);
+    }
+
+    return result;
+  }, [attempts, periodFilter, subjectFilter]);
+
   const chartAvailableSubjects = useMemo(() => {
     const source = subjectFilter === "todas" ? periodFilteredAttempts : filteredAttempts;
 
@@ -437,6 +666,56 @@ export default function Progress() {
 
   const avgTimeSeconds = useMemo(() => {
     const valid = filteredAttempts.filter((a) => typeof a.time_spent_seconds === "number");
+    if (!valid.length) return 0;
+    const total = valid.reduce((sum, a) => sum + (a.time_spent_seconds ?? 0), 0);
+    return total / valid.length;
+  }, [filteredAttempts]);
+
+  const previousTotalAnswered = previousPeriodAttempts.length;
+  const previousTotalCorrect = previousPeriodAttempts.filter((attempt) => attempt.is_correct).length;
+  const previousTotalWrong = previousTotalAnswered - previousTotalCorrect;
+  const previousAccuracy =
+    previousTotalAnswered > 0 ? (previousTotalCorrect / previousTotalAnswered) * 100 : 0;
+
+  const previousAvgTimeSeconds = useMemo(() => {
+    const valid = previousPeriodAttempts.filter((a) => typeof a.time_spent_seconds === "number");
+    if (!valid.length) return 0;
+    const total = valid.reduce((sum, a) => sum + (a.time_spent_seconds ?? 0), 0);
+    return total / valid.length;
+  }, [previousPeriodAttempts]);
+
+  const comparisonAccuracy = useMemo(
+    () => getComparisonMetric(accuracy, previousAccuracy),
+    [accuracy, previousAccuracy]
+  );
+
+  const comparisonTotal = useMemo(
+    () => getComparisonMetric(totalAnswered, previousTotalAnswered),
+    [totalAnswered, previousTotalAnswered]
+  );
+
+  const comparisonAvgTime = useMemo(
+    () => getComparisonMetric(avgTimeSeconds, previousAvgTimeSeconds),
+    [avgTimeSeconds, previousAvgTimeSeconds]
+  );
+
+  const streakInfo = useMemo(() => buildStreakInfo(filteredAttempts), [filteredAttempts]);
+
+  const coverageInfo = useMemo(() => buildCoverageInfo(filteredAttempts), [filteredAttempts]);
+
+  const avgTimeCorrect = useMemo(() => {
+    const valid = filteredAttempts.filter(
+      (a) => a.is_correct && typeof a.time_spent_seconds === "number"
+    );
+    if (!valid.length) return 0;
+    const total = valid.reduce((sum, a) => sum + (a.time_spent_seconds ?? 0), 0);
+    return total / valid.length;
+  }, [filteredAttempts]);
+
+  const avgTimeWrong = useMemo(() => {
+    const valid = filteredAttempts.filter(
+      (a) => !a.is_correct && typeof a.time_spent_seconds === "number"
+    );
     if (!valid.length) return 0;
     const total = valid.reduce((sum, a) => sum + (a.time_spent_seconds ?? 0), 0);
     return total / valid.length;
@@ -523,6 +802,30 @@ export default function Progress() {
     return averageTimeBySubject.find((item) => item.total >= 2);
   }, [averageTimeBySubject]);
 
+  const subjectEvolution = useMemo(
+    () => buildEvolutionRows(filteredAttempts, previousPeriodAttempts, (attempt) => attempt.subject),
+    [filteredAttempts, previousPeriodAttempts]
+  );
+
+  const conteudoEvolution = useMemo(
+    () => buildEvolutionRows(filteredAttempts, previousPeriodAttempts, (attempt) => attempt.conteudo),
+    [filteredAttempts, previousPeriodAttempts]
+  );
+
+  const topImprovements = useMemo(() => {
+    return [...conteudoEvolution]
+      .filter((item) => item.delta > 0)
+      .sort((a, b) => b.delta - a.delta)
+      .slice(0, 5);
+  }, [conteudoEvolution]);
+
+  const topDrops = useMemo(() => {
+    return [...conteudoEvolution]
+      .filter((item) => item.delta < 0)
+      .sort((a, b) => a.delta - b.delta)
+      .slice(0, 5);
+  }, [conteudoEvolution]);
+
   const recommendations = useMemo(() => {
     const recs: string[] = [];
 
@@ -552,6 +855,20 @@ export default function Progress() {
       recs.push(`Seu melhor desempenho no recorte atual está em ${bestSubject.label}.`);
     }
 
+    if (comparisonAccuracy.delta !== 0) {
+      recs.push(
+        comparisonAccuracy.delta > 0
+          ? `Seu acerto subiu ${formatDelta(comparisonAccuracy.delta)} em relação ao período anterior.`
+          : `Seu acerto caiu ${formatDelta(comparisonAccuracy.delta)} em relação ao período anterior.`
+      );
+    }
+
+    if (topDrops[0]) {
+      recs.push(
+        `O conteúdo que mais caiu foi ${topDrops[0].label}. Pode valer uma retomada rápida.`
+      );
+    }
+
     if (avgTimeSeconds > 0) {
       recs.push(
         `Seu tempo médio geral neste filtro está em ${formatSeconds(Math.round(avgTimeSeconds))}.`
@@ -568,6 +885,8 @@ export default function Progress() {
     mostWrongConteudo,
     slowestSubject,
     bestSubject,
+    comparisonAccuracy.delta,
+    topDrops,
     avgTimeSeconds,
     filteredAttempts.length,
   ]);
@@ -717,8 +1036,12 @@ export default function Progress() {
                       <BookOpen className="w-5 h-5 text-blue-700" />
                     </div>
                   </div>
-                  <p className="text-sm text-slate-500">
-                    Total de questões feitas no filtro atual
+                  <p
+                    className={`text-sm font-semibold ${
+                      comparisonTotal.delta >= 0 ? "text-emerald-600" : "text-red-600"
+                    }`}
+                  >
+                    {formatDelta(comparisonTotal.delta, "")} vs período anterior
                   </p>
                 </div>
               </Card>
@@ -736,7 +1059,7 @@ export default function Progress() {
                     </div>
                   </div>
                   <p className="text-sm text-slate-500">
-                    Questões resolvidas corretamente
+                    Antes: {previousTotalCorrect} • Agora: {totalCorrect}
                   </p>
                 </div>
               </Card>
@@ -754,7 +1077,7 @@ export default function Progress() {
                     </div>
                   </div>
                   <p className="text-sm text-slate-500">
-                    Questões que ainda pedem revisão
+                    Antes: {previousTotalWrong} • Agora: {totalWrong}
                   </p>
                 </div>
               </Card>
@@ -773,8 +1096,12 @@ export default function Progress() {
                       <Gauge className="w-5 h-5 text-indigo-700" />
                     </div>
                   </div>
-                  <p className="text-sm text-slate-500">
-                    Aproveitamento geral no período selecionado
+                  <p
+                    className={`text-sm font-semibold ${
+                      comparisonAccuracy.delta >= 0 ? "text-emerald-600" : "text-red-600"
+                    }`}
+                  >
+                    {formatDelta(comparisonAccuracy.delta)} vs período anterior
                   </p>
                 </div>
               </Card>
@@ -793,10 +1120,68 @@ export default function Progress() {
                       <Clock3 className="w-5 h-5 text-purple-700" />
                     </div>
                   </div>
-                  <p className="text-sm text-slate-500">
-                    Tempo gasto por questão, em média
+                  <p
+                    className={`text-sm font-semibold ${
+                      comparisonAvgTime.delta <= 0 ? "text-emerald-600" : "text-red-600"
+                    }`}
+                  >
+                    {formatDelta(comparisonAvgTime.delta, "s")} vs período anterior
                   </p>
                 </div>
+              </Card>
+            </div>
+
+            <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+              <Card className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <TrendingUp className="w-5 h-5 text-emerald-500" />
+                  <h2 className="font-bold text-slate-900">Variação do acerto</h2>
+                </div>
+                <p className="text-2xl font-bold text-slate-900">
+                  {comparisonAccuracy.current.toFixed(0)}%
+                </p>
+                <p
+                  className={`text-sm mt-1 font-semibold ${
+                    comparisonAccuracy.delta >= 0 ? "text-emerald-600" : "text-red-600"
+                  }`}
+                >
+                  {formatDelta(comparisonAccuracy.delta)} vs período anterior
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <BookOpen className="w-5 h-5 text-blue-500" />
+                  <h2 className="font-bold text-slate-900">Sequência atual</h2>
+                </div>
+                <p className="text-2xl font-bold text-slate-900">{streakInfo.currentStreak}</p>
+                <p className="text-sm mt-1 text-slate-500">
+                  melhor sequência: {streakInfo.bestStreak} dias
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <CheckCircle2 className="w-5 h-5 text-purple-500" />
+                  <h2 className="font-bold text-slate-900">Dias ativos</h2>
+                </div>
+                <p className="text-2xl font-bold text-slate-900">{streakInfo.activeDays7}/7</p>
+                <p className="text-sm mt-1 text-slate-500">
+                  últimos 30 dias: {streakInfo.activeDays30}
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Clock3 className="w-5 h-5 text-orange-500" />
+                  <h2 className="font-bold text-slate-900">Tempo correto x erro</h2>
+                </div>
+                <p className="text-sm text-slate-700">
+                  Acertos: <span className="font-bold">{formatSeconds(Math.round(avgTimeCorrect))}</span>
+                </p>
+                <p className="text-sm text-slate-700 mt-1">
+                  Erros: <span className="font-bold">{formatSeconds(Math.round(avgTimeWrong))}</span>
+                </p>
               </Card>
             </div>
 
@@ -956,6 +1341,68 @@ export default function Progress() {
 
             <div className="grid xl:grid-cols-2 gap-6">
               <Card className="p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <TrendingUp className="w-5 h-5 text-emerald-500" />
+                  <h2 className="text-xl font-bold text-slate-900">Maiores evoluções</h2>
+                </div>
+
+                <div className="space-y-3">
+                  {topImprovements.length > 0 ? (
+                    topImprovements.map((item) => (
+                      <div
+                        key={item.label}
+                        className="rounded-xl border border-emerald-200 bg-emerald-50 p-4"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="font-semibold text-slate-900">{item.label}</span>
+                          <span className="text-sm font-bold text-emerald-700">
+                            {formatDelta(item.delta)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-slate-600 mt-1">
+                          Agora: {item.currentAccuracy.toFixed(0)}% • Antes: {item.previousAccuracy.toFixed(0)}%
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-slate-500">Ainda não há evolução suficiente para comparar.</p>
+                  )}
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <TrendingDown className="w-5 h-5 text-red-500" />
+                  <h2 className="text-xl font-bold text-slate-900">Maiores quedas</h2>
+                </div>
+
+                <div className="space-y-3">
+                  {topDrops.length > 0 ? (
+                    topDrops.map((item) => (
+                      <div
+                        key={item.label}
+                        className="rounded-xl border border-red-200 bg-red-50 p-4"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="font-semibold text-slate-900">{item.label}</span>
+                          <span className="text-sm font-bold text-red-700">
+                            {formatDelta(item.delta)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-slate-600 mt-1">
+                          Agora: {item.currentAccuracy.toFixed(0)}% • Antes: {item.previousAccuracy.toFixed(0)}%
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-slate-500">Nenhuma queda relevante detectada no período.</p>
+                  )}
+                </div>
+              </Card>
+            </div>
+
+            <div className="grid xl:grid-cols-2 gap-6">
+              <Card className="p-6">
                 <h2 className="text-xl font-bold text-slate-900 mb-4">
                   Desempenho por disciplina
                 </h2>
@@ -1011,6 +1458,49 @@ export default function Progress() {
                 </div>
               </Card>
             </div>
+
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Gauge className="w-5 h-5 text-blue-500" />
+                <h2 className="text-xl font-bold text-slate-900">Tendência por disciplina</h2>
+              </div>
+
+              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {subjectEvolution.length > 0 ? (
+                  subjectEvolution.map((item) => (
+                    <div
+                      key={item.label}
+                      className="rounded-xl border border-slate-200 bg-white p-4"
+                    >
+                      <div className="flex items-center justify-between gap-3 mb-2">
+                        <span className="font-semibold text-slate-900">{item.label}</span>
+                        <span
+                          className={`text-sm font-bold ${
+                            item.delta >= 0 ? "text-emerald-600" : "text-red-600"
+                          }`}
+                        >
+                          {formatDelta(item.delta)}
+                        </span>
+                      </div>
+
+                      <p className="text-sm text-slate-600">
+                        Agora: {item.currentAccuracy.toFixed(0)}%
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        Antes: {item.previousAccuracy.toFixed(0)}%
+                      </p>
+                      <p className="text-xs text-slate-400 mt-2">
+                        {item.totalCurrent} tentativa(s) agora • {item.totalPrevious} antes
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-slate-500">
+                    Ainda não há dados suficientes para tendência por disciplina.
+                  </p>
+                )}
+              </div>
+            </Card>
 
             <div className="grid xl:grid-cols-2 gap-6">
               <Card className="p-6">
@@ -1130,6 +1620,35 @@ export default function Progress() {
                 </div>
               </Card>
             </div>
+
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="w-5 h-5 text-purple-500" />
+                <h2 className="text-xl font-bold text-slate-900">Cobertura do estudo</h2>
+              </div>
+
+              <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <div className="rounded-xl border border-slate-200 p-4 bg-white">
+                  <p className="text-sm text-slate-500 mb-1">Questões únicas</p>
+                  <p className="text-2xl font-bold text-slate-900">{coverageInfo.uniqueQuestions}</p>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 p-4 bg-white">
+                  <p className="text-sm text-slate-500 mb-1">Disciplinas tocadas</p>
+                  <p className="text-2xl font-bold text-slate-900">{coverageInfo.uniqueSubjects}</p>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 p-4 bg-white">
+                  <p className="text-sm text-slate-500 mb-1">Conteúdos tocados</p>
+                  <p className="text-2xl font-bold text-slate-900">{coverageInfo.uniqueConteudos}</p>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 p-4 bg-white">
+                  <p className="text-sm text-slate-500 mb-1">Assuntos tocados</p>
+                  <p className="text-2xl font-bold text-slate-900">{coverageInfo.uniqueAssuntos}</p>
+                </div>
+              </div>
+            </Card>
 
             <Card className="p-6">
               <div className="flex items-center gap-2 mb-4">
@@ -1282,7 +1801,7 @@ export default function Progress() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-slate-500">Você ainda não respondeu nenhuma questão.</p>
+                  <p className="text-slate-500">Nenhuma tentativa registrada nesse filtro.</p>
                 )}
               </Card>
             </div>
