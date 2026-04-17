@@ -30,11 +30,19 @@ type QuestionFormData = {
   enunciado_pos_imagem: string;
   formula: string;
   url_imagem: string;
+
   alternativa_a: string;
   alternativa_b: string;
   alternativa_c: string;
   alternativa_d: string;
   alternativa_e: string;
+
+  alternativa_a_imagem: string;
+  alternativa_b_imagem: string;
+  alternativa_c_imagem: string;
+  alternativa_d_imagem: string;
+  alternativa_e_imagem: string;
+
   alternativa_correta: string;
 };
 
@@ -54,11 +62,19 @@ const initialForm: QuestionFormData = {
   enunciado_pos_imagem: "",
   formula: "",
   url_imagem: "",
+
   alternativa_a: "",
   alternativa_b: "",
   alternativa_c: "",
   alternativa_d: "",
   alternativa_e: "",
+
+  alternativa_a_imagem: "",
+  alternativa_b_imagem: "",
+  alternativa_c_imagem: "",
+  alternativa_d_imagem: "",
+  alternativa_e_imagem: "",
+
   alternativa_correta: "",
 };
 
@@ -124,6 +140,7 @@ export default function AdminQuestionCreatePage() {
   const [form, setForm] = useState<QuestionFormData>(initialForm);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingAlternative, setUploadingAlternative] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -135,7 +152,9 @@ export default function AdminQuestionCreatePage() {
       ...prev,
       [field]: value,
     }));
-    async function handleImageUpload(event: ChangeEvent<HTMLInputElement>) {
+  }
+
+  async function handleImageUpload(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -147,7 +166,7 @@ export default function AdminQuestionCreatePage() {
       const pastaBase =
         form.codigo.trim() || `questao-${Date.now().toString()}`;
       const fileName = gerarNomeArquivo(file.name);
-      const path = `${pastaBase}/${fileName}`;
+      const path = `${pastaBase}/enunciado/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from(QUESTION_IMAGES_BUCKET)
@@ -157,7 +176,11 @@ export default function AdminQuestionCreatePage() {
 
       if (uploadError) {
         console.error("Erro ao enviar imagem da questão:", uploadError);
-        setError("Não foi possível enviar a imagem da questão.");
+        setError(
+          uploadError.message
+            ? `Não foi possível enviar a imagem da questão: ${uploadError.message}`
+            : "Não foi possível enviar a imagem da questão."
+        );
         return;
       }
 
@@ -177,6 +200,64 @@ export default function AdminQuestionCreatePage() {
       setError("Ocorreu um erro inesperado ao enviar a imagem.");
     } finally {
       setUploadingImage(false);
+      event.target.value = "";
+    }
+  }
+
+  async function handleAlternativeImageUpload(
+    field:
+      | "alternativa_a_imagem"
+      | "alternativa_b_imagem"
+      | "alternativa_c_imagem"
+      | "alternativa_d_imagem"
+      | "alternativa_e_imagem",
+    event: ChangeEvent<HTMLInputElement>
+  ) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadingAlternative(field);
+      setError("");
+      setSuccessMessage("");
+
+      const pastaBase =
+        form.codigo.trim() || `questao-${Date.now().toString()}`;
+      const fileName = gerarNomeArquivo(file.name);
+      const path = `${pastaBase}/alternativas/${field}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(QUESTION_IMAGES_BUCKET)
+        .upload(path, file, {
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.error("Erro ao enviar imagem da alternativa:", uploadError);
+        setError(
+          uploadError.message
+            ? `Não foi possível enviar a imagem da alternativa: ${uploadError.message}`
+            : "Não foi possível enviar a imagem da alternativa."
+        );
+        return;
+      }
+
+      const { data } = supabase.storage
+        .from(QUESTION_IMAGES_BUCKET)
+        .getPublicUrl(path);
+
+      if (!data?.publicUrl) {
+        setError("Não foi possível gerar a URL pública da imagem da alternativa.");
+        return;
+      }
+
+      updateField(field, data.publicUrl);
+      setSuccessMessage("Imagem da alternativa enviada com sucesso.");
+    } catch (err) {
+      console.error("Erro inesperado ao enviar imagem da alternativa:", err);
+      setError("Ocorreu um erro inesperado ao enviar a imagem da alternativa.");
+    } finally {
+      setUploadingAlternative(null);
       event.target.value = "";
     }
   }
@@ -216,13 +297,16 @@ export default function AdminQuestionCreatePage() {
         return;
       }
 
-      if (!form.alternativa_a.trim()) {
-        setError("Preencha a alternativa A.");
+      const temA = form.alternativa_a.trim() || form.alternativa_a_imagem.trim();
+      const temB = form.alternativa_b.trim() || form.alternativa_b_imagem.trim();
+
+      if (!temA) {
+        setError("Preencha a alternativa A com texto ou imagem.");
         return;
       }
 
-      if (!form.alternativa_b.trim()) {
-        setError("Preencha a alternativa B.");
+      if (!temB) {
+        setError("Preencha a alternativa B com texto ou imagem.");
         return;
       }
 
@@ -245,11 +329,19 @@ export default function AdminQuestionCreatePage() {
         enunciado_pos_imagem: valorLimpo(form.enunciado_pos_imagem),
         formula: valorLimpo(form.formula),
         url_imagem: valorLimpo(form.url_imagem),
+
         A: valorLimpo(form.alternativa_a),
         B: valorLimpo(form.alternativa_b),
         C: valorLimpo(form.alternativa_c),
         D: valorLimpo(form.alternativa_d),
         E: valorLimpo(form.alternativa_e),
+
+        a_url_imagem: valorLimpo(form.alternativa_a_imagem),
+        b_url_imagem: valorLimpo(form.alternativa_b_imagem),
+        c_url_imagem: valorLimpo(form.alternativa_c_imagem),
+        d_url_imagem: valorLimpo(form.alternativa_d_imagem),
+        e_url_imagem: valorLimpo(form.alternativa_e_imagem),
+
         alternativa_correta: valorLimpo(form.alternativa_correta),
       };
 
@@ -291,6 +383,11 @@ export default function AdminQuestionCreatePage() {
           instituicao: form.instituicao || null,
           publicada: form.publicada,
           urlImagem: form.url_imagem || null,
+          alternativaAImagem: form.alternativa_a_imagem || null,
+          alternativaBImagem: form.alternativa_b_imagem || null,
+          alternativaCImagem: form.alternativa_c_imagem || null,
+          alternativaDImagem: form.alternativa_d_imagem || null,
+          alternativaEImagem: form.alternativa_e_imagem || null,
         },
       });
 
@@ -302,6 +399,65 @@ export default function AdminQuestionCreatePage() {
     } finally {
       setSaving(false);
     }
+  }
+
+  function AlternativeImageField({
+    label,
+    imageField,
+  }: {
+    label: string;
+    imageField:
+      | "alternativa_a_imagem"
+      | "alternativa_b_imagem"
+      | "alternativa_c_imagem"
+      | "alternativa_d_imagem"
+      | "alternativa_e_imagem";
+  }) {
+    const imageValue = form[imageField];
+
+    return (
+      <div>
+        <FieldLabel>{label}</FieldLabel>
+
+        <div className="flex flex-wrap gap-3 mb-3">
+          <label className="inline-flex">
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => handleAlternativeImageUpload(imageField, e)}
+            />
+            <span className="inline-flex items-center rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm cursor-pointer hover:bg-slate-50">
+              {uploadingAlternative === imageField ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Enviando imagem...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4 mr-2" />
+                  Enviar imagem
+                </>
+              )}
+            </span>
+          </label>
+        </div>
+
+        <TextInput
+          value={imageValue}
+          onChange={(e) => updateField(imageField, e.target.value)}
+          placeholder="https://..."
+        />
+
+        {imageValue ? (
+          <img
+            src={imageValue}
+            alt={`Preview ${label}`}
+            className="mt-3 max-h-40 rounded-xl border border-slate-200 bg-white"
+          />
+        ) : null}
+      </div>
+    );
   }
 
   return (
@@ -552,49 +708,84 @@ export default function AdminQuestionCreatePage() {
             Alternativas
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <FieldLabel>Alternativa A</FieldLabel>
-              <TextArea
-                rows={3}
-                value={form.alternativa_a}
-                onChange={(e) => updateField("alternativa_a", e.target.value)}
+          <div className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <FieldLabel>Alternativa A</FieldLabel>
+                <TextArea
+                  rows={3}
+                  value={form.alternativa_a}
+                  onChange={(e) => updateField("alternativa_a", e.target.value)}
+                />
+              </div>
+
+              <AlternativeImageField
+                label="Imagem da alternativa A"
+                imageField="alternativa_a_imagem"
               />
             </div>
 
-            <div>
-              <FieldLabel>Alternativa B</FieldLabel>
-              <TextArea
-                rows={3}
-                value={form.alternativa_b}
-                onChange={(e) => updateField("alternativa_b", e.target.value)}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <FieldLabel>Alternativa B</FieldLabel>
+                <TextArea
+                  rows={3}
+                  value={form.alternativa_b}
+                  onChange={(e) => updateField("alternativa_b", e.target.value)}
+                />
+              </div>
+
+              <AlternativeImageField
+                label="Imagem da alternativa B"
+                imageField="alternativa_b_imagem"
               />
             </div>
 
-            <div>
-              <FieldLabel>Alternativa C</FieldLabel>
-              <TextArea
-                rows={3}
-                value={form.alternativa_c}
-                onChange={(e) => updateField("alternativa_c", e.target.value)}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <FieldLabel>Alternativa C</FieldLabel>
+                <TextArea
+                  rows={3}
+                  value={form.alternativa_c}
+                  onChange={(e) => updateField("alternativa_c", e.target.value)}
+                />
+              </div>
+
+              <AlternativeImageField
+                label="Imagem da alternativa C"
+                imageField="alternativa_c_imagem"
               />
             </div>
 
-            <div>
-              <FieldLabel>Alternativa D</FieldLabel>
-              <TextArea
-                rows={3}
-                value={form.alternativa_d}
-                onChange={(e) => updateField("alternativa_d", e.target.value)}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <FieldLabel>Alternativa D</FieldLabel>
+                <TextArea
+                  rows={3}
+                  value={form.alternativa_d}
+                  onChange={(e) => updateField("alternativa_d", e.target.value)}
+                />
+              </div>
+
+              <AlternativeImageField
+                label="Imagem da alternativa D"
+                imageField="alternativa_d_imagem"
               />
             </div>
 
-            <div>
-              <FieldLabel>Alternativa E</FieldLabel>
-              <TextArea
-                rows={3}
-                value={form.alternativa_e}
-                onChange={(e) => updateField("alternativa_e", e.target.value)}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <FieldLabel>Alternativa E</FieldLabel>
+                <TextArea
+                  rows={3}
+                  value={form.alternativa_e}
+                  onChange={(e) => updateField("alternativa_e", e.target.value)}
+                />
+              </div>
+
+              <AlternativeImageField
+                label="Imagem da alternativa E"
+                imageField="alternativa_e_imagem"
               />
             </div>
 
@@ -639,5 +830,4 @@ export default function AdminQuestionCreatePage() {
       </AdminLayout>
     </AdminGuard>
   );
-                }
-  }
+}
