@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useRoute, useLocation, Link } from "wouter";
 import { supabase } from "@/lib/supabase";
 import { logAdminAction } from "@/lib/adminLogs";
@@ -13,6 +13,8 @@ import {
   ArrowLeft,
   CheckCircle2,
   Blocks,
+  Upload,
+  Image as ImageIcon,
 } from "lucide-react";
 
 type QuestionFormData = {
@@ -36,6 +38,8 @@ type QuestionFormData = {
   alternativa_e: string;
   alternativa_correta: string;
 };
+
+const QUESTION_IMAGES_BUCKET = "questoes-imagens";
 
 const initialForm: QuestionFormData = {
   codigo: "",
@@ -105,6 +109,16 @@ function valorLimpo(texto: string) {
   return valor.length > 0 ? valor : null;
 }
 
+function gerarNomeArquivo(originalName: string) {
+  const extensao = originalName.includes(".")
+    ? originalName.split(".").pop()
+    : "png";
+
+  return `${Date.now()}-${Math.random()
+    .toString(36)
+    .slice(2, 10)}.${extensao}`;
+}
+
 export default function AdminQuestionEditPage() {
   const [match, params] = useRoute("/admin/questoes/:id");
   const [, setLocation] = useLocation();
@@ -113,6 +127,7 @@ export default function AdminQuestionEditPage() {
   const [form, setForm] = useState<QuestionFormData>(initialForm);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -168,8 +183,7 @@ export default function AdminQuestionEditPage() {
       } finally {
         setLoading(false);
       }
-    }
-
+            }
     loadQuestion();
   }, [questionId]);
 
@@ -181,6 +195,52 @@ export default function AdminQuestionEditPage() {
       ...prev,
       [field]: value,
     }));
+  }
+
+  async function handleImageUpload(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file || !questionId) return;
+
+    try {
+      setUploadingImage(true);
+      setError("");
+      setSuccessMessage("");
+
+      const pastaBase =
+        form.codigo.trim() || questionId || `questao-${Date.now().toString()}`;
+      const fileName = gerarNomeArquivo(file.name);
+      const path = `${pastaBase}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(QUESTION_IMAGES_BUCKET)
+        .upload(path, file, {
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.error("Erro ao enviar imagem da questão:", uploadError);
+        setError("Não foi possível enviar a imagem da questão.");
+        return;
+      }
+
+      const { data } = supabase.storage
+        .from(QUESTION_IMAGES_BUCKET)
+        .getPublicUrl(path);
+
+      if (!data?.publicUrl) {
+        setError("Não foi possível gerar a URL pública da imagem.");
+        return;
+      }
+
+      updateField("url_imagem", data.publicUrl);
+      setSuccessMessage("Imagem da questão enviada com sucesso.");
+    } catch (err) {
+      console.error("Erro inesperado ao enviar imagem da questão:", err);
+      setError("Ocorreu um erro inesperado ao enviar a imagem.");
+    } finally {
+      setUploadingImage(false);
+      event.target.value = "";
+    }
   }
 
   async function saveQuestion() {
@@ -283,6 +343,7 @@ export default function AdminQuestionEditPage() {
         dificuldade: form.dificuldade || null,
         instituicao: form.instituicao || null,
         publicada: form.publicada,
+        urlImagem: form.url_imagem || null,
       },
     });
 
@@ -527,6 +588,30 @@ export default function AdminQuestionEditPage() {
                   />
                 </div>
 
+                <div className="flex flex-wrap gap-3">
+                  <label className="inline-flex">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                    />
+                    <span className="inline-flex items-center rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm cursor-pointer hover:bg-slate-50">
+                      {uploadingImage ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Enviando imagem...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4 mr-2" />
+                          Enviar imagem da questão
+                        </>
+                      )}
+                    </span>
+                  </label>
+                </div>
+
                 <div>
                   <FieldLabel>URL da imagem</FieldLabel>
                   <TextInput
@@ -534,6 +619,27 @@ export default function AdminQuestionEditPage() {
                     onChange={(e) => updateField("url_imagem", e.target.value)}
                     placeholder="https://..."
                   />
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <ImageIcon className="w-4 h-4 text-emerald-600" />
+                    <p className="text-sm font-semibold text-slate-700">
+                      Preview da imagem da questão
+                    </p>
+                  </div>
+
+                  {form.url_imagem ? (
+                    <img
+                      src={form.url_imagem}
+                      alt="Preview da imagem da questão"
+                      className="max-w-full rounded-xl border border-slate-200 bg-white"
+                    />
+                  ) : (
+                    <p className="text-sm text-slate-500">
+                      Envie uma imagem ou cole uma URL para visualizar o preview.
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -672,3 +778,4 @@ export default function AdminQuestionEditPage() {
     </AdminGuard>
   );
 }
+    
