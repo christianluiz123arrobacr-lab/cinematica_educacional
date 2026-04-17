@@ -1,5 +1,20 @@
 import { supabase } from "@/lib/supabase";
-import type { Question, QuestionDifficulty } from "@/types/question";
+import type {
+  Question,
+  QuestionDifficulty,
+  QuestionSubject,
+} from "@/types/question";
+
+export type QuestionFilters = {
+  subject?: QuestionSubject;
+  topic?: string;
+  subtopic?: string;
+  exam?: string;
+  year?: number;
+  difficulty?: QuestionDifficulty;
+  institution?: string;
+  isPublished?: boolean;
+};
 
 type QuestaoRow = {
   id: string;
@@ -25,11 +40,6 @@ type QuestaoRow = {
   C?: string | null;
   D?: string | null;
   E?: string | null;
-  a_url_imagem?: string | null;
-  b_url_imagem?: string | null;
-  c_url_imagem?: string | null;
-  d_url_imagem?: string | null;
-  e_url_imagem?: string | null;
   alternativa_correta: string;
   instituição?: string | null;
   fonte?: string | null;
@@ -45,6 +55,12 @@ type QuestaoRow = {
   }[];
 };
 
+function normalizarTexto(valor?: string | null): string | undefined {
+  if (!valor) return undefined;
+  const limpo = valor.trim();
+  return limpo.length > 0 ? limpo : undefined;
+}
+
 function normalizarAlternativas(row: QuestaoRow): Question["options"] {
   const altA = row.a ?? row.A ?? "";
   const altB = row.b ?? row.B ?? "";
@@ -53,100 +69,90 @@ function normalizarAlternativas(row: QuestaoRow): Question["options"] {
   const altE = row.e ?? row.E ?? "";
 
   return [
-    altA || row.a_url_imagem
-      ? {
-          id: "a",
-          label: "A",
-          text: altA || undefined,
-          imageUrl: row.a_url_imagem ?? undefined,
-        }
-      : null,
-    altB || row.b_url_imagem
-      ? {
-          id: "b",
-          label: "B",
-          text: altB || undefined,
-          imageUrl: row.b_url_imagem ?? undefined,
-        }
-      : null,
-    altC || row.c_url_imagem
-      ? {
-          id: "c",
-          label: "C",
-          text: altC || undefined,
-          imageUrl: row.c_url_imagem ?? undefined,
-        }
-      : null,
-    altD || row.d_url_imagem
-      ? {
-          id: "d",
-          label: "D",
-          text: altD || undefined,
-          imageUrl: row.d_url_imagem ?? undefined,
-        }
-      : null,
-    altE || row.e_url_imagem
-      ? {
-          id: "e",
-          label: "E",
-          text: altE || undefined,
-          imageUrl: row.e_url_imagem ?? undefined,
-        }
-      : null,
+    altA ? { id: "a", label: "A", text: altA } : null,
+    altB ? { id: "b", label: "B", text: altB } : null,
+    altC ? { id: "c", label: "C", text: altC } : null,
+    altD ? { id: "d", label: "D", text: altD } : null,
+    altE ? { id: "e", label: "E", text: altE } : null,
   ].filter(Boolean) as Question["options"];
 }
 
 function mapQuestao(row: QuestaoRow): Question {
   const explanationBlocks =
     row.resolucoes
-      ?.map((resolucao) => ({
-        type:
-          (resolucao.tipo || "").toLowerCase() === "imagem"
-            ? "imagem"
-            : (resolucao.tipo || "").toLowerCase() === "latex"
-              ? "latex"
-              : "texto",
-        content: resolucao.texto || "",
-        imageUrl: resolucao.url_imagem || undefined,
-        order: resolucao.ordem ?? 0,
-      }))
-      .sort((a, b) => a.order - b.order) || [];
+      ?.sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0))
+      .map((r) => {
+        const tipo = (r.tipo || "").toLowerCase().trim();
 
-  const explanationFallback = explanationBlocks
-    .filter((block) => block.type !== "imagem" && block.content)
-    .map((block) => block.content)
-    .join("\n\n");
+        if (tipo === "imagem") {
+          return {
+            type: "imagem" as const,
+            imageUrl: r.url_imagem ?? undefined,
+            order: r.ordem ?? 0,
+          };
+        }
+
+        if (tipo === "latex") {
+          return {
+            type: "latex" as const,
+            content: r.texto ?? "",
+            order: r.ordem ?? 0,
+          };
+        }
+
+        return {
+          type: "texto" as const,
+          content: r.texto ?? "",
+          order: r.ordem ?? 0,
+        };
+      })
+      .filter((block) =>
+        block.type === "imagem" ? !!block.imageUrl : !!block.content
+      ) || [];
+
+  const resolucaoTexto =
+    row.resolucoes
+      ?.filter((r) => r.texto)
+      .sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0))
+      .map((r) => r.texto ?? "")
+      .join("\n\n") || "Sem resolução cadastrada.";
+
+  const disciplina = (
+    row.disciplina ??
+    row.diciplina ??
+    "fisica"
+  ).toLowerCase().trim() as QuestionSubject;
 
   return {
     id: row.id,
     codigo: row.codigo ?? undefined,
-    subject: (row.disciplina ?? row.diciplina ?? "fisica") as Question["subject"],
-    topic: row.conteudo || "Sem conteúdo",
-    subtopic: row.assunto || undefined,
-    exam: row.banca || "Sem banca",
+    subject: disciplina,
+    topic: (row.conteudo ?? row.assunto ?? "").toLowerCase().trim(),
+    subtopic: row.assunto?.toLowerCase().trim(),
+    exam: normalizarTexto(row.banca) ?? "Sem banca",
     year: row.ano,
-    institution: row["instituição"] || undefined,
-    statement: row.enunciado || "",
-    statementAfterImage: row.enunciado_pos_imagem || undefined,
-    formula: row.formula || undefined,
-    imageUrl: row.url_imagem || undefined,
+    institution: normalizarTexto(row.instituição),
+    statement: row.enunciado ?? "Sem enunciado cadastrado.",
+    statementAfterImage: row.enunciado_pos_imagem ?? undefined,
+    formula: row.formula ?? undefined,
+    imageUrl: row.url_imagem ?? undefined,
     options: normalizarAlternativas(row),
-    correctOptionId: (row.alternativa_correta || "").toLowerCase(),
-    explanation: explanationFallback || "Sem resolução cadastrada.",
+    correctOptionId: row.alternativa_correta.toLowerCase().trim(),
+    explanation: resolucaoTexto,
     explanationBlocks,
     difficulty: row.dificuldade,
-    tags: row.tag ? [row.tag] : [],
-    source: row.fonte || undefined,
+    tags: row.tag ? row.tag.split(",").map((t) => t.trim()) : [],
+    source: row.fonte ?? undefined,
     isPublished: row.publicada ?? true,
-    createdAt: row.created_at || undefined,
-    updatedAt: undefined,
+    createdAt: row.created_at ?? undefined,
+    updatedAt: row.created_at ?? undefined,
   };
 }
 
-export async function fetchQuestions(): Promise<Question[]> {
-  const { data, error } = await supabase
-    .from("questoes")
-    .select(`
+export async function getQuestions(
+  filters?: QuestionFilters
+): Promise<Question[]> {
+  let query = supabase.from("questoes").select(`
       *,
       resolucoes (
         id,
@@ -155,21 +161,55 @@ export async function fetchQuestions(): Promise<Question[]> {
         ordem,
         url_imagem
       )
-    `)
-    .eq("publicada", true)
-    .order("ano", { ascending: false });
+    `);
+
+  if (filters?.subject) {
+    query = query.or(
+      `disciplina.eq.${filters.subject},diciplina.eq.${filters.subject}`
+    );
+  }
+
+  if (filters?.topic) {
+    query = query.ilike("conteudo", `%${filters.topic}%`);
+  }
+
+  if (filters?.subtopic) {
+    query = query.ilike("assunto", `%${filters.subtopic}%`);
+  }
+
+  if (filters?.exam) {
+    query = query.eq("banca", filters.exam);
+  }
+
+  if (filters?.year) {
+    query = query.eq("ano", filters.year);
+  }
+
+  if (filters?.difficulty) {
+    query = query.eq("dificuldade", filters.difficulty);
+  }
+
+  if (filters?.institution) {
+    query = query.eq("instituição", filters.institution);
+  }
+
+  if (filters?.isPublished !== undefined) {
+    query = query.eq("publicada", filters.isPublished);
+  }
+
+  const { data, error } = await query.order("created_at", {
+    ascending: false,
+  });
 
   if (error) {
     console.error("Erro ao buscar questões:", error);
-    throw error;
+    return [];
   }
 
-  return ((data as QuestaoRow[]) || []).map(mapQuestao);
+  return (data as QuestaoRow[]).map(mapQuestao);
 }
 
-export async function fetchQuestionsBySubject(
-  subject: Question["subject"]
-): Promise<Question[]> {
+export async function getQuestionById(id: string): Promise<Question | null> {
   const { data, error } = await supabase
     .from("questoes")
     .select(`
@@ -182,14 +222,13 @@ export async function fetchQuestionsBySubject(
         url_imagem
       )
     `)
-    .eq("publicada", true)
-    .or(`disciplina.eq.${subject},diciplina.eq.${subject}`)
-    .order("ano", { ascending: false });
+    .eq("id", id)
+    .single();
 
-  if (error) {
-    console.error("Erro ao buscar questões por disciplina:", error);
-    throw error;
+  if (error || !data) {
+    console.error("Erro ao buscar questão por ID:", error);
+    return null;
   }
 
-  return ((data as QuestaoRow[]) || []).map(mapQuestao);
-}
+  return mapQuestao(data as QuestaoRow);
+      }
