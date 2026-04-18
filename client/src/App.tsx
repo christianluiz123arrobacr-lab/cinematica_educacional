@@ -9,6 +9,8 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import VetQuestionsPage from "./pages/VetQuestionsPage";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Landing from "./pages/Landing";
+import ProfilePage from "./pages/ProfilePage";
+
 import VetPage from "./pages/VetPage";
 import VetObjectivePage from "./pages/VetObjectivePage";
 import VetPrioritiesPage from "./pages/VetPrioritiesPage";
@@ -263,6 +265,7 @@ function PrivateRouter() {
         <Route path="/fisica-moderna/topic/aplicacoes" component={FisicaModernaTopicAplicacoes} />
 
         <Route path="/progress" component={Progress} />
+        <Route path="/perfil" component={ProfilePage} />
         <Route path="/ia-resolver" component={IAResolver} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
