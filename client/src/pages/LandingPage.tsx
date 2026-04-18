@@ -61,6 +61,12 @@ export default function LandingPage() {
             </Button>
           </Link>
 
+          <Link href="/ranking">
+            <Button className="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-full text-lg">
+              Ranking <Trophy className="w-5 h-5 ml-2" />
+            </Button>
+          </Link>
+
           <Link href="/perfil">
            <Button className="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-full text-lg">
              Perfil <UserCircle2 className="w-5 h-5 ml-2" />
