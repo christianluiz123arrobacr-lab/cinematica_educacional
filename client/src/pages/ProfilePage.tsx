@@ -13,9 +13,6 @@ import {
   Clock3,
   Flame,
   CalendarDays,
-  BookOpen,
-  TrendingDown,
-  TrendingUp,
   BrainCircuit,
   CheckCircle2,
   AlertTriangle,
@@ -32,6 +29,7 @@ import {
   Sparkles,
   Activity,
   Swords,
+  ChevronUp,
 } from "lucide-react";
 
 type AttemptRow = {
@@ -98,6 +96,21 @@ type RadarMetric = {
   value: number;
   description: string;
   delta?: number;
+};
+
+type RankingEntry = {
+  userId: string;
+  nome: string;
+  avatarKey: string;
+  score: number;
+  correctCount: number;
+  totalAttempts: number;
+  accuracy: number;
+  avgTimeSeconds: number;
+  lastActivityAt: string | null;
+  easyCorrect: number;
+  mediumCorrect: number;
+  hardCorrect: number;
 };
 
 const AVATAR_OPTIONS = [
@@ -586,6 +599,149 @@ function formatDelta(delta?: number) {
   return "0";
 }
 
+function getDifficultyPoints(difficulty?: string | null) {
+  const value = (difficulty || "").trim().toLowerCase();
+
+  if (value === "facil") return 2;
+  if (value === "medio") return 4;
+  if (value === "dificil") return 7;
+
+  return 0;
+}
+
+function getDifficultyBucket(difficulty?: string | null) {
+  const value = (difficulty || "").trim().toLowerCase();
+
+  if (value === "facil") return "easy";
+  if (value === "medio") return "medium";
+  if (value === "dificil") return "hard";
+
+  return "unknown";
+}
+
+function buildRanking(profiles: ProfileRow[], attempts: AttemptRow[]) {
+  const profilesMap = new Map<string, ProfileRow>();
+  for (const profile of profiles) {
+    if (profile.ativo === false) continue;
+    profilesMap.set(profile.id, profile);
+  }
+
+  const byUser = new Map<string, AttemptRow[]>();
+
+  for (const attempt of attempts) {
+    if (!attempt.user_id) continue;
+    if (!profilesMap.has(attempt.user_id)) continue;
+
+    const current = byUser.get(attempt.user_id) ?? [];
+    current.push(attempt);
+    byUser.set(attempt.user_id, current);
+  }
+
+  const rows: RankingEntry[] = [];
+
+  for (const [userId, userAttempts] of byUser.entries()) {
+    const profile = profilesMap.get(userId);
+    if (!profile) continue;
+
+    const uniqueCorrectByQuestion = new Map<string, AttemptRow>();
+
+    for (const attempt of userAttempts) {
+      if (!attempt.is_correct) continue;
+      if (!attempt.question_id) continue;
+
+      const existing = uniqueCorrectByQuestion.get(attempt.question_id);
+
+      if (!existing) {
+        uniqueCorrectByQuestion.set(attempt.question_id, attempt);
+        continue;
+      }
+
+      const existingDate = new Date(existing.answered_at).getTime();
+      const currentDate = new Date(attempt.answered_at).getTime();
+
+      if (currentDate < existingDate) {
+        uniqueCorrectByQuestion.set(attempt.question_id, attempt);
+      }
+    }
+
+    let score = 0;
+    let easyCorrect = 0;
+    let mediumCorrect = 0;
+    let hardCorrect = 0;
+
+    for (const attempt of uniqueCorrectByQuestion.values()) {
+      const bucket = getDifficultyBucket(attempt.difficulty);
+      const points = getDifficultyPoints(attempt.difficulty);
+
+      score += points;
+
+      if (bucket === "easy") easyCorrect += 1;
+      if (bucket === "medium") mediumCorrect += 1;
+      if (bucket === "hard") hardCorrect += 1;
+    }
+
+    const correctCount = uniqueCorrectByQuestion.size;
+    const totalAttempts = userAttempts.length;
+    const accuracy = totalAttempts > 0 ? (correctCount / totalAttempts) * 100 : 0;
+
+    const timedAttempts = userAttempts.filter(
+      (attempt) => typeof attempt.time_spent_seconds === "number"
+    );
+    const avgTimeSeconds =
+      timedAttempts.length > 0
+        ? timedAttempts.reduce((sum, attempt) => sum + (attempt.time_spent_seconds ?? 0), 0) /
+          timedAttempts.length
+        : 0;
+
+    const lastActivityAt =
+      userAttempts.length > 0
+        ? userAttempts
+            .map((attempt) => attempt.answered_at)
+            .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0]
+        : null;
+
+    rows.push({
+      userId,
+      nome: profile.nome?.trim() || profile.email || "Aluno",
+      avatarKey: profile.avatar_key || "avatar_1",
+      score,
+      correctCount,
+      totalAttempts,
+      accuracy,
+      avgTimeSeconds,
+      lastActivityAt,
+      easyCorrect,
+      mediumCorrect,
+      hardCorrect,
+    });
+  }
+
+  return rows
+    .filter((row) => row.correctCount > 0)
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      if (b.correctCount !== a.correctCount) return b.correctCount - a.correctCount;
+      if (b.accuracy !== a.accuracy) return b.accuracy - a.accuracy;
+
+      const aTime = a.avgTimeSeconds || Number.MAX_SAFE_INTEGER;
+      const bTime = b.avgTimeSeconds || Number.MAX_SAFE_INTEGER;
+      if (aTime !== bTime) return aTime - bTime;
+
+      const aLast = a.lastActivityAt ? new Date(a.lastActivityAt).getTime() : 0;
+      const bLast = b.lastActivityAt ? new Date(b.lastActivityAt).getTime() : 0;
+      return bLast - aLast;
+    });
+}
+
+function getRankingTier(position: number | null) {
+  if (position === null) return "Fora do ranking";
+  if (position === 1) return "Lenda";
+  if (position <= 3) return "Elite";
+  if (position <= 10) return "Destaque";
+  if (position <= 25) return "Competidor";
+  return "Em ascensão";
+}
+
 export default function ProfilePage() {
   const { user, loading: authLoading } = useSupabaseAuth();
   const [, setLocation] = useLocation();
@@ -593,6 +749,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [form, setForm] = useState<EditableProfile>(INITIAL_FORM);
   const [attempts, setAttempts] = useState<AttemptRow[]>([]);
+  const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
@@ -612,13 +769,13 @@ export default function ProfilePage() {
         setError("");
         setSuccessMessage("");
 
-        const [profileResult, attemptsResult] = await Promise.all([
+        const [profileResult, attemptsResult, profilesResult] = await Promise.all([
           supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
           supabase
             .from("user_question_attempts")
             .select("*")
-            .eq("user_id", user.id)
             .order("answered_at", { ascending: false }),
+          supabase.from("profiles").select("id, nome, email, avatar_key, ativo"),
         ]);
 
         if (profileResult.error) {
@@ -633,11 +790,19 @@ export default function ProfilePage() {
           return;
         }
 
+        if (profilesResult.error) {
+          console.error(profilesResult.error);
+          setError("Não foi possível carregar os perfis do ranking.");
+          return;
+        }
+
         const profileData = (profileResult.data as ProfileRow | null) ?? null;
         const attemptsData = (attemptsResult.data as AttemptRow[]) ?? [];
+        const profilesData = (profilesResult.data as ProfileRow[]) ?? [];
 
         setProfile(profileData);
         setAttempts(attemptsData);
+        setProfiles(profilesData);
 
         setForm({
           nome: profileData?.nome ?? user.user_metadata?.name ?? "",
@@ -738,17 +903,22 @@ export default function ProfilePage() {
     }
   }
 
-  const totalAnswered = attempts.length;
-  const totalCorrect = useMemo(() => attempts.filter((attempt) => attempt.is_correct).length, [attempts]);
+  const myAttempts = useMemo(
+    () => attempts.filter((attempt) => attempt.user_id === user?.id),
+    [attempts, user?.id]
+  );
+
+  const totalAnswered = myAttempts.length;
+  const totalCorrect = useMemo(() => myAttempts.filter((attempt) => attempt.is_correct).length, [myAttempts]);
   const totalWrong = totalAnswered - totalCorrect;
   const accuracy = totalAnswered > 0 ? (totalCorrect / totalAnswered) * 100 : 0;
-  const avgTimeSeconds = useMemo(() => getAverageTime(attempts), [attempts]);
-  const streakInfo = useMemo(() => buildStreakInfo(attempts), [attempts]);
-  const bySubject = useMemo(() => groupAttempts(attempts, (attempt) => attempt.subject), [attempts]);
-  const byConteudo = useMemo(() => groupAttempts(attempts, (attempt) => attempt.conteudo), [attempts]);
-  const byAssunto = useMemo(() => groupAttempts(attempts, (attempt) => attempt.assunto), [attempts]);
-  const byBanca = useMemo(() => groupAttempts(attempts, (attempt) => attempt.banca), [attempts]);
-  const recentAttempts = useMemo(() => attempts.slice(0, 5), [attempts]);
+  const avgTimeSeconds = useMemo(() => getAverageTime(myAttempts), [myAttempts]);
+  const streakInfo = useMemo(() => buildStreakInfo(myAttempts), [myAttempts]);
+  const bySubject = useMemo(() => groupAttempts(myAttempts, (attempt) => attempt.subject), [myAttempts]);
+  const byConteudo = useMemo(() => groupAttempts(myAttempts, (attempt) => attempt.conteudo), [myAttempts]);
+  const byAssunto = useMemo(() => groupAttempts(myAttempts, (attempt) => attempt.assunto), [myAttempts]);
+  const byBanca = useMemo(() => groupAttempts(myAttempts, (attempt) => attempt.banca), [myAttempts]);
+  const recentAttempts = useMemo(() => myAttempts.slice(0, 5), [myAttempts]);
 
   const bestSubject = useMemo(() => {
     return bySubject
@@ -798,33 +968,33 @@ export default function ProfilePage() {
     const now = new Date();
     const cutoff = new Date(now);
     cutoff.setDate(cutoff.getDate() - 7);
-    return attempts.filter((attempt) => new Date(attempt.answered_at) >= cutoff);
-  }, [attempts]);
+    return myAttempts.filter((attempt) => new Date(attempt.answered_at) >= cutoff);
+  }, [myAttempts]);
 
   const monthlyAttempts = useMemo(() => {
     const now = new Date();
     const cutoff = new Date(now);
     cutoff.setDate(cutoff.getDate() - 30);
-    return attempts.filter((attempt) => new Date(attempt.answered_at) >= cutoff);
-  }, [attempts]);
+    return myAttempts.filter((attempt) => new Date(attempt.answered_at) >= cutoff);
+  }, [myAttempts]);
 
-  const previous7dAttempts = useMemo(() => getPreviousPeriodAttempts(attempts, 7), [attempts]);
-  const previous30dAttempts = useMemo(() => getPreviousPeriodAttempts(attempts, 30), [attempts]);
+  const previous7dAttempts = useMemo(() => getPreviousPeriodAttempts(myAttempts, 7), [myAttempts]);
+  const previous30dAttempts = useMemo(() => getPreviousPeriodAttempts(myAttempts, 30), [myAttempts]);
 
   const weeklyQuestions = weeklyAttempts.length;
   const weeklyGoal = Number(profile?.meta_semanal_questoes ?? 0);
   const weeklyGoalPercent = weeklyGoal > 0 ? Math.min(100, (weeklyQuestions / weeklyGoal) * 100) : 0;
   const uniqueConteudos = useMemo(
-    () => new Set(attempts.map((a) => a.conteudo?.trim()).filter(Boolean)).size,
-    [attempts]
+    () => new Set(myAttempts.map((a) => a.conteudo?.trim()).filter(Boolean)).size,
+    [myAttempts]
   );
   const uniqueAssuntos = useMemo(
-    () => new Set(attempts.map((a) => a.assunto?.trim()).filter(Boolean)).size,
-    [attempts]
+    () => new Set(myAttempts.map((a) => a.assunto?.trim()).filter(Boolean)).size,
+    [myAttempts]
   );
   const uniqueQuestions = useMemo(
-    () => new Set(attempts.map((a) => a.question_id).filter(Boolean)).size,
-    [attempts]
+    () => new Set(myAttempts.map((a) => a.question_id).filter(Boolean)).size,
+    [myAttempts]
   );
 
   const weeklyAccuracy = useMemo(() => getAccuracy(weeklyAttempts), [weeklyAttempts]);
@@ -836,9 +1006,21 @@ export default function ProfilePage() {
   const previous7dAvgTime = useMemo(() => getAverageTime(previous7dAttempts), [previous7dAttempts]);
 
   const radarMetrics = useMemo(
-    () => buildRadarMetrics(attempts, previous30dAttempts),
-    [attempts, previous30dAttempts]
+    () => buildRadarMetrics(myAttempts, previous30dAttempts),
+    [myAttempts, previous30dAttempts]
   );
+
+  const ranking = useMemo(() => buildRanking(profiles, attempts), [profiles, attempts]);
+  const myRankingIndex = useMemo(
+    () => ranking.findIndex((entry) => entry.userId === user?.id),
+    [ranking, user?.id]
+  );
+  const myRankingEntry = myRankingIndex >= 0 ? ranking[myRankingIndex] : null;
+  const myPosition = myRankingIndex >= 0 ? myRankingIndex + 1 : null;
+  const nextRankingEntry = myRankingIndex > 0 ? ranking[myRankingIndex - 1] : null;
+  const top3Ranking = ranking.slice(0, 3);
+
+  const rankingTier = getRankingTier(myPosition);
 
   const profilePhase = useMemo(
     () =>
@@ -1055,6 +1237,9 @@ export default function ProfilePage() {
                       </span>
                       <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-sm font-semibold">
                         {form.foco_atual || "Foco atual não definido"}
+                      </span>
+                      <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-sm font-semibold">
+                        {rankingTier}
                       </span>
                     </div>
 
@@ -1326,30 +1511,93 @@ export default function ProfilePage() {
               <Card className="p-6 bg-white">
                 <div className="flex items-center gap-2 mb-4">
                   <BarChart3 className="w-5 h-5 text-indigo-600" />
-                  <h3 className="text-xl font-bold text-slate-900">Ranking</h3>
+                  <h3 className="text-xl font-bold text-slate-900">Seu ranking</h3>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                  <p className="text-sm uppercase tracking-wide text-slate-500 mb-2">Em preparação</p>
-                  <p className="text-2xl font-bold text-slate-900 mb-2">Ranking do aluno</p>
-                  <p className="text-slate-600">
-                    Aqui vai aparecer sua posição geral, semanal e por consistência quando a área de ranking entrar no ar.
-                  </p>
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                    <p className="text-sm uppercase tracking-wide text-slate-500 mb-2">Posição atual</p>
+                    <p className="text-4xl font-bold text-slate-900">
+                      {myPosition ? `#${myPosition}` : "—"}
+                    </p>
+                    <p className="text-slate-600 mt-2">{rankingTier}</p>
+                  </div>
 
-                  <div className="grid grid-cols-2 gap-3 mt-5">
-                    <div className="rounded-xl border border-slate-200 bg-white p-3">
-                      <p className="text-sm text-slate-500">Posição geral</p>
-                      <p className="text-xl font-bold text-slate-900">—</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                      <p className="text-sm text-slate-500 mb-1">Score</p>
+                      <p className="text-2xl font-bold text-slate-900">
+                        {myRankingEntry?.score ?? "—"}
+                      </p>
                     </div>
 
-                    <div className="rounded-xl border border-slate-200 bg-white p-3">
-                      <p className="text-sm text-slate-500">Faixa</p>
-                      <p className="text-xl font-bold text-slate-900">—</p>
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                      <p className="text-sm text-slate-500 mb-1">Próximo acima</p>
+                      <p className="text-2xl font-bold text-slate-900">
+                        {myRankingEntry && nextRankingEntry ? nextRankingEntry.score - myRankingEntry.score : "—"}
+                      </p>
                     </div>
                   </div>
+
+                  <Link href="/ranking">
+                    <Button className="rounded-2xl w-full">
+                      Ver ranking completo
+                    </Button>
+                  </Link>
                 </div>
               </Card>
             </div>
+
+            <Card className="p-6 bg-white">
+              <div className="flex items-center gap-2 mb-4">
+                <Trophy className="w-5 h-5 text-amber-500" />
+                <h3 className="text-xl font-bold text-slate-900">Resumo do ranking</h3>
+              </div>
+
+              {top3Ranking.length > 0 ? (
+                <div className="grid md:grid-cols-3 gap-4">
+                  {top3Ranking.map((entry, index) => {
+                    const avatarTop = getAvatarConfig(entry.avatarKey);
+                    const isMe = entry.userId === user?.id;
+
+                    return (
+                      <div
+                        key={entry.userId}
+                        className={`rounded-2xl border p-4 ${
+                          isMe ? "border-blue-200 bg-blue-50" : "border-slate-200 bg-slate-50"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-lg font-bold text-slate-900">#{index + 1}</span>
+                          {index === 0 ? <Crown className="w-5 h-5 text-amber-500" /> : null}
+                          {index === 1 ? <Trophy className="w-5 h-5 text-slate-500" /> : null}
+                          {index === 2 ? <Medal className="w-5 h-5 text-orange-500" /> : null}
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatarTop.bg} text-white flex items-center justify-center text-2xl`}
+                          >
+                            {avatarTop.emoji}
+                          </div>
+
+                          <div className="min-w-0">
+                            <p className="font-bold text-slate-900 truncate">{entry.nome}</p>
+                            <p className="text-sm text-slate-500">{entry.score} pts</p>
+                          </div>
+                        </div>
+
+                        {isMe ? (
+                          <p className="text-xs font-bold text-blue-600 mt-3">Você está no top 3</p>
+                        ) : null}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-slate-500">Ainda não há ranking suficiente para mostrar o top 3.</p>
+              )}
+            </Card>
 
             <div className="grid xl:grid-cols-2 gap-6">
               <Card className="p-6 bg-white">
