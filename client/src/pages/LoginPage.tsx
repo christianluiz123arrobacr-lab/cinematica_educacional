@@ -1,13 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useLocation } from "wouter";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 
 export default function LoginPage() {
   const [, navigate] = useLocation();
+  const { isAuthenticated, loading: authLoading } = useSupabaseAuth();
+
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
+
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      navigate("/");
+    }
+  }, [authLoading, isAuthenticated, navigate]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -31,6 +40,16 @@ export default function LoginPage() {
     }
 
     navigate("/");
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
+        <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-sm border border-slate-200">
+          <p className="text-slate-600">Carregando...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
