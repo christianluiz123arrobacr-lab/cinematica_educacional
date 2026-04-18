@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
-  UserCircle2,
   Pencil,
   Save,
   Target,
@@ -20,6 +19,14 @@ import {
   BrainCircuit,
   CheckCircle2,
   AlertTriangle,
+  LogOut,
+  Award,
+  Shield,
+  Zap,
+  Medal,
+  Star,
+  Crown,
+  BarChart3,
 } from "lucide-react";
 
 type AttemptRow = {
@@ -69,6 +76,14 @@ type GroupedStat = {
   correct: number;
   wrong: number;
   accuracy: number;
+};
+
+type Achievement = {
+  id: string;
+  title: string;
+  description: string;
+  unlocked: boolean;
+  icon: "award" | "flame" | "target" | "shield" | "zap" | "medal" | "star" | "crown";
 };
 
 const AVATAR_OPTIONS = [
@@ -278,8 +293,7 @@ function buildRadarMetrics(attempts: AttemptRow[]) {
       : 0;
 
   const consistencyScore = clamp((streakInfo.activeDays30 / 20) * 100);
-  const speedScore =
-    avgTime > 0 ? clamp(((300 - avgTime) / 240) * 100) : 0;
+  const speedScore = avgTime > 0 ? clamp(((300 - avgTime) / 240) * 100) : 0;
   const coverageScore = clamp((uniqueConteudos / 20) * 100);
 
   return [
@@ -381,19 +395,104 @@ function RadarChart({
 }
 
 function getAvatarConfig(avatarKey?: string | null) {
-  return (
-    AVATAR_OPTIONS.find((avatar) => avatar.key === avatarKey) ?? AVATAR_OPTIONS[0]
-  );
+  return AVATAR_OPTIONS.find((avatar) => avatar.key === avatarKey) ?? AVATAR_OPTIONS[0];
+}
+
+function getProfilePhase({
+  totalAnswered,
+  accuracy,
+  streak,
+  coverage,
+}: {
+  totalAnswered: number;
+  accuracy: number;
+  streak: number;
+  coverage: number;
+}) {
+  if (totalAnswered < 30) {
+    return {
+      title: "Fase de construção",
+      description: "Você ainda está formando base e dando volume ao estudo.",
+      tone: "blue",
+    };
+  }
+
+  if (accuracy >= 70 && streak >= 5 && coverage >= 45) {
+    return {
+      title: "Fase de consolidação",
+      description: "Seu perfil já mostra consistência e domínio crescente.",
+      tone: "green",
+    };
+  }
+
+  if (accuracy >= 60 && coverage < 45) {
+    return {
+      title: "Fase de expansão",
+      description: "Você já tem base, mas precisa aumentar cobertura.",
+      tone: "purple",
+    };
+  }
+
+  if (accuracy < 55) {
+    return {
+      title: "Fase de correção",
+      description: "Seu foco agora deve ser atacar gargalos com mais precisão.",
+      tone: "orange",
+    };
+  }
+
+  return {
+    title: "Fase de refinamento",
+    description: "Você está ajustando o jogo e ganhando consistência.",
+    tone: "slate",
+  };
+}
+
+function getProfileSignature(metrics: { label: string; value: number }[]) {
+  const sorted = [...metrics].sort((a, b) => b.value - a.value);
+  const top = sorted[0];
+  const bottom = sorted[sorted.length - 1];
+
+  if (!top || !bottom) {
+    return "Perfil ainda em formação.";
+  }
+
+  return `Seu perfil é de ${top.label.toLowerCase()} forte, mas ainda precisa crescer em ${bottom.label.toLowerCase()}.`;
+}
+
+function getAchievementIcon(icon: Achievement["icon"]) {
+  switch (icon) {
+    case "award":
+      return Award;
+    case "flame":
+      return Flame;
+    case "target":
+      return Target;
+    case "shield":
+      return Shield;
+    case "zap":
+      return Zap;
+    case "medal":
+      return Medal;
+    case "star":
+      return Star;
+    case "crown":
+      return Crown;
+    default:
+      return Award;
+  }
 }
 
 export default function ProfilePage() {
   const { user, loading: authLoading } = useSupabaseAuth();
+  const [, setLocation] = useLocation();
 
   const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [form, setForm] = useState<EditableProfile>(INITIAL_FORM);
   const [attempts, setAttempts] = useState<AttemptRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -526,6 +625,19 @@ export default function ProfilePage() {
     }
   }
 
+  async function handleLogout() {
+    try {
+      setLoggingOut(true);
+      await supabase.auth.signOut();
+      setLocation("/login");
+    } catch (err) {
+      console.error(err);
+      setError("Não foi possível sair da conta.");
+    } finally {
+      setLoggingOut(false);
+    }
+  }
+
   const totalAnswered = attempts.length;
   const totalCorrect = useMemo(
     () => attempts.filter((attempt) => attempt.is_correct).length,
@@ -537,9 +649,7 @@ export default function ProfilePage() {
   const avgTimeSeconds = useMemo(() => {
     const valid = attempts.filter((a) => typeof a.time_spent_seconds === "number");
     if (!valid.length) return 0;
-    return (
-      valid.reduce((sum, a) => sum + (a.time_spent_seconds ?? 0), 0) / valid.length
-    );
+    return valid.reduce((sum, a) => sum + (a.time_spent_seconds ?? 0), 0) / valid.length;
   }, [attempts]);
 
   const streakInfo = useMemo(() => buildStreakInfo(attempts), [attempts]);
@@ -596,6 +706,22 @@ export default function ProfilePage() {
 
   const radarMetrics = useMemo(() => buildRadarMetrics(attempts), [attempts]);
 
+  const profilePhase = useMemo(
+    () =>
+      getProfilePhase({
+        totalAnswered,
+        accuracy,
+        streak: streakInfo.currentStreak,
+        coverage: uniqueConteudos,
+      }),
+    [totalAnswered, accuracy, streakInfo.currentStreak, uniqueConteudos]
+  );
+
+  const profileSignature = useMemo(
+    () => getProfileSignature(radarMetrics),
+    [radarMetrics]
+  );
+
   const recommendations = useMemo(() => {
     const recs: string[] = [];
 
@@ -608,9 +734,7 @@ export default function ProfilePage() {
     }
 
     if (weeklyGoal > 0 && weeklyQuestions < weeklyGoal) {
-      recs.push(
-        `Faltam ${weeklyGoal - weeklyQuestions} questões para bater sua meta semanal.`
-      );
+      recs.push(`Faltam ${weeklyGoal - weeklyQuestions} questões para bater sua meta semanal.`);
     }
 
     if (streakInfo.currentStreak <= 1) {
@@ -630,7 +754,78 @@ export default function ProfilePage() {
     streakInfo.currentStreak,
   ]);
 
+  const achievements = useMemo<Achievement[]>(() => {
+    return [
+      {
+        id: "first_question",
+        title: "Primeiro passo",
+        description: "Resolver a primeira questão na plataforma.",
+        unlocked: totalAnswered >= 1,
+        icon: "award",
+      },
+      {
+        id: "fifty_questions",
+        title: "Volume inicial",
+        description: "Alcançar 50 questões resolvidas.",
+        unlocked: totalAnswered >= 50,
+        icon: "target",
+      },
+      {
+        id: "hundred_questions",
+        title: "Cem resolvidas",
+        description: "Bater 100 questões resolvidas.",
+        unlocked: totalAnswered >= 100,
+        icon: "medal",
+      },
+      {
+        id: "seven_day_streak",
+        title: "Constância real",
+        description: "Manter 7 dias seguidos de estudo.",
+        unlocked: streakInfo.bestStreak >= 7,
+        icon: "flame",
+      },
+      {
+        id: "accuracy_70",
+        title: "Mira calibrada",
+        description: "Alcançar 70% de acerto geral.",
+        unlocked: accuracy >= 70,
+        icon: "shield",
+      },
+      {
+        id: "weekly_goal",
+        title: "Meta batida",
+        description: "Cumprir a meta semanal de questões.",
+        unlocked: weeklyGoal > 0 && weeklyQuestions >= weeklyGoal,
+        icon: "star",
+      },
+      {
+        id: "coverage_10",
+        title: "Cobertura forte",
+        description: "Tocar 10 conteúdos diferentes.",
+        unlocked: uniqueConteudos >= 10,
+        icon: "zap",
+      },
+      {
+        id: "hard_mode",
+        title: "Perfil de ataque",
+        description: "Ir bem com volume em dificuldades maiores.",
+        unlocked:
+          radarMetrics.find((item) => item.label === "Dificuldade")?.value >= 65,
+        icon: "crown",
+      },
+    ];
+  }, [totalAnswered, streakInfo.bestStreak, accuracy, weeklyGoal, weeklyQuestions, uniqueConteudos, radarMetrics]);
+
+  const unlockedAchievements = achievements.filter((item) => item.unlocked).length;
   const avatar = getAvatarConfig(form.avatar_key);
+
+  function phaseToneClasses(tone: string) {
+    if (tone === "green") return "border-emerald-200 bg-emerald-50 text-emerald-700";
+    if (tone === "purple") return "border-purple-200 bg-purple-50 text-purple-700";
+    if (tone === "orange") return "border-orange-200 bg-orange-50 text-orange-700";
+    if (tone === "blue") return "border-blue-200 bg-blue-50 text-blue-700";
+    return "border-slate-200 bg-slate-50 text-slate-700";
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
@@ -709,13 +904,15 @@ export default function ProfilePage() {
                       {form.bio || "Adicione uma bio curta para deixar seu perfil mais pessoal."}
                     </p>
 
-                    <p className="text-sm text-slate-500 mt-3">
-                      Na plataforma desde {formatDate(profile?.created_at)}
-                    </p>
+                    <div className="flex flex-wrap gap-3 mt-4 text-sm text-slate-500">
+                      <span>Na plataforma desde {formatDate(profile?.created_at)}</span>
+                      <span>•</span>
+                      <span>Última atividade: {formatDateTime(profile?.last_seen_at)}</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   {!editing ? (
                     <Button
                       variant="outline"
@@ -748,6 +945,33 @@ export default function ProfilePage() {
                       )}
                     </Button>
                   )}
+
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl border-red-200 text-red-600 hover:bg-red-50"
+                    onClick={handleLogout}
+                    disabled={loggingOut}
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    {loggingOut ? "Saindo..." : "Sair"}
+                  </Button>
+                </div>
+              </div>
+            </Card>
+
+            <Card className={`p-5 border ${phaseToneClasses(profilePhase.tone)}`}>
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div>
+                  <p className="text-sm uppercase tracking-wide font-semibold mb-1">
+                    Seu momento atual
+                  </p>
+                  <h3 className="text-2xl font-bold">{profilePhase.title}</h3>
+                  <p className="mt-2 max-w-3xl">{profilePhase.description}</p>
+                </div>
+
+                <div className="rounded-2xl bg-white/70 px-4 py-3 border border-white/60">
+                  <p className="text-sm font-semibold">Assinatura do perfil</p>
+                  <p className="mt-1">{profileSignature}</p>
                 </div>
               </div>
             </Card>
@@ -823,9 +1047,7 @@ export default function ProfilePage() {
                       </label>
                       <input
                         value={form.meta_semanal_questoes}
-                        onChange={(e) =>
-                          updateField("meta_semanal_questoes", e.target.value)
-                        }
+                        onChange={(e) => updateField("meta_semanal_questoes", e.target.value)}
                         className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3"
                         placeholder="Ex.: 70"
                       />
@@ -884,87 +1106,138 @@ export default function ProfilePage() {
               </Card>
             </div>
 
-            <div className="grid xl:grid-cols-2 gap-6">
-              <Card className="p-6 bg-white">
+            <div className="grid xl:grid-cols-3 gap-6">
+              <Card className="p-6 bg-white xl:col-span-2">
                 <div className="flex items-center gap-2 mb-4">
                   <BrainCircuit className="w-5 h-5 text-blue-600" />
                   <h3 className="text-xl font-bold text-slate-900">Leitura do seu perfil</h3>
                 </div>
 
-                <RadarChart metrics={radarMetrics} />
+                <div className="grid lg:grid-cols-2 gap-6 items-center">
+                  <RadarChart metrics={radarMetrics} />
 
-                <div className="grid md:grid-cols-2 gap-3 mt-6">
-                  {radarMetrics.map((metric) => (
-                    <div
-                      key={metric.label}
-                      className="rounded-xl border border-slate-200 bg-slate-50 p-3"
-                    >
-                      <p className="text-sm text-slate-500">{metric.label}</p>
-                      <p className="text-lg font-bold text-slate-900">
-                        {metric.value.toFixed(0)}
+                  <div className="space-y-3">
+                    {radarMetrics.map((metric) => (
+                      <div
+                        key={metric.label}
+                        className="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="font-semibold text-slate-900">{metric.label}</p>
+                          <p className="text-lg font-bold text-blue-600">
+                            {metric.value.toFixed(0)}
+                          </p>
+                        </div>
+
+                        <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-600"
+                            style={{ width: `${metric.value}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+
+                    <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+                      <p className="text-sm font-semibold text-blue-700 mb-1">
+                        Como ler esse pentágono
+                      </p>
+                      <p className="text-sm text-slate-700">
+                        Ele mostra seu perfil de estudo em 5 frentes: acerto, constância,
+                        rapidez, variedade de conteúdos e desempenho em níveis mais exigentes.
                       </p>
                     </div>
-                  ))}
+                  </div>
                 </div>
               </Card>
 
               <Card className="p-6 bg-white">
                 <div className="flex items-center gap-2 mb-4">
-                  <Trophy className="w-5 h-5 text-yellow-500" />
-                  <h3 className="text-xl font-bold text-slate-900">Sua identidade acadêmica</h3>
+                  <BarChart3 className="w-5 h-5 text-indigo-600" />
+                  <h3 className="text-xl font-bold text-slate-900">Ranking</h3>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-                    <p className="text-sm font-semibold text-emerald-700 mb-1">
-                      Melhor disciplina
-                    </p>
-                    <p className="font-bold text-slate-900">
-                      {bestSubject?.label ?? "Sem dados ainda"}
-                    </p>
-                    <p className="text-sm text-slate-600 mt-1">
-                      {bestSubject ? `${bestSubject.accuracy.toFixed(0)}% de acerto` : "—"}
-                    </p>
-                  </div>
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                  <p className="text-sm uppercase tracking-wide text-slate-500 mb-2">
+                    Em preparação
+                  </p>
+                  <p className="text-2xl font-bold text-slate-900 mb-2">Ranking do aluno</p>
+                  <p className="text-slate-600">
+                    Aqui vai aparecer sua posição geral, semanal e por consistência quando a
+                    área de ranking entrar no ar.
+                  </p>
 
-                  <div className="rounded-xl border border-red-200 bg-red-50 p-4">
-                    <p className="text-sm font-semibold text-red-700 mb-1">
-                      Disciplina mais fraca
-                    </p>
-                    <p className="font-bold text-slate-900">
-                      {worstSubject?.label ?? "Sem dados ainda"}
-                    </p>
-                    <p className="text-sm text-slate-600 mt-1">
-                      {worstSubject ? `${worstSubject.accuracy.toFixed(0)}% de acerto` : "—"}
-                    </p>
-                  </div>
+                  <div className="grid grid-cols-2 gap-3 mt-5">
+                    <div className="rounded-xl border border-slate-200 bg-white p-3">
+                      <p className="text-sm text-slate-500">Posição geral</p>
+                      <p className="text-xl font-bold text-slate-900">—</p>
+                    </div>
 
-                  <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
-                    <p className="text-sm font-semibold text-blue-700 mb-1">
-                      Conteúdo mais treinado
-                    </p>
-                    <p className="font-bold text-slate-900">
-                      {mostTrainedConteudo?.label ?? "Sem dados ainda"}
-                    </p>
-                    <p className="text-sm text-slate-600 mt-1">
-                      {mostTrainedConteudo ? `${mostTrainedConteudo.total} tentativas` : "—"}
-                    </p>
-                  </div>
-
-                  <div className="rounded-xl border border-orange-200 bg-orange-50 p-4">
-                    <p className="text-sm font-semibold text-orange-700 mb-1">
-                      Conteúdo mais crítico
-                    </p>
-                    <p className="font-bold text-slate-900">
-                      {mostCriticalConteudo?.label ?? "Sem dados ainda"}
-                    </p>
-                    <p className="text-sm text-slate-600 mt-1">
-                      {mostCriticalConteudo ? `${mostCriticalConteudo.wrong} erros` : "—"}
-                    </p>
+                    <div className="rounded-xl border border-slate-200 bg-white p-3">
+                      <p className="text-sm text-slate-500">Faixa</p>
+                      <p className="text-xl font-bold text-slate-900">—</p>
+                    </div>
                   </div>
                 </div>
               </Card>
             </div>
+
+            <Card className="p-6 bg-white">
+              <div className="flex items-center gap-2 mb-4">
+                <Trophy className="w-5 h-5 text-yellow-500" />
+                <h3 className="text-xl font-bold text-slate-900">Sua identidade acadêmica</h3>
+              </div>
+
+              <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+                  <p className="text-sm font-semibold text-emerald-700 mb-1">
+                    Melhor disciplina
+                  </p>
+                  <p className="font-bold text-slate-900">
+                    {bestSubject?.label ?? "Sem dados ainda"}
+                  </p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    {bestSubject ? `${bestSubject.accuracy.toFixed(0)}% de acerto` : "—"}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+                  <p className="text-sm font-semibold text-red-700 mb-1">
+                    Disciplina mais fraca
+                  </p>
+                  <p className="font-bold text-slate-900">
+                    {worstSubject?.label ?? "Sem dados ainda"}
+                  </p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    {worstSubject ? `${worstSubject.accuracy.toFixed(0)}% de acerto` : "—"}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+                  <p className="text-sm font-semibold text-blue-700 mb-1">
+                    Conteúdo mais treinado
+                  </p>
+                  <p className="font-bold text-slate-900">
+                    {mostTrainedConteudo?.label ?? "Sem dados ainda"}
+                  </p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    {mostTrainedConteudo ? `${mostTrainedConteudo.total} tentativas` : "—"}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-orange-200 bg-orange-50 p-4">
+                  <p className="text-sm font-semibold text-orange-700 mb-1">
+                    Conteúdo mais crítico
+                  </p>
+                  <p className="font-bold text-slate-900">
+                    {mostCriticalConteudo?.label ?? "Sem dados ainda"}
+                  </p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    {mostCriticalConteudo ? `${mostCriticalConteudo.wrong} erros` : "—"}
+                  </p>
+                </div>
+              </div>
+            </Card>
 
             <div className="grid xl:grid-cols-2 gap-6">
               <Card className="p-6 bg-white">
@@ -1044,6 +1317,61 @@ export default function ProfilePage() {
             </div>
 
             <Card className="p-6 bg-white">
+              <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
+                <div className="flex items-center gap-2">
+                  <Award className="w-5 h-5 text-amber-500" />
+                  <h3 className="text-xl font-bold text-slate-900">Conquistas</h3>
+                </div>
+
+                <div className="text-sm text-slate-500">
+                  {unlockedAchievements} de {achievements.length} desbloqueadas
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+                {achievements.map((achievement) => {
+                  const Icon = getAchievementIcon(achievement.icon);
+
+                  return (
+                    <div
+                      key={achievement.id}
+                      className={`rounded-2xl border p-4 transition-all ${
+                        achievement.unlocked
+                          ? "border-amber-200 bg-amber-50"
+                          : "border-slate-200 bg-slate-50 opacity-70"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div
+                          className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
+                            achievement.unlocked
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-slate-200 text-slate-500"
+                          }`}
+                        >
+                          <Icon className="w-5 h-5" />
+                        </div>
+
+                        <span
+                          className={`text-xs font-bold px-2 py-1 rounded-full ${
+                            achievement.unlocked
+                              ? "bg-emerald-100 text-emerald-700"
+                              : "bg-slate-200 text-slate-600"
+                          }`}
+                        >
+                          {achievement.unlocked ? "Desbloqueada" : "Bloqueada"}
+                        </span>
+                      </div>
+
+                      <p className="font-bold text-slate-900">{achievement.title}</p>
+                      <p className="text-sm text-slate-600 mt-1">{achievement.description}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+
+            <Card className="p-6 bg-white">
               <div className="flex items-center gap-2 mb-4">
                 <CalendarDays className="w-5 h-5 text-blue-600" />
                 <h3 className="text-xl font-bold text-slate-900">Últimas atividades</h3>
@@ -1077,8 +1405,7 @@ export default function ProfilePage() {
                       </p>
 
                       <p className="text-sm text-slate-500">
-                        {attempt.banca ?? "Sem banca"}{" "}
-                        {attempt.ano ? `• ${attempt.ano}` : ""}
+                        {attempt.banca ?? "Sem banca"} {attempt.ano ? `• ${attempt.ano}` : ""}
                         {attempt.difficulty ? ` • ${attempt.difficulty}` : ""}
                         {" • "}
                         {formatSeconds(attempt.time_spent_seconds)}
