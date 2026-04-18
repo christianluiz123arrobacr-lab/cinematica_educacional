@@ -1,11 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu,  DropdownMenuContent,  DropdownMenuItem,  DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -21,7 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Users } from "lucide-react";
+import { LayoutDashboard, LogOut, PanelLeft, Users, UserCircle2 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -221,14 +216,22 @@ function DashboardLayoutContent({
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem
-                  onClick={logout}
-                  className="cursor-pointer text-destructive focus:text-destructive"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
+  <DropdownMenuItem
+    onClick={() => setLocation("/perfil")}
+    className="cursor-pointer"
+  >
+    <UserCircle2 className="mr-2 h-4 w-4" />
+    <span>Ver perfil</span>
+  </DropdownMenuItem>
+
+  <DropdownMenuItem
+    onClick={logout}
+    className="cursor-pointer text-destructive focus:text-destructive"
+  >
+    <LogOut className="mr-2 h-4 w-4" />
+    <span>Sair</span>
+  </DropdownMenuItem>
+</DropdownMenuContent>
             </DropdownMenu>
           </SidebarFooter>
         </Sidebar>
