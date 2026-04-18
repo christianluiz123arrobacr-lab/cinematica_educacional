@@ -11,7 +11,6 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Landing from "./pages/Landing";
 import ProfilePage from "./pages/ProfilePage";
 import RankingPage from "./pages/RankingPage";
-import DashboardLayout from "./components/DashboardLayout";
 
 import VetPage from "./pages/VetPage";
 import VetObjectivePage from "./pages/VetObjectivePage";
@@ -133,18 +132,28 @@ import FisicaModernaTopicAtomo from "./pages/FisicaModernaTopicAtomo";
 import FisicaModernaTopicParticulas from "./pages/FisicaModernaTopicParticulas";
 import FisicaModernaTopicAplicacoes from "./pages/FisicaModernaTopicAplicacoes";
 
-function StudentRouter() {
+function PrivateRouter() {
   return (
-    <DashboardLayout>
+    <ProtectedRoute>
       <Switch>
         <Route path="/" component={LandingPage} />
         <Route path="/landing" component={Landing} />
         <Route path="/fisica" component={FisicaSelector} />
 
+        <Route path="/admin" component={AdminDashboardPage} />
+        <Route path="/admin/usuarios" component={AdminUsersPage} />
+        <Route path="/admin/questoes/nova" component={AdminQuestionCreatePage} />
+        <Route path="/admin/questoes/:id" component={AdminQuestionEditPage} />
+        <Route path="/admin/questoes" component={AdminQuestionsPage} />
+        <Route path="/admin/resolucoes/:questaoId" component={AdminResolutionEditorPage} />
+        <Route path="/admin/resolucoes" component={AdminResolutionsPage} />
+        <Route path="/admin/uploads" component={AdminUploadsPage} />
+        <Route path="/admin/vet" component={AdminVetPage} />
+        <Route path="/admin/logs" component={AdminLogsPage} />
+
         <Route path="/fisica-i" component={FisicaIHome} />
         <Route path="/fisica-ii" component={FisicaIIHome} />
         <Route path="/fisica-iii" component={FisicaIIIHome} />
-
         <Route path="/cinematica" component={Home} />
         <Route path="/cinematica/learn" component={Learn} />
         <Route path="/cinematica/quiz" component={Quiz} />
@@ -155,12 +164,16 @@ function StudentRouter() {
         <Route path="/cinematica/quiz-new" component={CinematicaQuiz} />
         <Route path="/cinematica/simulator" component={CinematicaSimulator} />
         <Route path="/cinematica/topic/bases" component={CinematicaTopicBases} />
+        <Route path="/caderno-de-erros" component={ErrorNotebook} />
+
+        <Route path="/banco-questoes" component={QuestionBank} />
+        <Route path="/banco-de-questoes" component={QuestionBankPage} />
+        <Route path="/disciplinas" component={LandingPage} />
         <Route path="/cinematica/topic/velocidade" component={CinematicaTopicVelocidade} />
         <Route path="/cinematica/topic/mru" component={CinematicaTopicMRU} />
         <Route path="/cinematica/topic/mruv" component={CinematicaTopicMRUV} />
         <Route path="/cinematica/topic/circular" component={CinematicaTopicCircular} />
         <Route path="/cinematica/topic/queda-livre" component={CinematicaTopicQuedaLivre} />
-
         <Route path="/dinamica" component={DinamicaHome} />
         <Route path="/dinamica/learn" component={DynamicsLearn} />
         <Route path="/dinamica/quiz" component={DynamicsQuiz} />
@@ -173,7 +186,6 @@ function StudentRouter() {
         <Route path="/dinamica/topic/energy" component={DynamicsTopicEnergy} />
         <Route path="/dinamica/topic/momentum" component={DynamicsTopicMomentum} />
         <Route path="/dinamica/topic/power" component={DynamicsTopicPower} />
-
         <Route path="/estatica" component={EstaticaHome} />
         <Route path="/estatica/graphs" component={EstaticaGraphs} />
         <Route path="/estatica/quiz" component={EstaticaQuiz} />
@@ -196,6 +208,15 @@ function StudentRouter() {
         <Route path="/mecanica" component={MecanicaHome} />
         <Route path="/mecanica/topic/cinematica" component={MecanicaTopicCinematica} />
         <Route path="/mecanica/topic/dinamica" component={MecanicaTopicDinamica} />
+
+        <Route path="/vet" component={VetPage} />
+        <Route path="/vet/objetivo" component={VetObjectivePage} />
+        <Route path="/vet/prioridades" component={VetPrioritiesPage} />
+        <Route path="/vet/treino" component={VetTrainingPage} />
+        <Route path="/vet/questoes" component={VetQuestionsPage} />
+        <Route path="/vet/nivelamento" component={VetLevelPage} />
+        <Route path="/vet/simulado" component={VetMockPage} />
+        <Route path="/vet/simulado/resultado" component={VetMockResultPage} />
 
         <Route path="/ondulatoria" component={OndulatóriaHome} />
         <Route path="/ondulatoria/topic/conceitos" component={OndulatóriaTopicConceitos} />
@@ -244,49 +265,12 @@ function StudentRouter() {
         <Route path="/fisica-moderna/topic/particulas" component={FisicaModernaTopicParticulas} />
         <Route path="/fisica-moderna/topic/aplicacoes" component={FisicaModernaTopicAplicacoes} />
 
-        <Route path="/vet" component={VetPage} />
-        <Route path="/vet/objetivo" component={VetObjectivePage} />
-        <Route path="/vet/prioridades" component={VetPrioritiesPage} />
-        <Route path="/vet/treino" component={VetTrainingPage} />
-        <Route path="/vet/questoes" component={VetQuestionsPage} />
-        <Route path="/vet/nivelamento" component={VetLevelPage} />
-        <Route path="/vet/simulado" component={VetMockPage} />
-        <Route path="/vet/simulado/resultado" component={VetMockResultPage} />
-
-        <Route path="/caderno-de-erros" component={ErrorNotebook} />
-        <Route path="/banco-questoes" component={QuestionBank} />
-        <Route path="/banco-de-questoes" component={QuestionBankPage} />
-        <Route path="/disciplinas" component={LandingPage} />
-
         <Route path="/progress" component={Progress} />
         <Route path="/perfil" component={ProfilePage} />
         <Route path="/ranking" component={RankingPage} />
         <Route path="/ia-resolver" component={IAResolver} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
-      </Switch>
-    </DashboardLayout>
-  );
-}
-
-function PrivateRouter() {
-  return (
-    <ProtectedRoute>
-      <Switch>
-        <Route path="/admin" component={AdminDashboardPage} />
-        <Route path="/admin/usuarios" component={AdminUsersPage} />
-        <Route path="/admin/questoes/nova" component={AdminQuestionCreatePage} />
-        <Route path="/admin/questoes/:id" component={AdminQuestionEditPage} />
-        <Route path="/admin/questoes" component={AdminQuestionsPage} />
-        <Route path="/admin/resolucoes/:questaoId" component={AdminResolutionEditorPage} />
-        <Route path="/admin/resolucoes" component={AdminResolutionsPage} />
-        <Route path="/admin/uploads" component={AdminUploadsPage} />
-        <Route path="/admin/vet" component={AdminVetPage} />
-        <Route path="/admin/logs" component={AdminLogsPage} />
-
-        <Route>
-          <StudentRouter />
-        </Route>
       </Switch>
     </ProtectedRoute>
   );
