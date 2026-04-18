@@ -27,6 +27,11 @@ import {
   Star,
   Crown,
   BarChart3,
+  TimerReset,
+  Layers3,
+  Sparkles,
+  Activity,
+  Swords,
 } from "lucide-react";
 
 type AttemptRow = {
@@ -84,6 +89,15 @@ type Achievement = {
   description: string;
   unlocked: boolean;
   icon: "award" | "flame" | "target" | "shield" | "zap" | "medal" | "star" | "crown";
+  progress?: number;
+  progressMax?: number;
+};
+
+type RadarMetric = {
+  label: string;
+  value: number;
+  description: string;
+  delta?: number;
 };
 
 const AVATAR_OPTIONS = [
@@ -95,6 +109,22 @@ const AVATAR_OPTIONS = [
   { key: "avatar_6", emoji: "🔥", bg: "from-rose-500 to-red-600" },
   { key: "avatar_7", emoji: "🛡️", bg: "from-slate-500 to-slate-700" },
   { key: "avatar_8", emoji: "🏆", bg: "from-yellow-400 to-amber-500" },
+  { key: "avatar_9", emoji: "📈", bg: "from-teal-500 to-cyan-600" },
+  { key: "avatar_10", emoji: "🧪", bg: "from-violet-500 to-purple-700" },
+  { key: "avatar_11", emoji: "🛰️", bg: "from-sky-500 to-blue-700" },
+  { key: "avatar_12", emoji: "⚙️", bg: "from-zinc-500 to-slate-700" },
+];
+
+const GOAL_SUGGESTIONS = [30, 50, 70, 100, 140];
+const TARGET_EXAM_SUGGESTIONS = ["ITA", "IME", "FUVEST", "ENEM", "UNESP", "UNICAMP", "EPCAR", "EFOMM"];
+const FOCUS_SUGGESTIONS = [
+  "Física",
+  "Matemática",
+  "Química",
+  "Revisão",
+  "Correção de erros",
+  "Dificuldade alta",
+  "Base teórica",
 ];
 
 const INITIAL_FORM: EditableProfile = {
@@ -138,6 +168,10 @@ function formatSeconds(seconds?: number | null) {
   const sec = Math.round(seconds % 60);
   if (min === 0) return `${sec}s`;
   return `${min}m ${sec}s`;
+}
+
+function clamp(value: number, min = 0, max = 100) {
+  return Math.max(min, Math.min(max, value));
 }
 
 function groupAttempts(
@@ -189,6 +223,7 @@ function buildStreakInfo(attempts: AttemptRow[]) {
       bestStreak: 0,
       activeDays7: 0,
       activeDays30: 0,
+      totalActiveDays: 0,
     };
   }
 
@@ -245,32 +280,56 @@ function buildStreakInfo(attempts: AttemptRow[]) {
     bestStreak,
     activeDays7,
     activeDays30,
+    totalActiveDays: activeKeys.length,
   };
 }
 
-function clamp(value: number, min = 0, max = 100) {
-  return Math.max(min, Math.min(max, value));
+function getPreviousPeriodAttempts(attempts: AttemptRow[], days: number) {
+  const now = new Date();
+  const end = new Date(now);
+  end.setDate(end.getDate() - days);
+
+  const start = new Date(now);
+  start.setDate(start.getDate() - days * 2);
+
+  return attempts.filter((attempt) => {
+    const date = new Date(attempt.answered_at);
+    return date >= start && date < end;
+  });
 }
 
-function buildRadarMetrics(attempts: AttemptRow[]) {
-  const totalAnswered = attempts.length;
-  const totalCorrect = attempts.filter((a) => a.is_correct).length;
+function getAccuracy(attempts: AttemptRow[]) {
+  if (!attempts.length) return 0;
+  const correct = attempts.filter((attempt) => attempt.is_correct).length;
+  return (correct / attempts.length) * 100;
+}
+
+function getAverageTime(attempts: AttemptRow[]) {
+  const valid = attempts.filter((a) => typeof a.time_spent_seconds === "number");
+  if (!valid.length) return 0;
+  return valid.reduce((sum, a) => sum + (a.time_spent_seconds ?? 0), 0) / valid.length;
+}
+
+function buildRadarMetrics(currentAttempts: AttemptRow[], previousAttempts: AttemptRow[]): RadarMetric[] {
+  const totalAnswered = currentAttempts.length;
+  const totalCorrect = currentAttempts.filter((a) => a.is_correct).length;
   const accuracy = totalAnswered > 0 ? (totalCorrect / totalAnswered) * 100 : 0;
 
-  const streakInfo = buildStreakInfo(attempts);
+  const prevAccuracy = getAccuracy(previousAttempts);
+  const streakInfo = buildStreakInfo(currentAttempts);
 
-  const avgTimeValid = attempts.filter((a) => typeof a.time_spent_seconds === "number");
-  const avgTime =
-    avgTimeValid.length > 0
-      ? avgTimeValid.reduce((sum, a) => sum + (a.time_spent_seconds ?? 0), 0) /
-        avgTimeValid.length
-      : 0;
+  const avgTime = getAverageTime(currentAttempts);
+  const prevAvgTime = getAverageTime(previousAttempts);
 
   const uniqueConteudos = new Set(
-    attempts.map((a) => a.conteudo?.trim()).filter(Boolean)
+    currentAttempts.map((a) => a.conteudo?.trim()).filter(Boolean)
   ).size;
 
-  const difficultyWeights = attempts
+  const prevUniqueConteudos = new Set(
+    previousAttempts.map((a) => a.conteudo?.trim()).filter(Boolean)
+  ).size;
+
+  const difficultyWeights = currentAttempts
     .filter((a) => a.difficulty)
     .map((a) => {
       const difficulty = (a.difficulty || "").toLowerCase().trim();
@@ -278,7 +337,7 @@ function buildRadarMetrics(attempts: AttemptRow[]) {
       return a.is_correct ? weight : 0;
     });
 
-  const maxDifficultyWeights = attempts
+  const maxDifficultyWeights = currentAttempts
     .filter((a) => a.difficulty)
     .map((a) => {
       const difficulty = (a.difficulty || "").toLowerCase().trim();
@@ -292,24 +351,70 @@ function buildRadarMetrics(attempts: AttemptRow[]) {
         100
       : 0;
 
+  const prevDifficultyWeights = previousAttempts
+    .filter((a) => a.difficulty)
+    .map((a) => {
+      const difficulty = (a.difficulty || "").toLowerCase().trim();
+      const weight = difficulty === "dificil" ? 3 : difficulty === "medio" ? 2 : 1;
+      return a.is_correct ? weight : 0;
+    });
+
+  const prevMaxDifficultyWeights = previousAttempts
+    .filter((a) => a.difficulty)
+    .map((a) => {
+      const difficulty = (a.difficulty || "").toLowerCase().trim();
+      return difficulty === "dificil" ? 3 : difficulty === "medio" ? 2 : 1;
+    });
+
+  const prevDifficultyScore =
+    prevMaxDifficultyWeights.length > 0
+      ? (prevDifficultyWeights.reduce((a, b) => a + b, 0) /
+          prevMaxDifficultyWeights.reduce((a, b) => a + b, 0)) *
+        100
+      : 0;
+
   const consistencyScore = clamp((streakInfo.activeDays30 / 20) * 100);
+  const prevConsistencyScore = clamp((buildStreakInfo(previousAttempts).activeDays30 / 20) * 100);
   const speedScore = avgTime > 0 ? clamp(((300 - avgTime) / 240) * 100) : 0;
+  const prevSpeedScore = prevAvgTime > 0 ? clamp(((300 - prevAvgTime) / 240) * 100) : 0;
   const coverageScore = clamp((uniqueConteudos / 20) * 100);
+  const prevCoverageScore = clamp((prevUniqueConteudos / 20) * 100);
 
   return [
-    { label: "Precisão", value: clamp(accuracy) },
-    { label: "Consistência", value: consistencyScore },
-    { label: "Velocidade", value: speedScore },
-    { label: "Cobertura", value: coverageScore },
-    { label: "Dificuldade", value: clamp(difficultyScore) },
+    {
+      label: "Precisão",
+      value: clamp(accuracy),
+      delta: clamp(accuracy) - clamp(prevAccuracy),
+      description: "Mede seu aproveitamento geral nas questões.",
+    },
+    {
+      label: "Consistência",
+      value: consistencyScore,
+      delta: consistencyScore - prevConsistencyScore,
+      description: "Mostra frequência e regularidade de estudo.",
+    },
+    {
+      label: "Velocidade",
+      value: speedScore,
+      delta: speedScore - prevSpeedScore,
+      description: "Mostra quão ágil você está resolvendo.",
+    },
+    {
+      label: "Cobertura",
+      value: coverageScore,
+      delta: coverageScore - prevCoverageScore,
+      description: "Mede quantos conteúdos diferentes você está tocando.",
+    },
+    {
+      label: "Dificuldade",
+      value: clamp(difficultyScore),
+      delta: clamp(difficultyScore) - clamp(prevDifficultyScore),
+      description: "Mede como você rende em níveis mais exigentes.",
+    },
   ];
 }
 
-function RadarChart({
-  metrics,
-}: {
-  metrics: { label: string; value: number }[];
-}) {
+function RadarChart({ metrics }: { metrics: RadarMetric[] }) {
   const size = 320;
   const center = size / 2;
   const radius = 110;
@@ -353,14 +458,7 @@ function RadarChart({
 
           return (
             <g key={metric.label}>
-              <line
-                x1={center}
-                y1={center}
-                x2={x}
-                y2={y}
-                stroke="#cbd5e1"
-                strokeWidth="1"
-              />
+              <line x1={center} y1={center} x2={x} y2={y} stroke="#cbd5e1" strokeWidth="1" />
               <text
                 x={center + Math.cos(angle) * (radius + 28)}
                 y={center + Math.sin(angle) * (radius + 28)}
@@ -448,14 +546,12 @@ function getProfilePhase({
   };
 }
 
-function getProfileSignature(metrics: { label: string; value: number }[]) {
+function getProfileSignature(metrics: RadarMetric[]) {
   const sorted = [...metrics].sort((a, b) => b.value - a.value);
   const top = sorted[0];
   const bottom = sorted[sorted.length - 1];
 
-  if (!top || !bottom) {
-    return "Perfil ainda em formação.";
-  }
+  if (!top || !bottom) return "Perfil ainda em formação.";
 
   return `Seu perfil é de ${top.label.toLowerCase()} forte, mas ainda precisa crescer em ${bottom.label.toLowerCase()}.`;
 }
@@ -481,6 +577,13 @@ function getAchievementIcon(icon: Achievement["icon"]) {
     default:
       return Award;
   }
+}
+
+function formatDelta(delta?: number) {
+  const value = delta ?? 0;
+  if (value > 0) return `+${value.toFixed(0)}`;
+  if (value < 0) return `${value.toFixed(0)}`;
+  return "0";
 }
 
 export default function ProfilePage() {
@@ -554,15 +657,10 @@ export default function ProfilePage() {
       }
     }
 
-    if (!authLoading) {
-      loadData();
-    }
+    if (!authLoading) loadData();
   }, [user?.id, authLoading, user?.user_metadata]);
 
-  function updateField<K extends keyof EditableProfile>(
-    field: K,
-    value: EditableProfile[K]
-  ) {
+  function updateField<K extends keyof EditableProfile>(field: K, value: EditableProfile[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
@@ -579,14 +677,16 @@ export default function ProfilePage() {
         return;
       }
 
+      if (form.bio.length > 180) {
+        setError("A bio precisa ter no máximo 180 caracteres.");
+        return;
+      }
+
       const metaSemanal = form.meta_semanal_questoes.trim()
         ? Number(form.meta_semanal_questoes)
         : null;
 
-      if (
-        form.meta_semanal_questoes.trim() &&
-        (Number.isNaN(metaSemanal) || metaSemanal! < 0)
-      ) {
+      if (form.meta_semanal_questoes.trim() && (Number.isNaN(metaSemanal) || metaSemanal! < 0)) {
         setError("A meta semanal precisa ser um número válido.");
         return;
       }
@@ -639,30 +739,16 @@ export default function ProfilePage() {
   }
 
   const totalAnswered = attempts.length;
-  const totalCorrect = useMemo(
-    () => attempts.filter((attempt) => attempt.is_correct).length,
-    [attempts]
-  );
+  const totalCorrect = useMemo(() => attempts.filter((attempt) => attempt.is_correct).length, [attempts]);
   const totalWrong = totalAnswered - totalCorrect;
   const accuracy = totalAnswered > 0 ? (totalCorrect / totalAnswered) * 100 : 0;
-
-  const avgTimeSeconds = useMemo(() => {
-    const valid = attempts.filter((a) => typeof a.time_spent_seconds === "number");
-    if (!valid.length) return 0;
-    return valid.reduce((sum, a) => sum + (a.time_spent_seconds ?? 0), 0) / valid.length;
-  }, [attempts]);
-
+  const avgTimeSeconds = useMemo(() => getAverageTime(attempts), [attempts]);
   const streakInfo = useMemo(() => buildStreakInfo(attempts), [attempts]);
-
-  const bySubject = useMemo(
-    () => groupAttempts(attempts, (attempt) => attempt.subject),
-    [attempts]
-  );
-
-  const byConteudo = useMemo(
-    () => groupAttempts(attempts, (attempt) => attempt.conteudo),
-    [attempts]
-  );
+  const bySubject = useMemo(() => groupAttempts(attempts, (attempt) => attempt.subject), [attempts]);
+  const byConteudo = useMemo(() => groupAttempts(attempts, (attempt) => attempt.conteudo), [attempts]);
+  const byAssunto = useMemo(() => groupAttempts(attempts, (attempt) => attempt.assunto), [attempts]);
+  const byBanca = useMemo(() => groupAttempts(attempts, (attempt) => attempt.banca), [attempts]);
+  const recentAttempts = useMemo(() => attempts.slice(0, 5), [attempts]);
 
   const bestSubject = useMemo(() => {
     return bySubject
@@ -684,27 +770,75 @@ export default function ProfilePage() {
       .sort((a, b) => b.wrong - a.wrong || a.accuracy - b.accuracy)[0];
   }, [byConteudo]);
 
+  const bestAssunto = useMemo(() => {
+    return byAssunto
+      .filter((item) => item.total >= 2)
+      .sort((a, b) => b.accuracy - a.accuracy || b.total - a.total)[0];
+  }, [byAssunto]);
+
+  const worstAssunto = useMemo(() => {
+    return byAssunto
+      .filter((item) => item.total >= 2)
+      .sort((a, b) => a.accuracy - b.accuracy || b.total - a.total)[0];
+  }, [byAssunto]);
+
+  const bestBanca = useMemo(() => {
+    return byBanca
+      .filter((item) => item.total >= 2)
+      .sort((a, b) => b.accuracy - a.accuracy || b.total - a.total)[0];
+  }, [byBanca]);
+
+  const worstBanca = useMemo(() => {
+    return byBanca
+      .filter((item) => item.total >= 2)
+      .sort((a, b) => a.accuracy - b.accuracy || b.total - a.total)[0];
+  }, [byBanca]);
+
   const weeklyAttempts = useMemo(() => {
     const now = new Date();
     const cutoff = new Date(now);
     cutoff.setDate(cutoff.getDate() - 7);
-
     return attempts.filter((attempt) => new Date(attempt.answered_at) >= cutoff);
   }, [attempts]);
 
+  const monthlyAttempts = useMemo(() => {
+    const now = new Date();
+    const cutoff = new Date(now);
+    cutoff.setDate(cutoff.getDate() - 30);
+    return attempts.filter((attempt) => new Date(attempt.answered_at) >= cutoff);
+  }, [attempts]);
+
+  const previous7dAttempts = useMemo(() => getPreviousPeriodAttempts(attempts, 7), [attempts]);
+  const previous30dAttempts = useMemo(() => getPreviousPeriodAttempts(attempts, 30), [attempts]);
+
   const weeklyQuestions = weeklyAttempts.length;
   const weeklyGoal = Number(profile?.meta_semanal_questoes ?? 0);
-  const weeklyGoalPercent =
-    weeklyGoal > 0 ? Math.min(100, (weeklyQuestions / weeklyGoal) * 100) : 0;
-
-  const recentAttempts = useMemo(() => attempts.slice(0, 5), [attempts]);
-
+  const weeklyGoalPercent = weeklyGoal > 0 ? Math.min(100, (weeklyQuestions / weeklyGoal) * 100) : 0;
   const uniqueConteudos = useMemo(
     () => new Set(attempts.map((a) => a.conteudo?.trim()).filter(Boolean)).size,
     [attempts]
   );
+  const uniqueAssuntos = useMemo(
+    () => new Set(attempts.map((a) => a.assunto?.trim()).filter(Boolean)).size,
+    [attempts]
+  );
+  const uniqueQuestions = useMemo(
+    () => new Set(attempts.map((a) => a.question_id).filter(Boolean)).size,
+    [attempts]
+  );
 
-  const radarMetrics = useMemo(() => buildRadarMetrics(attempts), [attempts]);
+  const weeklyAccuracy = useMemo(() => getAccuracy(weeklyAttempts), [weeklyAttempts]);
+  const previous7dAccuracy = useMemo(() => getAccuracy(previous7dAttempts), [previous7dAttempts]);
+  const monthlyAccuracy = useMemo(() => getAccuracy(monthlyAttempts), [monthlyAttempts]);
+  const previous30dAccuracy = useMemo(() => getAccuracy(previous30dAttempts), [previous30dAttempts]);
+
+  const weeklyAvgTime = useMemo(() => getAverageTime(weeklyAttempts), [weeklyAttempts]);
+  const previous7dAvgTime = useMemo(() => getAverageTime(previous7dAttempts), [previous7dAttempts]);
+
+  const radarMetrics = useMemo(
+    () => buildRadarMetrics(attempts, previous30dAttempts),
+    [attempts, previous30dAttempts]
+  );
 
   const profilePhase = useMemo(
     () =>
@@ -717,10 +851,22 @@ export default function ProfilePage() {
     [totalAnswered, accuracy, streakInfo.currentStreak, uniqueConteudos]
   );
 
-  const profileSignature = useMemo(
-    () => getProfileSignature(radarMetrics),
-    [radarMetrics]
-  );
+  const profileSignature = useMemo(() => getProfileSignature(radarMetrics), [radarMetrics]);
+
+  const studyWeekSubjects = useMemo(() => {
+    return Array.from(
+      new Set(weeklyAttempts.map((a) => a.subject?.trim()).filter(Boolean))
+    ) as string[];
+  }, [weeklyAttempts]);
+
+  const studyWeekConteudos = useMemo(() => {
+    return Array.from(
+      new Set(weeklyAttempts.map((a) => a.conteudo?.trim()).filter(Boolean))
+    ) as string[];
+  }, [weeklyAttempts]);
+
+  const studyWeekLastConteudo = weeklyAttempts[0]?.conteudo?.trim() || null;
+  const studyWeekLastSubject = weeklyAttempts[0]?.subject?.trim() || null;
 
   const recommendations = useMemo(() => {
     const recs: string[] = [];
@@ -746,13 +892,7 @@ export default function ProfilePage() {
     }
 
     return recs.slice(0, 4);
-  }, [
-    mostCriticalConteudo,
-    worstSubject,
-    weeklyGoal,
-    weeklyQuestions,
-    streakInfo.currentStreak,
-  ]);
+  }, [mostCriticalConteudo, worstSubject, weeklyGoal, weeklyQuestions, streakInfo.currentStreak]);
 
   const achievements = useMemo<Achievement[]>(() => {
     return [
@@ -762,6 +902,8 @@ export default function ProfilePage() {
         description: "Resolver a primeira questão na plataforma.",
         unlocked: totalAnswered >= 1,
         icon: "award",
+        progress: Math.min(totalAnswered, 1),
+        progressMax: 1,
       },
       {
         id: "fifty_questions",
@@ -769,6 +911,8 @@ export default function ProfilePage() {
         description: "Alcançar 50 questões resolvidas.",
         unlocked: totalAnswered >= 50,
         icon: "target",
+        progress: Math.min(totalAnswered, 50),
+        progressMax: 50,
       },
       {
         id: "hundred_questions",
@@ -776,6 +920,8 @@ export default function ProfilePage() {
         description: "Bater 100 questões resolvidas.",
         unlocked: totalAnswered >= 100,
         icon: "medal",
+        progress: Math.min(totalAnswered, 100),
+        progressMax: 100,
       },
       {
         id: "seven_day_streak",
@@ -783,6 +929,8 @@ export default function ProfilePage() {
         description: "Manter 7 dias seguidos de estudo.",
         unlocked: streakInfo.bestStreak >= 7,
         icon: "flame",
+        progress: Math.min(streakInfo.bestStreak, 7),
+        progressMax: 7,
       },
       {
         id: "accuracy_70",
@@ -790,6 +938,8 @@ export default function ProfilePage() {
         description: "Alcançar 70% de acerto geral.",
         unlocked: accuracy >= 70,
         icon: "shield",
+        progress: Math.min(Math.round(accuracy), 70),
+        progressMax: 70,
       },
       {
         id: "weekly_goal",
@@ -797,6 +947,8 @@ export default function ProfilePage() {
         description: "Cumprir a meta semanal de questões.",
         unlocked: weeklyGoal > 0 && weeklyQuestions >= weeklyGoal,
         icon: "star",
+        progress: weeklyGoal > 0 ? Math.min(weeklyQuestions, weeklyGoal) : 0,
+        progressMax: weeklyGoal > 0 ? weeklyGoal : 1,
       },
       {
         id: "coverage_10",
@@ -804,14 +956,20 @@ export default function ProfilePage() {
         description: "Tocar 10 conteúdos diferentes.",
         unlocked: uniqueConteudos >= 10,
         icon: "zap",
+        progress: Math.min(uniqueConteudos, 10),
+        progressMax: 10,
       },
       {
         id: "hard_mode",
         title: "Perfil de ataque",
         description: "Ir bem com volume em dificuldades maiores.",
-        unlocked:
-          radarMetrics.find((item) => item.label === "Dificuldade")?.value >= 65,
+        unlocked: (radarMetrics.find((item) => item.label === "Dificuldade")?.value ?? 0) >= 65,
         icon: "crown",
+        progress: Math.min(
+          Math.round(radarMetrics.find((item) => item.label === "Dificuldade")?.value ?? 0),
+          65
+        ),
+        progressMax: 65,
       },
     ];
   }, [totalAnswered, streakInfo.bestStreak, accuracy, weeklyGoal, weeklyQuestions, uniqueConteudos, radarMetrics]);
@@ -927,22 +1085,9 @@ export default function ProfilePage() {
                       Editar perfil
                     </Button>
                   ) : (
-                    <Button
-                      className="rounded-2xl"
-                      onClick={handleSaveProfile}
-                      disabled={saving}
-                    >
-                      {saving ? (
-                        <>
-                          <Save className="w-4 h-4 mr-2" />
-                          Salvando...
-                        </>
-                      ) : (
-                        <>
-                          <Save className="w-4 h-4 mr-2" />
-                          Salvar perfil
-                        </>
-                      )}
+                    <Button className="rounded-2xl" onClick={handleSaveProfile} disabled={saving}>
+                      <Save className="w-4 h-4 mr-2" />
+                      {saving ? "Salvando..." : "Salvar perfil"}
                     </Button>
                   )}
 
@@ -986,16 +1131,14 @@ export default function ProfilePage() {
                       Escolha seu avatar
                     </label>
 
-                    <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
+                    <div className="grid grid-cols-4 md:grid-cols-6 xl:grid-cols-12 gap-3">
                       {AVATAR_OPTIONS.map((option) => (
                         <button
                           key={option.key}
                           type="button"
                           onClick={() => updateField("avatar_key", option.key)}
                           className={`h-16 rounded-2xl bg-gradient-to-br ${option.bg} text-white text-2xl flex items-center justify-center border-2 transition-all ${
-                            form.avatar_key === option.key
-                              ? "border-slate-900 scale-105"
-                              : "border-transparent"
+                            form.avatar_key === option.key ? "border-slate-900 scale-105" : "border-transparent"
                           }`}
                         >
                           {option.emoji}
@@ -1006,9 +1149,7 @@ export default function ProfilePage() {
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">
-                        Nome
-                      </label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Nome</label>
                       <input
                         value={form.nome}
                         onChange={(e) => updateField("nome", e.target.value)}
@@ -1022,11 +1163,17 @@ export default function ProfilePage() {
                         Prova-alvo
                       </label>
                       <input
+                        list="exam-suggestions"
                         value={form.prova_alvo}
                         onChange={(e) => updateField("prova_alvo", e.target.value)}
                         className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3"
                         placeholder="Ex.: ITA, IME, FUVEST"
                       />
+                      <datalist id="exam-suggestions">
+                        {TARGET_EXAM_SUGGESTIONS.map((exam) => (
+                          <option key={exam} value={exam} />
+                        ))}
+                      </datalist>
                     </div>
 
                     <div>
@@ -1034,11 +1181,17 @@ export default function ProfilePage() {
                         Foco atual
                       </label>
                       <input
+                        list="focus-suggestions"
                         value={form.foco_atual}
                         onChange={(e) => updateField("foco_atual", e.target.value)}
                         className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3"
                         placeholder="Ex.: Física, Matemática, revisão"
                       />
+                      <datalist id="focus-suggestions">
+                        {FOCUS_SUGGESTIONS.map((focus) => (
+                          <option key={focus} value={focus} />
+                        ))}
+                      </datalist>
                     </div>
 
                     <div>
@@ -1051,6 +1204,18 @@ export default function ProfilePage() {
                         className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3"
                         placeholder="Ex.: 70"
                       />
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {GOAL_SUGGESTIONS.map((goal) => (
+                          <button
+                            key={goal}
+                            type="button"
+                            onClick={() => updateField("meta_semanal_questoes", String(goal))}
+                            className="px-3 py-1 rounded-full text-sm bg-slate-100 hover:bg-slate-200 text-slate-700"
+                          >
+                            {goal}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
@@ -1065,6 +1230,9 @@ export default function ProfilePage() {
                       className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3"
                       placeholder="Fale rapidamente sobre seu momento de estudo."
                     />
+                    <p className="text-xs text-slate-500 mt-2">
+                      {form.bio.length}/180 caracteres
+                    </p>
                   </div>
                 </div>
               </Card>
@@ -1083,9 +1251,7 @@ export default function ProfilePage() {
 
               <Card className="p-5">
                 <p className="text-sm text-slate-500 mb-1">Tempo médio</p>
-                <p className="text-3xl font-bold text-purple-600">
-                  {formatSeconds(Math.round(avgTimeSeconds))}
-                </p>
+                <p className="text-3xl font-bold text-purple-600">{formatSeconds(Math.round(avgTimeSeconds))}</p>
               </Card>
 
               <Card className="p-5">
@@ -1118,15 +1284,23 @@ export default function ProfilePage() {
 
                   <div className="space-y-3">
                     {radarMetrics.map((metric) => (
-                      <div
-                        key={metric.label}
-                        className="rounded-xl border border-slate-200 bg-slate-50 p-4"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="font-semibold text-slate-900">{metric.label}</p>
-                          <p className="text-lg font-bold text-blue-600">
-                            {metric.value.toFixed(0)}
-                          </p>
+                      <div key={metric.label} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                        <div className="flex items-center justify-between mb-2 gap-3">
+                          <div>
+                            <p className="font-semibold text-slate-900">{metric.label}</p>
+                            <p className="text-xs text-slate-500 mt-1">{metric.description}</p>
+                          </div>
+
+                          <div className="text-right">
+                            <p className="text-lg font-bold text-blue-600">{metric.value.toFixed(0)}</p>
+                            <p
+                              className={`text-xs font-semibold ${
+                                (metric.delta ?? 0) >= 0 ? "text-emerald-600" : "text-red-600"
+                              }`}
+                            >
+                              {formatDelta(metric.delta)}
+                            </p>
+                          </div>
                         </div>
 
                         <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
@@ -1139,12 +1313,10 @@ export default function ProfilePage() {
                     ))}
 
                     <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
-                      <p className="text-sm font-semibold text-blue-700 mb-1">
-                        Como ler esse pentágono
-                      </p>
+                      <p className="text-sm font-semibold text-blue-700 mb-1">Como ler esse pentágono</p>
                       <p className="text-sm text-slate-700">
-                        Ele mostra seu perfil de estudo em 5 frentes: acerto, constância,
-                        rapidez, variedade de conteúdos e desempenho em níveis mais exigentes.
+                        Ele mostra seu perfil de estudo em 5 frentes: acerto, constância, rapidez,
+                        variedade de conteúdos e desempenho em níveis mais exigentes.
                       </p>
                     </div>
                   </div>
@@ -1158,13 +1330,10 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                  <p className="text-sm uppercase tracking-wide text-slate-500 mb-2">
-                    Em preparação
-                  </p>
+                  <p className="text-sm uppercase tracking-wide text-slate-500 mb-2">Em preparação</p>
                   <p className="text-2xl font-bold text-slate-900 mb-2">Ranking do aluno</p>
                   <p className="text-slate-600">
-                    Aqui vai aparecer sua posição geral, semanal e por consistência quando a
-                    área de ranking entrar no ar.
+                    Aqui vai aparecer sua posição geral, semanal e por consistência quando a área de ranking entrar no ar.
                   </p>
 
                   <div className="grid grid-cols-2 gap-3 mt-5">
@@ -1182,6 +1351,86 @@ export default function ProfilePage() {
               </Card>
             </div>
 
+            <div className="grid xl:grid-cols-2 gap-6">
+              <Card className="p-6 bg-white">
+                <div className="flex items-center gap-2 mb-4">
+                  <Activity className="w-5 h-5 text-emerald-600" />
+                  <h3 className="text-xl font-bold text-slate-900">Progresso recente</h3>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Acerto 7 dias</p>
+                    <p className="text-2xl font-bold text-slate-900">{weeklyAccuracy.toFixed(0)}%</p>
+                    <p className={`text-sm mt-1 font-semibold ${weeklyAccuracy - previous7dAccuracy >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                      {formatDelta(weeklyAccuracy - previous7dAccuracy)} pts vs 7d anteriores
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Acerto 30 dias</p>
+                    <p className="text-2xl font-bold text-slate-900">{monthlyAccuracy.toFixed(0)}%</p>
+                    <p className={`text-sm mt-1 font-semibold ${monthlyAccuracy - previous30dAccuracy >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                      {formatDelta(monthlyAccuracy - previous30dAccuracy)} pts vs 30d anteriores
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Tempo médio 7 dias</p>
+                    <p className="text-2xl font-bold text-slate-900">{formatSeconds(Math.round(weeklyAvgTime))}</p>
+                    <p className={`text-sm mt-1 font-semibold ${weeklyAvgTime - previous7dAvgTime <= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                      {formatDelta(previous7dAvgTime - weeklyAvgTime)} s de eficiência
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Perguntas únicas</p>
+                    <p className="text-2xl font-bold text-slate-900">{uniqueQuestions}</p>
+                    <p className="text-sm mt-1 text-slate-500">Não conta repetição da mesma questão</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 bg-white">
+                <div className="flex items-center gap-2 mb-4">
+                  <Layers3 className="w-5 h-5 text-cyan-600" />
+                  <h3 className="text-xl font-bold text-slate-900">Rotina da semana</h3>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Disciplinas tocadas</p>
+                    <p className="text-2xl font-bold text-slate-900">{studyWeekSubjects.length}</p>
+                    <p className="text-sm mt-1 text-slate-500">
+                      {studyWeekSubjects.length ? studyWeekSubjects.join(", ") : "Nenhuma ainda"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Conteúdos tocados</p>
+                    <p className="text-2xl font-bold text-slate-900">{studyWeekConteudos.length}</p>
+                    <p className="text-sm mt-1 text-slate-500">
+                      {studyWeekConteudos.length ? "Boa semana de cobertura" : "Cobertura zerada"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Último conteúdo</p>
+                    <p className="text-lg font-bold text-slate-900">{studyWeekLastConteudo || "—"}</p>
+                    <p className="text-sm mt-1 text-slate-500">
+                      {studyWeekLastSubject || "Sem disciplina nesta semana"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Dias ativos da semana</p>
+                    <p className="text-2xl font-bold text-slate-900">{streakInfo.activeDays7}/7</p>
+                    <p className="text-sm mt-1 text-slate-500">Ritmo recente de estudo</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
             <Card className="p-6 bg-white">
               <div className="flex items-center gap-2 mb-4">
                 <Trophy className="w-5 h-5 text-yellow-500" />
@@ -1190,50 +1439,66 @@ export default function ProfilePage() {
 
               <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-                  <p className="text-sm font-semibold text-emerald-700 mb-1">
-                    Melhor disciplina
-                  </p>
-                  <p className="font-bold text-slate-900">
-                    {bestSubject?.label ?? "Sem dados ainda"}
-                  </p>
+                  <p className="text-sm font-semibold text-emerald-700 mb-1">Melhor disciplina</p>
+                  <p className="font-bold text-slate-900">{bestSubject?.label ?? "Sem dados ainda"}</p>
                   <p className="text-sm text-slate-600 mt-1">
                     {bestSubject ? `${bestSubject.accuracy.toFixed(0)}% de acerto` : "—"}
                   </p>
                 </div>
 
                 <div className="rounded-xl border border-red-200 bg-red-50 p-4">
-                  <p className="text-sm font-semibold text-red-700 mb-1">
-                    Disciplina mais fraca
-                  </p>
-                  <p className="font-bold text-slate-900">
-                    {worstSubject?.label ?? "Sem dados ainda"}
-                  </p>
+                  <p className="text-sm font-semibold text-red-700 mb-1">Disciplina mais fraca</p>
+                  <p className="font-bold text-slate-900">{worstSubject?.label ?? "Sem dados ainda"}</p>
                   <p className="text-sm text-slate-600 mt-1">
                     {worstSubject ? `${worstSubject.accuracy.toFixed(0)}% de acerto` : "—"}
                   </p>
                 </div>
 
                 <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
-                  <p className="text-sm font-semibold text-blue-700 mb-1">
-                    Conteúdo mais treinado
-                  </p>
-                  <p className="font-bold text-slate-900">
-                    {mostTrainedConteudo?.label ?? "Sem dados ainda"}
-                  </p>
+                  <p className="text-sm font-semibold text-blue-700 mb-1">Conteúdo mais treinado</p>
+                  <p className="font-bold text-slate-900">{mostTrainedConteudo?.label ?? "Sem dados ainda"}</p>
                   <p className="text-sm text-slate-600 mt-1">
                     {mostTrainedConteudo ? `${mostTrainedConteudo.total} tentativas` : "—"}
                   </p>
                 </div>
 
                 <div className="rounded-xl border border-orange-200 bg-orange-50 p-4">
-                  <p className="text-sm font-semibold text-orange-700 mb-1">
-                    Conteúdo mais crítico
-                  </p>
-                  <p className="font-bold text-slate-900">
-                    {mostCriticalConteudo?.label ?? "Sem dados ainda"}
-                  </p>
+                  <p className="text-sm font-semibold text-orange-700 mb-1">Conteúdo mais crítico</p>
+                  <p className="font-bold text-slate-900">{mostCriticalConteudo?.label ?? "Sem dados ainda"}</p>
                   <p className="text-sm text-slate-600 mt-1">
                     {mostCriticalConteudo ? `${mostCriticalConteudo.wrong} erros` : "—"}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-teal-200 bg-teal-50 p-4">
+                  <p className="text-sm font-semibold text-teal-700 mb-1">Assunto mais forte</p>
+                  <p className="font-bold text-slate-900">{bestAssunto?.label ?? "Sem dados ainda"}</p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    {bestAssunto ? `${bestAssunto.accuracy.toFixed(0)}% de acerto` : "—"}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-rose-200 bg-rose-50 p-4">
+                  <p className="text-sm font-semibold text-rose-700 mb-1">Assunto mais fraco</p>
+                  <p className="font-bold text-slate-900">{worstAssunto?.label ?? "Sem dados ainda"}</p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    {worstAssunto ? `${worstAssunto.accuracy.toFixed(0)}% de acerto` : "—"}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4">
+                  <p className="text-sm font-semibold text-indigo-700 mb-1">Melhor banca</p>
+                  <p className="font-bold text-slate-900">{bestBanca?.label ?? "Sem dados ainda"}</p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    {bestBanca ? `${bestBanca.accuracy.toFixed(0)}% de acerto` : "—"}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4">
+                  <p className="text-sm font-semibold text-yellow-700 mb-1">Banca mais chata</p>
+                  <p className="font-bold text-slate-900">{worstBanca?.label ?? "Sem dados ainda"}</p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    {worstBanca ? `${worstBanca.accuracy.toFixed(0)}% de acerto` : "—"}
                   </p>
                 </div>
               </div>
@@ -1249,24 +1514,18 @@ export default function ProfilePage() {
                 <div className="space-y-4">
                   <div className="rounded-xl border border-slate-200 p-4 bg-slate-50">
                     <p className="text-sm text-slate-500 mb-1">Prova-alvo</p>
-                    <p className="font-bold text-slate-900">
-                      {form.prova_alvo || "Ainda não definida"}
-                    </p>
+                    <p className="font-bold text-slate-900">{form.prova_alvo || "Ainda não definida"}</p>
                   </div>
 
                   <div className="rounded-xl border border-slate-200 p-4 bg-slate-50">
                     <p className="text-sm text-slate-500 mb-1">Foco atual</p>
-                    <p className="font-bold text-slate-900">
-                      {form.foco_atual || "Ainda não definido"}
-                    </p>
+                    <p className="font-bold text-slate-900">{form.foco_atual || "Ainda não definido"}</p>
                   </div>
 
                   <div className="rounded-xl border border-slate-200 p-4 bg-slate-50">
                     <p className="text-sm text-slate-500 mb-2">Meta semanal</p>
                     <p className="font-bold text-slate-900 mb-3">
-                      {weeklyGoal > 0
-                        ? `${weeklyQuestions} de ${weeklyGoal} questões`
-                        : `${weeklyQuestions} questões nesta semana`}
+                      {weeklyGoal > 0 ? `${weeklyQuestions} de ${weeklyGoal} questões` : `${weeklyQuestions} questões nesta semana`}
                     </p>
 
                     <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
@@ -1282,55 +1541,67 @@ export default function ProfilePage() {
                         : "Defina uma meta semanal para acompanhar seu ritmo"}
                     </p>
                   </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-xl border border-slate-200 p-4 bg-slate-50">
+                      <p className="text-sm text-slate-500 mb-1">Conteúdos tocados</p>
+                      <p className="text-2xl font-bold text-slate-900">{uniqueConteudos}</p>
+                    </div>
+
+                    <div className="rounded-xl border border-slate-200 p-4 bg-slate-50">
+                      <p className="text-sm text-slate-500 mb-1">Assuntos tocados</p>
+                      <p className="text-2xl font-bold text-slate-900">{uniqueAssuntos}</p>
+                    </div>
+                  </div>
                 </div>
               </Card>
 
               <Card className="p-6 bg-white">
                 <div className="flex items-center gap-2 mb-4">
-                  <Flame className="w-5 h-5 text-orange-500" />
-                  <h3 className="text-xl font-bold text-slate-900">O que fazer agora</h3>
+                  <Sparkles className="w-5 h-5 text-orange-500" />
+                  <h3 className="text-xl font-bold text-slate-900">Perfil vivo</h3>
                 </div>
 
-                <div className="space-y-3">
-                  {recommendations.map((rec, index) => (
-                    <div
-                      key={index}
-                      className="rounded-xl border border-indigo-200 bg-indigo-50 p-4 text-slate-700"
-                    >
-                      {rec}
-                    </div>
-                  ))}
-                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Fase atual</p>
+                    <p className="font-bold text-slate-900">{profilePhase.title}</p>
+                  </div>
 
-                <div className="flex flex-wrap gap-3 mt-5">
-                  <Link href="/progress">
-                    <Button variant="outline" className="rounded-2xl">
-                      Ver progresso
-                    </Button>
-                  </Link>
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Melhor sequência</p>
+                    <p className="font-bold text-slate-900">{streakInfo.bestStreak} dias</p>
+                  </div>
 
-                  <Link href="/caderno-de-erros">
-                    <Button className="rounded-2xl">Abrir caderno de erros</Button>
-                  </Link>
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Dias ativos totais</p>
+                    <p className="font-bold text-slate-900">{streakInfo.totalActiveDays}</p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Melhor leitura atual</p>
+                    <p className="font-bold text-slate-900">{profileSignature}</p>
+                  </div>
                 </div>
               </Card>
             </div>
 
             <Card className="p-6 bg-white">
-              <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
-                <div className="flex items-center gap-2">
-                  <Award className="w-5 h-5 text-amber-500" />
-                  <h3 className="text-xl font-bold text-slate-900">Conquistas</h3>
-                </div>
-
-                <div className="text-sm text-slate-500">
+              <div className="flex items-center gap-2 mb-4">
+                <Award className="w-5 h-5 text-amber-500" />
+                <h3 className="text-xl font-bold text-slate-900">Conquistas</h3>
+                <span className="text-sm text-slate-500 ml-auto">
                   {unlockedAchievements} de {achievements.length} desbloqueadas
-                </div>
+                </span>
               </div>
 
               <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
                 {achievements.map((achievement) => {
                   const Icon = getAchievementIcon(achievement.icon);
+                  const progressPercent =
+                    achievement.progressMax && achievement.progress !== undefined
+                      ? Math.min(100, (achievement.progress / achievement.progressMax) * 100)
+                      : 0;
 
                   return (
                     <div
@@ -1338,7 +1609,7 @@ export default function ProfilePage() {
                       className={`rounded-2xl border p-4 transition-all ${
                         achievement.unlocked
                           ? "border-amber-200 bg-amber-50"
-                          : "border-slate-200 bg-slate-50 opacity-70"
+                          : "border-slate-200 bg-slate-50 opacity-80"
                       }`}
                     >
                       <div className="flex items-center justify-between mb-3">
@@ -1365,11 +1636,77 @@ export default function ProfilePage() {
 
                       <p className="font-bold text-slate-900">{achievement.title}</p>
                       <p className="text-sm text-slate-600 mt-1">{achievement.description}</p>
+
+                      {!achievement.unlocked && achievement.progress !== undefined && achievement.progressMax ? (
+                        <div className="mt-4">
+                          <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                            <span>Progresso</span>
+                            <span>
+                              {achievement.progress}/{achievement.progressMax}
+                            </span>
+                          </div>
+                          <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-gradient-to-r from-slate-500 to-slate-700"
+                              style={{ width: `${progressPercent}%` }}
+                            />
+                          </div>
+                        </div>
+                      ) : null}
                     </div>
                   );
                 })}
               </div>
             </Card>
+
+            <div className="grid xl:grid-cols-2 gap-6">
+              <Card className="p-6 bg-white">
+                <div className="flex items-center gap-2 mb-4">
+                  <Swords className="w-5 h-5 text-orange-500" />
+                  <h3 className="text-xl font-bold text-slate-900">Leitura estratégica</h3>
+                </div>
+
+                <div className="space-y-3">
+                  {recommendations.map((rec, index) => (
+                    <div
+                      key={index}
+                      className="rounded-xl border border-indigo-200 bg-indigo-50 p-4 text-slate-700"
+                    >
+                      {rec}
+                    </div>
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="p-6 bg-white">
+                <div className="flex items-center gap-2 mb-4">
+                  <TimerReset className="w-5 h-5 text-blue-600" />
+                  <h3 className="text-xl font-bold text-slate-900">Histórico pessoal</h3>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Conta criada em</p>
+                    <p className="font-bold text-slate-900">{formatDate(profile?.created_at)}</p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Melhor sequência</p>
+                    <p className="font-bold text-slate-900">{streakInfo.bestStreak} dias</p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Melhor acerto 7d</p>
+                    <p className="font-bold text-slate-900">{weeklyAccuracy.toFixed(0)}%</p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-500 mb-1">Total de dias ativos</p>
+                    <p className="font-bold text-slate-900">{streakInfo.totalActiveDays}</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
 
             <Card className="p-6 bg-white">
               <div className="flex items-center gap-2 mb-4">
@@ -1399,8 +1736,7 @@ export default function ProfilePage() {
                       </div>
 
                       <p className="font-semibold text-slate-900">
-                        {attempt.subject ?? "Sem disciplina"} •{" "}
-                        {attempt.conteudo ?? "Sem conteúdo"}
+                        {attempt.subject ?? "Sem disciplina"} • {attempt.conteudo ?? "Sem conteúdo"}
                         {attempt.assunto ? ` • ${attempt.assunto}` : ""}
                       </p>
 
