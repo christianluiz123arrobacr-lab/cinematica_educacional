@@ -3,6 +3,11 @@ import { ArrowLeft, Compass, Lightbulb, AlertTriangle, CheckCircle2, Info } from
 import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
+import ContentPageRenderer from "@/components/content/ContentPageRenderer";
+
+export default function CinematicaTopicBases() {
+  return <ContentPageRenderer slug="cinematica-bases" />;
+}
 
 export default function CinematicaTopicBases() {
   return (
