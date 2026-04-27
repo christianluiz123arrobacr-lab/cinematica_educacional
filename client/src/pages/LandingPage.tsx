@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { Button } from "@/components/ui/button";
 import {
   Calculator,
@@ -16,17 +17,35 @@ import {
 } from "lucide-react";
 
 export default function LandingPage() {
+  const { isAuthenticated, loading } = useSupabaseAuth();
+
   return (
     <div className="min-h-screen bg-white">
       {/* Top Bar */}
       <div className="w-full px-6 pt-6">
         <div className="max-w-6xl mx-auto flex justify-end">
-          <Link href="/login">
-            <Button className="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-2 rounded-full flex items-center gap-2">
-              <LogIn className="w-4 h-4" />
-              Login
+          {loading ? (
+            <Button
+              disabled
+              className="bg-slate-200 text-slate-500 font-semibold px-6 py-2 rounded-full flex items-center gap-2 cursor-wait"
+            >
+              Carregando...
             </Button>
-          </Link>
+          ) : isAuthenticated ? (
+            <Link href="/perfil">
+              <Button className="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-2 rounded-full flex items-center gap-2">
+                <UserCircle2 className="w-4 h-4" />
+                Perfil
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/login">
+              <Button className="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-2 rounded-full flex items-center gap-2">
+                <LogIn className="w-4 h-4" />
+                Login
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -65,12 +84,6 @@ export default function LandingPage() {
             <Button className="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-full text-lg">
               Ranking <Trophy className="w-5 h-5 ml-2" />
             </Button>
-          </Link>
-
-          <Link href="/perfil">
-           <Button className="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-full text-lg">
-             Perfil <UserCircle2 className="w-5 h-5 ml-2" />
-           </Button>
           </Link>
 
           <Link href="/vet">
@@ -173,18 +186,21 @@ export default function LandingPage() {
                     </div>
                     <span className="font-semibold text-base">Questões comentadas</span>
                   </div>
+
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                       <BarChart3 className="w-5 h-5" />
                     </div>
                     <span className="font-semibold text-base">Análise de desempenho</span>
                   </div>
+
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                       <BookMarked className="w-5 h-5" />
                     </div>
                     <span className="font-semibold text-base">Caderno de erros</span>
                   </div>
+
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                       <Zap className="w-5 h-5" />
@@ -210,7 +226,11 @@ export default function LandingPage() {
                           <div className="w-2 h-2 bg-slate-300 rounded-full"></div>
                           <div className="w-2 h-2 bg-slate-300 rounded-full"></div>
                         </div>
-                        <div className="text-xs font-semibold text-slate-400">Questões</div>
+
+                        <div className="text-xs font-semibold text-slate-400">
+                          Questões
+                        </div>
+
                         <div className="w-4 h-4 bg-slate-300 rounded"></div>
                       </div>
 
@@ -222,20 +242,51 @@ export default function LandingPage() {
 
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">
-                          <input type="radio" id="opt1" className="w-4 h-4 cursor-pointer" />
-                          <label htmlFor="opt1" className="text-sm cursor-pointer">A: 10 m/s</label>
+                          <input
+                            type="radio"
+                            id="opt1"
+                            className="w-4 h-4 cursor-pointer"
+                          />
+                          <label htmlFor="opt1" className="text-sm cursor-pointer">
+                            A: 10 m/s
+                          </label>
                         </div>
+
                         <div className="flex items-center gap-3">
-                          <input type="radio" id="opt2" className="w-4 h-4 cursor-pointer" defaultChecked />
-                          <label htmlFor="opt2" className="text-sm font-semibold cursor-pointer">B: 23 m/s</label>
+                          <input
+                            type="radio"
+                            id="opt2"
+                            className="w-4 h-4 cursor-pointer"
+                            defaultChecked
+                          />
+                          <label
+                            htmlFor="opt2"
+                            className="text-sm font-semibold cursor-pointer"
+                          >
+                            B: 23 m/s
+                          </label>
                         </div>
+
                         <div className="flex items-center gap-3">
-                          <input type="radio" id="opt3" className="w-4 h-4 cursor-pointer" />
-                          <label htmlFor="opt3" className="text-sm cursor-pointer">C: 80 m/s</label>
+                          <input
+                            type="radio"
+                            id="opt3"
+                            className="w-4 h-4 cursor-pointer"
+                          />
+                          <label htmlFor="opt3" className="text-sm cursor-pointer">
+                            C: 80 m/s
+                          </label>
                         </div>
+
                         <div className="flex items-center gap-3">
-                          <input type="radio" id="opt4" className="w-4 h-4 cursor-pointer" />
-                          <label htmlFor="opt4" className="text-sm cursor-pointer">D: 40 m/s</label>
+                          <input
+                            type="radio"
+                            id="opt4"
+                            className="w-4 h-4 cursor-pointer"
+                          />
+                          <label htmlFor="opt4" className="text-sm cursor-pointer">
+                            D: 40 m/s
+                          </label>
                         </div>
                       </div>
                     </div>
