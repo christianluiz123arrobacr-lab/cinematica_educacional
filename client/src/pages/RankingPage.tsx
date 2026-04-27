@@ -12,7 +12,7 @@ import {
   Clock3,
   Target,
   Shield,
-  ChevronUp,
+  UserCircle2,
 } from "lucide-react";
 
 type AttemptRow = {
@@ -127,15 +127,20 @@ function getCutoffDate(period: RankingPeriod) {
 
 function formatSeconds(seconds?: number | null) {
   if (!seconds || seconds <= 0) return "-";
+
   const min = Math.floor(seconds / 60);
   const sec = Math.round(seconds % 60);
+
   if (min === 0) return `${sec}s`;
+
   return `${min}m ${sec}s`;
 }
 
 function formatDateTime(date?: string | null) {
   if (!date) return "—";
+
   const parsed = new Date(date);
+
   if (Number.isNaN(parsed.getTime())) return "—";
 
   return parsed.toLocaleString("pt-BR", {
@@ -154,6 +159,10 @@ export default function RankingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [period, setPeriod] = useState<RankingPeriod>("7d");
+
+  function getProfileHref(userId: string) {
+    return userId === user?.id ? "/perfil" : `/perfil/${userId}`;
+  }
 
   useEffect(() => {
     async function loadData() {
@@ -201,6 +210,7 @@ export default function RankingPage() {
 
   const filteredAttempts = useMemo(() => {
     const cutoff = getCutoffDate(period);
+
     if (!cutoff) return attempts;
 
     return attempts.filter((attempt) => new Date(attempt.answered_at) >= cutoff);
@@ -208,6 +218,7 @@ export default function RankingPage() {
 
   const ranking = useMemo(() => {
     const profilesMap = new Map<string, ProfileRow>();
+
     for (const profile of profiles) {
       if (profile.ativo === false) continue;
       profilesMap.set(profile.id, profile);
@@ -228,6 +239,7 @@ export default function RankingPage() {
 
     for (const [userId, userAttempts] of byUser.entries()) {
       const profile = profilesMap.get(userId);
+
       if (!profile) continue;
 
       const uniqueCorrectByQuestion = new Map<string, AttemptRow>();
@@ -274,10 +286,13 @@ export default function RankingPage() {
       const timedAttempts = userAttempts.filter(
         (attempt) => typeof attempt.time_spent_seconds === "number"
       );
+
       const avgTimeSeconds =
         timedAttempts.length > 0
-          ? timedAttempts.reduce((sum, attempt) => sum + (attempt.time_spent_seconds ?? 0), 0) /
-            timedAttempts.length
+          ? timedAttempts.reduce(
+              (sum, attempt) => sum + (attempt.time_spent_seconds ?? 0),
+              0
+            ) / timedAttempts.length
           : 0;
 
       const lastActivityAt =
@@ -312,10 +327,12 @@ export default function RankingPage() {
 
         const aTime = a.avgTimeSeconds || Number.MAX_SAFE_INTEGER;
         const bTime = b.avgTimeSeconds || Number.MAX_SAFE_INTEGER;
+
         if (aTime !== bTime) return aTime - bTime;
 
         const aLast = a.lastActivityAt ? new Date(a.lastActivityAt).getTime() : 0;
         const bLast = b.lastActivityAt ? new Date(b.lastActivityAt).getTime() : 0;
+
         return bLast - aLast;
       });
   }, [filteredAttempts, profiles]);
@@ -328,7 +345,6 @@ export default function RankingPage() {
   const myEntry = myIndex >= 0 ? ranking[myIndex] : null;
   const nextEntry = myIndex > 0 ? ranking[myIndex - 1] : null;
   const top3 = ranking.slice(0, 3);
-  const restRanking = ranking.slice(3);
 
   function renderTopCard(entry: RankingEntry, position: number) {
     const avatar = getAvatarConfig(entry.avatarKey);
@@ -337,7 +353,6 @@ export default function RankingPage() {
       position === 1
         ? {
             icon: Crown,
-            bg: "from-yellow-400 to-amber-500",
             badge: "1º lugar",
             border: "border-yellow-200",
             cardBg: "bg-yellow-50",
@@ -345,14 +360,12 @@ export default function RankingPage() {
         : position === 2
         ? {
             icon: Trophy,
-            bg: "from-slate-400 to-slate-600",
             badge: "2º lugar",
             border: "border-slate-200",
             cardBg: "bg-slate-50",
           }
         : {
             icon: Medal,
-            bg: "from-orange-400 to-orange-600",
             badge: "3º lugar",
             border: "border-orange-200",
             cardBg: "bg-orange-50",
@@ -361,60 +374,66 @@ export default function RankingPage() {
     const Icon = positionConfig.icon;
 
     return (
-      <Card
-        key={entry.userId}
-        className={`p-6 ${positionConfig.border} ${positionConfig.cardBg}`}
-      >
-        <div className="flex items-center justify-between mb-5">
-          <span className="px-3 py-1 rounded-full text-sm font-bold bg-white text-slate-700 border border-slate-200">
-            {positionConfig.badge}
-          </span>
-          <Icon className="w-6 h-6 text-slate-700" />
-        </div>
-
-        <div className="flex items-center gap-4 mb-4">
-          <div
-            className={`w-16 h-16 rounded-3xl bg-gradient-to-br ${avatar.bg} text-white flex items-center justify-center text-3xl shadow-lg`}
-          >
-            {avatar.emoji}
-          </div>
-
-          <div>
-            <p className="text-xl font-bold text-slate-900">{entry.nome}</p>
-            <p className="text-sm text-slate-500">
-              {entry.correctCount} acertos únicos
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="rounded-xl bg-white p-3 border border-slate-200">
-            <p className="text-sm text-slate-500 mb-1">Score</p>
-            <p className="text-2xl font-bold text-slate-900">{entry.score}</p>
-          </div>
-
-          <div className="rounded-xl bg-white p-3 border border-slate-200">
-            <p className="text-sm text-slate-500 mb-1">Taxa</p>
-            <p className="text-2xl font-bold text-slate-900">
-              {entry.accuracy.toFixed(0)}%
-            </p>
-          </div>
-        </div>
-
-        <div className="text-sm text-slate-600 space-y-1">
-          <p>
-            Fácil: <span className="font-semibold">{entry.easyCorrect}</span> • Médio:{" "}
-            <span className="font-semibold">{entry.mediumCorrect}</span> • Difícil:{" "}
-            <span className="font-semibold">{entry.hardCorrect}</span>
-          </p>
-          <p>
-            Tempo médio:{" "}
-            <span className="font-semibold">
-              {formatSeconds(Math.round(entry.avgTimeSeconds))}
+      <Link key={entry.userId} href={getProfileHref(entry.userId)}>
+        <Card
+          className={`p-6 ${positionConfig.border} ${positionConfig.cardBg} cursor-pointer hover:-translate-y-1 hover:shadow-xl transition-all`}
+        >
+          <div className="flex items-center justify-between mb-5">
+            <span className="px-3 py-1 rounded-full text-sm font-bold bg-white text-slate-700 border border-slate-200">
+              {positionConfig.badge}
             </span>
-          </p>
-        </div>
-      </Card>
+            <Icon className="w-6 h-6 text-slate-700" />
+          </div>
+
+          <div className="flex items-center gap-4 mb-4">
+            <div
+              className={`w-16 h-16 rounded-3xl bg-gradient-to-br ${avatar.bg} text-white flex items-center justify-center text-3xl shadow-lg`}
+            >
+              {avatar.emoji}
+            </div>
+
+            <div>
+              <p className="text-xl font-bold text-slate-900">{entry.nome}</p>
+              <p className="text-sm text-slate-500">
+                {entry.correctCount} acertos únicos
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="rounded-xl bg-white p-3 border border-slate-200">
+              <p className="text-sm text-slate-500 mb-1">Score</p>
+              <p className="text-2xl font-bold text-slate-900">{entry.score}</p>
+            </div>
+
+            <div className="rounded-xl bg-white p-3 border border-slate-200">
+              <p className="text-sm text-slate-500 mb-1">Taxa</p>
+              <p className="text-2xl font-bold text-slate-900">
+                {entry.accuracy.toFixed(0)}%
+              </p>
+            </div>
+          </div>
+
+          <div className="text-sm text-slate-600 space-y-1">
+            <p>
+              Fácil: <span className="font-semibold">{entry.easyCorrect}</span> • Médio:{" "}
+              <span className="font-semibold">{entry.mediumCorrect}</span> • Difícil:{" "}
+              <span className="font-semibold">{entry.hardCorrect}</span>
+            </p>
+            <p>
+              Tempo médio:{" "}
+              <span className="font-semibold">
+                {formatSeconds(Math.round(entry.avgTimeSeconds))}
+              </span>
+            </p>
+          </div>
+
+          <div className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-slate-700 bg-white border border-slate-200 rounded-full px-4 py-2">
+            <UserCircle2 className="w-4 h-4" />
+            Ver perfil
+          </div>
+        </Card>
+      </Link>
     );
   }
 
@@ -556,98 +575,107 @@ export default function RankingPage() {
                     const isCurrentUser = entry.userId === user?.id;
 
                     return (
-                      <div
-                        key={entry.userId}
-                        className={`rounded-2xl border p-4 ${
-                          isCurrentUser
-                            ? "border-blue-200 bg-blue-50"
-                            : "border-slate-200 bg-white"
-                        }`}
-                      >
-                        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
-                          <div className="flex items-center gap-4 min-w-0">
-                            <div className="w-10 text-center">
-                              <p className="text-xl font-bold text-slate-900">
-                                #{index + 1}
-                              </p>
-                            </div>
-
-                            <div
-                              className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${avatar.bg} text-white flex items-center justify-center text-2xl shadow-md`}
-                            >
-                              {avatar.emoji}
-                            </div>
-
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <p className="text-lg font-bold text-slate-900 truncate">
-                                  {entry.nome}
+                      <Link key={entry.userId} href={getProfileHref(entry.userId)}>
+                        <div
+                          className={`rounded-2xl border p-4 cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all ${
+                            isCurrentUser
+                              ? "border-blue-200 bg-blue-50"
+                              : "border-slate-200 bg-white"
+                          }`}
+                        >
+                          <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+                            <div className="flex items-center gap-4 min-w-0">
+                              <div className="w-10 text-center">
+                                <p className="text-xl font-bold text-slate-900">
+                                  #{index + 1}
                                 </p>
-
-                                {isCurrentUser ? (
-                                  <span className="px-2 py-1 rounded-full text-xs font-bold bg-blue-600 text-white">
-                                    Você
-                                  </span>
-                                ) : null}
                               </div>
 
-                              <p className="text-sm text-slate-500">
-                                {entry.correctCount} acertos únicos • {entry.totalAttempts} tentativas •{" "}
-                                {entry.accuracy.toFixed(0)}% de taxa
-                              </p>
-                            </div>
-                          </div>
+                              <div
+                                className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${avatar.bg} text-white flex items-center justify-center text-2xl shadow-md`}
+                              >
+                                {avatar.emoji}
+                              </div>
 
-                          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 xl:min-w-[620px]">
-                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                              <p className="text-xs text-slate-500 mb-1">Score</p>
-                              <p className="text-lg font-bold text-slate-900">{entry.score}</p>
-                            </div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <p className="text-lg font-bold text-slate-900 truncate">
+                                    {entry.nome}
+                                  </p>
 
-                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                              <p className="text-xs text-slate-500 mb-1">Fácil</p>
-                              <p className="text-lg font-bold text-slate-900">
-                                {entry.easyCorrect}
-                              </p>
-                            </div>
+                                  {isCurrentUser ? (
+                                    <span className="px-2 py-1 rounded-full text-xs font-bold bg-blue-600 text-white">
+                                      Você
+                                    </span>
+                                  ) : null}
 
-                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                              <p className="text-xs text-slate-500 mb-1">Médio</p>
-                              <p className="text-lg font-bold text-slate-900">
-                                {entry.mediumCorrect}
-                              </p>
-                            </div>
+                                  <span className="px-2 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 inline-flex items-center gap-1">
+                                    <UserCircle2 className="w-3 h-3" />
+                                    Ver perfil
+                                  </span>
+                                </div>
 
-                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                              <p className="text-xs text-slate-500 mb-1">Difícil</p>
-                              <p className="text-lg font-bold text-slate-900">
-                                {entry.hardCorrect}
-                              </p>
+                                <p className="text-sm text-slate-500">
+                                  {entry.correctCount} acertos únicos •{" "}
+                                  {entry.totalAttempts} tentativas •{" "}
+                                  {entry.accuracy.toFixed(0)}% de taxa
+                                </p>
+                              </div>
                             </div>
 
-                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                              <p className="text-xs text-slate-500 mb-1">Tempo médio</p>
-                              <p className="text-lg font-bold text-slate-900">
-                                {formatSeconds(Math.round(entry.avgTimeSeconds))}
-                              </p>
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 xl:min-w-[620px]">
+                              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <p className="text-xs text-slate-500 mb-1">Score</p>
+                                <p className="text-lg font-bold text-slate-900">
+                                  {entry.score}
+                                </p>
+                              </div>
+
+                              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <p className="text-xs text-slate-500 mb-1">Fácil</p>
+                                <p className="text-lg font-bold text-slate-900">
+                                  {entry.easyCorrect}
+                                </p>
+                              </div>
+
+                              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <p className="text-xs text-slate-500 mb-1">Médio</p>
+                                <p className="text-lg font-bold text-slate-900">
+                                  {entry.mediumCorrect}
+                                </p>
+                              </div>
+
+                              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <p className="text-xs text-slate-500 mb-1">Difícil</p>
+                                <p className="text-lg font-bold text-slate-900">
+                                  {entry.hardCorrect}
+                                </p>
+                              </div>
+
+                              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <p className="text-xs text-slate-500 mb-1">Tempo médio</p>
+                                <p className="text-lg font-bold text-slate-900">
+                                  {formatSeconds(Math.round(entry.avgTimeSeconds))}
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>
               ) : (
-                <p className="text-slate-500">
-                  Ninguém pontuou ainda nesse período.
-                </p>
+                <p className="text-slate-500">Ninguém pontuou ainda nesse período.</p>
               )}
             </Card>
 
             <Card className="p-6 bg-white border-slate-200">
               <div className="flex items-center gap-2 mb-4">
                 <Shield className="w-5 h-5 text-blue-600" />
-                <h3 className="text-xl font-bold text-slate-900">Como esse ranking funciona</h3>
+                <h3 className="text-xl font-bold text-slate-900">
+                  Como esse ranking funciona
+                </h3>
               </div>
 
               <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
