@@ -6,6 +6,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminGuard from "@/components/admin/AdminGuard";
+import ReactMarkdown from "react-markdown";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 import {
   Loader2,
   AlertTriangle,
@@ -14,6 +18,7 @@ import {
   CheckCircle2,
   Upload,
   Image as ImageIcon,
+  Eye,
 } from "lucide-react";
 
 type QuestionFormData = {
@@ -132,6 +137,204 @@ function gerarNomeArquivo(originalName: string) {
   return `${Date.now()}-${Math.random()
     .toString(36)
     .slice(2, 10)}.${extensao}`;
+}
+
+
+function MarkdownPreview({
+  value,
+  emptyMessage = "Nada para visualizar ainda.",
+}: {
+  value: string;
+  emptyMessage?: string;
+}) {
+  const content = value.trim();
+
+  if (!content) {
+    return <p className="text-sm text-slate-500">{emptyMessage}</p>;
+  }
+
+  return (
+    <div className="prose prose-slate max-w-none text-slate-800 prose-p:my-2 prose-img:rounded-xl prose-img:border prose-img:border-slate-200">
+      <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+        {content}
+      </ReactMarkdown>
+    </div>
+  );
+}
+
+function QuestionPreview({ form }: { form: QuestionFormData }) {
+  const alternatives = [
+    {
+      letter: "A",
+      text: form.alternativa_a,
+      image: form.alternativa_a_imagem,
+      value: "a",
+    },
+    {
+      letter: "B",
+      text: form.alternativa_b,
+      image: form.alternativa_b_imagem,
+      value: "b",
+    },
+    {
+      letter: "C",
+      text: form.alternativa_c,
+      image: form.alternativa_c_imagem,
+      value: "c",
+    },
+    {
+      letter: "D",
+      text: form.alternativa_d,
+      image: form.alternativa_d_imagem,
+      value: "d",
+    },
+    {
+      letter: "E",
+      text: form.alternativa_e,
+      image: form.alternativa_e_imagem,
+      value: "e",
+    },
+  ];
+
+  const hasAnyAlternative = alternatives.some(
+    (alternative) => alternative.text.trim() || alternative.image.trim()
+  );
+
+  return (
+    <Card className="p-6 bg-white border-slate-200">
+      <div className="flex items-center justify-between gap-3 mb-6">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <Eye className="w-5 h-5 text-blue-600" />
+            <h2 className="text-xl font-bold text-slate-900">Prévia da questão</h2>
+          </div>
+          <p className="text-sm text-slate-500">
+            Veja como o enunciado, a imagem, as fórmulas e as alternativas vão aparecer para o aluno.
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 md:p-6 space-y-5">
+        <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600">
+          {form.codigo.trim() ? (
+            <span className="rounded-full bg-white border border-slate-200 px-3 py-1 font-semibold">
+              {form.codigo.trim()}
+            </span>
+          ) : null}
+
+          {form.disciplina.trim() ? (
+            <span className="rounded-full bg-blue-50 border border-blue-100 px-3 py-1 font-semibold text-blue-700">
+              {form.disciplina.trim()}
+            </span>
+          ) : null}
+
+          {form.conteudo.trim() ? (
+            <span className="rounded-full bg-purple-50 border border-purple-100 px-3 py-1 font-semibold text-purple-700">
+              {form.conteudo.trim()}
+            </span>
+          ) : null}
+
+          {form.banca.trim() || form.ano.trim() ? (
+            <span className="rounded-full bg-amber-50 border border-amber-100 px-3 py-1 font-semibold text-amber-700">
+              {[form.banca.trim(), form.ano.trim()].filter(Boolean).join(" • ")}
+            </span>
+          ) : null}
+        </div>
+
+        <div className="rounded-2xl bg-white border border-slate-200 p-5">
+          <p className="text-sm font-semibold text-slate-500 mb-3">Enunciado</p>
+          <MarkdownPreview
+            value={form.enunciado}
+            emptyMessage="Digite o enunciado para ver a prévia renderizada aqui."
+          />
+        </div>
+
+        {form.url_imagem.trim() ? (
+          <div className="rounded-2xl bg-white border border-slate-200 p-5">
+            <p className="text-sm font-semibold text-slate-500 mb-3">Imagem</p>
+            <img
+              src={form.url_imagem.trim()}
+              alt="Imagem da questão"
+              className="max-w-full rounded-xl border border-slate-200 bg-white"
+            />
+          </div>
+        ) : null}
+
+        {form.enunciado_pos_imagem.trim() ? (
+          <div className="rounded-2xl bg-white border border-slate-200 p-5">
+            <p className="text-sm font-semibold text-slate-500 mb-3">
+              Continuação do enunciado
+            </p>
+            <MarkdownPreview value={form.enunciado_pos_imagem} />
+          </div>
+        ) : null}
+
+        {form.formula.trim() ? (
+          <div className="rounded-2xl bg-white border border-slate-200 p-5">
+            <p className="text-sm font-semibold text-slate-500 mb-3">Fórmula</p>
+            <MarkdownPreview value={form.formula} />
+          </div>
+        ) : null}
+
+        <div className="rounded-2xl bg-white border border-slate-200 p-5">
+          <p className="text-sm font-semibold text-slate-500 mb-4">Alternativas</p>
+
+          {hasAnyAlternative ? (
+            <div className="space-y-3">
+              {alternatives.map((alternative) => {
+                const isCorrect = form.alternativa_correta === alternative.value;
+
+                if (!alternative.text.trim() && !alternative.image.trim()) {
+                  return null;
+                }
+
+                return (
+                  <div
+                    key={alternative.value}
+                    className={`rounded-2xl border p-4 ${
+                      isCorrect
+                        ? "border-emerald-300 bg-emerald-50"
+                        : "border-slate-200 bg-slate-50"
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
+                          isCorrect
+                            ? "bg-emerald-600 text-white"
+                            : "bg-white text-slate-700 border border-slate-200"
+                        }`}
+                      >
+                        {alternative.letter}
+                      </div>
+
+                      <div className="flex-1 min-w-0 space-y-3">
+                        {alternative.text.trim() ? (
+                          <MarkdownPreview value={alternative.text} />
+                        ) : null}
+
+                        {alternative.image.trim() ? (
+                          <img
+                            src={alternative.image.trim()}
+                            alt={`Imagem da alternativa ${alternative.letter}`}
+                            className="max-h-56 rounded-xl border border-slate-200 bg-white"
+                          />
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500">
+              Preencha as alternativas para visualizar como elas aparecerão.
+            </p>
+          )}
+        </div>
+      </div>
+    </Card>
+  );
 }
 
 export default function AdminQuestionCreatePage() {
@@ -860,6 +1063,8 @@ export default function AdminQuestionCreatePage() {
             </div>
           </div>
         </Card>
+
+        <QuestionPreview form={form} />
 
         <div className="flex justify-end">
           <Button
