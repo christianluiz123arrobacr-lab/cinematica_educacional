@@ -10,6 +10,7 @@ import VetQuestionsPage from "./pages/VetQuestionsPage";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Landing from "./pages/Landing";
 import ProfilePage from "./pages/ProfilePage";
+import PublicProfilePage from "./pages/PublicProfilePage";
 import RankingPage from "./pages/RankingPage";
 
 import VetPage from "./pages/VetPage";
@@ -266,6 +267,7 @@ function PrivateRouter() {
         <Route path="/fisica-moderna/topic/aplicacoes" component={FisicaModernaTopicAplicacoes} />
 
         <Route path="/progress" component={Progress} />
+        <Route path="/perfil/:userId" component={PublicProfilePage} />
         <Route path="/perfil" component={ProfilePage} />
         <Route path="/ranking" component={RankingPage} />
         <Route path="/ia-resolver" component={IAResolver} />
