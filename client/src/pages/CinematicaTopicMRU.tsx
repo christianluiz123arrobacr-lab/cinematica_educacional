@@ -3,12 +3,12 @@ import {
   ArrowLeft,
   Car,
   BookOpen,
-  Sigma,
   Info,
   Calculator,
+  Sigma,
+  Lightbulb,
   AlertTriangle,
   CheckCircle2,
-  Lightbulb,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/components/MathFormula";
@@ -40,7 +40,7 @@ export default function CinematicaTopicMRU() {
       </header>
 
       <section className="container mx-auto px-4 py-12 max-w-5xl">
-        {/* INTRODUÇÃO DO TÓPICO */}
+        {/* INTRODUÇÃO */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
           <h2 className="text-3xl font-bold text-slate-900 mb-6">
             🚗 Movimento Retilíneo Uniforme (MRU)
@@ -49,44 +49,47 @@ export default function CinematicaTopicMRU() {
           <div className="space-y-6">
             <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
               <h3 className="text-xl font-bold text-slate-900 mb-3">
-                O que é, de fato, o MRU?
+                A ideia central do MRU
               </h3>
 
               <p className="text-slate-700 leading-relaxed mb-4">
                 O <strong>Movimento Retilíneo Uniforme</strong> é o movimento em que um móvel
-                percorre uma <strong>trajetória retilínea</strong> com
-                <strong> velocidade escalar constante</strong>.
+                percorre uma trajetória retilínea com <strong>velocidade constante</strong>.
               </p>
 
               <p className="text-slate-700 leading-relaxed mb-4">
-                Essa definição parece curta, mas ela já contém duas ideias extremamente fortes.
-                A primeira é geométrica: a trajetória é uma reta. A segunda é física: a velocidade
-                não muda com o tempo. Juntas, essas duas condições fazem com que a posição varie
-                de modo linear.
+                Dizer que a velocidade é constante significa dizer que a posição do móvel varia
+                sempre no mesmo ritmo. Em tempos iguais, o móvel sofre variações de posição iguais.
               </p>
 
               <p className="text-slate-700 leading-relaxed">
-                Dizer que o movimento é uniforme significa dizer que o móvel realiza
-                <strong> iguais variações de posição em iguais intervalos de tempo</strong>.
-                Essa é a ideia central. A fórmula vem depois.
+                É dessa regularidade que nasce a necessidade de uma equação que relacione
+                <strong> posição</strong>, <strong>tempo</strong> e <strong>velocidade</strong>.
+                Essa equação é a equação horária do espaço.
               </p>
             </div>
 
             <div className="bg-indigo-50 border border-indigo-200 rounded p-6">
               <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
                 <Info className="w-5 h-5 text-indigo-600" />
-                O ponto pedagógico mais importante
+                O que queremos descobrir nesta parte?
               </h4>
 
-              <div className="space-y-3 text-slate-700">
-                <p>
-                  No MRU, a Física quer responder a uma pergunta muito simples:
-                  <strong> como a posição muda com o tempo quando o ritmo do movimento é constante?</strong>
-                </p>
-                <p>
-                  A resposta para essa pergunta é a equação horária do espaço.
-                </p>
+              <p className="text-slate-700 leading-relaxed mb-3">
+                Queremos construir uma expressão que permita responder à seguinte pergunta:
+              </p>
+
+              <div className="bg-white rounded-lg border border-slate-200 p-4 flex justify-center overflow-x-auto">
+                <MathFormula
+                  formula="\text{qual será a posição do móvel após certo tempo?}"
+                  display={true}
+                />
               </div>
+
+              <p className="text-slate-700 leading-relaxed mt-4">
+                A Física não quer uma fórmula por enfeite. Ela quer uma forma rigorosa de prever
+                a posição do móvel em qualquer instante.
+              </p>
             </div>
           </div>
         </div>
@@ -101,61 +104,89 @@ export default function CinematicaTopicMRU() {
             <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-500 p-6 rounded-r-xl">
               <h3 className="text-xl font-bold text-amber-900 mb-3 flex items-center gap-2">
                 <BookOpen className="w-5 h-5" />
-                Antes da fórmula: a ideia física que manda em tudo
+                Antes da fórmula: a construção da ideia
               </h3>
 
               <p className="text-slate-700 leading-relaxed mb-4">
-                Em um MRU, o móvel começa em uma posição inicial e continua se deslocando com
-                velocidade constante. Portanto, sua posição em um instante qualquer deve depender
-                de duas coisas:
+                A equação horária do espaço não deve ser tratada como uma fórmula que surgiu do nada.
+                Ela é a tradução matemática de uma ideia física extremamente simples e importante.
               </p>
 
-              <div className="space-y-3 text-slate-700 leading-relaxed">
-                <p>
-                  • de <strong>onde ele começou</strong>;
-                </p>
-                <p>
-                  • de <strong>quanto sua posição mudou ao longo do tempo</strong>.
-                </p>
-              </div>
-
-              <p className="text-slate-700 leading-relaxed mt-4 mb-4">
-                Então, antes de qualquer conta, a estrutura física da situação já é esta:
+              <p className="text-slate-700 leading-relaxed mb-4">
+                Se um móvel parte de uma posição inicial e continua se movendo com velocidade constante,
+                então sua posição em um instante qualquer será dada por:
               </p>
 
               <div className="bg-white rounded-lg border border-slate-200 p-4 flex justify-center overflow-x-auto">
                 <MathFormula
-                  formula="\text{posição atual} = \text{posição inicial} + \text{variação de posição}"
+                  formula="\text{posição no instante considerado} = \text{posição inicial} + \text{mudança de posição}"
                   display={true}
                 />
               </div>
 
               <p className="text-slate-700 leading-relaxed mt-4">
-                Toda a dedução da equação horária consiste em transformar essa ideia em linguagem matemática.
+                Toda a dedução da equação horária consiste apenas em escrever essa frase com símbolos matemáticos.
+              </p>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+              <h4 className="font-bold text-slate-900 mb-3">
+                O que precisa aparecer na equação?
+              </h4>
+
+              <p className="text-slate-700 leading-relaxed mb-4">
+                Para descrever a posição do móvel ao longo do tempo, a equação precisa envolver:
+              </p>
+
+              <div className="space-y-3 text-slate-700 leading-relaxed">
+                <p>• a posição inicial do móvel;</p>
+                <p>• o tempo transcorrido;</p>
+                <p>• a velocidade do movimento.</p>
+              </div>
+
+              <p className="text-slate-700 leading-relaxed mt-4">
+                Isso já nos mostra, intuitivamente, que a posição final depende do ponto de partida
+                e de quanto o móvel conseguiu variar sua posição ao longo do tempo.
               </p>
             </div>
 
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-6">
               <h4 className="font-bold text-slate-800 mb-3">
-                O que a equação horária faz?
+                O significado de variação de posição
               </h4>
 
               <p className="text-slate-700 leading-relaxed mb-4">
-                A equação horária do espaço é a expressão que permite descobrir a posição do móvel
-                em qualquer instante.
+                Se um móvel estava inicialmente em uma posição e depois passou a ocupar outra,
+                então houve uma mudança de posição. Essa mudança recebe o nome de
+                <strong> variação de posição</strong> ou <strong>deslocamento escalar</strong>.
               </p>
 
-              <p className="text-slate-700 leading-relaxed">
-                Ou seja, se alguém disser quanto tempo se passou, a equação consegue dizer onde o
-                móvel está. E se alguém disser onde o móvel está, ela pode até ajudar a descobrir
-                quanto tempo passou. Ela é a ponte entre posição e tempo.
+              <div className="bg-white rounded-lg border border-slate-200 p-4 flex justify-center overflow-x-auto">
+                <MathFormula formula="\Delta s = s - s_0" display={true} />
+              </div>
+
+              <div className="mt-4 space-y-3 text-slate-700 leading-relaxed">
+                <p>
+                  • <MathFormula formula="s_0" display={false} /> é a posição inicial;
+                </p>
+                <p>
+                  • <MathFormula formula="s" display={false} /> é a posição num instante qualquer;
+                </p>
+                <p>
+                  • logo, <MathFormula formula="\Delta s" display={false} /> mede quanto a posição mudou.
+                </p>
+              </div>
+
+              <p className="text-slate-700 leading-relaxed mt-4">
+                Aqui vale uma atenção importante: isso não é ainda distância percorrida.
+                Estamos falando de <strong>posição</strong> e de <strong>variação de posição</strong>.
               </p>
             </div>
 
             <div className="bg-white border border-slate-200 rounded-xl p-6">
               <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <Calculator className="w-5 h-5 text-blue-600" />
-                Passo 1: começar pela definição de velocidade
+                1. O ponto de partida da dedução
               </h4>
 
               <p className="text-slate-700 leading-relaxed mb-4">
@@ -167,13 +198,13 @@ export default function CinematicaTopicMRU() {
               </div>
 
               <p className="text-slate-700 leading-relaxed mt-4 mb-4">
-                Essa expressão quer dizer que a velocidade mede quanto a posição varia por unidade de tempo.
-                É a taxa de variação da posição.
+                Essa expressão diz que a velocidade média mede quanto a posição varia por unidade de tempo.
+                Ou seja, ela expressa o “ritmo” de mudança da posição.
               </p>
 
               <p className="text-slate-700 leading-relaxed">
-                No MRU, a velocidade não muda. Então, em qualquer intervalo de tempo,
-                a velocidade média coincide com a velocidade escalar do movimento:
+                No MRU, como a velocidade não muda ao longo do tempo, a velocidade média coincide com a
+                velocidade do movimento:
               </p>
 
               <div className="bg-slate-50 rounded-lg border border-slate-200 p-4 mt-4 flex justify-center overflow-x-auto">
@@ -183,12 +214,11 @@ export default function CinematicaTopicMRU() {
 
             <div className="bg-white border border-slate-200 rounded-xl p-6">
               <h4 className="font-bold text-slate-800 mb-4">
-                Passo 2: reescrever o deslocamento de modo explícito
+                2. Reescrevendo cada pedaço da fórmula
               </h4>
 
               <p className="text-slate-700 leading-relaxed mb-4">
-                A variação de posição, ou deslocamento escalar, é dada pela diferença entre a posição final
-                e a posição inicial:
+                Já sabemos que a variação de posição é:
               </p>
 
               <div className="bg-slate-50 rounded-lg border border-slate-200 p-4 flex justify-center overflow-x-auto">
@@ -196,33 +226,7 @@ export default function CinematicaTopicMRU() {
               </div>
 
               <p className="text-slate-700 leading-relaxed mt-4 mb-4">
-                Aqui é fundamental entender o significado dos símbolos:
-              </p>
-
-              <div className="space-y-3 text-slate-700 leading-relaxed">
-                <p>
-                  • <strong><MathFormula formula="s" display={false} /></strong> é a posição do móvel
-                  em um instante qualquer;
-                </p>
-                <p>
-                  • <strong><MathFormula formula="s_0" display={false} /></strong> é a posição inicial,
-                  isto é, a posição no instante em que começamos a analisar o movimento.
-                </p>
-              </div>
-
-              <p className="text-slate-700 leading-relaxed mt-4">
-                Portanto, <MathFormula formula="s - s_0" display={false} /> mede o quanto a posição mudou
-                desde o início.
-              </p>
-            </div>
-
-            <div className="bg-white border border-slate-200 rounded-xl p-6">
-              <h4 className="font-bold text-slate-800 mb-4">
-                Passo 3: tratar o intervalo de tempo com clareza
-              </h4>
-
-              <p className="text-slate-700 leading-relaxed mb-4">
-                O intervalo de tempo, em princípio, seria escrito como:
+                Para o intervalo de tempo, a forma geral seria:
               </p>
 
               <div className="bg-slate-50 rounded-lg border border-slate-200 p-4 flex justify-center overflow-x-auto">
@@ -230,8 +234,7 @@ export default function CinematicaTopicMRU() {
               </div>
 
               <p className="text-slate-700 leading-relaxed mt-4 mb-4">
-                Mas, em Cinemática, é muito comum escolher o instante inicial como origem dos tempos,
-                isto é:
+                Em Cinemática, é muito comum escolher o instante inicial como origem dos tempos, isto é:
               </p>
 
               <div className="bg-slate-50 rounded-lg border border-slate-200 p-4 flex justify-center overflow-x-auto">
@@ -239,7 +242,7 @@ export default function CinematicaTopicMRU() {
               </div>
 
               <p className="text-slate-700 leading-relaxed mt-4 mb-4">
-                Fazendo isso, a expressão do intervalo de tempo fica:
+                Fazendo isso:
               </p>
 
               <div className="bg-slate-50 rounded-lg border border-slate-200 p-4 flex justify-center overflow-x-auto">
@@ -247,18 +250,18 @@ export default function CinematicaTopicMRU() {
               </div>
 
               <p className="text-slate-700 leading-relaxed mt-4">
-                Essa simplificação não é um truque. É apenas uma escolha conveniente de referência temporal.
+                Essa escolha não muda a Física. Ela apenas simplifica a escrita e torna a interpretação mais direta.
               </p>
             </div>
 
             <div className="bg-white border border-slate-200 rounded-xl p-6">
               <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <Sigma className="w-5 h-5 text-blue-600" />
-                Passo 4: substituir tudo e construir a equação
+                3. A dedução propriamente dita
               </h4>
 
               <p className="text-slate-700 leading-relaxed mb-4">
-                Partimos da relação:
+                Partimos da expressão:
               </p>
 
               <div className="bg-slate-50 rounded-lg border border-slate-200 p-4 flex justify-center overflow-x-auto">
@@ -266,21 +269,9 @@ export default function CinematicaTopicMRU() {
               </div>
 
               <p className="text-slate-700 leading-relaxed mt-4 mb-4">
-                Agora substituímos:
-              </p>
-
-              <div className="space-y-4">
-                <div className="bg-slate-50 rounded-lg border border-slate-200 p-4 flex justify-center overflow-x-auto">
-                  <MathFormula formula="\Delta s = s - s_0" display={true} />
-                </div>
-
-                <div className="bg-slate-50 rounded-lg border border-slate-200 p-4 flex justify-center overflow-x-auto">
-                  <MathFormula formula="\Delta t = t" display={true} />
-                </div>
-              </div>
-
-              <p className="text-slate-700 leading-relaxed mt-4 mb-4">
-                Então:
+                Substituindo
+                <MathFormula formula="\Delta s = s - s_0" display={false} /> e
+                <MathFormula formula="\Delta t = t" display={false} />, obtemos:
               </p>
 
               <div className="bg-slate-50 rounded-lg border border-slate-200 p-4 flex justify-center overflow-x-auto">
@@ -296,7 +287,7 @@ export default function CinematicaTopicMRU() {
               </div>
 
               <p className="text-slate-700 leading-relaxed mt-4 mb-4">
-                Agora isolamos a posição <MathFormula formula="s" display={false} />:
+                Agora isolamos <MathFormula formula="s" display={false} />:
               </p>
 
               <div className="bg-blue-50 rounded-xl border border-blue-200 p-6 flex flex-col items-center">
@@ -309,38 +300,36 @@ export default function CinematicaTopicMRU() {
 
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 shadow-xl">
               <h4 className="font-semibold text-blue-400 mb-4">
-                💡 Agora vem a parte que quase ninguém explica direito
+                💡 A interpretação que precisa ser memorizada pelo entendimento
               </h4>
 
               <p className="text-slate-300 leading-relaxed mb-4">
                 A expressão
                 <MathFormula formula="s = s_0 + vt" display={false} />
-                tem uma interpretação física muito clara:
+                deve ser lida da seguinte maneira:
               </p>
 
               <div className="space-y-3 text-slate-300 leading-relaxed">
                 <p>
-                  • <strong><MathFormula formula="s_0" display={false} /></strong> diz de onde o móvel partiu;
+                  • <MathFormula formula="s_0" display={false} /> informa de onde o móvel partiu;
                 </p>
                 <p>
-                  • <strong><MathFormula formula="vt" display={false} /></strong> mede quanto a posição mudou
-                  ao longo do tempo;
+                  • <MathFormula formula="vt" display={false} /> informa quanto sua posição mudou ao longo do tempo;
                 </p>
                 <p>
-                  • a posição atual é a soma da posição inicial com essa variação.
+                  • a posição atual é a soma dessas duas contribuições.
                 </p>
               </div>
 
               <p className="text-slate-300 leading-relaxed mt-4">
-                Então o termo <MathFormula formula="vt" display={false} /> não é um enfeite algébrico.
-                Ele representa o deslocamento produzido pelo movimento uniforme.
+                Portanto, o termo <MathFormula formula="vt" display={false} /> representa o deslocamento produzido
+                por um movimento que ocorre com velocidade constante.
               </p>
 
               <p className="text-slate-300 leading-relaxed mt-4">
-                Se <MathFormula formula="v > 0" display={false} />, o móvel avança no sentido da orientação
-                e a posição cresce com o tempo. Se <MathFormula formula="v < 0" display={false} />,
-                a posição diminui com o tempo. O sinal da velocidade tem significado físico,
-                não apenas matemático.
+                Se <MathFormula formula="v > 0" display={false} />, a posição cresce com o tempo.
+                Se <MathFormula formula="v < 0" display={false} />, a posição diminui com o tempo.
+                O sinal da velocidade tem significado físico direto.
               </p>
             </div>
 
@@ -353,40 +342,39 @@ export default function CinematicaTopicMRU() {
               <p className="text-slate-700 leading-relaxed mb-4">
                 Sempre que aparecer a equação
                 <MathFormula formula="s = s_0 + vt" display={false} />,
-                faça mentalmente esta leitura:
+                você deve pensar:
               </p>
 
               <div className="space-y-3 text-slate-700 leading-relaxed">
-                <p>• onde o móvel começou?</p>
-                <p>• com que velocidade ele está se deslocando?</p>
-                <p>• quanto tempo passou?</p>
-                <p>• logo, em que posição ele estará?</p>
+                <p>• onde o móvel começou;</p>
+                <p>• com que velocidade ele está se movendo;</p>
+                <p>• quanto tempo já passou;</p>
+                <p>• onde ele estará depois desse tempo.</p>
               </div>
 
               <p className="text-slate-700 leading-relaxed mt-4">
-                Esse raciocínio é muito melhor do que decorar a fórmula mecanicamente,
-                porque te obriga a enxergar o movimento, e não apenas a manipular símbolos.
+                Esse tipo de leitura é muito melhor do que decorar a fórmula como desenho morto.
+                Ela transforma a equação em movimento pensado.
               </p>
             </div>
 
             <div className="bg-yellow-50 border border-yellow-300 rounded-xl p-5">
               <h4 className="font-bold text-yellow-900 mb-2 flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4" />
-                Armadilha clássica
+                Erro clássico
               </h4>
 
               <p className="text-slate-700 text-sm leading-relaxed">
                 Não confunda <MathFormula formula="s" display={false} /> com distância percorrida.
-                <MathFormula formula="s" display={false} /> representa <strong>posição</strong>.
-                O móvel pode estar na posição 50 m sem ter necessariamente percorrido 50 m.
-                Posição e distância percorrida não são a mesma grandeza.
+                A grandeza <MathFormula formula="s" display={false} /> representa <strong>posição</strong>.
+                Posição e distância percorrida não são a mesma coisa.
               </p>
             </div>
 
             <div className="bg-green-50 border border-green-200 rounded-xl p-6">
               <h4 className="font-bold text-green-900 mb-3 flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5" />
-                Conclusão desta parte
+                Fechando a construção
               </h4>
 
               <p className="text-slate-700 leading-relaxed mb-4">
@@ -398,8 +386,8 @@ export default function CinematicaTopicMRU() {
               </div>
 
               <p className="text-slate-700 leading-relaxed mt-4">
-                Ela mostra que a posição do móvel varia linearmente com o tempo,
-                porque o movimento acontece com velocidade constante.
+                Ela mostra que, em um movimento uniforme, a posição varia linearmente com o tempo,
+                pois o movimento acontece com velocidade constante.
               </p>
             </div>
           </div>
@@ -413,13 +401,12 @@ export default function CinematicaTopicMRU() {
               Fechamento desta etapa
             </h3>
             <p className="text-blue-100 leading-relaxed mb-4">
-              Até aqui, o mais importante é ter entendido que a equação horária do espaço
-              não é uma fórmula decorativa. Ela é a tradução matemática da ideia de que,
-              em um MRU, a posição muda com o tempo em ritmo constante.
+              Até aqui, o ponto essencial é este: a equação horária do espaço não é uma fórmula solta.
+              Ela é a tradução matemática da ideia de que, no MRU, a posição muda com o tempo em ritmo constante.
             </p>
             <p className="text-blue-100 leading-relaxed">
-              A próxima continuação natural é a interpretação gráfica dessa equação,
-              porque uma função do primeiro grau pede imediatamente uma leitura geométrica no gráfico.
+              O próximo passo natural é interpretar graficamente essa equação,
+              porque toda função do primeiro grau pede também uma leitura geométrica.
             </p>
           </div>
         </Card>
