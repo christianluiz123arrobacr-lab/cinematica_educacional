@@ -23,6 +23,8 @@ type QuestaoRow = {
   disciplina?: string;
   assunto: string;
   conteudo?: string | null;
+  conteudos?: string[] | null;
+  assuntos?: string[] | null;
   banca?: string | null;
   ano: number;
   dificuldade: QuestionDifficulty;
@@ -62,8 +64,35 @@ type QuestaoRow = {
 
 function normalizarTexto(valor?: string | null): string | undefined {
   if (!valor) return undefined;
+
   const limpo = valor.trim();
+
   return limpo.length > 0 ? limpo : undefined;
+}
+
+function normalizarListaTexto(
+  valores?: string[] | null,
+  fallback?: string | null
+): string[] {
+  const itens = Array.isArray(valores) ? valores : [];
+  const base = itens.length > 0 ? itens : fallback ? [fallback] : [];
+
+  return Array.from(
+    new Set(
+      base
+        .map((item) => String(item ?? "").trim().toLowerCase())
+        .filter(Boolean)
+    )
+  );
+}
+
+function questionMatchesListFilter(values: string[] | undefined, filter?: string) {
+  if (!filter?.trim()) return true;
+
+  const normalizedFilter = filter.trim().toLowerCase();
+  const list = values ?? [];
+
+  return list.some((item) => item.toLowerCase().includes(normalizedFilter));
 }
 
 function normalizarAlternativas(row: QuestaoRow): Question["options"] {
@@ -82,6 +111,7 @@ function normalizarAlternativas(row: QuestaoRow): Question["options"] {
           imageUrl: row.a_url_imagem ?? undefined,
         }
       : null,
+
     altB || row.b_url_imagem
       ? {
           id: "b",
@@ -90,6 +120,7 @@ function normalizarAlternativas(row: QuestaoRow): Question["options"] {
           imageUrl: row.b_url_imagem ?? undefined,
         }
       : null,
+
     altC || row.c_url_imagem
       ? {
           id: "c",
@@ -98,6 +129,7 @@ function normalizarAlternativas(row: QuestaoRow): Question["options"] {
           imageUrl: row.c_url_imagem ?? undefined,
         }
       : null,
+
     altD || row.d_url_imagem
       ? {
           id: "d",
@@ -106,6 +138,7 @@ function normalizarAlternativas(row: QuestaoRow): Question["options"] {
           imageUrl: row.d_url_imagem ?? undefined,
         }
       : null,
+
     altE || row.e_url_imagem
       ? {
           id: "e",
@@ -161,14 +194,32 @@ function mapQuestao(row: QuestaoRow): Question {
     row.disciplina ??
     row.diciplina ??
     "fisica"
-  ).toLowerCase().trim() as QuestionSubject;
+  )
+    .toLowerCase()
+    .trim() as QuestionSubject;
+
+  const topics = normalizarListaTexto(row.conteudos, row.conteudo ?? row.assunto);
+  const subtopics = normalizarListaTexto(row.assuntos, row.assunto);
 
   return {
     id: row.id,
     codigo: row.codigo ?? undefined,
     subject: disciplina,
-    topic: (row.conteudo ?? row.assunto ?? "").toLowerCase().trim(),
-    subtopic: row.assunto?.toLowerCase().trim(),
+
+    /**
+     * Compatibilidade com o sistema antigo:
+     * topic continua existindo, mas agora vem do primeiro conteúdo.
+     */
+    topic: topics[0] ?? "",
+    topics,
+
+    /**
+     * Compatibilidade com o sistema antigo:
+     * subtopic continua existindo, mas agora vem do primeiro assunto.
+     */
+    subtopic: subtopics[0],
+    subtopics,
+
     exam: normalizarTexto(row.banca) ?? "Sem banca",
     year: row.ano,
     institution: normalizarTexto(row.instituição),
@@ -209,13 +260,17 @@ export async function getQuestions(
     );
   }
 
-  if (filters?.topic) {
-    query = query.ilike("conteudo", `%${filters.topic}%`);
-  }
-
-  if (filters?.subtopic) {
-    query = query.ilike("assunto", `%${filters.subtopic}%`);
-  }
+  /**
+   * Conteúdo e assunto agora podem ser listas.
+   *
+   * Antes dava para filtrar direto no Supabase:
+   * conteudo.eq.cinemática
+   *
+   * Agora a questão pode ter:
+   * conteudos = ["cinemática", "dinâmica"]
+   *
+   * Por isso, topic/subtopic são filtrados depois do mapQuestao.
+   */
 
   if (filters?.exam) {
     query = query.eq("banca", filters.exam);
@@ -246,7 +301,21 @@ export async function getQuestions(
     return [];
   }
 
-  return (data as QuestaoRow[]).map(mapQuestao);
+  let questions = (data as QuestaoRow[]).map(mapQuestao);
+
+  if (filters?.topic) {
+    questions = questions.filter((question) =>
+      questionMatchesListFilter(question.topics, filters.topic)
+    );
+  }
+
+  if (filters?.subtopic) {
+    questions = questions.filter((question) =>
+      questionMatchesListFilter(question.subtopics, filters.subtopic)
+    );
+  }
+
+  return questions;
 }
 
 export async function getQuestionById(id: string): Promise<Question | null> {
