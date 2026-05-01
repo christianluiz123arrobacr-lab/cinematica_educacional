@@ -26,7 +26,9 @@ type AdminQuestionRow = {
   disciplina?: string | null;
   diciplina?: string | null;
   conteudo?: string | null;
+  conteudos?: string[] | null;
   assunto?: string | null;
+  assuntos?: string[] | null;
   banca?: string | null;
   ano?: number | null;
   dificuldade?: string | null;
@@ -54,10 +56,37 @@ function normalizarDisciplina(row: AdminQuestionRow) {
   return row.disciplina || row.diciplina || "—";
 }
 
+function normalizarLista(valores?: string[] | null, fallback?: string | null) {
+  const itens = Array.isArray(valores) ? valores : [];
+  const base = itens.length > 0 ? itens : fallback ? [fallback] : [];
+
+  return Array.from(
+    new Set(
+      base
+        .map((item) => String(item ?? "").trim())
+        .filter(Boolean)
+    )
+  );
+}
+
+function listarConteudos(row: AdminQuestionRow) {
+  return normalizarLista(row.conteudos, row.conteudo);
+}
+
+function listarAssuntos(row: AdminQuestionRow) {
+  return normalizarLista(row.assuntos, row.assunto);
+}
+
+function textoLista(valores: string[]) {
+  return valores.length > 0 ? valores.join(", ") : "—";
+}
+
 function textoCurto(texto?: string | null, limite = 90) {
   const valor = (texto || "").trim();
+
   if (!valor) return "Sem enunciado";
   if (valor.length <= limite) return valor;
+
   return `${valor.slice(0, limite)}...`;
 }
 
@@ -218,8 +247,8 @@ export default function AdminQuestionsPage() {
     return questions.filter((q) => {
       const disciplina = normalizarDisciplina(q).toLowerCase();
       const codigo = (q.codigo || "").toLowerCase();
-      const conteudo = (q.conteudo || "").toLowerCase();
-      const assunto = (q.assunto || "").toLowerCase();
+      const conteudo = listarConteudos(q).join(" ").toLowerCase();
+      const assunto = listarAssuntos(q).join(" ").toLowerCase();
       const banca = (q.banca || "").toLowerCase();
       const instituicao = (q.instituição || "").toLowerCase();
       const enunciado = (q.enunciado || "").toLowerCase();
@@ -242,13 +271,11 @@ export default function AdminQuestionsPage() {
         normalizarDisciplina(q).toLowerCase() === disciplinaFiltro.toLowerCase();
 
       const passouDificuldade =
-        !dificuldadeFiltro ||
-        dificuldade === dificuldadeFiltro.toLowerCase();
+        !dificuldadeFiltro || dificuldade === dificuldadeFiltro.toLowerCase();
 
       const passouInstituicao =
         !instituicaoFiltro ||
-        (q.instituição || "").toLowerCase() ===
-          instituicaoFiltro.toLowerCase();
+        (q.instituição || "").toLowerCase() === instituicaoFiltro.toLowerCase();
 
       const passouAno = !anoFiltro || String(q.ano || "") === anoFiltro;
 
@@ -315,7 +342,9 @@ export default function AdminQuestionsPage() {
           codigo: question.codigo || null,
           disciplina: normalizarDisciplina(question),
           conteudo: question.conteudo || null,
+          conteudos: listarConteudos(question),
           assunto: question.assunto || null,
+          assuntos: listarAssuntos(question),
           banca: question.banca || null,
           ano: question.ano || null,
           dificuldade: question.dificuldade || null,
@@ -397,7 +426,9 @@ export default function AdminQuestionsPage() {
           codigo: question.codigo || null,
           disciplina: normalizarDisciplina(question),
           conteudo: question.conteudo || null,
+          conteudos: listarConteudos(question),
           assunto: question.assunto || null,
+          assuntos: listarAssuntos(question),
           banca: question.banca || null,
           ano: question.ano || null,
           dificuldade: question.dificuldade || null,
@@ -644,32 +675,37 @@ export default function AdminQuestionsPage() {
                           <span className="font-semibold text-slate-800">
                             Conteúdo:
                           </span>{" "}
-                          {question.conteudo || "—"}
+                          {textoLista(listarConteudos(question))}
                         </p>
+
                         <p>
                           <span className="font-semibold text-slate-800">
                             Assunto:
                           </span>{" "}
-                          {question.assunto || "—"}
+                          {textoLista(listarAssuntos(question))}
                         </p>
+
                         <p>
                           <span className="font-semibold text-slate-800">
                             Banca:
                           </span>{" "}
                           {question.banca || "—"}
                         </p>
+
                         <p>
                           <span className="font-semibold text-slate-800">
                             Ano:
                           </span>{" "}
                           {question.ano || "—"}
                         </p>
+
                         <p>
                           <span className="font-semibold text-slate-800">
                             Instituição:
                           </span>{" "}
                           {question.instituição || "—"}
                         </p>
+
                         <p>
                           <span className="font-semibold text-slate-800">
                             ID:
