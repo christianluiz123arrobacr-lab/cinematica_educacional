@@ -142,6 +142,14 @@ function getQuestionDifficultyScore(
   return 0;
 }
 
+function getQuestionTopics(question: Question) {
+  if (Array.isArray(question.topics) && question.topics.length > 0) {
+    return question.topics.filter(Boolean);
+  }
+
+  return question.topic ? [question.topic] : [];
+}
+
 function getQuestionPriorityScore(
   question: Question,
   block: "ataque" | "consolidacao" | "manutencao",
@@ -151,10 +159,13 @@ function getQuestionPriorityScore(
 ) {
   let score = 0;
 
-  const normalizedTopic = normalizeText(question.topic);
-  const contentIndex = contents.indexOf(normalizedTopic);
+  const contentIndex = getQuestionTopics(question)
+    .map((topic) => normalizeText(topic))
+    .map((topic) => contents.indexOf(topic))
+    .filter((index) => index !== -1)
+    .sort((a, b) => a - b)[0];
 
-  if (contentIndex !== -1) {
+  if (contentIndex !== undefined) {
     score += Math.max(20 - contentIndex * 3, 5);
   }
 
@@ -319,8 +330,13 @@ export default function VetQuestionsPage() {
 
       const current = contentMap.get(conteudo) ?? { total: 0, correct: 0, wrong: 0 };
       current.total += 1;
-      if (attempt.is_correct) current.correct += 1;
-      else current.wrong += 1;
+
+      if (attempt.is_correct) {
+        current.correct += 1;
+      } else {
+        current.wrong += 1;
+      }
+
       contentMap.set(conteudo, current);
     }
 
@@ -410,8 +426,8 @@ export default function VetQuestionsPage() {
       block === "ataque"
         ? attackContents
         : block === "consolidacao"
-        ? consolidationContents
-        : maintenanceContents;
+          ? consolidationContents
+          : maintenanceContents;
 
     if (!contents.length) return [];
 
@@ -424,7 +440,9 @@ export default function VetQuestionsPage() {
     }
 
     base = base.filter((question) =>
-      contents.includes(normalizeText(question.topic))
+      getQuestionTopics(question).some((topic) =>
+        contents.includes(normalizeText(topic))
+      )
     );
 
     const sorted = [...base].sort((a, b) => {
@@ -475,15 +493,15 @@ export default function VetQuestionsPage() {
     selectedBlock === "ataque"
       ? attackQuestions
       : selectedBlock === "consolidacao"
-      ? consolidationQuestions
-      : maintenanceQuestions;
+        ? consolidationQuestions
+        : maintenanceQuestions;
 
   const visibleTitle =
     selectedBlock === "ataque"
       ? "Questões de ataque"
       : selectedBlock === "consolidacao"
-      ? "Questões de consolidação"
-      : "Questões de manutenção";
+        ? "Questões de consolidação"
+        : "Questões de manutenção";
 
   const attackBankUrl = buildBankUrl(
     profile?.focus_subject ?? "todas",
@@ -510,8 +528,8 @@ export default function VetQuestionsPage() {
     selectedBlock === "ataque"
       ? attackBankUrl
       : selectedBlock === "consolidacao"
-      ? consolidationBankUrl
-      : maintenanceBankUrl;
+        ? consolidationBankUrl
+        : maintenanceBankUrl;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-50">
@@ -525,7 +543,9 @@ export default function VetQuestionsPage() {
           </Link>
 
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Questões recomendadas</h1>
+            <h1 className="text-2xl font-bold text-slate-900">
+              Questões recomendadas
+            </h1>
             <p className="text-sm text-slate-500">
               Questões reais escolhidas pelo VET
             </p>
@@ -585,7 +605,9 @@ export default function VetQuestionsPage() {
 
               <Card className="p-5">
                 <p className="text-sm text-slate-500 mb-1">Consolidação</p>
-                <p className="text-3xl font-bold text-yellow-600">{consolidationQuestions.length}</p>
+                <p className="text-3xl font-bold text-yellow-600">
+                  {consolidationQuestions.length}
+                </p>
                 <Link href={consolidationBankUrl}>
                   <Button variant="outline" className="w-full mt-4 rounded-xl">
                     <ExternalLink className="w-4 h-4 mr-2" />
@@ -596,7 +618,9 @@ export default function VetQuestionsPage() {
 
               <Card className="p-5">
                 <p className="text-sm text-slate-500 mb-1">Manutenção</p>
-                <p className="text-3xl font-bold text-green-600">{maintenanceQuestions.length}</p>
+                <p className="text-3xl font-bold text-green-600">
+                  {maintenanceQuestions.length}
+                </p>
                 <Link href={maintenanceBankUrl}>
                   <Button variant="outline" className="w-full mt-4 rounded-xl">
                     <ExternalLink className="w-4 h-4 mr-2" />
@@ -675,7 +699,9 @@ export default function VetQuestionsPage() {
 
               {visibleQuestions.length > 0 ? (
                 <InteractiveQuiz
-                  key={`${selectedBlock}-${visibleQuestions.map((q) => q.id).join("-")}`}
+                  key={`${selectedBlock}-${visibleQuestions
+                    .map((q) => q.id)
+                    .join("-")}`}
                   questions={visibleQuestions}
                 />
               ) : (
