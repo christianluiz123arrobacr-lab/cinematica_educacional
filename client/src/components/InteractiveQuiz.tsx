@@ -30,6 +30,26 @@ type ResolutionMetaRow = {
   autor_nome?: string | null;
 };
 
+function getQuestionTopics(question?: Question | null) {
+  if (!question) return [];
+
+  if (Array.isArray(question.topics) && question.topics.length > 0) {
+    return question.topics.filter(Boolean);
+  }
+
+  return question.topic ? [question.topic] : [];
+}
+
+function getQuestionSubtopics(question?: Question | null) {
+  if (!question) return [];
+
+  if (Array.isArray(question.subtopics) && question.subtopics.length > 0) {
+    return question.subtopics.filter(Boolean);
+  }
+
+  return question.subtopic ? [question.subtopic] : [];
+}
+
 export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps) {
   const { user } = useSupabaseAuth();
 
@@ -38,9 +58,84 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
   const [showExplanationByQuestion, setShowExplanationByQuestion] = useState<Record<number, boolean>>({});
   const [questionStartedAt, setQuestionStartedAt] = useState<number>(Date.now());
   const [hasSentCompletion, setHasSentCompletion] = useState(false);
-  const [resolutionAuthorsByQuestionId, setResolutionAuthorsByQuestionId] = useState<
-    Record<string, string>
-  >({});
+  const [resolutionAuthorsByQuestionId, setResolutionAuthorsByQuestionId] = useState<Record<string, string>>({});
+
+  const question = questions[currentQuestion] ?? null;
+
+  const selectedAnswer = answersByQuestion[currentQuestion] ?? null;
+  const answered = selectedAnswer !== null;
+  const showExplanation = showExplanationByQuestion[currentQuestion] ?? false;
+  const isCorrect = question ? selectedAnswer === question.correctOptionId : false;
+  const resolutionAuthor = question ? resolutionAuthorsByQuestionId[question.id] ?? "" : "";
+
+  const questionTopics = getQuestionTopics(question);
+  const questionSubtopics = getQuestionSubtopics(question);
+
+  const score = useMemo(() => {
+    return questions.reduce((total, q, index) => {
+      return answersByQuestion[index] === q.correctOptionId ? total + 1 : total;
+    }, 0);
+  }, [answersByQuestion, questions]);
+
+  const totalAnswered = useMemo(() => {
+    return Object.keys(answersByQuestion).length;
+  }, [answersByQuestion]);
+
+  const isQuizComplete = questions.length > 0 && totalAnswered === questions.length;
+
+  const completionData = useMemo<QuizCompletionData | null>(() => {
+    if (!isQuizComplete) return null;
+
+    const correctQuestionIds: string[] = [];
+    const wrongQuestionIds: string[] = [];
+    const wrongTopicMap = new Map<string, number>();
+    const wrongDifficultyMap = new Map<string, number>();
+
+    questions.forEach((q, index) => {
+      const selected = answersByQuestion[index];
+      const correct = selected === q.correctOptionId;
+
+      if (correct) {
+        correctQuestionIds.push(q.id);
+        return;
+      }
+
+      wrongQuestionIds.push(q.id);
+
+      const topics = getQuestionTopics(q);
+      const safeTopics = topics.length > 0 ? topics : ["Sem conteúdo"];
+
+      for (const topic of safeTopics) {
+        wrongTopicMap.set(topic, (wrongTopicMap.get(topic) ?? 0) + 1);
+      }
+
+      const difficulty =
+        q.difficulty === "facil"
+          ? "Fácil"
+          : q.difficulty === "medio"
+            ? "Médio"
+            : q.difficulty === "dificil"
+              ? "Difícil"
+              : "Não informado";
+
+      wrongDifficultyMap.set(difficulty, (wrongDifficultyMap.get(difficulty) ?? 0) + 1);
+    });
+
+    return {
+      totalQuestions: questions.length,
+      totalAnswered,
+      score,
+      accuracy: questions.length > 0 ? (score / questions.length) * 100 : 0,
+      correctQuestionIds,
+      wrongQuestionIds,
+      wrongTopics: Array.from(wrongTopicMap.entries())
+        .map(([topic, count]) => ({ topic, count }))
+        .sort((a, b) => b.count - a.count),
+      wrongDifficulties: Array.from(wrongDifficultyMap.entries())
+        .map(([difficulty, count]) => ({ difficulty, count }))
+        .sort((a, b) => b.count - a.count),
+    };
+  }, [answersByQuestion, isQuizComplete, questions, score, totalAnswered]);
 
   useEffect(() => {
     if (!questions.length) {
@@ -65,7 +160,7 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
     async function loadResolutionAuthors() {
       try {
         const uniqueQuestionIds = Array.from(
-          new Set(questions.map((question) => question.id).filter(Boolean))
+          new Set(questions.map((item) => item.id).filter(Boolean))
         );
 
         if (!uniqueQuestionIds.length) {
@@ -100,93 +195,6 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
     loadResolutionAuthors();
   }, [questions]);
 
-  if (!questions.length) {
-    return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-        <h3 className="text-2xl font-bold text-slate-900 mb-6">📝 Exercícios Interativos</h3>
-        <p className="text-slate-600">Nenhuma questão encontrada.</p>
-      </div>
-    );
-  }
-
-  const question = questions[currentQuestion];
-
-  if (!question) {
-    return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-        <h3 className="text-2xl font-bold text-slate-900 mb-6">📝 Exercícios Interativos</h3>
-        <p className="text-slate-600">Carregando questão...</p>
-      </div>
-    );
-  }
-
-  const selectedAnswer = answersByQuestion[currentQuestion] ?? null;
-  const answered = selectedAnswer !== null;
-  const showExplanation = showExplanationByQuestion[currentQuestion] ?? false;
-  const isCorrect = selectedAnswer === question.correctOptionId;
-  const resolutionAuthor = resolutionAuthorsByQuestionId[question.id] ?? "";
-
-  const score = useMemo(() => {
-    return questions.reduce((total, q, index) => {
-      return answersByQuestion[index] === q.correctOptionId ? total + 1 : total;
-    }, 0);
-  }, [answersByQuestion, questions]);
-
-  const totalAnswered = useMemo(() => {
-    return Object.keys(answersByQuestion).length;
-  }, [answersByQuestion]);
-
-  const isQuizComplete = questions.length > 0 && totalAnswered === questions.length;
-
-  const completionData = useMemo<QuizCompletionData | null>(() => {
-    if (!isQuizComplete) return null;
-
-    const correctQuestionIds: string[] = [];
-    const wrongQuestionIds: string[] = [];
-    const wrongTopicMap = new Map<string, number>();
-    const wrongDifficultyMap = new Map<string, number>();
-
-    questions.forEach((q, index) => {
-      const selected = answersByQuestion[index];
-      const correct = selected === q.correctOptionId;
-
-      if (correct) {
-        correctQuestionIds.push(q.id);
-      } else {
-        wrongQuestionIds.push(q.id);
-
-        const topic = q.topic || "Sem conteúdo";
-        wrongTopicMap.set(topic, (wrongTopicMap.get(topic) ?? 0) + 1);
-
-        const difficulty =
-          q.difficulty === "facil"
-            ? "Fácil"
-            : q.difficulty === "medio"
-              ? "Médio"
-              : q.difficulty === "dificil"
-                ? "Difícil"
-                : "Não informado";
-
-        wrongDifficultyMap.set(difficulty, (wrongDifficultyMap.get(difficulty) ?? 0) + 1);
-      }
-    });
-
-    return {
-      totalQuestions: questions.length,
-      totalAnswered,
-      score,
-      accuracy: questions.length > 0 ? (score / questions.length) * 100 : 0,
-      correctQuestionIds,
-      wrongQuestionIds,
-      wrongTopics: Array.from(wrongTopicMap.entries())
-        .map(([topic, count]) => ({ topic, count }))
-        .sort((a, b) => b.count - a.count),
-      wrongDifficulties: Array.from(wrongDifficultyMap.entries())
-        .map(([difficulty, count]) => ({ difficulty, count }))
-        .sort((a, b) => b.count - a.count),
-    };
-  }, [answersByQuestion, isQuizComplete, questions, score, totalAnswered]);
-
   useEffect(() => {
     if (isQuizComplete && completionData && onComplete && !hasSentCompletion) {
       onComplete(completionData);
@@ -195,7 +203,7 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
   }, [completionData, hasSentCompletion, isQuizComplete, onComplete]);
 
   const saveAttempt = async (optionId: string) => {
-    if (!user?.id) return;
+    if (!user?.id || !question) return;
 
     try {
       const elapsedSeconds = Math.max(
@@ -227,8 +235,8 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
           time_spent_seconds: elapsedSeconds,
           attempt_number: attemptNumber,
           subject: question.subject,
-          conteudo: question.topic,
-          assunto: question.subtopic ?? null,
+          conteudo: getQuestionTopics(question)[0] ?? null,
+          assunto: getQuestionSubtopics(question)[0] ?? null,
           banca: question.exam,
           ano: question.year,
           difficulty: question.difficulty,
@@ -243,7 +251,7 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
   };
 
   const handleAnswer = async (optionId: string) => {
-    if (answered) return;
+    if (answered || !question) return;
 
     setAnswersByQuestion((prev) => ({
       ...prev,
@@ -278,6 +286,28 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
     setHasSentCompletion(false);
   };
 
+  if (!questions.length) {
+    return (
+      <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+        <h3 className="text-2xl font-bold text-slate-900 mb-6">
+          📝 Exercícios Interativos
+        </h3>
+        <p className="text-slate-600">Nenhuma questão encontrada.</p>
+      </div>
+    );
+  }
+
+  if (!question) {
+    return (
+      <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+        <h3 className="text-2xl font-bold text-slate-900 mb-6">
+          📝 Exercícios Interativos
+        </h3>
+        <p className="text-slate-600">Carregando questão...</p>
+      </div>
+    );
+  }
+
   const difficultyClass =
     question.difficulty === "facil"
       ? "bg-green-100 text-green-900"
@@ -294,26 +324,40 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-      <h3 className="text-2xl font-bold text-slate-900 mb-6">📝 Exercícios Interativos</h3>
+      <h3 className="text-2xl font-bold text-slate-900 mb-6">
+        📝 Exercícios Interativos
+      </h3>
 
       <div className="mb-4 flex flex-wrap gap-2">
         <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-900">
           {question.exam}
         </span>
+
         <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-900">
           {question.year}
         </span>
+
         <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${difficultyClass}`}>
           {difficultyLabel}
         </span>
-        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-900">
-          {question.topic}
-        </span>
-        {question.subtopic && (
-          <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-cyan-100 text-cyan-900">
-            {question.subtopic}
+
+        {questionTopics.map((topic) => (
+          <span
+            key={`topic-${topic}`}
+            className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-900"
+          >
+            {topic}
           </span>
-        )}
+        ))}
+
+        {questionSubtopics.map((subtopic) => (
+          <span
+            key={`subtopic-${subtopic}`}
+            className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-cyan-100 text-cyan-900"
+          >
+            {subtopic}
+          </span>
+        ))}
       </div>
 
       <div className="mb-8">
@@ -321,11 +365,12 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
           <span className="text-sm font-bold text-slate-900">Progresso</span>
 
           <div className="flex flex-col items-end">
-            {question.codigo && (
+            {question.codigo ? (
               <span className="text-xs font-bold text-slate-500 mb-1">
                 {question.codigo}
               </span>
-            )}
+            ) : null}
+
             <span className="text-sm font-bold text-slate-600">
               {currentQuestion + 1} de {questions.length}
             </span>
@@ -335,7 +380,9 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
         <div className="w-full bg-slate-200 rounded-full h-2">
           <div
             className="bg-gradient-to-r from-blue-500 to-blue-700 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
+            style={{
+              width: `${((currentQuestion + 1) / questions.length) * 100}%`,
+            }}
           />
         </div>
       </div>
@@ -347,14 +394,16 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
             rehypePlugins={[rehypeKatex]}
             components={{
               p: ({ children }) => <p className="mb-3">{children}</p>,
-              strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+              strong: ({ children }) => (
+                <strong className="font-bold">{children}</strong>
+              ),
             }}
           >
             {question.statement}
           </ReactMarkdown>
         </div>
 
-        {question.imageUrl && (
+        {question.imageUrl ? (
           <div className="mt-4">
             <img
               src={question.imageUrl}
@@ -362,24 +411,26 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
               className="max-w-full rounded-lg border border-slate-200"
             />
           </div>
-        )}
+        ) : null}
 
-        {question.statementAfterImage && (
+        {question.statementAfterImage ? (
           <div className="mt-4 text-lg font-bold text-slate-900 leading-relaxed">
             <ReactMarkdown
               remarkPlugins={[remarkMath]}
               rehypePlugins={[rehypeKatex]}
               components={{
                 p: ({ children }) => <p className="mb-3">{children}</p>,
-                strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                strong: ({ children }) => (
+                  <strong className="font-bold">{children}</strong>
+                ),
               }}
             >
               {question.statementAfterImage}
             </ReactMarkdown>
           </div>
-        )}
+        ) : null}
 
-        {question.formula && (
+        {question.formula ? (
           <div className="mt-4 p-4 bg-white rounded border border-blue-200">
             <p className="text-xs text-slate-600 mb-2">Fórmula útil:</p>
             <MathFormula
@@ -387,7 +438,7 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
               display={true}
             />
           </div>
-        )}
+        ) : null}
       </div>
 
       <div className="space-y-3 mb-8">
@@ -419,26 +470,31 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
                     rehypePlugins={[rehypeKatex]}
                     components={{
                       p: ({ children }) => <p className="mb-0">{children}</p>,
-                      strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                      strong: ({ children }) => (
+                        <strong className="font-bold">{children}</strong>
+                      ),
                     }}
                   >
                     {`${option.label}) ${option.text ?? ""}`}
                   </ReactMarkdown>
 
-                  {option.imageUrl && (
+                  {option.imageUrl ? (
                     <img
                       src={option.imageUrl}
                       alt={`Alternativa ${option.label}`}
                       className="mt-3 max-h-48 max-w-full object-contain rounded border border-slate-200 bg-white"
                     />
-                  )}
+                  ) : null}
                 </div>
 
                 <div className="flex-shrink-0">
-                  {answered && isCorrectOption && <CheckCircle className="w-5 h-5 text-green-600" />}
-                  {answered && isSelected && !isCorrectOption && (
+                  {answered && isCorrectOption ? (
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  ) : null}
+
+                  {answered && isSelected && !isCorrectOption ? (
                     <XCircle className="w-5 h-5 text-red-600" />
-                  )}
+                  ) : null}
                 </div>
               </div>
             </button>
@@ -446,10 +502,12 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
         })}
       </div>
 
-      {showExplanation && (
+      {showExplanation ? (
         <div
           className={`p-6 rounded-lg border-2 mb-8 ${
-            isCorrect ? "bg-green-50 border-green-300" : "bg-yellow-50 border-yellow-300"
+            isCorrect
+              ? "bg-green-50 border-green-300"
+              : "bg-yellow-50 border-yellow-300"
           }`}
         >
           <div className="flex gap-3 items-start">
@@ -461,7 +519,11 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
 
             <div className="w-full">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
-                <p className={`font-bold ${isCorrect ? "text-green-900" : "text-yellow-900"}`}>
+                <p
+                  className={`font-bold ${
+                    isCorrect ? "text-green-900" : "text-yellow-900"
+                  }`}
+                >
                   {isCorrect ? "✅ Correto!" : "❌ Incorreto"}
                 </p>
 
@@ -473,7 +535,11 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
                 ) : null}
               </div>
 
-              <div className={`text-sm ${isCorrect ? "text-green-800" : "text-yellow-800"}`}>
+              <div
+                className={`text-sm ${
+                  isCorrect ? "text-green-800" : "text-yellow-800"
+                }`}
+              >
                 {question.explanationBlocks && question.explanationBlocks.length > 0 ? (
                   <div className="space-y-4">
                     {question.explanationBlocks
@@ -504,8 +570,14 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
                                 remarkPlugins={[remarkMath]}
                                 rehypePlugins={[rehypeKatex]}
                                 components={{
-                                  p: ({ children }) => <p className="mb-0">{children}</p>,
-                                  strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                                  p: ({ children }) => (
+                                    <p className="mb-0">{children}</p>
+                                  ),
+                                  strong: ({ children }) => (
+                                    <strong className="font-bold">
+                                      {children}
+                                    </strong>
+                                  ),
                                 }}
                               >
                                 {block.content}
@@ -522,12 +594,28 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
                               rehypePlugins={[rehypeKatex]}
                               components={{
                                 p: ({ children }) => (
-                                  <p className="mb-3 whitespace-pre-line">{children}</p>
+                                  <p className="mb-3 whitespace-pre-line">
+                                    {children}
+                                  </p>
                                 ),
-                                strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-                                ul: ({ children }) => <ul className="list-disc pl-5 mb-3">{children}</ul>,
-                                ol: ({ children }) => <ol className="list-decimal pl-5 mb-3">{children}</ol>,
-                                li: ({ children }) => <li className="mb-1">{children}</li>,
+                                strong: ({ children }) => (
+                                  <strong className="font-bold">
+                                    {children}
+                                  </strong>
+                                ),
+                                ul: ({ children }) => (
+                                  <ul className="list-disc pl-5 mb-3">
+                                    {children}
+                                  </ul>
+                                ),
+                                ol: ({ children }) => (
+                                  <ol className="list-decimal pl-5 mb-3">
+                                    {children}
+                                  </ol>
+                                ),
+                                li: ({ children }) => (
+                                  <li className="mb-1">{children}</li>
+                                ),
                               }}
                             >
                               {block.content}
@@ -543,10 +631,18 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
                     remarkPlugins={[remarkMath]}
                     rehypePlugins={[rehypeKatex]}
                     components={{
-                      p: ({ children }) => <p className="mb-3 whitespace-pre-line">{children}</p>,
-                      strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-                      ul: ({ children }) => <ul className="list-disc pl-5 mb-3">{children}</ul>,
-                      ol: ({ children }) => <ol className="list-decimal pl-5 mb-3">{children}</ol>,
+                      p: ({ children }) => (
+                        <p className="mb-3 whitespace-pre-line">{children}</p>
+                      ),
+                      strong: ({ children }) => (
+                        <strong className="font-bold">{children}</strong>
+                      ),
+                      ul: ({ children }) => (
+                        <ul className="list-disc pl-5 mb-3">{children}</ul>
+                      ),
+                      ol: ({ children }) => (
+                        <ol className="list-decimal pl-5 mb-3">{children}</ol>
+                      ),
                       li: ({ children }) => <li className="mb-1">{children}</li>,
                     }}
                   >
@@ -557,35 +653,35 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
             </div>
           </div>
         </div>
-      )}
+      ) : null}
 
       <div className="flex gap-4">
-        {currentQuestion > 0 && (
+        {currentQuestion > 0 ? (
           <button
             onClick={handlePrevious}
             className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-lg transition-all"
           >
             ← Questão Anterior
           </button>
-        )}
+        ) : null}
 
-        {currentQuestion < questions.length - 1 && (
+        {currentQuestion < questions.length - 1 ? (
           <button
             onClick={handleNext}
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all"
           >
             Próxima Questão →
           </button>
-        )}
+        ) : null}
 
-        {currentQuestion === questions.length - 1 && (
+        {currentQuestion === questions.length - 1 ? (
           <button
             onClick={handleRestart}
             className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition-all"
           >
             Reiniciar Quiz
           </button>
-        )}
+        ) : null}
       </div>
     </div>
   );
