@@ -20,8 +20,31 @@ export type Question = {
   id: string;
   codigo?: string;
   subject: QuestionSubject;
+
+  /**
+   * Campo legado/principal único usado por componentes antigos.
+   * Ele continua sendo preenchido com o primeiro item de topics.
+   */
   topic: string;
+
+  /**
+   * Nova lista de conteúdos da questão.
+   * Ex.: ["cinemática", "dinâmica"].
+   */
+  topics?: string[];
+
+  /**
+   * Campo legado/principal único usado por componentes antigos.
+   * Ele continua sendo preenchido com o primeiro item de subtopics.
+   */
   subtopic?: string;
+
+  /**
+   * Nova lista de assuntos da questão.
+   * Ex.: ["mru", "gráficos", "leis de newton"].
+   */
+  subtopics?: string[];
+
   exam: string;
   year: number;
   institution?: string;
