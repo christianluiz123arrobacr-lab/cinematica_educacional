@@ -69,10 +69,31 @@ function matchesMulti(
   return selected.some((item) => normalizeText(item) === normalizedValue);
 }
 
-function getMultiSelectLabel(
-  selected: string[],
-  placeholder: string
-) {
+function getQuestionTopics(question: Question) {
+  if (Array.isArray(question.topics) && question.topics.length > 0) {
+    return question.topics.filter(Boolean);
+  }
+
+  return question.topic ? [question.topic] : [];
+}
+
+function getQuestionSubtopics(question: Question) {
+  if (Array.isArray(question.subtopics) && question.subtopics.length > 0) {
+    return question.subtopics.filter(Boolean);
+  }
+
+  return question.subtopic ? [question.subtopic] : [];
+}
+
+function matchesMultiList(values: string[], selected: string[]) {
+  if (selected.length === 0) return true;
+
+  const normalizedValues = values.map((value) => normalizeText(value));
+
+  return selected.some((item) => normalizedValues.includes(normalizeText(item)));
+}
+
+function getMultiSelectLabel(selected: string[], placeholder: string) {
   if (selected.length === 0) return placeholder;
   if (selected.length === 1) return selected[0];
   return `${selected.length} selecionados`;
@@ -197,15 +218,18 @@ export default function QuestionBankPage() {
 
   const availableTopics = useMemo(() => {
     return Array.from(
-      new Set(questionsForTopics.map((q) => q.topic).filter(Boolean))
+      new Set(
+        questionsForTopics
+          .flatMap((q) => getQuestionTopics(q))
+          .filter(Boolean)
+      )
     ).sort((a, b) => a.localeCompare(b, "pt-BR"));
   }, [questionsForTopics]);
 
   const questionsForSubtopics = useMemo(() => {
     return questions.filter((q) => {
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
-      const matchesTopic =
-        effectiveTopics.length === 0 || matchesMulti(q.topic, effectiveTopics);
+      const matchesTopic = matchesMultiList(getQuestionTopics(q), effectiveTopics);
 
       return matchesSubject && matchesTopic;
     });
@@ -213,7 +237,11 @@ export default function QuestionBankPage() {
 
   const availableSubtopics = useMemo(() => {
     return Array.from(
-      new Set(questionsForSubtopics.map((q) => q.subtopic).filter(Boolean))
+      new Set(
+        questionsForSubtopics
+          .flatMap((q) => getQuestionSubtopics(q))
+          .filter(Boolean)
+      )
     ).sort((a, b) => a.localeCompare(b, "pt-BR"));
   }, [questionsForSubtopics]);
 
@@ -221,9 +249,11 @@ export default function QuestionBankPage() {
     return questions.filter((q) => {
       const matchesDifficulty = matchesMulti(q.difficulty, selectedDifficulties);
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
-      const matchesTopic =
-        effectiveTopics.length === 0 || matchesMulti(q.topic, effectiveTopics);
-      const matchesSubtopic = matchesMulti(q.subtopic, selectedSubtopics);
+      const matchesTopic = matchesMultiList(getQuestionTopics(q), effectiveTopics);
+      const matchesSubtopic = matchesMultiList(
+        getQuestionSubtopics(q),
+        selectedSubtopics
+      );
 
       return (
         matchesDifficulty &&
@@ -250,9 +280,11 @@ export default function QuestionBankPage() {
     return questions.filter((q) => {
       const matchesDifficulty = matchesMulti(q.difficulty, selectedDifficulties);
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
-      const matchesTopic =
-        effectiveTopics.length === 0 || matchesMulti(q.topic, effectiveTopics);
-      const matchesSubtopic = matchesMulti(q.subtopic, selectedSubtopics);
+      const matchesTopic = matchesMultiList(getQuestionTopics(q), effectiveTopics);
+      const matchesSubtopic = matchesMultiList(
+        getQuestionSubtopics(q),
+        selectedSubtopics
+      );
       const matchesYear = matchesMulti(String(q.year), selectedYears);
 
       return (
@@ -364,11 +396,13 @@ export default function QuestionBankPage() {
     filtered = filtered.filter((q) => matchesMulti(q.subject, selectedSubjects));
 
     if (effectiveTopics.length > 0) {
-      filtered = filtered.filter((q) => matchesMulti(q.topic, effectiveTopics));
+      filtered = filtered.filter((q) =>
+        matchesMultiList(getQuestionTopics(q), effectiveTopics)
+      );
     }
 
     filtered = filtered.filter((q) =>
-      matchesMulti(q.subtopic, selectedSubtopics)
+      matchesMultiList(getQuestionSubtopics(q), selectedSubtopics)
     );
     filtered = filtered.filter((q) => matchesMulti(String(q.year), selectedYears));
     filtered = filtered.filter((q) =>
@@ -699,9 +733,7 @@ export default function QuestionBankPage() {
                   items={availableInstitutions}
                   selected={selectedInstitutions}
                   onToggle={(value) =>
-                    setSelectedInstitutions((prev) =>
-                      toggleValue(prev, value)
-                    )
+                    setSelectedInstitutions((prev) => toggleValue(prev, value))
                   }
                   placeholder="Todas"
                   emptyMessage="Nenhuma instituição disponível."
