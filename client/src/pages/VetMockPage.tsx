@@ -701,4 +701,25 @@ export default function VetMockPage() {
 
             <Card className="p-6">
               <div className="flex items-center gap-2 mb-4">
-                <FileCheck className="w-5 h-5 text-emer
+                <FileCheck className="w-5 h-5 text-emerald-600" />
+                <h2 className="text-xl font-bold text-slate-900">{modeLabel}</h2>
+              </div>
+
+              {currentQuestions.length > 0 ? (
+                <InteractiveQuiz
+                  key={`${mode}-${currentQuestions.map((q) => q.id).join("-")}`}
+                  questions={currentQuestions}
+                  onComplete={handleSimuladoComplete}
+                />
+              ) : (
+                <p className="text-slate-500">
+                  Ainda não há questões suficientes para esse modo de simulado com os critérios atuais.
+                </p>
+              )}
+            </Card>
+          </>
+        )}
+      </main>
+    </div>
+  );
+}
