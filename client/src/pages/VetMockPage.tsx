@@ -141,6 +141,14 @@ function getQuestionDifficultyScore(
   return 0;
 }
 
+function getQuestionTopics(question: Question) {
+  if (Array.isArray(question.topics) && question.topics.length > 0) {
+    return question.topics.filter(Boolean);
+  }
+
+  return question.topic ? [question.topic] : [];
+}
+
 function getQuestionPriorityScore(
   question: Question,
   block: "ataque" | "consolidacao" | "manutencao",
@@ -150,10 +158,13 @@ function getQuestionPriorityScore(
 ) {
   let score = 0;
 
-  const normalizedTopic = normalizeText(question.topic);
-  const contentIndex = contents.indexOf(normalizedTopic);
+  const contentIndex = getQuestionTopics(question)
+    .map((topic) => normalizeText(topic))
+    .map((topic) => contents.indexOf(topic))
+    .filter((index) => index !== -1)
+    .sort((a, b) => a - b)[0];
 
-  if (contentIndex !== -1) {
+  if (contentIndex !== undefined) {
     score += Math.max(20 - contentIndex * 3, 5);
   }
 
@@ -179,8 +190,10 @@ function getQuestionPriorityScore(
 
 function uniqueById(items: Question[]) {
   const seen = new Set<string>();
+
   return items.filter((item) => {
     if (seen.has(item.id)) return false;
+
     seen.add(item.id);
     return true;
   });
@@ -278,7 +291,8 @@ export default function VetMockPage() {
 
     if (profile.focus_subject !== "todas") {
       result = result.filter(
-        (attempt) => normalizeText(attempt.subject) === normalizeText(profile.focus_subject)
+        (attempt) =>
+          normalizeText(attempt.subject) === normalizeText(profile.focus_subject)
       );
     }
 
@@ -288,10 +302,14 @@ export default function VetMockPage() {
   const recommendedContents = useMemo(() => {
     if (!profile) return [];
 
-    const contentMap = new Map<string, { total: number; correct: number; wrong: number }>();
+    const contentMap = new Map<
+      string,
+      { total: number; correct: number; wrong: number }
+    >();
 
     for (const attempt of filteredAttempts) {
       const conteudo = normalizeText(attempt.conteudo);
+
       if (!conteudo) continue;
 
       const current = contentMap.get(conteudo) ?? {
@@ -301,21 +319,31 @@ export default function VetMockPage() {
       };
 
       current.total += 1;
-      if (attempt.is_correct) current.correct += 1;
-      else current.wrong += 1;
+
+      if (attempt.is_correct) {
+        current.correct += 1;
+      } else {
+        current.wrong += 1;
+      }
 
       contentMap.set(conteudo, current);
     }
 
     const filteredWeights = weights.filter((row) => {
       if (profile.focus_subject === "todas") return true;
+
       return normalizeText(row.subject) === normalizeText(profile.focus_subject);
     });
 
     const allContents = new Set<string>();
 
-    filteredWeights.forEach((row) => allContents.add(normalizeText(row.conteudo)));
-    contentMap.forEach((_, conteudo) => allContents.add(conteudo));
+    filteredWeights.forEach((row) => {
+      allContents.add(normalizeText(row.conteudo));
+    });
+
+    contentMap.forEach((_, conteudo) => {
+      allContents.add(conteudo);
+    });
 
     const urgencyTimeScore = getUrgencyTimeScore(profile.months_until_exam);
 
@@ -340,7 +368,11 @@ export default function VetMockPage() {
         const noAttemptPenalty = getNoAttemptPenalty(stats.total, weight);
 
         const score =
-          weight + weaknessScore + urgencyTimeScore + wrongVolumeScore + noAttemptPenalty;
+          weight +
+          weaknessScore +
+          urgencyTimeScore +
+          wrongVolumeScore +
+          noAttemptPenalty;
 
         return {
           conteudo,
@@ -398,12 +430,15 @@ export default function VetMockPage() {
 
     if (profile.focus_subject !== "todas") {
       base = base.filter(
-        (question) => normalizeText(question.subject) === normalizeText(profile.focus_subject)
+        (question) =>
+          normalizeText(question.subject) === normalizeText(profile.focus_subject)
       );
     }
 
     base = base.filter((question) =>
-      contents.includes(normalizeText(question.topic))
+      getQuestionTopics(question).some((topic) =>
+        contents.includes(normalizeText(topic))
+      )
     );
 
     const sorted = [...base].sort((a, b) => {
@@ -414,6 +449,7 @@ export default function VetMockPage() {
         profile.target_exam,
         attemptedQuestionIds
       );
+
       const scoreB = getQuestionPriorityScore(
         b,
         block,
@@ -425,8 +461,13 @@ export default function VetMockPage() {
       return scoreB - scoreA;
     });
 
-    const unseen = sorted.filter((question) => !attemptedQuestionIds.has(question.id));
-    const seen = sorted.filter((question) => attemptedQuestionIds.has(question.id));
+    const unseen = sorted.filter(
+      (question) => !attemptedQuestionIds.has(question.id)
+    );
+
+    const seen = sorted.filter((question) =>
+      attemptedQuestionIds.has(question.id)
+    );
 
     return [...unseen, ...seen].slice(0, limit);
   }
@@ -531,7 +572,9 @@ export default function VetMockPage() {
           </Card>
         ) : !user ? (
           <Card className="p-8">
-            <p className="text-slate-700">Você precisa estar logado para usar o VET.</p>
+            <p className="text-slate-700">
+              Você precisa estar logado para usar o VET.
+            </p>
           </Card>
         ) : !profile ? (
           <Card className="p-8">
@@ -564,8 +607,11 @@ export default function VetMockPage() {
                 <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
                   <BrainCircuit className="w-5 h-5 text-emerald-700" />
                 </div>
+
                 <div>
-                  <h2 className="text-xl font-bold text-slate-900">Escolha o modo</h2>
+                  <h2 className="text-xl font-bold text-slate-900">
+                    Escolha o modo
+                  </h2>
                   <p className="text-sm text-slate-500">
                     Cada modo monta um simulado com foco diferente.
                   </p>
@@ -626,46 +672,33 @@ export default function VetMockPage() {
             <div className="grid md:grid-cols-4 gap-4">
               <Card className="p-5">
                 <p className="text-sm text-slate-500 mb-1">Ataque</p>
-                <p className="text-3xl font-bold text-red-600">{ataqueQuestions.length}</p>
+                <p className="text-3xl font-bold text-red-600">
+                  {ataqueQuestions.length}
+                </p>
               </Card>
 
               <Card className="p-5">
                 <p className="text-sm text-slate-500 mb-1">Consolidação</p>
-                <p className="text-3xl font-bold text-yellow-600">{consolidacaoQuestions.length}</p>
+                <p className="text-3xl font-bold text-yellow-600">
+                  {consolidacaoQuestions.length}
+                </p>
               </Card>
 
               <Card className="p-5">
                 <p className="text-sm text-slate-500 mb-1">Manutenção</p>
-                <p className="text-3xl font-bold text-green-600">{manutencaoQuestions.length}</p>
+                <p className="text-3xl font-bold text-green-600">
+                  {manutencaoQuestions.length}
+                </p>
               </Card>
 
               <Card className="p-5">
                 <p className="text-sm text-slate-500 mb-1">Misto</p>
-                <p className="text-3xl font-bold text-slate-900">{mistoQuestions.length}</p>
+                <p className="text-3xl font-bold text-slate-900">
+                  {mistoQuestions.length}
+                </p>
               </Card>
             </div>
 
             <Card className="p-6">
               <div className="flex items-center gap-2 mb-4">
-                <FileCheck className="w-5 h-5 text-emerald-600" />
-                <h2 className="text-xl font-bold text-slate-900">{modeLabel}</h2>
-              </div>
-
-              {currentQuestions.length > 0 ? (
-                <InteractiveQuiz
-                  key={`${mode}-${currentQuestions.map((q) => q.id).join("-")}`}
-                  questions={currentQuestions}
-                  onComplete={handleSimuladoComplete}
-                />
-              ) : (
-                <p className="text-slate-500">
-                  Ainda não há questões suficientes para esse modo de simulado com os critérios atuais.
-                </p>
-              )}
-            </Card>
-          </>
-        )}
-      </main>
-    </div>
-  );
-}
+                <FileCheck className="w-5 h-5 text-emer
