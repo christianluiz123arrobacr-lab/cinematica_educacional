@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { supabase } from "@/lib/supabase";
 import { logAdminAction } from "@/lib/adminLogs";
@@ -25,7 +25,9 @@ type QuestionFormData = {
   codigo: string;
   disciplina: string;
   conteudo: string;
+  conteudos: string[];
   assunto: string;
+  assuntos: string[];
   banca: string;
   ano: string;
   dificuldade: string;
@@ -57,7 +59,9 @@ const initialForm: QuestionFormData = {
   codigo: "",
   disciplina: "",
   conteudo: "",
+  conteudos: [],
   assunto: "",
+  assuntos: [],
   banca: "",
   ano: "",
   dificuldade: "",
@@ -129,6 +133,104 @@ function valorLimpo(texto: string) {
   return valor.length > 0 ? valor : null;
 }
 
+function normalizarLista(valores: string[]) {
+  return Array.from(
+    new Set(
+      valores
+        .map((item) => item.trim())
+        .filter(Boolean)
+    )
+  );
+}
+
+function primeiroValorDaLista(valores: string[]) {
+  return normalizarLista(valores)[0] ?? "";
+}
+
+type MultiTagInputProps = {
+  label: string;
+  values: string[];
+  onChange: (values: string[]) => void;
+  placeholder: string;
+  helper?: string;
+};
+
+function MultiTagInput({
+  label,
+  values,
+  onChange,
+  placeholder,
+  helper,
+}: MultiTagInputProps) {
+  const [draft, setDraft] = useState("");
+
+  function addValues(rawValue: string) {
+    const novosValores = rawValue
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+    if (novosValores.length === 0) {
+      setDraft("");
+      return;
+    }
+
+    onChange(normalizarLista([...values, ...novosValores]));
+    setDraft("");
+  }
+
+  function removeValue(value: string) {
+    onChange(values.filter((item) => item !== value));
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== "Enter" && event.key !== ",") return;
+
+    event.preventDefault();
+    addValues(draft);
+  }
+
+  return (
+    <div>
+      <FieldLabel>{label}</FieldLabel>
+
+      <div className="rounded-2xl border border-slate-300 bg-white p-3 shadow-sm focus-within:ring-2 focus-within:ring-slate-900">
+        {values.length > 0 ? (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {values.map((value) => (
+              <span
+                key={value}
+                className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white"
+              >
+                {value}
+                <button
+                  type="button"
+                  onClick={() => removeValue(value)}
+                  className="text-white/80 hover:text-white"
+                  aria-label={`Remover ${value}`}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        <input
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          onKeyDown={handleKeyDown}
+          onBlur={() => addValues(draft)}
+          placeholder={placeholder}
+          className="w-full border-0 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+        />
+      </div>
+
+      {helper ? <p className="mt-2 text-xs text-slate-500">{helper}</p> : null}
+    </div>
+  );
+}
+
 function gerarNomeArquivo(originalName: string) {
   const extensao = originalName.includes(".")
     ? originalName.split(".").pop()
@@ -138,7 +240,6 @@ function gerarNomeArquivo(originalName: string) {
     .toString(36)
     .slice(2, 10)}.${extensao}`;
 }
-
 
 function MarkdownPreview({
   value,
@@ -228,11 +329,23 @@ function QuestionPreview({ form }: { form: QuestionFormData }) {
             </span>
           ) : null}
 
-          {form.conteudo.trim() ? (
-            <span className="rounded-full bg-purple-50 border border-purple-100 px-3 py-1 font-semibold text-purple-700">
-              {form.conteudo.trim()}
+          {normalizarLista(form.conteudos).map((conteudo) => (
+            <span
+              key={conteudo}
+              className="rounded-full bg-purple-50 border border-purple-100 px-3 py-1 font-semibold text-purple-700"
+            >
+              {conteudo}
             </span>
-          ) : null}
+          ))}
+
+          {normalizarLista(form.assuntos).map((assunto) => (
+            <span
+              key={assunto}
+              className="rounded-full bg-emerald-50 border border-emerald-100 px-3 py-1 font-semibold text-emerald-700"
+            >
+              {assunto}
+            </span>
+          ))}
 
           {form.banca.trim() || form.ano.trim() ? (
             <span className="rounded-full bg-amber-50 border border-amber-100 px-3 py-1 font-semibold text-amber-700">
@@ -407,8 +520,10 @@ export default function AdminQuestionCreatePage() {
         metadata: {
           codigo: form.codigo || null,
           disciplina: form.disciplina || null,
-          conteudo: form.conteudo || null,
-          assunto: form.assunto || null,
+          conteudo: primeiroValorDaLista(form.conteudos) || null,
+          conteudos: normalizarLista(form.conteudos),
+          assunto: primeiroValorDaLista(form.assuntos) || null,
+          assuntos: normalizarLista(form.assuntos),
           bucket: QUESTION_IMAGES_BUCKET,
           path,
           fileName: file.name,
@@ -496,8 +611,10 @@ export default function AdminQuestionCreatePage() {
         metadata: {
           codigo: form.codigo || null,
           disciplina: form.disciplina || null,
-          conteudo: form.conteudo || null,
-          assunto: form.assunto || null,
+          conteudo: primeiroValorDaLista(form.conteudos) || null,
+          conteudos: normalizarLista(form.conteudos),
+          assunto: primeiroValorDaLista(form.assuntos) || null,
+          assuntos: normalizarLista(form.assuntos),
           alternativa: letraAlternativa,
           field,
           bucket: QUESTION_IMAGES_BUCKET,
@@ -533,8 +650,16 @@ export default function AdminQuestionCreatePage() {
         return;
       }
 
-      if (!form.assunto.trim()) {
-        setError("Preencha o assunto.");
+      const conteudosSelecionados = normalizarLista(form.conteudos);
+      const assuntosSelecionados = normalizarLista(form.assuntos);
+
+      if (conteudosSelecionados.length === 0) {
+        setError("Adicione pelo menos um conteúdo.");
+        return;
+      }
+
+      if (assuntosSelecionados.length === 0) {
+        setError("Adicione pelo menos um assunto.");
         return;
       }
 
@@ -574,8 +699,10 @@ export default function AdminQuestionCreatePage() {
       const payload = {
         codigo: valorLimpo(form.codigo),
         disciplina: valorLimpo(form.disciplina),
-        conteudo: valorLimpo(form.conteudo),
-        assunto: valorLimpo(form.assunto),
+        conteudo: valorLimpo(primeiroValorDaLista(conteudosSelecionados)),
+        conteudos: conteudosSelecionados,
+        assunto: valorLimpo(primeiroValorDaLista(assuntosSelecionados)),
+        assuntos: assuntosSelecionados,
         banca: valorLimpo(form.banca),
         ano: anoNumero,
         dificuldade: valorLimpo(form.dificuldade),
@@ -631,8 +758,10 @@ export default function AdminQuestionCreatePage() {
         metadata: {
           codigo: form.codigo || null,
           disciplina: form.disciplina || null,
-          conteudo: form.conteudo || null,
-          assunto: form.assunto || null,
+          conteudo: primeiroValorDaLista(form.conteudos) || null,
+          conteudos: normalizarLista(form.conteudos),
+          assunto: primeiroValorDaLista(form.assuntos) || null,
+          assuntos: normalizarLista(form.assuntos),
           banca: form.banca || null,
           ano: form.ano ? Number(form.ano) : null,
           dificuldade: form.dificuldade || null,
@@ -813,21 +942,35 @@ export default function AdminQuestionCreatePage() {
               </Select>
             </div>
 
-            <div>
-              <FieldLabel>Conteúdo</FieldLabel>
-              <TextInput
-                value={form.conteudo}
-                onChange={(e) => updateField("conteudo", e.target.value)}
-                placeholder="cinemática"
+            <div className="md:col-span-2">
+              <MultiTagInput
+                label="Conteúdos"
+                values={form.conteudos}
+                onChange={(values) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    conteudos: values,
+                    conteudo: primeiroValorDaLista(values),
+                  }))
+                }
+                placeholder="Digite um conteúdo e pressione Enter. Ex.: cinemática"
+                helper="Você pode adicionar vários conteúdos. Também dá para colar separados por vírgula."
               />
             </div>
 
-            <div>
-              <FieldLabel>Assunto</FieldLabel>
-              <TextInput
-                value={form.assunto}
-                onChange={(e) => updateField("assunto", e.target.value)}
-                placeholder="mru"
+            <div className="md:col-span-2">
+              <MultiTagInput
+                label="Assuntos"
+                values={form.assuntos}
+                onChange={(values) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    assuntos: values,
+                    assunto: primeiroValorDaLista(values),
+                  }))
+                }
+                placeholder="Digite um assunto e pressione Enter. Ex.: mru"
+                helper="Você pode adicionar vários assuntos. O primeiro continua salvo no campo legado."
               />
             </div>
 
