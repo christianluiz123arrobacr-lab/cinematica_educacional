@@ -14,6 +14,7 @@ import PublicProfilePage from "./pages/PublicProfilePage";
 import RankingPage from "./pages/RankingPage";
 
 import VetPage from "./pages/VetPage";
+import VetPlanPage from "./pages/VetPlanPage";
 import VetObjectivePage from "./pages/VetObjectivePage";
 import VetPrioritiesPage from "./pages/VetPrioritiesPage";
 import VetLevelPage from "./pages/VetLevelPage";
@@ -187,6 +188,7 @@ function PrivateRouter() {
         <Route path="/dinamica/topic/energy" component={DynamicsTopicEnergy} />
         <Route path="/dinamica/topic/momentum" component={DynamicsTopicMomentum} />
         <Route path="/dinamica/topic/power" component={DynamicsTopicPower} />
+
         <Route path="/estatica" component={EstaticaHome} />
         <Route path="/estatica/graphs" component={EstaticaGraphs} />
         <Route path="/estatica/quiz" component={EstaticaQuiz} />
@@ -213,6 +215,7 @@ function PrivateRouter() {
         <Route path="/vet" component={VetPage} />
         <Route path="/vet/objetivo" component={VetObjectivePage} />
         <Route path="/vet/prioridades" component={VetPrioritiesPage} />
+        <Route path="/vet/plano" component={VetPlanPage} />
         <Route path="/vet/treino" component={VetTrainingPage} />
         <Route path="/vet/questoes" component={VetQuestionsPage} />
         <Route path="/vet/nivelamento" component={VetLevelPage} />
