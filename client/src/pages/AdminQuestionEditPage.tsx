@@ -54,6 +54,29 @@ type QuestionFormData = {
   alternativa_correta: string;
 };
 
+type SuggestionRow = {
+  conteudo?: string | null;
+  conteudos?: string[] | null;
+  assunto?: string | null;
+  assuntos?: string[] | null;
+  banca?: string | null;
+  instituição?: string | null;
+};
+
+type SuggestionsState = {
+  conteudos: string[];
+  assuntos: string[];
+  bancas: string[];
+  instituicoes: string[];
+};
+
+const EMPTY_SUGGESTIONS: SuggestionsState = {
+  conteudos: [],
+  assuntos: [],
+  bancas: [],
+  instituicoes: [],
+};
+
 const QUESTION_IMAGES_BUCKET = "questoes-imagens";
 
 const initialForm: QuestionFormData = {
@@ -155,9 +178,36 @@ function primeiroValorDaLista(valores: string[]) {
   return normalizarLista(valores)[0] ?? "";
 }
 
+function normalizeForSearch(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function addTextToSet(set: Set<string>, value?: string | null) {
+  const cleanValue = value?.trim();
+
+  if (cleanValue) {
+    set.add(cleanValue);
+  }
+}
+
+function addTextArrayToSet(set: Set<string>, values?: string[] | null) {
+  if (!Array.isArray(values)) return;
+
+  values.forEach((value) => addTextToSet(set, value));
+}
+
+function sortTextValues(values: Set<string>) {
+  return Array.from(values).sort((a, b) => a.localeCompare(b, "pt-BR"));
+}
+
 type MultiTagInputProps = {
   label: string;
   values: string[];
+  suggestions?: string[];
   onChange: (values: string[]) => void;
   placeholder: string;
   helper?: string;
@@ -166,11 +216,27 @@ type MultiTagInputProps = {
 function MultiTagInput({
   label,
   values,
+  suggestions = [],
   onChange,
   placeholder,
   helper,
 }: MultiTagInputProps) {
   const [draft, setDraft] = useState("");
+
+  const filteredSuggestions = suggestions
+    .filter((suggestion) => {
+      const normalizedSuggestion = normalizeForSearch(suggestion);
+      const normalizedDraft = normalizeForSearch(draft);
+      const alreadySelected = values.some(
+        (value) => normalizeForSearch(value) === normalizedSuggestion
+      );
+
+      if (alreadySelected) return false;
+      if (!normalizedDraft) return false;
+
+      return normalizedSuggestion.includes(normalizedDraft);
+    })
+    .slice(0, 8);
 
   function addValues(rawValue: string) {
     const novosValores = rawValue
@@ -184,6 +250,11 @@ function MultiTagInput({
     }
 
     onChange(normalizarLista([...values, ...novosValores]));
+    setDraft("");
+  }
+
+  function addSingleValue(value: string) {
+    onChange(normalizarLista([...values, value]));
     setDraft("");
   }
 
@@ -232,6 +303,28 @@ function MultiTagInput({
           placeholder={placeholder}
           className="w-full border-0 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
         />
+
+        {filteredSuggestions.length > 0 ? (
+          <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-2">
+            <p className="px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-slate-400">
+              Sugestões já cadastradas
+            </p>
+
+            {filteredSuggestions.map((suggestion) => (
+              <button
+                key={suggestion}
+                type="button"
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  addSingleValue(suggestion);
+                }}
+                className="w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-slate-700 hover:bg-white"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </div>
 
       {helper ? <p className="mt-2 text-xs text-slate-500">{helper}</p> : null}
@@ -464,12 +557,54 @@ export default function AdminQuestionEditPage() {
   const questionId = match ? params.id : null;
 
   const [form, setForm] = useState<QuestionFormData>(initialForm);
+  const [suggestions, setSuggestions] =
+    useState<SuggestionsState>(EMPTY_SUGGESTIONS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [uploadingAlternative, setUploadingAlternative] = useState<string | null>(null);
+  const [uploadingAlternative, setUploadingAlternative] = useState<string | null>(
+    null
+  );
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  useEffect(() => {
+    async function loadSuggestions() {
+      const { data, error } = await supabase
+        .from("questoes")
+        .select("conteudo, conteudos, assunto, assuntos, banca, instituição");
+
+      if (error) {
+        console.error("Erro ao carregar sugestões da questão:", error);
+        return;
+      }
+
+      const conteudosSet = new Set<string>();
+      const assuntosSet = new Set<string>();
+      const bancasSet = new Set<string>();
+      const instituicoesSet = new Set<string>();
+
+      ((data as SuggestionRow[]) || []).forEach((row) => {
+        addTextToSet(conteudosSet, row.conteudo);
+        addTextArrayToSet(conteudosSet, row.conteudos);
+
+        addTextToSet(assuntosSet, row.assunto);
+        addTextArrayToSet(assuntosSet, row.assuntos);
+
+        addTextToSet(bancasSet, row.banca);
+        addTextToSet(instituicoesSet, row.instituição);
+      });
+
+      setSuggestions({
+        conteudos: sortTextValues(conteudosSet),
+        assuntos: sortTextValues(assuntosSet),
+        bancas: sortTextValues(bancasSet),
+        instituicoes: sortTextValues(instituicoesSet),
+      });
+    }
+
+    loadSuggestions();
+  }, []);
 
   useEffect(() => {
     async function loadQuestion() {
@@ -1071,6 +1206,7 @@ export default function AdminQuestionEditPage() {
                   <MultiTagInput
                     label="Conteúdos"
                     values={form.conteudos}
+                    suggestions={suggestions.conteudos}
                     onChange={(values) =>
                       setForm((prev) => ({
                         ...prev,
@@ -1087,6 +1223,7 @@ export default function AdminQuestionEditPage() {
                   <MultiTagInput
                     label="Assuntos"
                     values={form.assuntos}
+                    suggestions={suggestions.assuntos}
                     onChange={(values) =>
                       setForm((prev) => ({
                         ...prev,
@@ -1105,7 +1242,13 @@ export default function AdminQuestionEditPage() {
                     value={form.banca}
                     onChange={(e) => updateField("banca", e.target.value)}
                     placeholder="eear"
+                    list="edit-bancas-suggestions"
                   />
+                  <datalist id="edit-bancas-suggestions">
+                    {suggestions.bancas.map((banca) => (
+                      <option key={banca} value={banca} />
+                    ))}
+                  </datalist>
                 </div>
 
                 <div>
@@ -1114,7 +1257,13 @@ export default function AdminQuestionEditPage() {
                     value={form.instituicao}
                     onChange={(e) => updateField("instituicao", e.target.value)}
                     placeholder="eear"
+                    list="edit-instituicoes-suggestions"
                   />
+                  <datalist id="edit-instituicoes-suggestions">
+                    {suggestions.instituicoes.map((instituicao) => (
+                      <option key={instituicao} value={instituicao} />
+                    ))}
+                  </datalist>
                 </div>
               </div>
 
