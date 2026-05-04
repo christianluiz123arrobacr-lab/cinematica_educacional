@@ -21,6 +21,11 @@ import {
   Eye,
 } from "lucide-react";
 
+type AssuntosPorConteudoItem = {
+  conteudo: string;
+  assuntos: string[];
+};
+
 type QuestionFormData = {
   codigo: string;
   disciplina: string;
@@ -28,6 +33,7 @@ type QuestionFormData = {
   conteudos: string[];
   assunto: string;
   assuntos: string[];
+  assuntosPorConteudo: AssuntosPorConteudoItem[];
   banca: string;
   ano: string;
   dificuldade: string;
@@ -62,6 +68,7 @@ const initialForm: QuestionFormData = {
   conteudos: [],
   assunto: "",
   assuntos: [],
+  assuntosPorConteudo: [],
   banca: "",
   ano: "",
   dificuldade: "",
@@ -92,6 +99,7 @@ type SuggestionRow = {
   conteudos?: string[] | null;
   assunto?: string | null;
   assuntos?: string[] | null;
+  assuntos_por_conteudo?: unknown;
   banca?: string | null;
   instituição?: string | null;
 };
@@ -194,6 +202,56 @@ function sortTextValues(values: Set<string>) {
 
 function primeiroValorDaLista(valores: string[]) {
   return normalizarLista(valores)[0] ?? "";
+}
+
+function normalizarAssuntosPorConteudo(
+  valores: AssuntosPorConteudoItem[]
+): AssuntosPorConteudoItem[] {
+  return valores
+    .map((item) => ({
+      conteudo: item.conteudo.trim(),
+      assuntos: normalizarLista(item.assuntos),
+    }))
+    .filter((item) => item.conteudo.length > 0);
+}
+
+function sincronizarAssuntosPorConteudo(
+  conteudos: string[],
+  atuais: AssuntosPorConteudoItem[]
+): AssuntosPorConteudoItem[] {
+  const conteudosLimpos = normalizarLista(conteudos);
+
+  return conteudosLimpos.map((conteudo) => {
+    const atual = atuais.find(
+      (item) => normalizeForSearch(item.conteudo) === normalizeForSearch(conteudo)
+    );
+
+    return {
+      conteudo,
+      assuntos: atual?.assuntos ?? [],
+    };
+  });
+}
+
+function flattenAssuntosPorConteudo(valores: AssuntosPorConteudoItem[]) {
+  return normalizarLista(valores.flatMap((item) => item.assuntos));
+}
+
+function addGroupedAssuntosToSet(set: Set<string>, value: unknown) {
+  if (!Array.isArray(value)) return;
+
+  value.forEach((item) => {
+    if (!item || typeof item !== "object") return;
+
+    const rawItem = item as { assuntos?: unknown; subtopics?: unknown };
+    const assuntos = Array.isArray(rawItem.assuntos)
+      ? rawItem.assuntos
+      : Array.isArray(rawItem.subtopics)
+        ? rawItem.subtopics
+        : [];
+
+    assuntos.forEach((assunto) => addTextToSet(set, String(assunto ?? "")));
+  });
 }
 
 type MultiTagInputProps = {
@@ -320,6 +378,73 @@ function MultiTagInput({
       </div>
 
       {helper ? <p className="mt-2 text-xs text-slate-500">{helper}</p> : null}
+    </div>
+  );
+}
+
+type AssuntosPorConteudoEditorProps = {
+  items: AssuntosPorConteudoItem[];
+  suggestions: string[];
+  onChange: (items: AssuntosPorConteudoItem[]) => void;
+};
+
+function AssuntosPorConteudoEditor({
+  items,
+  suggestions,
+  onChange,
+}: AssuntosPorConteudoEditorProps) {
+  function updateAssuntos(conteudo: string, assuntos: string[]) {
+    onChange(
+      normalizarAssuntosPorConteudo(
+        items.map((item) =>
+          normalizeForSearch(item.conteudo) === normalizeForSearch(conteudo)
+            ? { ...item, assuntos }
+            : item
+        )
+      )
+    );
+  }
+
+  return (
+    <div className="md:col-span-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+      <div className="mb-4">
+        <h3 className="text-base font-bold text-slate-900">
+          Assuntos por conteúdo
+        </h3>
+        <p className="text-sm text-slate-500">
+          Cada conteúdo selecionado tem sua própria caixa de assuntos. Assim Funções não rouba assunto de Álgebra, essa pequena vitória contra o caos.
+        </p>
+      </div>
+
+      {items.length > 0 ? (
+        <div className="grid md:grid-cols-2 gap-4">
+          {items.map((item) => (
+            <div
+              key={item.conteudo}
+              className="rounded-2xl border border-slate-200 bg-white p-4"
+            >
+              <div className="mb-3">
+                <span className="inline-flex rounded-full bg-purple-50 border border-purple-100 px-3 py-1 text-xs font-bold text-purple-700">
+                  {item.conteudo}
+                </span>
+              </div>
+
+              <MultiTagInput
+                label={`Assuntos de ${item.conteudo}`}
+                values={item.assuntos}
+                suggestions={suggestions}
+                onChange={(values) => updateAssuntos(item.conteudo, values)}
+                placeholder={`Digite um assunto de ${item.conteudo}`}
+                helper="Esses assuntos ficarão ligados somente a este conteúdo."
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm text-slate-500">
+          Adicione pelo menos um conteúdo para liberar as caixas de assuntos.
+        </p>
+      )}
     </div>
   );
 }
@@ -558,7 +683,7 @@ export default function AdminQuestionCreatePage() {
     async function loadSuggestions() {
       const { data, error } = await supabase
         .from("questoes")
-        .select("conteudo, conteudos, assunto, assuntos, banca, instituição");
+        .select("conteudo, conteudos, assunto, assuntos, assuntos_por_conteudo, banca, instituição");
 
       if (error) {
         console.error("Erro ao carregar sugestões da questão:", error);
@@ -576,6 +701,7 @@ export default function AdminQuestionCreatePage() {
 
         addTextToSet(assuntosSet, row.assunto);
         addTextArrayToSet(assuntosSet, row.assuntos);
+        addGroupedAssuntosToSet(assuntosSet, row.assuntos_por_conteudo);
 
         addTextToSet(bancasSet, row.banca);
         addTextToSet(instituicoesSet, row.instituição);
@@ -656,6 +782,7 @@ export default function AdminQuestionCreatePage() {
           conteudos: normalizarLista(form.conteudos),
           assunto: primeiroValorDaLista(form.assuntos) || null,
           assuntos: normalizarLista(form.assuntos),
+          assuntosPorConteudo: normalizarAssuntosPorConteudo(form.assuntosPorConteudo),
           bucket: QUESTION_IMAGES_BUCKET,
           path,
           fileName: file.name,
@@ -747,6 +874,7 @@ export default function AdminQuestionCreatePage() {
           conteudos: normalizarLista(form.conteudos),
           assunto: primeiroValorDaLista(form.assuntos) || null,
           assuntos: normalizarLista(form.assuntos),
+          assuntosPorConteudo: normalizarAssuntosPorConteudo(form.assuntosPorConteudo),
           alternativa: letraAlternativa,
           field,
           bucket: QUESTION_IMAGES_BUCKET,
@@ -783,7 +911,12 @@ export default function AdminQuestionCreatePage() {
       }
 
       const conteudosSelecionados = normalizarLista(form.conteudos);
-      const assuntosSelecionados = normalizarLista(form.assuntos);
+      const assuntosPorConteudoSelecionados = normalizarAssuntosPorConteudo(
+        form.assuntosPorConteudo
+      );
+      const assuntosSelecionados = flattenAssuntosPorConteudo(
+        assuntosPorConteudoSelecionados
+      );
 
       if (conteudosSelecionados.length === 0) {
         setError("Adicione pelo menos um conteúdo.");
@@ -835,6 +968,7 @@ export default function AdminQuestionCreatePage() {
         conteudos: conteudosSelecionados,
         assunto: valorLimpo(primeiroValorDaLista(assuntosSelecionados)),
         assuntos: assuntosSelecionados,
+        assuntos_por_conteudo: assuntosPorConteudoSelecionados,
         banca: valorLimpo(form.banca),
         ano: anoNumero,
         dificuldade: valorLimpo(form.dificuldade),
@@ -894,6 +1028,7 @@ export default function AdminQuestionCreatePage() {
           conteudos: normalizarLista(form.conteudos),
           assunto: primeiroValorDaLista(form.assuntos) || null,
           assuntos: normalizarLista(form.assuntos),
+          assuntosPorConteudo: normalizarAssuntosPorConteudo(form.assuntosPorConteudo),
           banca: form.banca || null,
           ano: form.ano ? Number(form.ano) : null,
           dificuldade: form.dificuldade || null,
@@ -1080,33 +1215,46 @@ export default function AdminQuestionCreatePage() {
                 values={form.conteudos}
                 suggestions={suggestions.conteudos}
                 onChange={(values) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    conteudos: values,
-                    conteudo: primeiroValorDaLista(values),
-                  }))
+                  setForm((prev) => {
+                    const conteudos = normalizarLista(values);
+                    const assuntosPorConteudo = sincronizarAssuntosPorConteudo(
+                      conteudos,
+                      prev.assuntosPorConteudo
+                    );
+                    const assuntos = flattenAssuntosPorConteudo(assuntosPorConteudo);
+
+                    return {
+                      ...prev,
+                      conteudos,
+                      conteudo: primeiroValorDaLista(conteudos),
+                      assuntosPorConteudo,
+                      assuntos,
+                      assunto: primeiroValorDaLista(assuntos),
+                    };
+                  })
                 }
                 placeholder="Digite um conteúdo e pressione Enter. Ex.: cinemática"
                 helper="Você pode adicionar vários conteúdos. Também dá para colar separados por vírgula."
               />
             </div>
 
-            <div className="md:col-span-2">
-              <MultiTagInput
-                label="Assuntos"
-                values={form.assuntos}
-                suggestions={suggestions.assuntos}
-                onChange={(values) =>
-                  setForm((prev) => ({
+            <AssuntosPorConteudoEditor
+              items={form.assuntosPorConteudo}
+              suggestions={suggestions.assuntos}
+              onChange={(items) =>
+                setForm((prev) => {
+                  const assuntosPorConteudo = normalizarAssuntosPorConteudo(items);
+                  const assuntos = flattenAssuntosPorConteudo(assuntosPorConteudo);
+
+                  return {
                     ...prev,
-                    assuntos: values,
-                    assunto: primeiroValorDaLista(values),
-                  }))
-                }
-                placeholder="Digite um assunto e pressione Enter. Ex.: mru"
-                helper="Você pode adicionar vários assuntos. O primeiro continua salvo no campo legado."
-              />
-            </div>
+                    assuntosPorConteudo,
+                    assuntos,
+                    assunto: primeiroValorDaLista(assuntos),
+                  };
+                })
+              }
+            />
 
             <div>
               <FieldLabel>Banca</FieldLabel>
