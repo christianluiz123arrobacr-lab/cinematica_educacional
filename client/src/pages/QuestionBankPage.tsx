@@ -65,7 +65,9 @@ function matchesMulti(
   selected: string[]
 ) {
   if (selected.length === 0) return true;
+
   const normalizedValue = normalizeText(String(value ?? ""));
+
   return selected.some((item) => normalizeText(item) === normalizedValue);
 }
 
@@ -85,6 +87,32 @@ function getQuestionSubtopics(question: Question) {
   return question.subtopic ? [question.subtopic] : [];
 }
 
+function getQuestionSubtopicsForTopics(
+  question: Question,
+  selectedTopics: string[]
+) {
+  if (selectedTopics.length === 0) {
+    return getQuestionSubtopics(question);
+  }
+
+  const grouped = question.subtopicsByTopic ?? [];
+
+  if (grouped.length === 0) {
+    return getQuestionSubtopics(question);
+  }
+
+  const selectedNormalized = selectedTopics.map((topic) =>
+    normalizeText(topic)
+  );
+
+  const subtopics = grouped
+    .filter((item) => selectedNormalized.includes(normalizeText(item.topic)))
+    .flatMap((item) => item.subtopics)
+    .filter(Boolean);
+
+  return Array.from(new Set(subtopics));
+}
+
 function matchesMultiList(values: string[], selected: string[]) {
   if (selected.length === 0) return true;
 
@@ -96,6 +124,7 @@ function matchesMultiList(values: string[], selected: string[]) {
 function getMultiSelectLabel(selected: string[], placeholder: string) {
   if (selected.length === 0) return placeholder;
   if (selected.length === 1) return selected[0];
+
   return `${selected.length} selecionados`;
 }
 
@@ -122,12 +151,14 @@ function MultiSelectDropdown({
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (!wrapperRef.current) return;
+
       if (!wrapperRef.current.contains(event.target as Node)) {
         setOpen(false);
       }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
@@ -145,6 +176,7 @@ function MultiSelectDropdown({
         <span className="truncate">
           {getMultiSelectLabel(selected, placeholder)}
         </span>
+
         <ChevronDown
           className={`w-4 h-4 text-slate-500 transition-transform ${
             open ? "rotate-180" : ""
@@ -172,6 +204,7 @@ function MultiSelectDropdown({
                       onChange={() => onToggle(item)}
                       className="h-4 w-4 rounded border-slate-300"
                     />
+
                     <span className="text-sm text-slate-700">{item}</span>
                   </label>
                 );
@@ -205,12 +238,15 @@ export default function QuestionBankPage() {
     initialVetFilters.institution ? [initialVetFilters.institution] : []
   );
 
-  const [vetTopics, setVetTopics] = useState<string[]>(initialVetFilters.topics);
+  const [vetTopics, setVetTopics] = useState<string[]>(
+    initialVetFilters.topics
+  );
   const [vetBlock, setVetBlock] = useState<string>(initialVetFilters.block);
 
   const hasVetFilter = vetTopics.length > 0;
 
-  const effectiveTopics = selectedTopics.length > 0 ? selectedTopics : vetTopics;
+  const effectiveTopics =
+    selectedTopics.length > 0 ? selectedTopics : vetTopics;
 
   const questionsForTopics = useMemo(() => {
     return questions.filter((q) => matchesMulti(q.subject, selectedSubjects));
@@ -229,7 +265,10 @@ export default function QuestionBankPage() {
   const questionsForSubtopics = useMemo(() => {
     return questions.filter((q) => {
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
-      const matchesTopic = matchesMultiList(getQuestionTopics(q), effectiveTopics);
+      const matchesTopic = matchesMultiList(
+        getQuestionTopics(q),
+        effectiveTopics
+      );
 
       return matchesSubject && matchesTopic;
     });
@@ -239,19 +278,25 @@ export default function QuestionBankPage() {
     return Array.from(
       new Set(
         questionsForSubtopics
-          .flatMap((q) => getQuestionSubtopics(q))
+          .flatMap((q) => getQuestionSubtopicsForTopics(q, effectiveTopics))
           .filter(Boolean)
       )
     ).sort((a, b) => a.localeCompare(b, "pt-BR"));
-  }, [questionsForSubtopics]);
+  }, [questionsForSubtopics, effectiveTopics]);
 
   const questionsForYears = useMemo(() => {
     return questions.filter((q) => {
-      const matchesDifficulty = matchesMulti(q.difficulty, selectedDifficulties);
+      const matchesDifficulty = matchesMulti(
+        q.difficulty,
+        selectedDifficulties
+      );
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
-      const matchesTopic = matchesMultiList(getQuestionTopics(q), effectiveTopics);
+      const matchesTopic = matchesMultiList(
+        getQuestionTopics(q),
+        effectiveTopics
+      );
       const matchesSubtopic = matchesMultiList(
-        getQuestionSubtopics(q),
+        getQuestionSubtopicsForTopics(q, effectiveTopics),
         selectedSubtopics
       );
 
@@ -278,11 +323,17 @@ export default function QuestionBankPage() {
 
   const questionsForInstitutions = useMemo(() => {
     return questions.filter((q) => {
-      const matchesDifficulty = matchesMulti(q.difficulty, selectedDifficulties);
+      const matchesDifficulty = matchesMulti(
+        q.difficulty,
+        selectedDifficulties
+      );
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
-      const matchesTopic = matchesMultiList(getQuestionTopics(q), effectiveTopics);
+      const matchesTopic = matchesMultiList(
+        getQuestionTopics(q),
+        effectiveTopics
+      );
       const matchesSubtopic = matchesMultiList(
-        getQuestionSubtopics(q),
+        getQuestionSubtopicsForTopics(q, effectiveTopics),
         selectedSubtopics
       );
       const matchesYear = matchesMulti(String(q.year), selectedYears);
@@ -336,7 +387,9 @@ export default function QuestionBankPage() {
 
     const counts = questions.reduce<Record<string, number>>((acc, q) => {
       if (!q.subject) return acc;
+
       acc[q.subject] = (acc[q.subject] || 0) + 1;
+
       return acc;
     }, {});
 
@@ -358,7 +411,9 @@ export default function QuestionBankPage() {
 
     const counts = questions.reduce<Record<string, number>>((acc, q) => {
       if (!q.difficulty) return acc;
+
       acc[q.difficulty] = (acc[q.difficulty] || 0) + 1;
+
       return acc;
     }, {});
 
@@ -380,6 +435,7 @@ export default function QuestionBankPage() {
   useEffect(() => {
     async function loadQuestions() {
       const data = await getQuestions();
+
       setQuestions(data);
       setFilteredQuestions(data);
     }
@@ -393,7 +449,10 @@ export default function QuestionBankPage() {
     filtered = filtered.filter((q) =>
       matchesMulti(q.difficulty, selectedDifficulties)
     );
-    filtered = filtered.filter((q) => matchesMulti(q.subject, selectedSubjects));
+
+    filtered = filtered.filter((q) =>
+      matchesMulti(q.subject, selectedSubjects)
+    );
 
     if (effectiveTopics.length > 0) {
       filtered = filtered.filter((q) =>
@@ -402,9 +461,16 @@ export default function QuestionBankPage() {
     }
 
     filtered = filtered.filter((q) =>
-      matchesMultiList(getQuestionSubtopics(q), selectedSubtopics)
+      matchesMultiList(
+        getQuestionSubtopicsForTopics(q, effectiveTopics),
+        selectedSubtopics
+      )
     );
-    filtered = filtered.filter((q) => matchesMulti(String(q.year), selectedYears));
+
+    filtered = filtered.filter((q) =>
+      matchesMulti(String(q.year), selectedYears)
+    );
+
     filtered = filtered.filter((q) =>
       matchesMulti(q.institution, selectedInstitutions)
     );
@@ -451,10 +517,12 @@ export default function QuestionBankPage() {
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 to-purple-400 flex items-center justify-center">
               <Zap className="w-6 h-6 text-white" />
             </div>
+
             <div>
               <h1 className="text-2xl font-bold text-slate-900">
                 Banco de Questões
               </h1>
+
               <p className="text-xs text-slate-500">
                 Premium - Questões Comentadas
               </p>
@@ -477,6 +545,7 @@ export default function QuestionBankPage() {
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <BrainCircuit className="w-5 h-5 text-emerald-700" />
+
                     <h3 className="text-lg font-bold text-slate-900">
                       Filtro vindo do VET
                     </h3>
@@ -517,8 +586,10 @@ export default function QuestionBankPage() {
               <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
                 <BookMarked className="w-6 h-6 text-white" />
               </div>
+
               <div>
                 <p className="text-sm text-slate-600">Total de Questões</p>
+
                 <p className="text-3xl font-bold text-slate-900">
                   {questions.length}
                 </p>
@@ -531,8 +602,10 @@ export default function QuestionBankPage() {
               <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
                 <BarChart3 className="w-6 h-6 text-white" />
               </div>
+
               <div>
                 <p className="text-sm text-slate-600">Disciplinas</p>
+
                 <p className="text-3xl font-bold text-slate-900">
                   {totalSubjects}
                 </p>
@@ -545,8 +618,10 @@ export default function QuestionBankPage() {
               <div className="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center">
                 <Zap className="w-6 h-6 text-white" />
               </div>
+
               <div>
                 <p className="text-sm text-slate-600">Dificuldades</p>
+
                 <p className="text-3xl font-bold text-slate-900">
                   {totalDifficulties}
                 </p>
@@ -560,6 +635,7 @@ export default function QuestionBankPage() {
             <h3 className="text-lg font-bold text-slate-900 mb-4">
               Questões por disciplina
             </h3>
+
             <div className="space-y-3">
               {subjectStats.length > 0 ? (
                 subjectStats.map((item) => (
@@ -570,6 +646,7 @@ export default function QuestionBankPage() {
                     <span className="font-medium text-slate-700">
                       {item.label}
                     </span>
+
                     <span className="text-sm font-bold text-slate-900">
                       {item.count}
                     </span>
@@ -587,6 +664,7 @@ export default function QuestionBankPage() {
             <h3 className="text-lg font-bold text-slate-900 mb-4">
               Questões por nível
             </h3>
+
             <div className="space-y-3">
               {difficultyStats.length > 0 ? (
                 difficultyStats.map((item) => (
@@ -597,6 +675,7 @@ export default function QuestionBankPage() {
                     <span className="font-medium text-slate-700">
                       {item.label}
                     </span>
+
                     <span className="text-sm font-bold text-slate-900">
                       {item.count}
                     </span>
@@ -617,8 +696,10 @@ export default function QuestionBankPage() {
               <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
                 <Filter className="w-5 h-5 text-slate-600" />
               </div>
+
               <div>
                 <h3 className="text-lg font-bold text-slate-900">Filtros</h3>
+
                 <p className="text-sm text-slate-500">
                   Você pode combinar várias opções ao mesmo tempo
                 </p>
@@ -630,6 +711,7 @@ export default function QuestionBankPage() {
                 <label className="block text-sm font-semibold text-slate-700 mb-3">
                   Dificuldade
                 </label>
+
                 <div className="flex flex-wrap gap-3">
                   {["facil", "medio", "dificil"].map((diff) => {
                     const selected = selectedDifficulties.includes(diff);
@@ -667,6 +749,7 @@ export default function QuestionBankPage() {
                 <label className="block text-sm font-semibold text-slate-700 mb-3">
                   Disciplina
                 </label>
+
                 <div className="flex flex-wrap gap-3">
                   {["fisica", "matematica", "quimica"].map((subj) => {
                     const selected = selectedSubjects.includes(subj);
@@ -772,6 +855,7 @@ export default function QuestionBankPage() {
               <p className="text-lg text-slate-600 mb-4">
                 Nenhuma questão encontrada com os filtros selecionados.
               </p>
+
               <Button onClick={clearAllFilters}>Limpar Filtros</Button>
             </Card>
           )}
@@ -783,6 +867,7 @@ export default function QuestionBankPage() {
           <p className="mb-4">
             © 2026 Domine Exatas. Banco de Questões Premium.
           </p>
+
           <p className="text-sm text-slate-500">
             Questões comentadas, análise de desempenho e simulados estratégicos.
           </p>
