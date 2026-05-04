@@ -1,9 +1,8 @@
 import { supabase } from "@/lib/supabase";
-import type {
-  Question,
-  QuestionDifficulty,
-  QuestionSubject,
-} from "@/types/question";
+import type { Question, QuestionSubtopicsByTopic } from "@/types/question";
+
+type QuestionDifficulty = Question["difficulty"];
+type QuestionSubject = Question["subject"];
 
 export type QuestionFilters = {
   subject?: QuestionSubject;
@@ -25,6 +24,7 @@ type QuestaoRow = {
   conteudo?: string | null;
   conteudos?: string[] | null;
   assuntos?: string[] | null;
+  assuntos_por_conteudo?: unknown;
   banca?: string | null;
   ano: number;
   dificuldade: QuestionDifficulty;
@@ -32,27 +32,32 @@ type QuestaoRow = {
   enunciado_pos_imagem?: string | null;
   url_imagem?: string | null;
   formula?: string | null;
+
   a?: string | null;
   b?: string | null;
   c?: string | null;
   d?: string | null;
   e?: string | null;
+
   A?: string | null;
   B?: string | null;
   C?: string | null;
   D?: string | null;
   E?: string | null;
+
   a_url_imagem?: string | null;
   b_url_imagem?: string | null;
   c_url_imagem?: string | null;
   d_url_imagem?: string | null;
   e_url_imagem?: string | null;
+
   alternativa_correta: string;
   instituição?: string | null;
   fonte?: string | null;
   tag?: string | null;
   publicada?: boolean | null;
   created_at?: string | null;
+
   resolucoes?: {
     id: string;
     tipo: string;
@@ -86,13 +91,83 @@ function normalizarListaTexto(
   );
 }
 
-function questionMatchesListFilter(values: string[] | undefined, filter?: string) {
+function normalizarAssuntosPorConteudo(
+  valor: unknown
+): QuestionSubtopicsByTopic[] {
+  if (!Array.isArray(valor)) return [];
+
+  return valor
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+
+      const rawItem = item as {
+        conteudo?: unknown;
+        topic?: unknown;
+        assuntos?: unknown;
+        subtopics?: unknown;
+      };
+
+      const topic = String(rawItem.conteudo ?? rawItem.topic ?? "")
+        .trim()
+        .toLowerCase();
+
+      const rawSubtopics = Array.isArray(rawItem.assuntos)
+        ? rawItem.assuntos
+        : Array.isArray(rawItem.subtopics)
+          ? rawItem.subtopics
+          : [];
+
+      const subtopics = normalizarListaTexto(
+        rawSubtopics.map((subtopic) => String(subtopic ?? ""))
+      );
+
+      if (!topic || subtopics.length === 0) return null;
+
+      return {
+        topic,
+        subtopics,
+      };
+    })
+    .filter((item): item is QuestionSubtopicsByTopic => !!item);
+}
+
+function questionMatchesListFilter(
+  values: string[] | undefined,
+  filter?: string
+) {
   if (!filter?.trim()) return true;
 
   const normalizedFilter = filter.trim().toLowerCase();
   const list = values ?? [];
 
   return list.some((item) => item.toLowerCase().includes(normalizedFilter));
+}
+
+function questionMatchesSubtopicFilter(
+  question: Question,
+  topicFilter?: string,
+  subtopicFilter?: string
+) {
+  if (!subtopicFilter?.trim()) return true;
+
+  const normalizedSubtopic = subtopicFilter.trim().toLowerCase();
+  const normalizedTopic = topicFilter?.trim().toLowerCase();
+
+  if (
+    normalizedTopic &&
+    Array.isArray(question.subtopicsByTopic) &&
+    question.subtopicsByTopic.length > 0
+  ) {
+    const groupedSubtopics = question.subtopicsByTopic
+      .filter((group) => group.topic.toLowerCase().includes(normalizedTopic))
+      .flatMap((group) => group.subtopics);
+
+    return groupedSubtopics.some((subtopic) =>
+      subtopic.toLowerCase().includes(normalizedSubtopic)
+    );
+  }
+
+  return questionMatchesListFilter(question.subtopics, subtopicFilter);
 }
 
 function normalizarAlternativas(row: QuestaoRow): Question["options"] {
@@ -200,41 +275,42 @@ function mapQuestao(row: QuestaoRow): Question {
 
   const topics = normalizarListaTexto(row.conteudos, row.conteudo ?? row.assunto);
   const subtopics = normalizarListaTexto(row.assuntos, row.assunto);
+  const subtopicsByTopic = normalizarAssuntosPorConteudo(
+    row.assuntos_por_conteudo
+  );
 
   return {
     id: row.id,
     codigo: row.codigo ?? undefined,
     subject: disciplina,
 
-    /**
-     * Compatibilidade com o sistema antigo:
-     * topic continua existindo, mas agora vem do primeiro conteúdo.
-     */
     topic: topics[0] ?? "",
     topics,
 
-    /**
-     * Compatibilidade com o sistema antigo:
-     * subtopic continua existindo, mas agora vem do primeiro assunto.
-     */
     subtopic: subtopics[0],
     subtopics,
+    subtopicsByTopic,
 
     exam: normalizarTexto(row.banca) ?? "Sem banca",
     year: row.ano,
     institution: normalizarTexto(row.instituição),
+
     statement: row.enunciado ?? "Sem enunciado cadastrado.",
     statementAfterImage: row.enunciado_pos_imagem ?? undefined,
     formula: row.formula ?? undefined,
     imageUrl: row.url_imagem ?? undefined,
+
     options: normalizarAlternativas(row),
     correctOptionId: row.alternativa_correta.toLowerCase().trim(),
+
     explanation: resolucaoTexto,
     explanationBlocks,
+
     difficulty: row.dificuldade,
     tags: row.tag ? row.tag.split(",").map((t) => t.trim()) : [],
     source: row.fonte ?? undefined,
     isPublished: row.publicada ?? true,
+
     createdAt: row.created_at ?? undefined,
     updatedAt: row.created_at ?? undefined,
   };
@@ -260,7 +336,7 @@ export async function getQuestions(
     );
   }
 
-  /**
+  /*
    * Conteúdo e assunto agora podem ser listas.
    *
    * Antes dava para filtrar direto no Supabase:
@@ -268,6 +344,12 @@ export async function getQuestions(
    *
    * Agora a questão pode ter:
    * conteudos = ["cinemática", "dinâmica"]
+   *
+   * E também pode ter:
+   * assuntos_por_conteudo = [
+   *   { conteudo: "funções", assuntos: ["função modular"] },
+   *   { conteudo: "álgebra", assuntos: ["equação com módulo"] }
+   * ]
    *
    * Por isso, topic/subtopic são filtrados depois do mapQuestao.
    */
@@ -311,7 +393,11 @@ export async function getQuestions(
 
   if (filters?.subtopic) {
     questions = questions.filter((question) =>
-      questionMatchesListFilter(question.subtopics, filters.subtopic)
+      questionMatchesSubtopicFilter(
+        question,
+        filters.topic,
+        filters.subtopic
+      )
     );
   }
 
