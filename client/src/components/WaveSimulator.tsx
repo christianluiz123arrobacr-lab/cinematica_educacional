@@ -19,18 +19,27 @@ type WaveMode = "progressive" | "standing" | "interference";
 type WaveType = "transversal" | "longitudinal";
 type Direction = "right" | "left";
 
+interface WaveSimulatorProps {
+  initialMode?: WaveMode;
+  lockedMode?: WaveMode;
+  title?: string;
+  description?: string;
+}
+
 const TWO_PI = 2 * Math.PI;
 
-const clamp = (value: number, min: number, max: number) =>
-  Math.max(min, Math.min(max, value));
-
-export const WaveSimulator: React.FC = () => {
+export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
+  initialMode = "progressive",
+  lockedMode,
+  title = "Simulador de Ondas",
+  description = "Analise ondas progressivas, estacionárias e interferência.",
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationIdRef = useRef<number | null>(null);
   const timeRef = useRef(0);
   const lastTimeRef = useRef(0);
 
-  const [mode, setMode] = useState<WaveMode>("progressive");
+  const [mode, setMode] = useState<WaveMode>(lockedMode ?? initialMode);
   const [waveType, setWaveType] = useState<WaveType>("transversal");
   const [direction, setDirection] = useState<Direction>("right");
 
@@ -47,6 +56,11 @@ export const WaveSimulator: React.FC = () => {
 
   const [harmonic, setHarmonic] = useState(2);
   const [stringLength, setStringLength] = useState(600);
+
+  useEffect(() => {
+    setMode(lockedMode ?? initialMode);
+    timeRef.current = 0;
+  }, [initialMode, lockedMode]);
 
   const period = useMemo(() => {
     if (frequency <= 0) return 0;
@@ -73,6 +87,19 @@ export const WaveSimulator: React.FC = () => {
     [standingWavelength, frequency]
   );
 
+  const activeWavelength = useMemo(() => {
+    return mode === "standing" ? standingWavelength : wavelength;
+  }, [mode, standingWavelength, wavelength]);
+
+  const activeVelocity = useMemo(() => {
+    return mode === "standing" ? standingVelocity : velocity;
+  }, [mode, standingVelocity, velocity]);
+
+  const activeK = useMemo(() => {
+    if (activeWavelength <= 0) return 0;
+    return TWO_PI / activeWavelength;
+  }, [activeWavelength]);
+
   const resultantAmplitude = useMemo(() => {
     return Math.sqrt(
       amplitude ** 2 +
@@ -82,8 +109,16 @@ export const WaveSimulator: React.FC = () => {
   }, [amplitude, amplitude2, phaseDiffRad]);
 
   const interferenceType = useMemo(() => {
-    if (Math.abs(phaseDiffDeg % 360) < 5) return "Construtiva";
-    if (Math.abs((phaseDiffDeg % 360) - 180) < 5) return "Destrutiva";
+    const normalized = ((phaseDiffDeg % 360) + 360) % 360;
+
+    if (Math.abs(normalized) < 5 || Math.abs(normalized - 360) < 5) {
+      return "Construtiva";
+    }
+
+    if (Math.abs(normalized - 180) < 5) {
+      return "Destrutiva";
+    }
+
     return "Parcial";
   }, [phaseDiffDeg]);
 
@@ -190,8 +225,8 @@ export const WaveSimulator: React.FC = () => {
         ctx,
         mode,
         waveType,
-        velocity: mode === "standing" ? standingVelocity : velocity,
-        wavelength: mode === "standing" ? standingWavelength : wavelength,
+        velocity: activeVelocity,
+        wavelength: activeWavelength,
         frequency,
         period,
         amplitude,
@@ -222,9 +257,8 @@ export const WaveSimulator: React.FC = () => {
     phaseDiffRad,
     harmonic,
     stringLength,
-    standingWavelength,
-    standingVelocity,
-    velocity,
+    activeWavelength,
+    activeVelocity,
   ]);
 
   return (
@@ -233,30 +267,40 @@ export const WaveSimulator: React.FC = () => {
         <div className="space-y-4 xl:col-span-4">
           <Card className="border border-slate-200 shadow-sm">
             <div className="border-b border-slate-200 px-5 py-4">
-              <h3 className="text-lg font-bold text-slate-900">
-                Simulador de Ondas
-              </h3>
-              <p className="mt-1 text-sm text-slate-600">
-                Analise ondas progressivas, estacionárias e interferência.
-              </p>
+              <h3 className="text-lg font-bold text-slate-900">{title}</h3>
+              <p className="mt-1 text-sm text-slate-600">{description}</p>
             </div>
 
             <div className="space-y-5 p-5">
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
-                  Modo
-                </p>
-                <Select value={mode} onValueChange={(value) => setMode(value as WaveMode)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="progressive">Onda progressiva</SelectItem>
-                    <SelectItem value="standing">Onda estacionária</SelectItem>
-                    <SelectItem value="interference">Interferência</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {!lockedMode ? (
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+                    Modo
+                  </p>
+                  <Select
+                    value={mode}
+                    onValueChange={(value) => setMode(value as WaveMode)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="progressive">Onda progressiva</SelectItem>
+                      <SelectItem value="standing">Onda estacionária</SelectItem>
+                      <SelectItem value="interference">Interferência</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : (
+                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4">
+                  <p className="text-xs font-bold uppercase tracking-wide text-indigo-600">
+                    Modo fixo desta aba
+                  </p>
+                  <p className="mt-1 text-sm font-bold text-indigo-900">
+                    {getModeLabel(mode)}
+                  </p>
+                </div>
+              )}
 
               {mode === "progressive" && (
                 <>
@@ -453,7 +497,7 @@ export const WaveSimulator: React.FC = () => {
                     Velocidade <MathFormula inline formula={String.raw`v`} />
                   </>
                 }
-                value={formatUnit(mode === "standing" ? standingVelocity : velocity, "px/s")}
+                value={formatUnit(activeVelocity, "px/s")}
                 valueClassName="text-indigo-700"
               />
 
@@ -482,7 +526,7 @@ export const WaveSimulator: React.FC = () => {
                     Número de onda <MathFormula inline formula={String.raw`k`} />
                   </>
                 }
-                value={`${formatNumber(k, 4)} rad/px`}
+                value={`${formatNumber(activeK, 4)} rad/px`}
               />
 
               {mode === "interference" && (
@@ -578,14 +622,14 @@ export const WaveSimulator: React.FC = () => {
                 values={[
                   ["A", formatUnit(amplitude, "px")],
                   ["f", formatUnit(frequency, "Hz")],
-                  ["λ", formatUnit(mode === "standing" ? standingWavelength : wavelength, "px")],
+                  ["λ", formatUnit(activeWavelength, "px")],
                 ]}
               />
 
               <CalcMiniCard
                 title="Grandezas derivadas"
                 values={[
-                  ["v", formatUnit(mode === "standing" ? standingVelocity : velocity, "px/s")],
+                  ["v", formatUnit(activeVelocity, "px/s")],
                   ["T", formatUnit(period, "s")],
                 ]}
               />
@@ -593,7 +637,7 @@ export const WaveSimulator: React.FC = () => {
               <CalcMiniCard
                 title="Forma matemática"
                 values={[
-                  ["k", `${formatNumber(k, 4)} rad/px`],
+                  ["k", `${formatNumber(activeK, 4)} rad/px`],
                   ["ω", formatUnit(omega, "rad/s")],
                 ]}
               />
@@ -620,11 +664,7 @@ export const WaveSimulator: React.FC = () => {
                 title="Relação fundamental da ondulatória"
                 formulas={[
                   String.raw`v = \lambda f`,
-                  String.raw`v = ${formatNumber(
-                    mode === "standing" ? standingWavelength : wavelength
-                  )}\cdot ${formatNumber(frequency)} = ${formatNumber(
-                    mode === "standing" ? standingVelocity : velocity
-                  )}\,\text{px/s}`,
+                  String.raw`v = ${formatNumber(activeWavelength)}\cdot ${formatNumber(frequency)} = ${formatNumber(activeVelocity)}\,\text{px/s}`,
                 ]}
               />
 
@@ -632,15 +672,8 @@ export const WaveSimulator: React.FC = () => {
                 title="Período, número de onda e frequência angular"
                 formulas={[
                   String.raw`T = \frac{1}{f} = \frac{1}{${formatNumber(frequency)}} = ${formatNumber(period)}\,\text{s}`,
-                  String.raw`k = \frac{2\pi}{\lambda} = \frac{2\pi}{${formatNumber(
-                    mode === "standing" ? standingWavelength : wavelength
-                  )}} = ${formatNumber(
-                    mode === "standing" ? TWO_PI / standingWavelength : k,
-                    4
-                  )}\,\text{rad/px}`,
-                  String.raw`\omega = 2\pi f = 2\pi\cdot ${formatNumber(
-                    frequency
-                  )} = ${formatNumber(omega, 4)}\,\text{rad/s}`,
+                  String.raw`k = \frac{2\pi}{\lambda} = \frac{2\pi}{${formatNumber(activeWavelength)}} = ${formatNumber(activeK, 4)}\,\text{rad/px}`,
+                  String.raw`\omega = 2\pi f = 2\pi\cdot ${formatNumber(frequency)} = ${formatNumber(omega, 4)}\,\text{rad/s}`,
                 ]}
               />
 
@@ -652,14 +685,8 @@ export const WaveSimulator: React.FC = () => {
                       ? String.raw`y(x,t) = A\sin(kx-\omega t)`
                       : String.raw`y(x,t) = A\sin(kx+\omega t)`,
                     direction === "right"
-                      ? String.raw`y(x,t) = ${formatNumber(amplitude)}\sin(${formatNumber(
-                          k,
-                          4
-                        )}x - ${formatNumber(omega, 4)}t)`
-                      : String.raw`y(x,t) = ${formatNumber(amplitude)}\sin(${formatNumber(
-                          k,
-                          4
-                        )}x + ${formatNumber(omega, 4)}t)`,
+                      ? String.raw`y(x,t) = ${formatNumber(amplitude)}\sin(${formatNumber(k, 4)}x - ${formatNumber(omega, 4)}t)`
+                      : String.raw`y(x,t) = ${formatNumber(amplitude)}\sin(${formatNumber(k, 4)}x + ${formatNumber(omega, 4)}t)`,
                     waveType === "transversal"
                       ? String.raw`\text{Na onda transversal, a perturbação é perpendicular à propagação.}`
                       : String.raw`\text{Na onda longitudinal, a perturbação é paralela à propagação.}`,
@@ -672,13 +699,9 @@ export const WaveSimulator: React.FC = () => {
                   title="Onda estacionária em corda fixa nas extremidades"
                   formulas={[
                     String.raw`\lambda_n = \frac{2L}{n}`,
-                    String.raw`\lambda_${harmonic} = \frac{2\cdot ${formatNumber(
-                      stringLength
-                    )}}{${harmonic}} = ${formatNumber(standingWavelength)}\,\text{px}`,
+                    String.raw`\lambda_${harmonic} = \frac{2\cdot ${formatNumber(stringLength)}}{${harmonic}} = ${formatNumber(standingWavelength)}\,\text{px}`,
                     String.raw`f_n = \frac{nv}{2L}`,
-                    String.raw`\text{O modo }n=${harmonic}\text{ possui }${harmonic}\text{ ventre(s) e }${
-                      harmonic + 1
-                    }\text{ nó(s).}`,
+                    String.raw`\text{O modo }n=${harmonic}\text{ possui }${harmonic}\text{ ventre(s) e }${harmonic + 1}\text{ nó(s).}`,
                   ]}
                 />
               )}
@@ -691,13 +714,7 @@ export const WaveSimulator: React.FC = () => {
                     String.raw`y_2 = A_2\sin(kx-\omega t+\Delta\varphi)`,
                     String.raw`y_R = y_1 + y_2`,
                     String.raw`A_R = \sqrt{A_1^2 + A_2^2 + 2A_1A_2\cos\Delta\varphi}`,
-                    String.raw`A_R = \sqrt{${formatNumber(amplitude)}^2 + ${formatNumber(
-                      amplitude2
-                    )}^2 + 2\cdot ${formatNumber(amplitude)}\cdot ${formatNumber(
-                      amplitude2
-                    )}\cos(${formatNumber(phaseDiffDeg)}^\circ)} = ${formatNumber(
-                      resultantAmplitude
-                    )}\,\text{px}`,
+                    String.raw`A_R = \sqrt{${formatNumber(amplitude)}^2 + ${formatNumber(amplitude2)}^2 + 2\cdot ${formatNumber(amplitude)}\cdot ${formatNumber(amplitude2)}\cos(${formatNumber(phaseDiffDeg)}^\circ)} = ${formatNumber(resultantAmplitude)}\,\text{px}`,
                   ]}
                 />
               )}
