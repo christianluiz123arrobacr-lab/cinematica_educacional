@@ -32,7 +32,7 @@ const waveMedia: Record<
   custom: {
     label: "Meio personalizado",
     speed: null,
-    description: "Você controla o comprimento de onda, e a velocidade sai de v = λf.",
+    description: "Você controla λ e f. A velocidade sai de v = λf.",
   },
   air: {
     label: "Ar",
@@ -62,8 +62,7 @@ const clamp = (value: number, min: number, max: number) =>
 export const ProgressiveWaveSimulator: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationIdRef = useRef<number | null>(null);
-  const timeRef = useRef(0);
-  const lastTimeRef = useRef(0);
+  const lastTimeRef = useRef<number>(0);
 
   const [waveType, setWaveType] = useState<WaveType>("transversal");
   const [direction, setDirection] = useState<Direction>("right");
@@ -72,11 +71,16 @@ export const ProgressiveWaveSimulator: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [showParticles, setShowParticles] = useState(true);
   const [showMeasures, setShowMeasures] = useState(true);
+  const [showProbe, setShowProbe] = useState(true);
+  const [showEnergy, setShowEnergy] = useState(true);
 
   const [amplitudeCm, setAmplitudeCm] = useState(20);
   const [frequency, setFrequency] = useState(1);
   const [wavelengthM, setWavelengthM] = useState(2);
   const [phaseDeg, setPhaseDeg] = useState(0);
+  const [probePercent, setProbePercent] = useState(35);
+
+  const [time, setTime] = useState(0);
 
   const selectedMedium = waveMedia[medium];
 
@@ -108,118 +112,98 @@ export const ProgressiveWaveSimulator: React.FC = () => {
     return TWO_PI / physicalWavelength;
   }, [physicalWavelength]);
 
-  const omega = useMemo(() => {
-    return TWO_PI * frequency;
-  }, [frequency]);
+  const omega = useMemo(() => TWO_PI * frequency, [frequency]);
 
-  const visualAmplitude = useMemo(() => {
-    return clamp(amplitudeCm * 2.2, 10, 100);
-  }, [amplitudeCm]);
+  const directionSign = direction === "right" ? -1 : 1;
 
-  const visualWavelength = useMemo(() => {
-    return clamp(physicalWavelength * 120, 90, 520);
+  const visibleMeters = useMemo(() => {
+    return Math.max(physicalWavelength * 4, 1);
   }, [physicalWavelength]);
 
-  const visualK = useMemo(() => {
-    return TWO_PI / visualWavelength;
-  }, [visualWavelength]);
+  const probeX = useMemo(() => {
+    return (probePercent / 100) * visibleMeters;
+  }, [probePercent, visibleMeters]);
 
-  const equationSign = direction === "right" ? "-" : "+";
+  const probePhase = useMemo(() => {
+    return k * probeX + directionSign * omega * time + phaseRad;
+  }, [k, probeX, directionSign, omega, time, phaseRad]);
+
+  const probeDisplacement = useMemo(() => {
+    return amplitudeM * Math.sin(probePhase);
+  }, [amplitudeM, probePhase]);
+
+  const probeParticleVelocity = useMemo(() => {
+    return amplitudeM * directionSign * omega * Math.cos(probePhase);
+  }, [amplitudeM, directionSign, omega, probePhase]);
+
+  const probeParticleAcceleration = useMemo(() => {
+    return -amplitudeM * omega ** 2 * Math.sin(probePhase);
+  }, [amplitudeM, omega, probePhase]);
+
+  const maxParticleVelocity = useMemo(() => {
+    return amplitudeM * omega;
+  }, [amplitudeM, omega]);
+
+  const maxParticleAcceleration = useMemo(() => {
+    return amplitudeM * omega ** 2;
+  }, [amplitudeM, omega]);
+
+  const relativeEnergy = useMemo(() => {
+    return amplitudeM ** 2 * omega ** 2;
+  }, [amplitudeM, omega]);
+
+  const energyBarPercent = useMemo(() => {
+    return clamp(relativeEnergy * 18, 0, 100);
+  }, [relativeEnergy]);
 
   const interpretation = useMemo(() => {
-    if (medium === "custom") {
-      return "No modo personalizado, você escolhe λ e f. A velocidade é calculada por v = λf.";
+    if (medium !== "custom") {
+      return `No meio escolhido, a velocidade foi fixada em aproximadamente ${formatNumber(
+        velocity
+      )} m/s. Quando a frequência muda, o comprimento de onda muda junto, porque λ = v/f.`;
     }
 
-    return `No meio escolhido, a velocidade foi fixada em aproximadamente ${formatNumber(
-      velocity
-    )} m/s. Quando você altera a frequência, o comprimento de onda muda automaticamente.`;
+    return "No modo personalizado, você escolhe λ e f. A velocidade da onda é calculada por v = λf.";
   }, [medium, velocity]);
 
   const reset = () => {
     setWaveType("transversal");
     setDirection("right");
     setMedium("custom");
+    setIsPlaying(true);
+    setShowParticles(true);
+    setShowMeasures(true);
+    setShowProbe(true);
+    setShowEnergy(true);
     setAmplitudeCm(20);
     setFrequency(1);
     setWavelengthM(2);
     setPhaseDeg(0);
-    setIsPlaying(true);
-    setShowParticles(true);
-    setShowMeasures(true);
-    timeRef.current = 0;
+    setProbePercent(35);
+    setTime(0);
+    lastTimeRef.current = 0;
   };
 
   useEffect(() => {
-    timeRef.current = 0;
+    setTime(0);
+    lastTimeRef.current = 0;
   }, [waveType, direction, medium, phaseDeg]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!isPlaying) {
+      lastTimeRef.current = 0;
+      return;
+    }
 
     const animate = (now: number) => {
+      if (!lastTimeRef.current) {
+        lastTimeRef.current = now;
+      }
+
       const dt = Math.min((now - lastTimeRef.current) / 1000, 0.04);
       lastTimeRef.current = now;
 
-      if (isPlaying) {
-        timeRef.current += dt;
-      }
-
-      const width = canvas.width;
-      const height = canvas.height;
-      const t = timeRef.current;
-
-      drawBackground(ctx, width, height);
-
-      if (waveType === "transversal") {
-        drawTransversalWave({
-          ctx,
-          width,
-          height,
-          amplitude: visualAmplitude,
-          wavelength: visualWavelength,
-          k: visualK,
-          omega,
-          phase: phaseRad,
-          t,
-          direction,
-          showParticles,
-          showMeasures,
-          amplitudeLabel: `${formatNumber(amplitudeM, 2)} m`,
-          wavelengthLabel: `${formatNumber(physicalWavelength, 2)} m`,
-        });
-      } else {
-        drawLongitudinalWave({
-          ctx,
-          width,
-          height,
-          amplitude: visualAmplitude,
-          wavelength: visualWavelength,
-          k: visualK,
-          omega,
-          phase: phaseRad,
-          t,
-          direction,
-          showParticles,
-          showMeasures,
-          wavelengthLabel: `${formatNumber(physicalWavelength, 2)} m`,
-        });
-      }
-
-      drawInfoBox({
-        ctx,
-        waveType,
-        direction,
-        amplitudeCm,
-        frequency,
-        wavelength: physicalWavelength,
-        velocity,
-        period,
-      });
+      setTime((prev) => prev + dt);
 
       animationIdRef.current = requestAnimationFrame(animate);
     };
@@ -231,27 +215,110 @@ export const ProgressiveWaveSimulator: React.FC = () => {
         cancelAnimationFrame(animationIdRef.current);
       }
     };
+  }, [isPlaying]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const width = canvas.width;
+    const height = canvas.height;
+
+    drawBackground(ctx, width, height);
+
+    const commonProps = {
+      ctx,
+      width,
+      height,
+      amplitudeM,
+      physicalWavelength,
+      visibleMeters,
+      k,
+      omega,
+      phaseRad,
+      directionSign,
+      time,
+      showParticles,
+      showMeasures,
+      showProbe,
+      probeX,
+      probePercent,
+      probeDisplacement,
+      probeParticleVelocity,
+      probeParticleAcceleration,
+    };
+
+    if (waveType === "transversal") {
+      drawTransversalWave(commonProps);
+    } else {
+      drawLongitudinalWave(commonProps);
+    }
+
+    drawDirectionArrow({
+      ctx,
+      width,
+      height,
+      direction,
+      velocity,
+    });
+
+    if (showEnergy) {
+      drawEnergyPanel({
+        ctx,
+        width,
+        relativeEnergy,
+        energyBarPercent,
+        maxParticleVelocity,
+        maxParticleAcceleration,
+      });
+    }
+
+    drawInfoBox({
+      ctx,
+      waveType,
+      direction,
+      mediumLabel: selectedMedium.label,
+      amplitudeCm,
+      frequency,
+      wavelength: physicalWavelength,
+      velocity,
+      period,
+      probeX,
+      probeDisplacement,
+    });
   }, [
     waveType,
     direction,
     medium,
-    isPlaying,
-    showParticles,
-    showMeasures,
-    amplitudeCm,
+    selectedMedium.label,
     amplitudeM,
+    amplitudeCm,
     frequency,
-    wavelengthM,
     physicalWavelength,
+    visibleMeters,
     velocity,
     period,
     k,
     omega,
     phaseRad,
-    phaseDeg,
-    visualAmplitude,
-    visualWavelength,
-    visualK,
+    directionSign,
+    time,
+    showParticles,
+    showMeasures,
+    showProbe,
+    showEnergy,
+    probeX,
+    probePercent,
+    probeDisplacement,
+    probeParticleVelocity,
+    probeParticleAcceleration,
+    relativeEnergy,
+    energyBarPercent,
+    maxParticleVelocity,
+    maxParticleAcceleration,
   ]);
 
   return (
@@ -264,7 +331,7 @@ export const ProgressiveWaveSimulator: React.FC = () => {
                 Ondas Progressivas
               </h3>
               <p className="mt-1 text-sm text-slate-600">
-                Analise ondas transversais e longitudinais se propagando pelo meio.
+                Analise a propagação, a oscilação das partículas e a equação da onda.
               </p>
             </div>
 
@@ -404,6 +471,21 @@ export const ProgressiveWaveSimulator: React.FC = () => {
                 />
               </ControlRow>
 
+              <ControlRow
+                label="Ponto analisado"
+                symbol="x₀"
+                value={`${formatNumber(probeX, 2)} m`}
+              >
+                <Slider
+                  value={[probePercent]}
+                  onValueChange={(value) => setProbePercent(value[0])}
+                  min={5}
+                  max={95}
+                  step={1}
+                  className="w-full"
+                />
+              </ControlRow>
+
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => setShowParticles(!showParticles)}
@@ -425,6 +507,28 @@ export const ProgressiveWaveSimulator: React.FC = () => {
                   }`}
                 >
                   Medidas
+                </button>
+
+                <button
+                  onClick={() => setShowProbe(!showProbe)}
+                  className={`rounded-lg border px-3 py-2 text-sm font-bold ${
+                    showProbe
+                      ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                      : "border-slate-300 bg-white text-slate-700"
+                  }`}
+                >
+                  Ponto x₀
+                </button>
+
+                <button
+                  onClick={() => setShowEnergy(!showEnergy)}
+                  className={`rounded-lg border px-3 py-2 text-sm font-bold ${
+                    showEnergy
+                      ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                      : "border-slate-300 bg-white text-slate-700"
+                  }`}
+                >
+                  Energia
                 </button>
               </div>
             </div>
@@ -456,7 +560,7 @@ export const ProgressiveWaveSimulator: React.FC = () => {
               <MetricCard
                 label={
                   <>
-                    Velocidade <MathFormula inline formula={String.raw`v`} />
+                    Velocidade da onda <MathFormula inline formula={String.raw`v`} />
                   </>
                 }
                 value={formatUnit(velocity, "m/s")}
@@ -485,6 +589,15 @@ export const ProgressiveWaveSimulator: React.FC = () => {
               <MetricCard
                 label={
                   <>
+                    Número de onda <MathFormula inline formula={String.raw`k`} />
+                  </>
+                }
+                value={`${formatNumber(k, 4)} rad/m`}
+              />
+
+              <MetricCard
+                label={
+                  <>
                     Frequência angular{" "}
                     <MathFormula inline formula={String.raw`\omega`} />
                   </>
@@ -495,13 +608,20 @@ export const ProgressiveWaveSimulator: React.FC = () => {
               <MetricCard
                 label={
                   <>
-                    Número de onda <MathFormula inline formula={String.raw`k`} />
+                    Deslocamento em{" "}
+                    <MathFormula inline formula={String.raw`x_0`} />
                   </>
                 }
-                value={`${formatNumber(k, 4)} rad/m`}
+                value={formatUnit(probeDisplacement, "m")}
+                valueClassName={
+                  probeDisplacement >= 0 ? "text-red-700" : "text-blue-700"
+                }
               />
 
-              <MetricCard label="Interpretação" value={interpretation} />
+              <MetricCard
+                label="Interpretação"
+                value={interpretation}
+              />
             </div>
           </Card>
         </div>
@@ -540,7 +660,7 @@ export const ProgressiveWaveSimulator: React.FC = () => {
                   <canvas
                     ref={canvasRef}
                     width={980}
-                    height={420}
+                    height={460}
                     className="mx-auto w-full min-w-[780px] rounded-lg border border-slate-200 bg-slate-50"
                   />
                 </div>
@@ -566,27 +686,37 @@ export const ProgressiveWaveSimulator: React.FC = () => {
               />
 
               <CalcMiniCard
-                title="Grandezas derivadas"
+                title="Grandezas da onda"
                 values={[
                   ["v", formatUnit(velocity, "m/s")],
                   ["T", formatUnit(period, "s")],
-                ]}
-              />
-
-              <CalcMiniCard
-                title="Forma matemática"
-                values={[
                   ["k", `${formatNumber(k, 4)} rad/m`],
                   ["ω", formatUnit(omega, "rad/s")],
                 ]}
               />
 
               <CalcMiniCard
-                title="Configuração"
+                title="Ponto analisado"
                 values={[
-                  ["Tipo", waveType === "transversal" ? "Transversal" : "Longitudinal"],
-                  ["Sentido", direction === "right" ? "Para a direita" : "Para a esquerda"],
-                  ["φ₀", formatUnit(phaseDeg, "°")],
+                  ["x₀", formatUnit(probeX, "m")],
+                  ["y(x₀,t)", formatUnit(probeDisplacement, "m")],
+                  [
+                    waveType === "transversal" ? "v_y" : "v_x",
+                    formatUnit(probeParticleVelocity, "m/s"),
+                  ],
+                  [
+                    waveType === "transversal" ? "a_y" : "a_x",
+                    formatUnit(probeParticleAcceleration, "m/s²"),
+                  ],
+                ]}
+              />
+
+              <CalcMiniCard
+                title="Energia relativa"
+                values={[
+                  ["A²ω²", formatNumber(relativeEnergy, 4)],
+                  ["v part. máx.", formatUnit(maxParticleVelocity, "m/s")],
+                  ["a part. máx.", formatUnit(maxParticleAcceleration, "m/s²")],
                 ]}
               />
             </div>
@@ -604,16 +734,25 @@ export const ProgressiveWaveSimulator: React.FC = () => {
                 title="Relação fundamental da ondulatória"
                 formulas={[
                   String.raw`v = \lambda f`,
-                  String.raw`v = ${formatNumber(physicalWavelength, 4)}\cdot ${formatNumber(frequency)} = ${formatNumber(velocity, 4)}\,\text{m/s}`,
+                  String.raw`v = ${formatNumber(physicalWavelength, 4)}\cdot ${formatNumber(
+                    frequency
+                  )} = ${formatNumber(velocity, 4)}\,\text{m/s}`,
                 ]}
               />
 
               <CalcSection
                 title="Período, número de onda e frequência angular"
                 formulas={[
-                  String.raw`T = \frac{1}{f} = \frac{1}{${formatNumber(frequency)}} = ${formatNumber(period, 4)}\,\text{s}`,
-                  String.raw`k = \frac{2\pi}{\lambda} = \frac{2\pi}{${formatNumber(physicalWavelength, 4)}} = ${formatNumber(k, 4)}\,\text{rad/m}`,
-                  String.raw`\omega = 2\pi f = 2\pi\cdot ${formatNumber(frequency)} = ${formatNumber(omega, 4)}\,\text{rad/s}`,
+                  String.raw`T = \frac{1}{f} = \frac{1}{${formatNumber(
+                    frequency
+                  )}} = ${formatNumber(period, 4)}\,\text{s}`,
+                  String.raw`k = \frac{2\pi}{\lambda} = \frac{2\pi}{${formatNumber(
+                    physicalWavelength,
+                    4
+                  )}} = ${formatNumber(k, 4)}\,\text{rad/m}`,
+                  String.raw`\omega = 2\pi f = 2\pi\cdot ${formatNumber(
+                    frequency
+                  )} = ${formatNumber(omega, 4)}\,\text{rad/s}`,
                 ]}
               />
 
@@ -623,20 +762,68 @@ export const ProgressiveWaveSimulator: React.FC = () => {
                   direction === "right"
                     ? String.raw`y(x,t) = A\sin(kx-\omega t+\varphi_0)`
                     : String.raw`y(x,t) = A\sin(kx+\omega t+\varphi_0)`,
-                  String.raw`y(x,t) = ${formatNumber(amplitudeM, 3)}\sin(${formatNumber(k, 4)}x ${equationSign} ${formatNumber(omega, 4)}t + ${formatNumber(phaseRad, 4)})`,
-                  waveType === "transversal"
-                    ? String.raw`\text{Na onda transversal, a perturbação é perpendicular à propagação.}`
-                    : String.raw`\text{Na onda longitudinal, a perturbação é paralela à propagação.}`,
+                  direction === "right"
+                    ? String.raw`y(x,t) = ${formatNumber(amplitudeM, 3)}\sin(${formatNumber(
+                        k,
+                        4
+                      )}x - ${formatNumber(omega, 4)}t + ${formatNumber(
+                        phaseRad,
+                        4
+                      )})`
+                    : String.raw`y(x,t) = ${formatNumber(amplitudeM, 3)}\sin(${formatNumber(
+                        k,
+                        4
+                      )}x + ${formatNumber(omega, 4)}t + ${formatNumber(
+                        phaseRad,
+                        4
+                      )})`,
                 ]}
               />
 
               <CalcSection
-                title="Meio de propagação"
+                title="Ponto analisado"
                 formulas={[
-                  selectedMedium.speed
-                    ? String.raw`v_{\text{meio}} \approx ${formatNumber(selectedMedium.speed)}\,\text{m/s}`
-                    : String.raw`\text{No meio personalizado, a velocidade é definida por }v=\lambda f.`,
-                  String.raw`\lambda = \frac{v}{f} = \frac{${formatNumber(velocity, 4)}}{${formatNumber(frequency)}} = ${formatNumber(physicalWavelength, 4)}\,\text{m}`,
+                  String.raw`x_0 = ${formatNumber(probeX, 4)}\,\text{m}`,
+                  String.raw`y(x_0,t) = ${formatNumber(
+                    probeDisplacement,
+                    4
+                  )}\,\text{m}`,
+                  String.raw`v_{\text{partícula}} = \frac{\partial y}{\partial t} = ${formatNumber(
+                    probeParticleVelocity,
+                    4
+                  )}\,\text{m/s}`,
+                  String.raw`a_{\text{partícula}} = \frac{\partial^2 y}{\partial t^2} = ${formatNumber(
+                    probeParticleAcceleration,
+                    4
+                  )}\,\text{m/s}^2`,
+                ]}
+              />
+
+              <CalcSection
+                title="Energia relativa da onda"
+                formulas={[
+                  String.raw`E_{\text{relativa}} \propto A^2\omega^2`,
+                  String.raw`E_{\text{relativa}} \propto ${formatNumber(
+                    amplitudeM,
+                    4
+                  )}^2\cdot ${formatNumber(omega, 4)}^2`,
+                  String.raw`E_{\text{relativa}} \propto ${formatNumber(
+                    relativeEnergy,
+                    4
+                  )}`,
+                  String.raw`\text{Quanto maior a amplitude e a frequência, maior tende a ser a energia transportada.}`,
+                ]}
+              />
+
+              <CalcSection
+                title="Diferença física entre os tipos"
+                formulas={[
+                  waveType === "transversal"
+                    ? String.raw`\text{Na onda transversal, a partícula oscila perpendicularmente à direção de propagação.}`
+                    : String.raw`\text{Na onda longitudinal, a partícula oscila paralelamente à direção de propagação.}`,
+                  direction === "right"
+                    ? String.raw`\text{O sinal }-\omega t\text{ indica propagação para a direita.}`
+                    : String.raw`\text{O sinal }+\omega t\text{ indica propagação para a esquerda.}`,
                 ]}
               />
             </div>
@@ -769,39 +956,56 @@ function drawBackground(
   ctx.stroke();
 }
 
+function metersToCanvasX(xMeters: number, visibleMeters: number, width: number) {
+  return (xMeters / visibleMeters) * width;
+}
+
+function canvasXToMeters(x: number, visibleMeters: number, width: number) {
+  return (x / width) * visibleMeters;
+}
+
 function drawTransversalWave({
   ctx,
   width,
   height,
-  amplitude,
-  wavelength,
+  amplitudeM,
+  physicalWavelength,
+  visibleMeters,
   k,
   omega,
-  phase,
-  t,
-  direction,
+  phaseRad,
+  directionSign,
+  time,
   showParticles,
   showMeasures,
-  amplitudeLabel,
-  wavelengthLabel,
+  showProbe,
+  probeX,
+  probeDisplacement,
+  probeParticleVelocity,
+  probeParticleAcceleration,
 }: {
   ctx: CanvasRenderingContext2D;
   width: number;
   height: number;
-  amplitude: number;
-  wavelength: number;
+  amplitudeM: number;
+  physicalWavelength: number;
+  visibleMeters: number;
   k: number;
   omega: number;
-  phase: number;
-  t: number;
-  direction: Direction;
+  phaseRad: number;
+  directionSign: number;
+  time: number;
   showParticles: boolean;
   showMeasures: boolean;
-  amplitudeLabel: string;
-  wavelengthLabel: string;
+  showProbe: boolean;
+  probeX: number;
+  probePercent: number;
+  probeDisplacement: number;
+  probeParticleVelocity: number;
+  probeParticleAcceleration: number;
 }) {
   const centerY = height / 2;
-  const sign = direction === "right" ? -1 : 1;
+  const amplitudePx = clamp(amplitudeM * 420, 14, 110);
 
   ctx.beginPath();
   ctx.strokeStyle = "#4f46e5";
@@ -809,7 +1013,9 @@ function drawTransversalWave({
   ctx.lineCap = "round";
 
   for (let x = 0; x <= width; x++) {
-    const y = centerY + amplitude * Math.sin(k * x + sign * omega * t + phase);
+    const xMeters = canvasXToMeters(x, visibleMeters, width);
+    const phase = k * xMeters + directionSign * omega * time + phaseRad;
+    const y = centerY + amplitudePx * Math.sin(phase);
 
     if (x === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
@@ -818,13 +1024,17 @@ function drawTransversalWave({
   ctx.stroke();
 
   if (showParticles) {
-    for (let x = 60; x < width; x += 70) {
-      const y = centerY + amplitude * Math.sin(k * x + sign * omega * t + phase);
+    for (let i = 0; i <= 26; i++) {
+      const xMeters = (i / 26) * visibleMeters;
+      const x = metersToCanvasX(xMeters, visibleMeters, width);
+      const phase = k * xMeters + directionSign * omega * time + phaseRad;
+      const y = centerY + amplitudePx * Math.sin(phase);
 
       ctx.fillStyle = "#ef4444";
       ctx.beginPath();
-      ctx.arc(x, y, 6, 0, TWO_PI);
+      ctx.arc(x, y, 5, 0, TWO_PI);
       ctx.fill();
+
       ctx.strokeStyle = "white";
       ctx.lineWidth = 2;
       ctx.stroke();
@@ -832,9 +1042,93 @@ function drawTransversalWave({
   }
 
   if (showMeasures) {
-    drawAmplitudeMeasure(ctx, 100, centerY, amplitude, amplitudeLabel);
-    drawWavelengthMeasure(ctx, 180, centerY + amplitude + 55, wavelength, wavelengthLabel);
-    drawCrestValleyLabels(ctx, centerY, amplitude);
+    const lambdaPx = metersToCanvasX(physicalWavelength, visibleMeters, width);
+
+    drawArrow(
+      ctx,
+      90,
+      centerY,
+      90,
+      centerY - amplitudePx,
+      "#dc2626",
+      "A"
+    );
+
+    drawArrow(
+      ctx,
+      170,
+      centerY + amplitudePx + 48,
+      170 + lambdaPx,
+      centerY + amplitudePx + 48,
+      "#059669",
+      "λ"
+    );
+
+    ctx.fillStyle = "#334155";
+    ctx.font = "bold 12px Arial";
+    ctx.fillText("crista", 245, centerY - amplitudePx - 14);
+    ctx.fillText("vale", 355, centerY + amplitudePx + 24);
+  }
+
+  if (showProbe) {
+    const probeCanvasX = metersToCanvasX(probeX, visibleMeters, width);
+    const probeY = centerY + amplitudePx * (probeDisplacement / amplitudeM);
+
+    ctx.strokeStyle = "#f97316";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.moveTo(probeCanvasX, 40);
+    ctx.lineTo(probeCanvasX, height - 42);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = "#f97316";
+    ctx.beginPath();
+    ctx.arc(probeCanvasX, probeY, 9, 0, TWO_PI);
+    ctx.fill();
+
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    const velocityScale = amplitudeM * omega || 1;
+    const vectorLength = clamp((probeParticleVelocity / velocityScale) * 58, -58, 58);
+
+    drawArrow(
+      ctx,
+      probeCanvasX + 28,
+      probeY,
+      probeCanvasX + 28,
+      probeY + vectorLength,
+      "#0ea5e9",
+      "v part."
+    );
+
+    const accelScale = amplitudeM * omega ** 2 || 1;
+    const accelLength = clamp(
+      (probeParticleAcceleration / accelScale) * 48,
+      -48,
+      48
+    );
+
+    drawArrow(
+      ctx,
+      probeCanvasX + 62,
+      probeY,
+      probeCanvasX + 62,
+      probeY + accelLength,
+      "#a855f7",
+      "a part."
+    );
+
+    drawProbeLabel({
+      ctx,
+      x: probeCanvasX,
+      y: probeY,
+      probeX,
+      probeDisplacement,
+    });
   }
 }
 
@@ -842,67 +1136,78 @@ function drawLongitudinalWave({
   ctx,
   width,
   height,
-  amplitude,
-  wavelength,
+  amplitudeM,
+  physicalWavelength,
+  visibleMeters,
   k,
   omega,
-  phase,
-  t,
-  direction,
+  phaseRad,
+  directionSign,
+  time,
   showParticles,
   showMeasures,
-  wavelengthLabel,
+  showProbe,
+  probeX,
+  probeDisplacement,
+  probeParticleVelocity,
+  probeParticleAcceleration,
 }: {
   ctx: CanvasRenderingContext2D;
   width: number;
   height: number;
-  amplitude: number;
-  wavelength: number;
+  amplitudeM: number;
+  physicalWavelength: number;
+  visibleMeters: number;
   k: number;
   omega: number;
-  phase: number;
-  t: number;
-  direction: Direction;
+  phaseRad: number;
+  directionSign: number;
+  time: number;
   showParticles: boolean;
   showMeasures: boolean;
-  wavelengthLabel: string;
+  showProbe: boolean;
+  probeX: number;
+  probePercent: number;
+  probeDisplacement: number;
+  probeParticleVelocity: number;
+  probeParticleAcceleration: number;
 }) {
   const centerY = height / 2;
-  const sign = direction === "right" ? -1 : 1;
-  const numParticles = 54;
-  const spacing = width / numParticles;
+  const displacementPx = clamp(amplitudeM * 320, 10, 75);
 
   if (showParticles) {
-    for (let i = 0; i <= numParticles; i++) {
-      const xEq = i * spacing;
-      const displacement =
-        amplitude * 0.7 * Math.sin(k * xEq + sign * omega * t + phase);
-      const x = xEq + displacement;
+    for (let i = 0; i <= 58; i++) {
+      const xMeters = (i / 58) * visibleMeters;
+      const baseX = metersToCanvasX(xMeters, visibleMeters, width);
+      const phase = k * xMeters + directionSign * omega * time + phaseRad;
+      const dx = displacementPx * Math.sin(phase);
+      const x = baseX + dx;
 
-      ctx.fillStyle = i % 5 === 0 ? "#ef4444" : "#4f46e5";
+      const stronger = i % 5 === 0;
+
+      ctx.fillStyle = stronger ? "#ef4444" : "#4f46e5";
       ctx.beginPath();
-      ctx.arc(x, centerY, i % 5 === 0 ? 6 : 4, 0, TWO_PI);
+      ctx.arc(x, centerY, stronger ? 6 : 4, 0, TWO_PI);
       ctx.fill();
 
-      ctx.strokeStyle = "rgba(79,70,229,0.18)";
+      ctx.strokeStyle = "rgba(79,70,229,0.16)";
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(x, centerY - 70);
-      ctx.lineTo(x, centerY + 70);
+      ctx.moveTo(x, centerY - 76);
+      ctx.lineTo(x, centerY + 76);
       ctx.stroke();
     }
   }
 
   ctx.beginPath();
-  ctx.strokeStyle = "rgba(15,23,42,0.35)";
+  ctx.strokeStyle = "#64748b";
   ctx.lineWidth = 2;
   ctx.setLineDash([6, 6]);
 
   for (let x = 0; x <= width; x++) {
-    const y =
-      centerY +
-      105 +
-      amplitude * 0.45 * Math.sin(k * x + sign * omega * t + phase);
+    const xMeters = canvasXToMeters(x, visibleMeters, width);
+    const phase = k * xMeters + directionSign * omega * time + phaseRad;
+    const y = centerY + 120 + displacementPx * 0.55 * Math.sin(phase);
 
     if (x === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
@@ -911,50 +1216,244 @@ function drawLongitudinalWave({
   ctx.stroke();
   ctx.setLineDash([]);
 
-  if (showMeasures) {
-    drawWavelengthMeasure(ctx, 180, centerY + 155, wavelength, wavelengthLabel);
-    ctx.fillStyle = "#475569";
-    ctx.font = "bold 12px Arial";
-    ctx.fillText("compressões e rarefações se propagam pelo meio", 26, 40);
-  }
-
-  if (!showParticles) {
-    ctx.fillStyle = "#64748b";
-    ctx.font = "bold 13px Arial";
-    ctx.fillText("Partículas ocultas. Ative o botão para ver o movimento do meio.", 26, 70);
-  }
-}
-
-function drawAmplitudeMeasure(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  centerY: number,
-  amplitude: number,
-  label: string
-) {
-  drawArrow(ctx, x, centerY, x, centerY - amplitude, "#dc2626", `A = ${label}`);
-  drawArrow(ctx, x + 20, centerY, x + 20, centerY + amplitude, "#dc2626", "A");
-}
-
-function drawWavelengthMeasure(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  wavelength: number,
-  label: string
-) {
-  drawArrow(ctx, x, y, x + wavelength, y, "#059669", `λ = ${label}`);
-}
-
-function drawCrestValleyLabels(
-  ctx: CanvasRenderingContext2D,
-  centerY: number,
-  amplitude: number
-) {
-  ctx.fillStyle = "#334155";
+  ctx.fillStyle = "#475569";
   ctx.font = "bold 12px Arial";
-  ctx.fillText("crista", 255, centerY - amplitude - 12);
-  ctx.fillText("vale", 350, centerY + amplitude + 22);
+  ctx.fillText("compressões e rarefações do meio", 28, 48);
+
+  if (showMeasures) {
+    const lambdaPx = metersToCanvasX(physicalWavelength, visibleMeters, width);
+
+    drawArrow(
+      ctx,
+      170,
+      centerY + 165,
+      170 + lambdaPx,
+      centerY + 165,
+      "#059669",
+      "λ"
+    );
+  }
+
+  if (showProbe) {
+    const baseProbeX = metersToCanvasX(probeX, visibleMeters, width);
+    const probeCanvasX = baseProbeX + displacementPx * (probeDisplacement / amplitudeM);
+
+    ctx.strokeStyle = "#f97316";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.moveTo(baseProbeX, 40);
+    ctx.lineTo(baseProbeX, height - 42);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = "#f97316";
+    ctx.beginPath();
+    ctx.arc(probeCanvasX, centerY, 10, 0, TWO_PI);
+    ctx.fill();
+
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    const velocityScale = amplitudeM * omega || 1;
+    const velocityLength = clamp(
+      (probeParticleVelocity / velocityScale) * 62,
+      -62,
+      62
+    );
+
+    drawArrow(
+      ctx,
+      probeCanvasX,
+      centerY - 36,
+      probeCanvasX + velocityLength,
+      centerY - 36,
+      "#0ea5e9",
+      "v part."
+    );
+
+    const accelScale = amplitudeM * omega ** 2 || 1;
+    const accelLength = clamp(
+      (probeParticleAcceleration / accelScale) * 52,
+      -52,
+      52
+    );
+
+    drawArrow(
+      ctx,
+      probeCanvasX,
+      centerY - 68,
+      probeCanvasX + accelLength,
+      centerY - 68,
+      "#a855f7",
+      "a part."
+    );
+
+    drawProbeLabel({
+      ctx,
+      x: probeCanvasX,
+      y: centerY,
+      probeX,
+      probeDisplacement,
+    });
+  }
+}
+
+function drawDirectionArrow({
+  ctx,
+  width,
+  height,
+  direction,
+  velocity,
+}: {
+  ctx: CanvasRenderingContext2D;
+  width: number;
+  height: number;
+  direction: Direction;
+  velocity: number;
+}) {
+  const y = height - 28;
+  const startX = direction === "right" ? width - 230 : 230;
+  const endX = direction === "right" ? width - 90 : 90;
+
+  drawArrow(
+    ctx,
+    startX,
+    y,
+    endX,
+    y,
+    "#4f46e5",
+    `propagação v = ${formatNumber(velocity, 2)} m/s`
+  );
+}
+
+function drawEnergyPanel({
+  ctx,
+  width,
+  relativeEnergy,
+  energyBarPercent,
+  maxParticleVelocity,
+  maxParticleAcceleration,
+}: {
+  ctx: CanvasRenderingContext2D;
+  width: number;
+  relativeEnergy: number;
+  energyBarPercent: number;
+  maxParticleVelocity: number;
+  maxParticleAcceleration: number;
+}) {
+  const x = width - 315;
+  const y = 22;
+
+  ctx.fillStyle = "rgba(255,255,255,0.94)";
+  ctx.strokeStyle = "#e2e8f0";
+  ctx.lineWidth = 1;
+  roundRect(ctx, x, y, 285, 120, 14);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = "#0f172a";
+  ctx.font = "bold 13px Arial";
+  ctx.fillText("Energia relativa", x + 18, y + 28);
+
+  ctx.fillStyle = "#e2e8f0";
+  roundRect(ctx, x + 18, y + 44, 240, 14, 7);
+  ctx.fill();
+
+  ctx.fillStyle = "#4f46e5";
+  roundRect(ctx, x + 18, y + 44, (240 * energyBarPercent) / 100, 14, 7);
+  ctx.fill();
+
+  ctx.fillStyle = "#475569";
+  ctx.font = "12px Arial";
+  ctx.fillText(`A²ω² = ${formatNumber(relativeEnergy, 4)}`, x + 18, y + 78);
+  ctx.fillText(`v máx. part. = ${formatNumber(maxParticleVelocity, 3)} m/s`, x + 18, y + 96);
+  ctx.fillText(`a máx. part. = ${formatNumber(maxParticleAcceleration, 3)} m/s²`, x + 18, y + 114);
+}
+
+function drawInfoBox({
+  ctx,
+  waveType,
+  direction,
+  mediumLabel,
+  amplitudeCm,
+  frequency,
+  wavelength,
+  velocity,
+  period,
+  probeX,
+  probeDisplacement,
+}: {
+  ctx: CanvasRenderingContext2D;
+  waveType: WaveType;
+  direction: Direction;
+  mediumLabel: string;
+  amplitudeCm: number;
+  frequency: number;
+  wavelength: number;
+  velocity: number;
+  period: number;
+  probeX: number;
+  probeDisplacement: number;
+}) {
+  ctx.fillStyle = "rgba(255,255,255,0.94)";
+  ctx.strokeStyle = "#e2e8f0";
+  ctx.lineWidth = 1;
+  roundRect(ctx, 20, 18, 330, 178, 14);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = "#0f172a";
+  ctx.font = "bold 13px Arial";
+  ctx.fillText("ONDA PROGRESSIVA", 38, 44);
+
+  ctx.font = "12px Arial";
+  ctx.fillText(`tipo: ${waveType === "transversal" ? "Transversal" : "Longitudinal"}`, 38, 68);
+  ctx.fillText(`meio: ${mediumLabel}`, 38, 88);
+  ctx.fillText(`sentido: ${direction === "right" ? "direita" : "esquerda"}`, 38, 108);
+  ctx.fillText(`A = ${formatNumber(amplitudeCm)} cm`, 38, 128);
+  ctx.fillText(`λ = ${formatNumber(wavelength, 2)} m`, 38, 148);
+
+  ctx.fillText(`f = ${formatNumber(frequency)} Hz`, 185, 128);
+  ctx.fillText(`v = ${formatNumber(velocity, 2)} m/s`, 185, 148);
+  ctx.fillText(`T = ${formatNumber(period, 2)} s`, 185, 168);
+
+  ctx.fillText(`x₀ = ${formatNumber(probeX, 2)} m`, 38, 168);
+  ctx.fillText(`y₀ = ${formatNumber(probeDisplacement, 3)} m`, 185, 188);
+}
+
+function drawProbeLabel({
+  ctx,
+  x,
+  y,
+  probeX,
+  probeDisplacement,
+}: {
+  ctx: CanvasRenderingContext2D;
+  x: number;
+  y: number;
+  probeX: number;
+  probeDisplacement: number;
+}) {
+  const boxX = clamp(x + 18, 20, 760);
+  const boxY = clamp(y - 70, 20, 365);
+
+  ctx.fillStyle = "rgba(255,255,255,0.95)";
+  ctx.strokeStyle = "#fed7aa";
+  ctx.lineWidth = 1;
+  roundRect(ctx, boxX, boxY, 180, 58, 12);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = "#9a3412";
+  ctx.font = "bold 12px Arial";
+  ctx.fillText("ponto analisado", boxX + 12, boxY + 22);
+
+  ctx.fillStyle = "#475569";
+  ctx.font = "12px Arial";
+  ctx.fillText(`x₀ = ${formatNumber(probeX, 2)} m`, boxX + 12, boxY + 40);
+  ctx.fillText(`y = ${formatNumber(probeDisplacement, 3)} m`, boxX + 95, boxY + 40);
 }
 
 function drawArrow(
@@ -993,55 +1492,6 @@ function drawArrow(
 
   ctx.font = "bold 12px Arial";
   ctx.fillText(label, toX + 8, toY - 6);
-}
-
-function drawInfoBox({
-  ctx,
-  waveType,
-  direction,
-  amplitudeCm,
-  frequency,
-  wavelength,
-  velocity,
-  period,
-}: {
-  ctx: CanvasRenderingContext2D;
-  waveType: WaveType;
-  direction: Direction;
-  amplitudeCm: number;
-  frequency: number;
-  wavelength: number;
-  velocity: number;
-  period: number;
-}) {
-  ctx.fillStyle = "rgba(255,255,255,0.92)";
-  ctx.strokeStyle = "#e2e8f0";
-  ctx.lineWidth = 1;
-  roundRect(ctx, 20, 18, 315, 142, 12);
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = "#0f172a";
-  ctx.font = "bold 13px Arial";
-  ctx.fillText("ONDA PROGRESSIVA", 38, 44);
-
-  ctx.font = "12px Arial";
-  ctx.fillText(
-    `tipo: ${waveType === "transversal" ? "Transversal" : "Longitudinal"}`,
-    38,
-    68
-  );
-  ctx.fillText(
-    `sentido: ${direction === "right" ? "direita" : "esquerda"}`,
-    38,
-    88
-  );
-  ctx.fillText(`A = ${formatNumber(amplitudeCm)} cm`, 38, 108);
-  ctx.fillText(`λ = ${formatNumber(wavelength, 2)} m`, 38, 128);
-
-  ctx.fillText(`f = ${formatNumber(frequency)} Hz`, 190, 108);
-  ctx.fillText(`v = ${formatNumber(velocity, 2)} m/s`, 190, 128);
-  ctx.fillText(`T = ${formatNumber(period, 2)} s`, 190, 148);
 }
 
 function roundRect(
