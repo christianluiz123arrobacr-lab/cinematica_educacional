@@ -27,7 +27,7 @@ type CameraConfig = {
 };
 
 const TWO_PI = 2 * Math.PI;
-const DEFAULT_3D_SPEED = 0.22;
+const DEFAULT_3D_SPEED = 0.08;
 
 const DEFAULT_CAMERA_ROT_X = 0;
 const DEFAULT_CAMERA_ROT_Y = 0;
@@ -96,6 +96,7 @@ export const ProgressiveWaveSimulator: React.FC = () => {
 
   const [waveOriginPercent3D, setWaveOriginPercent3D] = useState(0);
   const [wave3DSpeed, setWave3DSpeed] = useState(DEFAULT_3D_SPEED);
+  const [wave3DStartTime, setWave3DStartTime] = useState(0);
 
   const [cameraRotX, setCameraRotX] = useState(DEFAULT_CAMERA_ROT_X);
   const [cameraRotY, setCameraRotY] = useState(DEFAULT_CAMERA_ROT_Y);
@@ -204,6 +205,7 @@ export const ProgressiveWaveSimulator: React.FC = () => {
     setProbePercent(35);
     setWaveOriginPercent3D(0);
     setWave3DSpeed(DEFAULT_3D_SPEED);
+    setWave3DStartTime(0);
     setCameraRotX(DEFAULT_CAMERA_ROT_X);
     setCameraRotY(DEFAULT_CAMERA_ROT_Y);
     setCameraRotZ(DEFAULT_CAMERA_ROT_Z);
@@ -214,6 +216,7 @@ export const ProgressiveWaveSimulator: React.FC = () => {
 
   const open3DModal = () => {
     setWaveOriginPercent3D(direction === "right" ? 0 : 100);
+    setWave3DStartTime(time);
     setCameraRotX(DEFAULT_CAMERA_ROT_X);
     setCameraRotY(DEFAULT_CAMERA_ROT_Y);
     setCameraRotZ(DEFAULT_CAMERA_ROT_Z);
@@ -888,16 +891,15 @@ export const ProgressiveWaveSimulator: React.FC = () => {
           onClose={() => setShow3DModal(false)}
           waveType={waveType}
           direction={direction}
-          directionSign={directionSign}
           amplitudeM={amplitudeM}
           physicalWavelength={physicalWavelength}
           frequency={frequency}
           velocity={velocity}
           visibleMeters={visibleMeters}
           k={k}
-          omega={omega}
           phaseRad={phaseRad}
           time={time}
+          wave3DStartTime={wave3DStartTime}
           probeX={probeX}
           probeDisplacement={probeDisplacement}
           originPercent={waveOriginPercent3D}
@@ -922,16 +924,15 @@ function Wave3DModal({
   onClose,
   waveType,
   direction,
-  directionSign,
   amplitudeM,
   physicalWavelength,
   frequency,
   velocity,
   visibleMeters,
   k,
-  omega,
   phaseRad,
   time,
+  wave3DStartTime,
   probeX,
   probeDisplacement,
   originPercent,
@@ -950,16 +951,15 @@ function Wave3DModal({
   onClose: () => void;
   waveType: WaveType;
   direction: Direction;
-  directionSign: number;
   amplitudeM: number;
   physicalWavelength: number;
   frequency: number;
   velocity: number;
   visibleMeters: number;
   k: number;
-  omega: number;
   phaseRad: number;
   time: number;
+  wave3DStartTime: number;
   probeX: number;
   probeDisplacement: number;
   originPercent: number;
@@ -994,9 +994,24 @@ function Wave3DModal({
   }, [originPercent, visibleMeters]);
 
   const waveProgress = useMemo(() => {
-    const cycleSize = visibleMeters + physicalWavelength;
-    return (time * wave3DSpeed * Math.max(physicalWavelength, 0.4)) % cycleSize;
-  }, [time, wave3DSpeed, physicalWavelength, visibleMeters]);
+    const elapsed = Math.max(0, time - wave3DStartTime);
+
+    const maxDistance =
+      direction === "right" ? visibleMeters - originX : originX;
+
+    const speedInMetersPerSecond =
+      wave3DSpeed * Math.max(physicalWavelength, 0.4);
+
+    return clamp(elapsed * speedInMetersPerSecond, 0, maxDistance);
+  }, [
+    time,
+    wave3DStartTime,
+    wave3DSpeed,
+    physicalWavelength,
+    visibleMeters,
+    originX,
+    direction,
+  ]);
 
   const frontX = useMemo(() => {
     if (direction === "right") {
@@ -1006,9 +1021,13 @@ function Wave3DModal({
     return clamp(originX - waveProgress, 0, visibleMeters);
   }, [direction, originX, waveProgress, visibleMeters]);
 
+  const frontRelativeDistance = useMemo(() => {
+    return Math.abs(frontX - originX);
+  }, [frontX, originX]);
+
   const trigPhase = useMemo(() => {
-    return k * probeX + directionSign * omega * time + phaseRad;
-  }, [k, probeX, directionSign, omega, time, phaseRad]);
+    return k * frontRelativeDistance + phaseRad;
+  }, [k, frontRelativeDistance, phaseRad]);
 
   const wavePoints = useMemo(() => {
     return buildProjectedWavePoints({
@@ -1017,10 +1036,7 @@ function Wave3DModal({
       visibleMeters,
       amplitudeM,
       k,
-      omega,
       phaseRad,
-      directionSign,
-      time,
       direction,
       cameraConfig,
     });
@@ -1030,50 +1046,48 @@ function Wave3DModal({
     visibleMeters,
     amplitudeM,
     k,
-    omega,
     phaseRad,
-    directionSign,
-    time,
     direction,
     cameraConfig,
   ]);
 
   const fullGhostWave = useMemo(() => {
+    const ghostFront = direction === "right" ? visibleMeters : 0;
+
     return buildProjectedWavePoints({
-      originX: 0,
-      frontX: visibleMeters,
+      originX,
+      frontX: ghostFront,
       visibleMeters,
       amplitudeM,
       k,
-      omega,
       phaseRad,
-      directionSign,
-      time,
-      direction: "right",
+      direction,
       cameraConfig,
     });
   }, [
+    direction,
+    originX,
     visibleMeters,
     amplitudeM,
     k,
-    omega,
     phaseRad,
-    directionSign,
-    time,
     cameraConfig,
   ]);
 
   const phaseCirclePoints = useMemo(() => {
     return buildProjectedPhaseCircle({
-      xMeters: probeX,
+      xMeters: frontX,
       visibleMeters,
       amplitudeM,
       cameraConfig,
     });
-  }, [probeX, visibleMeters, amplitudeM, cameraConfig]);
+  }, [frontX, visibleMeters, amplitudeM, cameraConfig]);
 
   const projectedProbe = useMemo(() => {
-    const phase = k * probeX + directionSign * omega * time + phaseRad;
+    const relativeX =
+      direction === "right" ? probeX - originX : originX - probeX;
+
+    const phase = k * relativeX + phaseRad;
     const y = amplitudeM * Math.sin(phase);
     const z = amplitudeM * Math.cos(phase);
 
@@ -1087,10 +1101,9 @@ function Wave3DModal({
     });
   }, [
     probeX,
+    originX,
+    direction,
     k,
-    directionSign,
-    omega,
-    time,
     phaseRad,
     amplitudeM,
     visibleMeters,
@@ -1109,7 +1122,10 @@ function Wave3DModal({
   }, [originX, visibleMeters, amplitudeM, cameraConfig]);
 
   const projectedFront = useMemo(() => {
-    const phase = k * frontX + directionSign * omega * time + phaseRad;
+    const relativeX =
+      direction === "right" ? frontX - originX : originX - frontX;
+
+    const phase = k * relativeX + phaseRad;
     const y = amplitudeM * Math.sin(phase);
     const z = amplitudeM * Math.cos(phase);
 
@@ -1123,10 +1139,9 @@ function Wave3DModal({
     });
   }, [
     frontX,
+    originX,
+    direction,
     k,
-    directionSign,
-    omega,
-    time,
     phaseRad,
     amplitudeM,
     visibleMeters,
@@ -1213,8 +1228,7 @@ function Wave3DModal({
               Visualização 3D da Onda Progressiva
             </h3>
             <p className="mt-1 text-sm text-slate-400">
-              Com X, Y e Z zerados, a onda aparece como gráfico seno comum.
-              Gire a câmera para ver o 3D.
+              A linha nasce da origem. Com X e Y zerados, Z apenas gira o gráfico comum.
             </p>
           </div>
 
@@ -1258,9 +1272,9 @@ function Wave3DModal({
                   <Slider
                     value={[wave3DSpeed]}
                     onValueChange={(value) => setWave3DSpeed(value[0])}
-                    min={0.04}
-                    max={0.8}
-                    step={0.02}
+                    min={0.01}
+                    max={0.4}
+                    step={0.01}
                     className="w-full"
                   />
                 </DarkControlRow>
@@ -1356,10 +1370,10 @@ function Wave3DModal({
                 Leitura física
               </p>
               <p className="mt-2 text-sm leading-relaxed text-slate-300">
-                Quando X, Y e Z estão zerados, a visualização fica como uma
-                função seno comum. Ao girar a câmera, o eixo z mostra a fase
-                como cosseno para formar o ciclo visual. A partícula da corda
-                continua oscilando; ela não gira em círculo no espaço.
+                Quando X e Y estão zerados, a visualização fica como uma função
+                seno comum. A rotação Z apenas gira o gráfico na tela. Ao girar
+                em X ou Y, o eixo z mostra a fase como cosseno para formar o
+                ciclo visual.
               </p>
             </div>
 
@@ -1427,11 +1441,11 @@ function Wave3DModal({
                   </text>
 
                   <text x="408" y="48" fill="#f8fafc" fontSize="21" fontWeight="900">
-                    Câmera 3D da onda
+                    Linha saindo da origem
                   </text>
 
                   <text x="408" y="74" fill="#94a3b8" fontSize="13">
-                    Com X, Y e Z zerados, a onda aparece como gráfico seno comum. Gire a câmera para ver o 3D.
+                    A onda fica parada. A frente da linha é que vai desenhando a curva.
                   </text>
 
                   {gridLines.map((line) => (
@@ -1494,13 +1508,13 @@ function Wave3DModal({
                     y
                   </text>
 
-                  {fullGhostWave.length > 0 && (
+                  {!flatCamera && fullGhostWave.length > 0 && (
                     <polyline
                       points={fullGhostWave}
                       fill="none"
                       stroke="#334155"
                       strokeWidth="3"
-                      opacity="0.55"
+                      opacity="0.45"
                       strokeDasharray="8 8"
                     />
                   )}
@@ -1669,7 +1683,7 @@ function Wave3DModal({
                   </text>
 
                   <text x="48" y="420" fill="#94a3b8" fontSize="13">
-                    Com câmera zerada, a onda é uma senoide comum; com rotação, aparece o ciclo de fase.
+                    Z só gira a tela. X ou Y revelam a profundidade de fase.
                   </text>
 
                   <rect
@@ -1683,7 +1697,7 @@ function Wave3DModal({
                   />
 
                   <text x="416" y="128" fill="#e2e8f0" fontSize="13" fontWeight="800">
-                    Frente visual da onda
+                    Frente visual da linha
                   </text>
 
                   <text x="416" y="153" fill="#94a3b8" fontSize="12">
@@ -1731,10 +1745,7 @@ function buildProjectedWavePoints({
   visibleMeters,
   amplitudeM,
   k,
-  omega,
   phaseRad,
-  directionSign,
-  time,
   direction,
   cameraConfig,
 }: {
@@ -1743,10 +1754,7 @@ function buildProjectedWavePoints({
   visibleMeters: number;
   amplitudeM: number;
   k: number;
-  omega: number;
   phaseRad: number;
-  directionSign: number;
-  time: number;
   direction: Direction;
   cameraConfig: CameraConfig;
 }) {
@@ -1768,7 +1776,10 @@ function buildProjectedWavePoints({
         ? start + alpha * (end - start)
         : end - alpha * (end - start);
 
-    const phase = k * xMeters + directionSign * omega * time + phaseRad;
+    const relativeX =
+      direction === "right" ? xMeters - originX : originX - xMeters;
+
+    const phase = k * relativeX + phaseRad;
     const yMeters = amplitudeM * Math.sin(phase);
     const zMeters = amplitudeM * Math.cos(phase);
 
@@ -1919,9 +1930,16 @@ function projectWorldPoint(
     const centerY = 350;
     const scale = 62 * cameraConfig.zoom;
 
+    const rz = degreesToRadians(cameraConfig.rotZ);
+    const cosZ = Math.cos(rz);
+    const sinZ = Math.sin(rz);
+
+    const xRotated = point.x * cosZ - point.y * sinZ;
+    const yRotated = point.x * sinZ + point.y * cosZ;
+
     return {
-      x: centerX + point.x * scale,
-      y: centerY - point.y * scale,
+      x: centerX + xRotated * scale,
+      y: centerY - yRotated * scale,
       depth: 0,
     };
   }
@@ -1991,8 +2009,7 @@ function degreesToRadians(degrees: number) {
 function isFlatCamera(cameraConfig: CameraConfig) {
   return (
     Math.abs(cameraConfig.rotX) < 0.001 &&
-    Math.abs(cameraConfig.rotY) < 0.001 &&
-    Math.abs(cameraConfig.rotZ) < 0.001
+    Math.abs(cameraConfig.rotY) < 0.001
   );
 }
 
