@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WaveSimulator } from "@/components/WaveSimulator";
 import { DopplerSimulator } from "@/components/DopplerSimulator";
+import { ProgressiveWaveSimulator } from "@/components/waves/ProgressiveWaveSimulator";
 
 export default function OndulatoriaSimulator() {
   return (
@@ -44,12 +45,7 @@ export default function OndulatoriaSimulator() {
 
           <TabsContent value="progressivas" className="space-y-6">
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg">
-              <WaveSimulator
-                initialMode="progressive"
-                lockedMode="progressive"
-                title="Ondas Progressivas"
-                description="Analise ondas transversais e longitudinais se propagando pelo meio."
-              />
+              <ProgressiveWaveSimulator />
             </div>
           </TabsContent>
 
