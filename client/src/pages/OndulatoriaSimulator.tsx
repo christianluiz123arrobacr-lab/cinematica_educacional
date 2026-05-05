@@ -2,10 +2,10 @@ import { Link } from "wouter";
 import { ArrowLeft, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DopplerSimulator } from "@/components/DopplerSimulator";
 import { ProgressiveWaveSimulator } from "@/components/waves/ProgressiveWaveSimulator";
 import { StandingWaveSimulator } from "@/components/waves/StandingWaveSimulator";
 import { InterferenceSimulator } from "@/components/waves/InterferenceSimulator";
+import { DopplerSimulator } from "@/components/waves/DopplerSimulator";
 
 export default function OndulatoriaSimulator() {
   return (
