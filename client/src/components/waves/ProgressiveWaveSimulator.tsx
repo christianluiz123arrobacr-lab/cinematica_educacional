@@ -29,8 +29,8 @@ type CameraConfig = {
 const TWO_PI = 2 * Math.PI;
 const DEFAULT_3D_SPEED = 0.22;
 
-const DEFAULT_CAMERA_ROT_X = 24;
-const DEFAULT_CAMERA_ROT_Y = -34;
+const DEFAULT_CAMERA_ROT_X = 0;
+const DEFAULT_CAMERA_ROT_Y = 0;
 const DEFAULT_CAMERA_ROT_Z = 0;
 const DEFAULT_CAMERA_ZOOM = 1.05;
 
@@ -210,6 +210,15 @@ export const ProgressiveWaveSimulator: React.FC = () => {
     setCameraZoom(DEFAULT_CAMERA_ZOOM);
     setTime(0);
     lastTimeRef.current = 0;
+  };
+
+  const open3DModal = () => {
+    setWaveOriginPercent3D(direction === "right" ? 0 : 100);
+    setCameraRotX(DEFAULT_CAMERA_ROT_X);
+    setCameraRotY(DEFAULT_CAMERA_ROT_Y);
+    setCameraRotZ(DEFAULT_CAMERA_ROT_Z);
+    setCameraZoom(DEFAULT_CAMERA_ZOOM);
+    setShow3DModal(true);
   };
 
   useEffect(() => {
@@ -560,10 +569,7 @@ export const ProgressiveWaveSimulator: React.FC = () => {
 
               <Button
                 type="button"
-                onClick={() => {
-                  setWaveOriginPercent3D(direction === "right" ? 0 : 100);
-                  setShow3DModal(true);
-                }}
+                onClick={open3DModal}
                 className="w-full gap-2 bg-slate-950 text-white hover:bg-slate-800"
               >
                 <Box className="h-4 w-4" />
@@ -979,6 +985,10 @@ function Wave3DModal({
     [cameraRotX, cameraRotY, cameraRotZ, cameraZoom]
   );
 
+  const flatCamera = useMemo(() => {
+    return isFlatCamera(cameraConfig);
+  }, [cameraConfig]);
+
   const originX = useMemo(() => {
     return (originPercent / 100) * visibleMeters;
   }, [originPercent, visibleMeters]);
@@ -1124,8 +1134,9 @@ function Wave3DModal({
   ]);
 
   const gridLines = useMemo(() => {
+    if (flatCamera) return [];
     return build3DGridLines(cameraConfig);
-  }, [cameraConfig]);
+  }, [flatCamera, cameraConfig]);
 
   const xAxis = useMemo(() => {
     return buildWorldLine(
@@ -1202,7 +1213,8 @@ function Wave3DModal({
               Visualização 3D da Onda Progressiva
             </h3>
             <p className="mt-1 text-sm text-slate-400">
-              Gire a câmera nos três eixos para enxergar a senoide, a fase e a propagação.
+              Com X, Y e Z zerados, a onda aparece como gráfico seno comum.
+              Gire a câmera para ver o 3D.
             </p>
           </div>
 
@@ -1344,9 +1356,10 @@ function Wave3DModal({
                 Leitura física
               </p>
               <p className="mt-2 text-sm leading-relaxed text-slate-300">
-                A rotação 3D muda a câmera, não muda a física. O eixo z mostra
-                a fase como cosseno para formar o ciclo visual. A partícula da
-                corda continua oscilando; ela não gira em círculo no espaço.
+                Quando X, Y e Z estão zerados, a visualização fica como uma
+                função seno comum. Ao girar a câmera, o eixo z mostra a fase
+                como cosseno para formar o ciclo visual. A partícula da corda
+                continua oscilando; ela não gira em círculo no espaço.
               </p>
             </div>
 
@@ -1418,7 +1431,7 @@ function Wave3DModal({
                   </text>
 
                   <text x="408" y="74" fill="#94a3b8" fontSize="13">
-                    Clique em Ciclo ou use Rotação Y = 90° para ver o ciclo de fase.
+                    Com X, Y e Z zerados, a onda aparece como gráfico seno comum. Gire a câmera para ver o 3D.
                   </text>
 
                   {gridLines.map((line) => (
@@ -1450,23 +1463,35 @@ function Wave3DModal({
                     stroke="#64748b"
                     strokeWidth="3"
                   />
-                  <line
-                    x1={zAxis.x1}
-                    y1={zAxis.y1}
-                    x2={zAxis.x2}
-                    y2={zAxis.y2}
-                    stroke="#64748b"
-                    strokeWidth="3"
-                  />
+
+                  {!flatCamera && (
+                    <>
+                      <line
+                        x1={zAxis.x1}
+                        y1={zAxis.y1}
+                        x2={zAxis.x2}
+                        y2={zAxis.y2}
+                        stroke="#64748b"
+                        strokeWidth="3"
+                      />
+
+                      <text
+                        x={zLabel.x}
+                        y={zLabel.y}
+                        fill="#94a3b8"
+                        fontSize="13"
+                        fontWeight="800"
+                      >
+                        z
+                      </text>
+                    </>
+                  )}
 
                   <text x={xLabel.x} y={xLabel.y} fill="#94a3b8" fontSize="13" fontWeight="800">
                     x
                   </text>
                   <text x={yLabel.x} y={yLabel.y} fill="#94a3b8" fontSize="13" fontWeight="800">
                     y
-                  </text>
-                  <text x={zLabel.x} y={zLabel.y} fill="#94a3b8" fontSize="13" fontWeight="800">
-                    z
                   </text>
 
                   {fullGhostWave.length > 0 && (
@@ -1480,7 +1505,7 @@ function Wave3DModal({
                     />
                   )}
 
-                  {phaseCirclePoints.length > 0 && (
+                  {!flatCamera && phaseCirclePoints.length > 0 && (
                     <polyline
                       points={phaseCirclePoints}
                       fill="none"
@@ -1644,7 +1669,7 @@ function Wave3DModal({
                   </text>
 
                   <text x="48" y="420" fill="#94a3b8" fontSize="13">
-                    No 3D, o eixo z usa cosseno para mostrar o ciclo de fase.
+                    Com câmera zerada, a onda é uma senoide comum; com rotação, aparece o ciclo de fase.
                   </text>
 
                   <rect
@@ -1887,6 +1912,20 @@ function projectWorldPoint(
   point: { x: number; y: number; z: number },
   cameraConfig: CameraConfig
 ) {
+  const flat = isFlatCamera(cameraConfig);
+
+  if (flat) {
+    const centerX = 665;
+    const centerY = 350;
+    const scale = 62 * cameraConfig.zoom;
+
+    return {
+      x: centerX + point.x * scale,
+      y: centerY - point.y * scale,
+      depth: 0,
+    };
+  }
+
   const rotated = rotatePoint(point, cameraConfig);
 
   const cameraDistance = 9;
@@ -1947,6 +1986,14 @@ function rotatePoint(
 
 function degreesToRadians(degrees: number) {
   return (degrees * Math.PI) / 180;
+}
+
+function isFlatCamera(cameraConfig: CameraConfig) {
+  return (
+    Math.abs(cameraConfig.rotX) < 0.001 &&
+    Math.abs(cameraConfig.rotY) < 0.001 &&
+    Math.abs(cameraConfig.rotZ) < 0.001
+  );
 }
 
 function DarkControlRow({
