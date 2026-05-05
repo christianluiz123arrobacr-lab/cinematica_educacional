@@ -2,10 +2,10 @@ import { Link } from "wouter";
 import { ArrowLeft, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { WaveSimulator } from "@/components/WaveSimulator";
 import { DopplerSimulator } from "@/components/DopplerSimulator";
 import { ProgressiveWaveSimulator } from "@/components/waves/ProgressiveWaveSimulator";
 import { StandingWaveSimulator } from "@/components/waves/StandingWaveSimulator";
+import { InterferenceSimulator } from "@/components/waves/InterferenceSimulator";
 
 export default function OndulatoriaSimulator() {
   return (
@@ -58,12 +58,7 @@ export default function OndulatoriaSimulator() {
 
           <TabsContent value="interferencia" className="space-y-6">
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg">
-              <WaveSimulator
-                initialMode="interference"
-                lockedMode="interference"
-                title="Interferência de Ondas"
-                description="Analise superposição, diferença de fase e amplitude resultante."
-              />
+              <InterferenceSimulator />
             </div>
           </TabsContent>
 
