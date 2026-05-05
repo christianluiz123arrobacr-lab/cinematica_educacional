@@ -19,6 +19,7 @@ type StandingSystem = "string_fixed" | "tube_open_open" | "tube_open_closed";
 type TubeQuantity = "displacement" | "pressure";
 
 const TWO_PI = 2 * Math.PI;
+const DEFAULT_ANIMATION_SPEED = 0.045;
 
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
@@ -47,10 +48,17 @@ export const StandingWaveSimulator: React.FC = () => {
   const [soundSpeed, setSoundSpeed] = useState(340);
 
   const [probePercent, setProbePercent] = useState(35);
+  const [animationSpeed, setAnimationSpeed] = useState(DEFAULT_ANIMATION_SPEED);
   const [time, setTime] = useState(0);
 
   const visualQuantity: TubeQuantity =
     system === "string_fixed" ? "displacement" : tubeQuantity;
+
+  const visualUnit = useMemo(() => {
+    if (system === "string_fixed") return "m";
+    if (visualQuantity === "displacement") return "m";
+    return "u.p.";
+  }, [system, visualQuantity]);
 
   const harmonicNumber = useMemo(() => {
     if (system === "tube_open_closed") {
@@ -188,6 +196,7 @@ export const StandingWaveSimulator: React.FC = () => {
     setLinearDensity(0.02);
     setSoundSpeed(340);
     setProbePercent(35);
+    setAnimationSpeed(DEFAULT_ANIMATION_SPEED);
     setTime(0);
     lastTimeRef.current = 0;
   };
@@ -211,7 +220,7 @@ export const StandingWaveSimulator: React.FC = () => {
       const dt = Math.min((now - lastTimeRef.current) / 1000, 0.04);
       lastTimeRef.current = now;
 
-      setTime((prev) => prev + dt);
+      setTime((prev) => prev + dt * animationSpeed);
 
       animationIdRef.current = requestAnimationFrame(animate);
     };
@@ -223,7 +232,7 @@ export const StandingWaveSimulator: React.FC = () => {
         cancelAnimationFrame(animationIdRef.current);
       }
     };
-  }, [isPlaying]);
+  }, [isPlaying, animationSpeed]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -239,7 +248,6 @@ export const StandingWaveSimulator: React.FC = () => {
 
     drawStandingSystem({
       ctx,
-      width,
       height,
       system,
       quantity: visualQuantity,
@@ -323,7 +331,7 @@ export const StandingWaveSimulator: React.FC = () => {
                 Ondas Estacionárias
               </h3>
               <p className="mt-1 text-sm text-slate-600">
-                Analise nós, ventres, harmônicos e frequências naturais sem precisar invocar magia negra trigonométrica.
+                Analise nós, ventres, harmônicos e frequências naturais sem transformar a animação no Flash atravessando o multiverso.
               </p>
             </div>
 
@@ -393,7 +401,11 @@ export const StandingWaveSimulator: React.FC = () => {
               </ControlRow>
 
               <ControlRow
-                label={system === "tube_open_closed" ? "Modo permitido" : "Harmônico"}
+                label={
+                  system === "tube_open_closed"
+                    ? "Modo permitido"
+                    : "Harmônico"
+                }
                 symbol={system === "tube_open_closed" ? "m" : "n"}
                 value={
                   system === "tube_open_closed"
@@ -486,6 +498,21 @@ export const StandingWaveSimulator: React.FC = () => {
                   min={0}
                   max={100}
                   step={1}
+                  className="w-full"
+                />
+              </ControlRow>
+
+              <ControlRow
+                label="Velocidade visual"
+                symbol="sim"
+                value={`${formatNumber(animationSpeed, 3)}x`}
+              >
+                <Slider
+                  value={[animationSpeed]}
+                  onValueChange={(value) => setAnimationSpeed(value[0])}
+                  min={0.015}
+                  max={0.18}
+                  step={0.005}
                   className="w-full"
                 />
               </ControlRow>
@@ -593,6 +620,12 @@ export const StandingWaveSimulator: React.FC = () => {
               />
 
               <MetricCard
+                label="Velocidade visual"
+                value={`${formatNumber(animationSpeed, 3)}x`}
+                valueClassName="text-amber-700"
+              />
+
+              <MetricCard
                 label="Nós visualizados"
                 value={String(markerPositions.nodes.length)}
               />
@@ -608,12 +641,7 @@ export const StandingWaveSimulator: React.FC = () => {
                     Valor em <MathFormula inline formula={String.raw`x_0`} />
                   </>
                 }
-                value={formatUnit(
-                  probeValue,
-                  system === "string_fixed" || visualQuantity === "displacement"
-                    ? "m"
-                    : "u.p."
-                )}
+                value={formatUnit(probeValue, visualUnit)}
                 valueClassName={probeValue >= 0 ? "text-red-700" : "text-blue-700"}
               />
 
@@ -695,8 +723,8 @@ export const StandingWaveSimulator: React.FC = () => {
                 title="Ponto analisado"
                 values={[
                   ["x₀", formatUnit(probeX, "m")],
-                  ["amplitude local", formatUnit(localMaxAmplitude, "m")],
-                  ["valor atual", formatNumber(probeValue, 4)],
+                  ["amplitude local", formatUnit(localMaxAmplitude, visualUnit)],
+                  ["valor atual", formatUnit(probeValue, visualUnit)],
                   ["velocidade local", formatUnit(probeVelocity, "m/s")],
                   ["aceleração local", formatUnit(probeAcceleration, "m/s²")],
                 ]}
@@ -810,6 +838,10 @@ export const StandingWaveSimulator: React.FC = () => {
                     frequency,
                     4
                   )}} = ${formatNumber(period, 4)}\,\text{s}`,
+                  String.raw`\text{A animação visual está desacelerada por um fator de }${formatNumber(
+                    animationSpeed,
+                    3
+                  )}\text{ para facilitar a leitura.}`,
                 ]}
               />
 
@@ -820,7 +852,7 @@ export const StandingWaveSimulator: React.FC = () => {
                   String.raw`\text{amplitude local} = A|\text{forma}(x_0)| = ${formatNumber(
                     localMaxAmplitude,
                     4
-                  )}\,\text{m}`,
+                  )}`,
                   String.raw`\text{valor atual em }x_0 = ${formatNumber(
                     probeValue,
                     4
@@ -1158,7 +1190,6 @@ function metersToCanvasX(
 
 function drawStandingSystem({
   ctx,
-  width,
   height,
   system,
   quantity,
@@ -1178,7 +1209,6 @@ function drawStandingSystem({
   markerPositions,
 }: {
   ctx: CanvasRenderingContext2D;
-  width: number;
   height: number;
   system: StandingSystem;
   quantity: TubeQuantity;
@@ -1202,7 +1232,7 @@ function drawStandingSystem({
 }) {
   const centerY = height / 2;
   const startX = 125;
-  const endX = width - 125;
+  const endX = 980 - 125;
   const amplitudePx = clamp(amplitudeM * 420, 18, 115);
 
   drawSystemBoundaries({
@@ -1596,138 +1626,4 @@ function drawEnergyPanel({
   ctx.fillText("Energia local relativa", x + 18, y + 28);
 
   ctx.fillStyle = "#e2e8f0";
-  roundRect(ctx, x + 18, y + 44, 240, 14, 7);
-  ctx.fill();
-
-  ctx.fillStyle = "#7c3aed";
-  roundRect(ctx, x + 18, y + 44, (240 * energyPercent) / 100, 14, 7);
-  ctx.fill();
-
-  ctx.fillStyle = "#475569";
-  ctx.font = "12px Arial";
-  ctx.fillText(
-    `A local = ${formatNumber(localMaxAmplitude, 4)} m`,
-    x + 18,
-    y + 78
-  );
-  ctx.fillText(
-    `v local = ${formatNumber(probeVelocity, 3)} m/s`,
-    x + 18,
-    y + 96
-  );
-  ctx.fillText(
-    `a local = ${formatNumber(probeAcceleration, 3)} m/s²`,
-    x + 18,
-    y + 114
-  );
-}
-
-function drawInfoBox({
-  ctx,
-  systemLabel,
-  quantityLabel,
-  harmonicNumber,
-  length,
-  wavelength,
-  frequency,
-  waveSpeed,
-  period,
-  probeX,
-  probeValue,
-}: {
-  ctx: CanvasRenderingContext2D;
-  systemLabel: string;
-  quantityLabel: string;
-  harmonicNumber: number;
-  length: number;
-  wavelength: number;
-  frequency: number;
-  waveSpeed: number;
-  period: number;
-  probeX: number;
-  probeValue: number;
-}) {
-  ctx.fillStyle = "rgba(255,255,255,0.94)";
-  ctx.strokeStyle = "#e2e8f0";
-  ctx.lineWidth = 1;
-  roundRect(ctx, 20, 18, 350, 188, 14);
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = "#0f172a";
-  ctx.font = "bold 13px Arial";
-  ctx.fillText("ONDA ESTACIONÁRIA", 38, 44);
-
-  ctx.font = "12px Arial";
-  ctx.fillText(`sistema: ${systemLabel}`, 38, 68);
-  ctx.fillText(`visual: ${quantityLabel}`, 38, 88);
-  ctx.fillText(`n = ${harmonicNumber}`, 38, 108);
-  ctx.fillText(`L = ${formatNumber(length, 2)} m`, 38, 128);
-  ctx.fillText(`λ = ${formatNumber(wavelength, 2)} m`, 38, 148);
-
-  ctx.fillText(`f = ${formatNumber(frequency, 2)} Hz`, 190, 108);
-  ctx.fillText(`v = ${formatNumber(waveSpeed, 2)} m/s`, 190, 128);
-  ctx.fillText(`T = ${formatNumber(period, 2)} s`, 190, 148);
-
-  ctx.fillText(`x₀ = ${formatNumber(probeX, 2)} m`, 38, 172);
-  ctx.fillText(`valor = ${formatNumber(probeValue, 3)}`, 190, 172);
-}
-
-function drawArrow(
-  ctx: CanvasRenderingContext2D,
-  fromX: number,
-  fromY: number,
-  toX: number,
-  toY: number,
-  color: string,
-  label: string
-) {
-  const angle = Math.atan2(toY - fromY, toX - fromX);
-  const head = 9;
-
-  ctx.strokeStyle = color;
-  ctx.fillStyle = color;
-  ctx.lineWidth = 2.5;
-
-  ctx.beginPath();
-  ctx.moveTo(fromX, fromY);
-  ctx.lineTo(toX, toY);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(toX, toY);
-  ctx.lineTo(
-    toX - head * Math.cos(angle - Math.PI / 6),
-    toY - head * Math.sin(angle - Math.PI / 6)
-  );
-  ctx.lineTo(
-    toX - head * Math.cos(angle + Math.PI / 6),
-    toY - head * Math.sin(angle + Math.PI / 6)
-  );
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.font = "bold 12px Arial";
-  ctx.fillText(label, toX + 8, toY - 6);
-}
-
-function roundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  radius: number
-) {
-  ctx.beginPath();
-  ctx.moveTo(x + radius, y);
-  ctx.lineTo(x + width - radius, y);
-  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-  ctx.lineTo(x + width, y + height - radius);
-  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-  ctx.lineTo(x + radius, y + height);
-  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-  ctx.lineTo(x, y + radius);
-  ctx.quadraticCurveTo(x, y, x + radius, y);
-  ctx.closePath();
-}
+  roundRect(ctx
