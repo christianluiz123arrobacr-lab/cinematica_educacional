@@ -9,8 +9,6 @@ import {
   Trophy,
   Medal,
   Crown,
-  Clock3,
-  Target,
   Shield,
   UserCircle2,
 } from "lucide-react";
@@ -33,7 +31,6 @@ type AttemptRow = {
 type ProfileRow = {
   id: string;
   nome: string | null;
-  email: string | null;
   avatar_key?: string | null;
   ativo?: boolean | null;
 };
@@ -78,7 +75,10 @@ const AVATAR_OPTIONS = [
 ];
 
 function getAvatarConfig(avatarKey?: string | null) {
-  return AVATAR_OPTIONS.find((avatar) => avatar.key === avatarKey) ?? AVATAR_OPTIONS[0];
+  return (
+    AVATAR_OPTIONS.find((avatar) => avatar.key === avatarKey) ??
+    AVATAR_OPTIONS[0]
+  );
 }
 
 function getDifficultyPoints(difficulty?: string | null) {
@@ -178,17 +178,23 @@ export default function RankingPage() {
 
           supabase
             .from("profiles")
-            .select("id, nome, email, avatar_key, ativo"),
+            .select("id, nome, avatar_key, ativo"),
         ]);
 
         if (attemptsResult.error) {
-          console.error("Erro ao carregar tentativas do ranking:", attemptsResult.error);
+          console.error(
+            "Erro ao carregar tentativas do ranking:",
+            attemptsResult.error
+          );
           setError("Não foi possível carregar os dados do ranking.");
           return;
         }
 
         if (profilesResult.error) {
-          console.error("Erro ao carregar perfis do ranking:", profilesResult.error);
+          console.error(
+            "Erro ao carregar perfis do ranking:",
+            profilesResult.error
+          );
           setError("Não foi possível carregar os perfis do ranking.");
           return;
         }
@@ -213,7 +219,9 @@ export default function RankingPage() {
 
     if (!cutoff) return attempts;
 
-    return attempts.filter((attempt) => new Date(attempt.answered_at) >= cutoff);
+    return attempts.filter(
+      (attempt) => new Date(attempt.answered_at) >= cutoff
+    );
   }, [attempts, period]);
 
   const ranking = useMemo(() => {
@@ -221,6 +229,7 @@ export default function RankingPage() {
 
     for (const profile of profiles) {
       if (profile.ativo === false) continue;
+
       profilesMap.set(profile.id, profile);
     }
 
@@ -281,7 +290,8 @@ export default function RankingPage() {
 
       const correctCount = uniqueCorrectByQuestion.size;
       const totalAttempts = userAttempts.length;
-      const accuracy = totalAttempts > 0 ? (correctCount / totalAttempts) * 100 : 0;
+      const accuracy =
+        totalAttempts > 0 ? (correctCount / totalAttempts) * 100 : 0;
 
       const timedAttempts = userAttempts.filter(
         (attempt) => typeof attempt.time_spent_seconds === "number"
@@ -299,12 +309,15 @@ export default function RankingPage() {
         userAttempts.length > 0
           ? userAttempts
               .map((attempt) => attempt.answered_at)
-              .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0]
+              .sort(
+                (a, b) =>
+                  new Date(b).getTime() - new Date(a).getTime()
+              )[0]
           : null;
 
       rows.push({
         userId,
-        nome: profile.nome?.trim() || profile.email || "Aluno",
+        nome: profile.nome?.trim() || "Aluno",
         avatarKey: profile.avatar_key || "avatar_1",
         score,
         correctCount,
@@ -322,16 +335,27 @@ export default function RankingPage() {
       .filter((row) => row.correctCount > 0)
       .sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
-        if (b.correctCount !== a.correctCount) return b.correctCount - a.correctCount;
-        if (b.accuracy !== a.accuracy) return b.accuracy - a.accuracy;
+
+        if (b.correctCount !== a.correctCount) {
+          return b.correctCount - a.correctCount;
+        }
+
+        if (b.accuracy !== a.accuracy) {
+          return b.accuracy - a.accuracy;
+        }
 
         const aTime = a.avgTimeSeconds || Number.MAX_SAFE_INTEGER;
         const bTime = b.avgTimeSeconds || Number.MAX_SAFE_INTEGER;
 
         if (aTime !== bTime) return aTime - bTime;
 
-        const aLast = a.lastActivityAt ? new Date(a.lastActivityAt).getTime() : 0;
-        const bLast = b.lastActivityAt ? new Date(b.lastActivityAt).getTime() : 0;
+        const aLast = a.lastActivityAt
+          ? new Date(a.lastActivityAt).getTime()
+          : 0;
+
+        const bLast = b.lastActivityAt
+          ? new Date(b.lastActivityAt).getTime()
+          : 0;
 
         return bLast - aLast;
       });
@@ -339,6 +363,7 @@ export default function RankingPage() {
 
   const myIndex = useMemo(() => {
     if (!user?.id) return -1;
+
     return ranking.findIndex((entry) => entry.userId === user.id);
   }, [ranking, user?.id]);
 
@@ -358,18 +383,18 @@ export default function RankingPage() {
             cardBg: "bg-yellow-50",
           }
         : position === 2
-        ? {
-            icon: Trophy,
-            badge: "2º lugar",
-            border: "border-slate-200",
-            cardBg: "bg-slate-50",
-          }
-        : {
-            icon: Medal,
-            badge: "3º lugar",
-            border: "border-orange-200",
-            cardBg: "bg-orange-50",
-          };
+          ? {
+              icon: Trophy,
+              badge: "2º lugar",
+              border: "border-slate-200",
+              cardBg: "bg-slate-50",
+            }
+          : {
+              icon: Medal,
+              badge: "3º lugar",
+              border: "border-orange-200",
+              cardBg: "bg-orange-50",
+            };
 
     const Icon = positionConfig.icon;
 
@@ -382,6 +407,7 @@ export default function RankingPage() {
             <span className="px-3 py-1 rounded-full text-sm font-bold bg-white text-slate-700 border border-slate-200">
               {positionConfig.badge}
             </span>
+
             <Icon className="w-6 h-6 text-slate-700" />
           </div>
 
@@ -393,7 +419,10 @@ export default function RankingPage() {
             </div>
 
             <div>
-              <p className="text-xl font-bold text-slate-900">{entry.nome}</p>
+              <p className="text-xl font-bold text-slate-900">
+                {entry.nome}
+              </p>
+
               <p className="text-sm text-slate-500">
                 {entry.correctCount} acertos únicos
               </p>
@@ -403,11 +432,15 @@ export default function RankingPage() {
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="rounded-xl bg-white p-3 border border-slate-200">
               <p className="text-sm text-slate-500 mb-1">Score</p>
-              <p className="text-2xl font-bold text-slate-900">{entry.score}</p>
+
+              <p className="text-2xl font-bold text-slate-900">
+                {entry.score}
+              </p>
             </div>
 
             <div className="rounded-xl bg-white p-3 border border-slate-200">
               <p className="text-sm text-slate-500 mb-1">Taxa</p>
+
               <p className="text-2xl font-bold text-slate-900">
                 {entry.accuracy.toFixed(0)}%
               </p>
@@ -416,10 +449,14 @@ export default function RankingPage() {
 
           <div className="text-sm text-slate-600 space-y-1">
             <p>
-              Fácil: <span className="font-semibold">{entry.easyCorrect}</span> • Médio:{" "}
-              <span className="font-semibold">{entry.mediumCorrect}</span> • Difícil:{" "}
+              Fácil:{" "}
+              <span className="font-semibold">{entry.easyCorrect}</span> •
+              Médio:{" "}
+              <span className="font-semibold">{entry.mediumCorrect}</span> •
+              Difícil:{" "}
               <span className="font-semibold">{entry.hardCorrect}</span>
             </p>
+
             <p>
               Tempo médio:{" "}
               <span className="font-semibold">
@@ -467,10 +504,15 @@ export default function RankingPage() {
               <p className="text-sm uppercase tracking-wide text-amber-100 mb-2">
                 Competição estratégica
               </p>
-              <h2 className="text-3xl font-bold mb-3">Ranking por pontuação</h2>
+
+              <h2 className="text-3xl font-bold mb-3">
+                Ranking por pontuação
+              </h2>
+
               <p className="text-amber-50 leading-relaxed max-w-3xl">
-                O ranking considera apenas questões únicas acertadas no período escolhido.
-                A pontuação é: <strong>fácil = 2</strong>, <strong>médio = 4</strong> e{" "}
+                O ranking considera apenas questões únicas acertadas no período
+                escolhido. A pontuação é: <strong>fácil = 2</strong>,{" "}
+                <strong>médio = 4</strong> e{" "}
                 <strong>difícil = 7</strong>.
               </p>
             </Card>
@@ -481,6 +523,7 @@ export default function RankingPage() {
                   <h3 className="text-xl font-bold text-slate-900 mb-1">
                     Período do ranking
                   </h3>
+
                   <p className="text-sm text-slate-500">
                     Escolha o recorte que quer analisar.
                   </p>
@@ -508,11 +551,14 @@ export default function RankingPage() {
                     <p className="text-sm uppercase tracking-wide text-slate-500 mb-2">
                       Sua posição
                     </p>
+
                     <h3 className="text-3xl font-bold text-slate-900">
                       #{myIndex + 1}
                     </h3>
+
                     <p className="text-slate-600 mt-2">
-                      Score: <span className="font-semibold">{myEntry.score}</span> •{" "}
+                      Score:{" "}
+                      <span className="font-semibold">{myEntry.score}</span> •{" "}
                       {myEntry.correctCount} acertos únicos •{" "}
                       {myEntry.accuracy.toFixed(0)}% de taxa
                     </p>
@@ -520,23 +566,34 @@ export default function RankingPage() {
 
                   <div className="grid md:grid-cols-3 gap-3 lg:min-w-[520px]">
                     <div className="rounded-xl bg-slate-50 border border-slate-200 p-4">
-                      <p className="text-sm text-slate-500 mb-1">Tempo médio</p>
+                      <p className="text-sm text-slate-500 mb-1">
+                        Tempo médio
+                      </p>
+
                       <p className="text-xl font-bold text-slate-900">
                         {formatSeconds(Math.round(myEntry.avgTimeSeconds))}
                       </p>
                     </div>
 
                     <div className="rounded-xl bg-slate-50 border border-slate-200 p-4">
-                      <p className="text-sm text-slate-500 mb-1">Última atividade</p>
+                      <p className="text-sm text-slate-500 mb-1">
+                        Última atividade
+                      </p>
+
                       <p className="text-base font-bold text-slate-900">
                         {formatDateTime(myEntry.lastActivityAt)}
                       </p>
                     </div>
 
                     <div className="rounded-xl bg-slate-50 border border-slate-200 p-4">
-                      <p className="text-sm text-slate-500 mb-1">Próximo acima</p>
+                      <p className="text-sm text-slate-500 mb-1">
+                        Próximo acima
+                      </p>
+
                       <p className="text-base font-bold text-slate-900">
-                        {nextEntry ? `${nextEntry.score - myEntry.score} pts` : "Topo"}
+                        {nextEntry
+                          ? `${nextEntry.score - myEntry.score} pts`
+                          : "Topo"}
                       </p>
                     </div>
                   </div>
@@ -545,19 +602,23 @@ export default function RankingPage() {
             ) : (
               <Card className="p-6 bg-white border-slate-200">
                 <p className="text-slate-600">
-                  Você ainda não entrou no ranking neste período. Acerte questões para subir.
+                  Você ainda não entrou no ranking neste período. Acerte
+                  questões para subir.
                 </p>
               </Card>
             )}
 
             {top3.length > 0 ? (
               <div className="grid xl:grid-cols-3 gap-4">
-                {top3.map((entry, index) => renderTopCard(entry, index + 1))}
+                {top3.map((entry, index) =>
+                  renderTopCard(entry, index + 1)
+                )}
               </div>
             ) : (
               <Card className="p-8">
                 <p className="text-slate-500">
-                  Ainda não há pontuação suficiente para montar o ranking neste período.
+                  Ainda não há pontuação suficiente para montar o ranking neste
+                  período.
                 </p>
               </Card>
             )}
@@ -565,7 +626,10 @@ export default function RankingPage() {
             <Card className="p-6 bg-white border-slate-200">
               <div className="flex items-center gap-2 mb-4">
                 <Trophy className="w-5 h-5 text-amber-500" />
-                <h3 className="text-xl font-bold text-slate-900">Classificação geral</h3>
+
+                <h3 className="text-xl font-bold text-slate-900">
+                  Classificação geral
+                </h3>
               </div>
 
               {ranking.length > 0 ? (
@@ -575,7 +639,10 @@ export default function RankingPage() {
                     const isCurrentUser = entry.userId === user?.id;
 
                     return (
-                      <Link key={entry.userId} href={getProfileHref(entry.userId)}>
+                      <Link
+                        key={entry.userId}
+                        href={getProfileHref(entry.userId)}
+                      >
                         <div
                           className={`rounded-2xl border p-4 cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all ${
                             isCurrentUser
@@ -625,37 +692,54 @@ export default function RankingPage() {
 
                             <div className="grid grid-cols-2 md:grid-cols-5 gap-3 xl:min-w-[620px]">
                               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                                <p className="text-xs text-slate-500 mb-1">Score</p>
+                                <p className="text-xs text-slate-500 mb-1">
+                                  Score
+                                </p>
+
                                 <p className="text-lg font-bold text-slate-900">
                                   {entry.score}
                                 </p>
                               </div>
 
                               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                                <p className="text-xs text-slate-500 mb-1">Fácil</p>
+                                <p className="text-xs text-slate-500 mb-1">
+                                  Fácil
+                                </p>
+
                                 <p className="text-lg font-bold text-slate-900">
                                   {entry.easyCorrect}
                                 </p>
                               </div>
 
                               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                                <p className="text-xs text-slate-500 mb-1">Médio</p>
+                                <p className="text-xs text-slate-500 mb-1">
+                                  Médio
+                                </p>
+
                                 <p className="text-lg font-bold text-slate-900">
                                   {entry.mediumCorrect}
                                 </p>
                               </div>
 
                               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                                <p className="text-xs text-slate-500 mb-1">Difícil</p>
+                                <p className="text-xs text-slate-500 mb-1">
+                                  Difícil
+                                </p>
+
                                 <p className="text-lg font-bold text-slate-900">
                                   {entry.hardCorrect}
                                 </p>
                               </div>
 
                               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                                <p className="text-xs text-slate-500 mb-1">Tempo médio</p>
+                                <p className="text-xs text-slate-500 mb-1">
+                                  Tempo médio
+                                </p>
+
                                 <p className="text-lg font-bold text-slate-900">
-                                  {formatSeconds(Math.round(entry.avgTimeSeconds))}
+                                  {formatSeconds(
+                                    Math.round(entry.avgTimeSeconds)
+                                  )}
                                 </p>
                               </div>
                             </div>
@@ -666,13 +750,16 @@ export default function RankingPage() {
                   })}
                 </div>
               ) : (
-                <p className="text-slate-500">Ninguém pontuou ainda nesse período.</p>
+                <p className="text-slate-500">
+                  Ninguém pontuou ainda nesse período.
+                </p>
               )}
             </Card>
 
             <Card className="p-6 bg-white border-slate-200">
               <div className="flex items-center gap-2 mb-4">
                 <Shield className="w-5 h-5 text-blue-600" />
+
                 <h3 className="text-xl font-bold text-slate-900">
                   Como esse ranking funciona
                 </h3>
@@ -680,28 +767,40 @@ export default function RankingPage() {
 
               <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="font-bold text-slate-900 mb-1">Conta só acerto</p>
+                  <p className="font-bold text-slate-900 mb-1">
+                    Conta só acerto
+                  </p>
+
                   <p className="text-sm text-slate-600">
                     Só questões acertadas geram pontuação.
                   </p>
                 </div>
 
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="font-bold text-slate-900 mb-1">Questões únicas</p>
+                  <p className="font-bold text-slate-900 mb-1">
+                    Questões únicas
+                  </p>
+
                   <p className="text-sm text-slate-600">
                     Repetir a mesma questão não multiplica score.
                   </p>
                 </div>
 
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="font-bold text-slate-900 mb-1">Dificuldade pesa</p>
+                  <p className="font-bold text-slate-900 mb-1">
+                    Dificuldade pesa
+                  </p>
+
                   <p className="text-sm text-slate-600">
                     Fácil vale 2, médio vale 4 e difícil vale 7.
                   </p>
                 </div>
 
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="font-bold text-slate-900 mb-1">Desempate justo</p>
+                  <p className="font-bold text-slate-900 mb-1">
+                    Desempate justo
+                  </p>
+
                   <p className="text-sm text-slate-600">
                     Score, acertos, taxa, tempo médio e atividade recente.
                   </p>
