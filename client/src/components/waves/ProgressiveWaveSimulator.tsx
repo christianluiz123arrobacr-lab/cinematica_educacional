@@ -19,8 +19,20 @@ type WaveType = "transversal" | "longitudinal";
 type Direction = "right" | "left";
 type WaveMedium = "custom" | "air" | "water" | "steel" | "string";
 
+type CameraConfig = {
+  rotX: number;
+  rotY: number;
+  rotZ: number;
+  zoom: number;
+};
+
 const TWO_PI = 2 * Math.PI;
 const DEFAULT_3D_SPEED = 0.22;
+
+const DEFAULT_CAMERA_ROT_X = 24;
+const DEFAULT_CAMERA_ROT_Y = -34;
+const DEFAULT_CAMERA_ROT_Z = 0;
+const DEFAULT_CAMERA_ZOOM = 1.05;
 
 const waveMedia: Record<
   WaveMedium,
@@ -85,6 +97,11 @@ export const ProgressiveWaveSimulator: React.FC = () => {
   const [waveOriginPercent3D, setWaveOriginPercent3D] = useState(0);
   const [wave3DSpeed, setWave3DSpeed] = useState(DEFAULT_3D_SPEED);
 
+  const [cameraRotX, setCameraRotX] = useState(DEFAULT_CAMERA_ROT_X);
+  const [cameraRotY, setCameraRotY] = useState(DEFAULT_CAMERA_ROT_Y);
+  const [cameraRotZ, setCameraRotZ] = useState(DEFAULT_CAMERA_ROT_Z);
+  const [cameraZoom, setCameraZoom] = useState(DEFAULT_CAMERA_ZOOM);
+
   const [time, setTime] = useState(0);
 
   const selectedMedium = waveMedia[medium];
@@ -142,7 +159,7 @@ export const ProgressiveWaveSimulator: React.FC = () => {
   }, [amplitudeM, directionSign, omega, probePhase]);
 
   const probeParticleAcceleration = useMemo(() => {
-    return -amplitudeM * omega ** 2 * Math.sin(probePhase);
+    return -(amplitudeM * (omega ** 2) * Math.sin(probePhase));
   }, [amplitudeM, omega, probePhase]);
 
   const maxParticleVelocity = useMemo(() => {
@@ -187,6 +204,10 @@ export const ProgressiveWaveSimulator: React.FC = () => {
     setProbePercent(35);
     setWaveOriginPercent3D(0);
     setWave3DSpeed(DEFAULT_3D_SPEED);
+    setCameraRotX(DEFAULT_CAMERA_ROT_X);
+    setCameraRotY(DEFAULT_CAMERA_ROT_Y);
+    setCameraRotZ(DEFAULT_CAMERA_ROT_Z);
+    setCameraZoom(DEFAULT_CAMERA_ZOOM);
     setTime(0);
     lastTimeRef.current = 0;
   };
@@ -539,7 +560,10 @@ export const ProgressiveWaveSimulator: React.FC = () => {
 
               <Button
                 type="button"
-                onClick={() => setShow3DModal(true)}
+                onClick={() => {
+                  setWaveOriginPercent3D(direction === "right" ? 0 : 100);
+                  setShow3DModal(true);
+                }}
                 className="w-full gap-2 bg-slate-950 text-white hover:bg-slate-800"
               >
                 <Box className="h-4 w-4" />
@@ -869,6 +893,14 @@ export const ProgressiveWaveSimulator: React.FC = () => {
           setOriginPercent={setWaveOriginPercent3D}
           wave3DSpeed={wave3DSpeed}
           setWave3DSpeed={setWave3DSpeed}
+          cameraRotX={cameraRotX}
+          setCameraRotX={setCameraRotX}
+          cameraRotY={cameraRotY}
+          setCameraRotY={setCameraRotY}
+          cameraRotZ={cameraRotZ}
+          setCameraRotZ={setCameraRotZ}
+          cameraZoom={cameraZoom}
+          setCameraZoom={setCameraZoom}
         />
       )}
     </div>
@@ -895,6 +927,14 @@ function Wave3DModal({
   setOriginPercent,
   wave3DSpeed,
   setWave3DSpeed,
+  cameraRotX,
+  setCameraRotX,
+  cameraRotY,
+  setCameraRotY,
+  cameraRotZ,
+  setCameraRotZ,
+  cameraZoom,
+  setCameraZoom,
 }: {
   onClose: () => void;
   waveType: WaveType;
@@ -915,7 +955,25 @@ function Wave3DModal({
   setOriginPercent: React.Dispatch<React.SetStateAction<number>>;
   wave3DSpeed: number;
   setWave3DSpeed: React.Dispatch<React.SetStateAction<number>>;
+  cameraRotX: number;
+  setCameraRotX: React.Dispatch<React.SetStateAction<number>>;
+  cameraRotY: number;
+  setCameraRotY: React.Dispatch<React.SetStateAction<number>>;
+  cameraRotZ: number;
+  setCameraRotZ: React.Dispatch<React.SetStateAction<number>>;
+  cameraZoom: number;
+  setCameraZoom: React.Dispatch<React.SetStateAction<number>>;
 }) {
+  const cameraConfig: CameraConfig = useMemo(
+    () => ({
+      rotX: cameraRotX,
+      rotY: cameraRotY,
+      rotZ: cameraRotZ,
+      zoom: cameraZoom,
+    }),
+    [cameraRotX, cameraRotY, cameraRotZ, cameraZoom]
+  );
+
   const originX = useMemo(() => {
     return (originPercent / 100) * visibleMeters;
   }, [originPercent, visibleMeters]);
@@ -949,6 +1007,7 @@ function Wave3DModal({
       directionSign,
       time,
       direction,
+      cameraConfig,
     });
   }, [
     originX,
@@ -961,6 +1020,7 @@ function Wave3DModal({
     directionSign,
     time,
     direction,
+    cameraConfig,
   ]);
 
   const fullGhostWave = useMemo(() => {
@@ -975,19 +1035,41 @@ function Wave3DModal({
       directionSign,
       time,
       direction: "right",
+      cameraConfig,
     });
-  }, [visibleMeters, amplitudeM, k, omega, phaseRad, directionSign, time]);
+  }, [
+    visibleMeters,
+    amplitudeM,
+    k,
+    omega,
+    phaseRad,
+    directionSign,
+    time,
+    cameraConfig,
+  ]);
 
   const projectedProbe = useMemo(() => {
     const phase = k * probeX + directionSign * omega * time + phaseRad;
     const y = amplitudeM * Math.sin(phase);
+
     return project3DPoint({
       xMeters: probeX,
       yMeters: y,
       visibleMeters,
       amplitudeM,
+      cameraConfig,
     });
-  }, [probeX, k, directionSign, omega, time, phaseRad, amplitudeM, visibleMeters]);
+  }, [
+    probeX,
+    k,
+    directionSign,
+    omega,
+    time,
+    phaseRad,
+    amplitudeM,
+    visibleMeters,
+    cameraConfig,
+  ]);
 
   const projectedOrigin = useMemo(() => {
     return project3DPoint({
@@ -995,8 +1077,9 @@ function Wave3DModal({
       yMeters: 0,
       visibleMeters,
       amplitudeM,
+      cameraConfig,
     });
-  }, [originX, visibleMeters, amplitudeM]);
+  }, [originX, visibleMeters, amplitudeM, cameraConfig]);
 
   const projectedFront = useMemo(() => {
     return project3DPoint({
@@ -1004,8 +1087,52 @@ function Wave3DModal({
       yMeters: 0,
       visibleMeters,
       amplitudeM,
+      cameraConfig,
     });
-  }, [frontX, visibleMeters, amplitudeM]);
+  }, [frontX, visibleMeters, amplitudeM, cameraConfig]);
+
+  const gridLines = useMemo(() => {
+    return build3DGridLines(cameraConfig);
+  }, [cameraConfig]);
+
+  const xAxis = useMemo(() => {
+    return buildWorldLine(
+      { x: -4.4, y: 0, z: 0 },
+      { x: 4.7, y: 0, z: 0 },
+      cameraConfig
+    );
+  }, [cameraConfig]);
+
+  const yAxis = useMemo(() => {
+    return buildWorldLine(
+      { x: -4.4, y: -1.9, z: 0 },
+      { x: -4.4, y: 2.1, z: 0 },
+      cameraConfig
+    );
+  }, [cameraConfig]);
+
+  const zAxis = useMemo(() => {
+    return buildWorldLine(
+      { x: -4.4, y: 0, z: -2.4 },
+      { x: -4.4, y: 0, z: 2.7 },
+      cameraConfig
+    );
+  }, [cameraConfig]);
+
+  const xLabel = useMemo(
+    () => projectWorldPoint({ x: 4.95, y: 0, z: 0 }, cameraConfig),
+    [cameraConfig]
+  );
+
+  const yLabel = useMemo(
+    () => projectWorldPoint({ x: -4.4, y: 2.35, z: 0 }, cameraConfig),
+    [cameraConfig]
+  );
+
+  const zLabel = useMemo(
+    () => projectWorldPoint({ x: -4.4, y: 0, z: 2.95 }, cameraConfig),
+    [cameraConfig]
+  );
 
   const circle = {
     cx: 185,
@@ -1020,6 +1147,13 @@ function Wave3DModal({
 
   const projectionY = circle.cy - circle.r * Math.sin(trigPhase);
 
+  const resetCamera = () => {
+    setCameraRotX(DEFAULT_CAMERA_ROT_X);
+    setCameraRotY(DEFAULT_CAMERA_ROT_Y);
+    setCameraRotZ(DEFAULT_CAMERA_ROT_Z);
+    setCameraZoom(DEFAULT_CAMERA_ZOOM);
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
       <div className="max-h-[92vh] w-full max-w-7xl overflow-y-auto rounded-3xl border border-slate-700 bg-slate-950 shadow-2xl">
@@ -1029,7 +1163,7 @@ function Wave3DModal({
               Visualização 3D da Onda Progressiva
             </h3>
             <p className="mt-1 text-sm text-slate-400">
-              A onda nasce da origem escolhida e se desenvolve lentamente para mostrar a fase se propagando.
+              Gire a câmera nos três eixos para enxergar a senoide, a fase e a propagação.
             </p>
           </div>
 
@@ -1048,7 +1182,7 @@ function Wave3DModal({
           <div className="space-y-4 xl:col-span-3">
             <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
               <p className="text-sm font-bold text-slate-200">
-                Controles da visualização
+                Controles da onda
               </p>
 
               <div className="mt-5 space-y-5">
@@ -1082,14 +1216,88 @@ function Wave3DModal({
               </div>
             </div>
 
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-bold text-slate-200">
+                  Câmera 3D
+                </p>
+
+                <button
+                  type="button"
+                  onClick={resetCamera}
+                  className="rounded-lg border border-slate-700 px-2 py-1 text-xs font-bold text-slate-300 hover:bg-slate-800"
+                >
+                  Resetar
+                </button>
+              </div>
+
+              <div className="mt-5 space-y-5">
+                <DarkControlRow
+                  label="Rotação X"
+                  value={`${formatNumber(cameraRotX, 0)}°`}
+                >
+                  <Slider
+                    value={[cameraRotX]}
+                    onValueChange={(value) => setCameraRotX(value[0])}
+                    min={-80}
+                    max={80}
+                    step={1}
+                    className="w-full"
+                  />
+                </DarkControlRow>
+
+                <DarkControlRow
+                  label="Rotação Y"
+                  value={`${formatNumber(cameraRotY, 0)}°`}
+                >
+                  <Slider
+                    value={[cameraRotY]}
+                    onValueChange={(value) => setCameraRotY(value[0])}
+                    min={-120}
+                    max={120}
+                    step={1}
+                    className="w-full"
+                  />
+                </DarkControlRow>
+
+                <DarkControlRow
+                  label="Rotação Z"
+                  value={`${formatNumber(cameraRotZ, 0)}°`}
+                >
+                  <Slider
+                    value={[cameraRotZ]}
+                    onValueChange={(value) => setCameraRotZ(value[0])}
+                    min={-180}
+                    max={180}
+                    step={1}
+                    className="w-full"
+                  />
+                </DarkControlRow>
+
+                <DarkControlRow
+                  label="Zoom"
+                  value={`${formatNumber(cameraZoom, 2)}x`}
+                >
+                  <Slider
+                    value={[cameraZoom]}
+                    onValueChange={(value) => setCameraZoom(value[0])}
+                    min={0.55}
+                    max={1.8}
+                    step={0.05}
+                    className="w-full"
+                  />
+                </DarkControlRow>
+              </div>
+            </div>
+
             <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4">
               <p className="text-sm font-bold text-cyan-200">
                 Leitura física
               </p>
               <p className="mt-2 text-sm leading-relaxed text-slate-300">
-                O círculo trigonométrico representa a fase da oscilação. Ele não
-                é a trajetória real da partícula. Na onda transversal simples, a
-                partícula sobe e desce enquanto a fase se propaga pelo espaço.
+                A rotação 3D muda a câmera, não muda a física. O eixo z é uma
+                profundidade visual. A partícula da corda continua oscilando,
+                não girando em círculo no espaço.
               </p>
             </div>
 
@@ -1099,8 +1307,14 @@ function Wave3DModal({
               </p>
 
               <div className="mt-3 space-y-2 text-sm text-slate-300">
-                <DarkMetric label="Tipo" value={waveType === "transversal" ? "Transversal" : "Longitudinal"} />
-                <DarkMetric label="Sentido" value={direction === "right" ? "Direita" : "Esquerda"} />
+                <DarkMetric
+                  label="Tipo"
+                  value={waveType === "transversal" ? "Transversal" : "Longitudinal"}
+                />
+                <DarkMetric
+                  label="Sentido"
+                  value={direction === "right" ? "Direita" : "Esquerda"}
+                />
                 <DarkMetric label="A" value={formatUnit(amplitudeM, "m")} />
                 <DarkMetric label="λ" value={formatUnit(physicalWavelength, "m")} />
                 <DarkMetric label="f" value={formatUnit(frequency, "Hz")} />
@@ -1138,75 +1352,64 @@ function Wave3DModal({
 
                   <rect width="1040" height="620" fill="#020617" />
 
-                  {Array.from({ length: 12 }).map((_, index) => (
-                    <line
-                      key={`grid-x-${index}`}
-                      x1={370 + index * 48}
-                      y1={170 + index * 16}
-                      x2={470 + index * 48}
-                      y2={500 + index * 16}
-                      stroke="#1e293b"
-                      strokeWidth="1"
-                    />
-                  ))}
-
-                  {Array.from({ length: 8 }).map((_, index) => (
-                    <line
-                      key={`grid-y-${index}`}
-                      x1="330"
-                      y1={185 + index * 44}
-                      x2="930"
-                      y2={315 + index * 44}
-                      stroke="#1e293b"
-                      strokeWidth="1"
-                    />
-                  ))}
-
                   <text x="42" y="48" fill="#f8fafc" fontSize="21" fontWeight="900">
                     Ciclo trigonométrico → fase → onda
                   </text>
 
                   <text x="408" y="48" fill="#f8fafc" fontSize="21" fontWeight="900">
-                    Onda em perspectiva 3D
+                    Câmera 3D da onda
                   </text>
 
                   <text x="408" y="74" fill="#94a3b8" fontSize="13">
-                    A curva aparece como uma senoide em perspectiva, nascendo da origem escolhida.
+                    Controle X, Y, Z e zoom para olhar a onda por diferentes ângulos.
                   </text>
 
+                  {gridLines.map((line) => (
+                    <line
+                      key={line.id}
+                      x1={line.x1}
+                      y1={line.y1}
+                      x2={line.x2}
+                      y2={line.y2}
+                      stroke="#1e293b"
+                      strokeWidth="1"
+                      opacity={line.opacity}
+                    />
+                  ))}
+
                   <line
-                    x1="390"
-                    y1="430"
-                    x2="935"
-                    y2="535"
-                    stroke="#475569"
+                    x1={xAxis.x1}
+                    y1={xAxis.y1}
+                    x2={xAxis.x2}
+                    y2={xAxis.y2}
+                    stroke="#64748b"
                     strokeWidth="3"
                   />
                   <line
-                    x1="390"
-                    y1="430"
-                    x2="390"
-                    y2="210"
-                    stroke="#475569"
+                    x1={yAxis.x1}
+                    y1={yAxis.y1}
+                    x2={yAxis.x2}
+                    y2={yAxis.y2}
+                    stroke="#64748b"
                     strokeWidth="3"
                   />
                   <line
-                    x1="390"
-                    y1="430"
-                    x2="470"
-                    y2="495"
-                    stroke="#475569"
+                    x1={zAxis.x1}
+                    y1={zAxis.y1}
+                    x2={zAxis.x2}
+                    y2={zAxis.y2}
+                    stroke="#64748b"
                     strokeWidth="3"
                   />
 
-                  <text x="930" y="558" fill="#94a3b8" fontSize="13" fontWeight="700">
+                  <text x={xLabel.x} y={xLabel.y} fill="#94a3b8" fontSize="13" fontWeight="800">
                     x
                   </text>
-                  <text x="368" y="208" fill="#94a3b8" fontSize="13" fontWeight="700">
+                  <text x={yLabel.x} y={yLabel.y} fill="#94a3b8" fontSize="13" fontWeight="800">
                     y
                   </text>
-                  <text x="476" y="512" fill="#94a3b8" fontSize="13" fontWeight="700">
-                    profundidade
+                  <text x={zLabel.x} y={zLabel.y} fill="#94a3b8" fontSize="13" fontWeight="800">
+                    z
                   </text>
 
                   {fullGhostWave.length > 0 && (
@@ -1253,7 +1456,7 @@ function Wave3DModal({
                     fontSize="12"
                     fontWeight="800"
                   >
-                    frente da onda
+                    frente
                   </text>
 
                   {wavePoints.length > 0 && (
@@ -1409,15 +1612,15 @@ function Wave3DModal({
                   />
 
                   <text x="746" y="128" fill="#e2e8f0" fontSize="13" fontWeight="800">
-                    Equação visualizada
+                    Câmera
                   </text>
 
                   <text x="746" y="153" fill="#94a3b8" fontSize="12">
-                    y(x,t) = A sen(kx {direction === "right" ? "- ωt" : "+ ωt"} + φ₀)
+                    X = {formatNumber(cameraRotX, 0)}°, Y = {formatNumber(cameraRotY, 0)}°
                   </text>
 
                   <text x="746" y="171" fill="#94a3b8" fontSize="12">
-                    A = {formatNumber(amplitudeM, 2)} m, λ = {formatNumber(physicalWavelength, 2)} m
+                    Z = {formatNumber(cameraRotZ, 0)}°, zoom = {formatNumber(cameraZoom, 2)}x
                   </text>
                 </svg>
               </div>
@@ -1440,6 +1643,7 @@ function buildProjectedWavePoints({
   directionSign,
   time,
   direction,
+  cameraConfig,
 }: {
   originX: number;
   frontX: number;
@@ -1451,6 +1655,7 @@ function buildProjectedWavePoints({
   directionSign: number;
   time: number;
   direction: Direction;
+  cameraConfig: CameraConfig;
 }) {
   const start = Math.min(originX, frontX);
   const end = Math.max(originX, frontX);
@@ -1459,14 +1664,16 @@ function buildProjectedWavePoints({
     return "";
   }
 
-  const samples = 180;
+  const samples = 220;
   const points: string[] = [];
 
   for (let i = 0; i <= samples; i++) {
     const alpha = i / samples;
-    const xMeters = direction === "right"
-      ? start + alpha * (end - start)
-      : end - alpha * (end - start);
+
+    const xMeters =
+      direction === "right"
+        ? start + alpha * (end - start)
+        : end - alpha * (end - start);
 
     const phase = k * xMeters + directionSign * omega * time + phaseRad;
     const yMeters = amplitudeM * Math.sin(phase);
@@ -1476,6 +1683,7 @@ function buildProjectedWavePoints({
       yMeters,
       visibleMeters,
       amplitudeM,
+      cameraConfig,
     });
 
     points.push(`${point.x.toFixed(2)},${point.y.toFixed(2)}`);
@@ -1489,27 +1697,149 @@ function project3DPoint({
   yMeters,
   visibleMeters,
   amplitudeM,
+  cameraConfig,
 }: {
   xMeters: number;
   yMeters: number;
   visibleMeters: number;
   amplitudeM: number;
+  cameraConfig: CameraConfig;
 }) {
-  const xNorm = visibleMeters > 0 ? xMeters / visibleMeters : 0;
   const safeAmplitude = Math.max(amplitudeM, 0.02);
-  const yNorm = yMeters / safeAmplitude;
+  const xNorm = visibleMeters > 0 ? xMeters / visibleMeters : 0;
 
-  const baseX = 390;
-  const baseY = 430;
+  return projectWorldPoint(
+    {
+      x: (xNorm - 0.5) * 8.6,
+      y: (yMeters / safeAmplitude) * 1.65,
+      z: 0,
+    },
+    cameraConfig
+  );
+}
 
-  const projectedX = baseX + xNorm * 530 + xNorm * 62;
-  const depthDrop = xNorm * 98;
-  const projectedY = baseY + depthDrop - yNorm * 78;
+function build3DGridLines(cameraConfig: CameraConfig) {
+  const lines: {
+    id: string;
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    opacity: number;
+  }[] = [];
+
+  for (let i = -4; i <= 4; i++) {
+    const a = projectWorldPoint({ x: i, y: 0, z: -2.4 }, cameraConfig);
+    const b = projectWorldPoint({ x: i, y: 0, z: 2.4 }, cameraConfig);
+
+    lines.push({
+      id: `grid-x-${i}`,
+      x1: a.x,
+      y1: a.y,
+      x2: b.x,
+      y2: b.y,
+      opacity: i === 0 ? 0.65 : 0.35,
+    });
+  }
+
+  for (let j = -3; j <= 3; j++) {
+    const z = j * 0.8;
+    const a = projectWorldPoint({ x: -4.4, y: 0, z }, cameraConfig);
+    const b = projectWorldPoint({ x: 4.4, y: 0, z }, cameraConfig);
+
+    lines.push({
+      id: `grid-z-${j}`,
+      x1: a.x,
+      y1: a.y,
+      x2: b.x,
+      y2: b.y,
+      opacity: j === 0 ? 0.65 : 0.35,
+    });
+  }
+
+  return lines;
+}
+
+function buildWorldLine(
+  a: { x: number; y: number; z: number },
+  b: { x: number; y: number; z: number },
+  cameraConfig: CameraConfig
+) {
+  const p1 = projectWorldPoint(a, cameraConfig);
+  const p2 = projectWorldPoint(b, cameraConfig);
 
   return {
-    x: projectedX,
-    y: projectedY,
+    x1: p1.x,
+    y1: p1.y,
+    x2: p2.x,
+    y2: p2.y,
   };
+}
+
+function projectWorldPoint(
+  point: { x: number; y: number; z: number },
+  cameraConfig: CameraConfig
+) {
+  const rotated = rotatePoint(point, cameraConfig);
+
+  const cameraDistance = 9;
+  const depth = cameraDistance + rotated.z;
+  const perspective = cameraDistance / Math.max(2.2, depth);
+
+  const centerX = 665;
+  const centerY = 350;
+  const scale = 62 * cameraConfig.zoom * perspective;
+
+  return {
+    x: centerX + rotated.x * scale,
+    y: centerY - rotated.y * scale,
+    depth: rotated.z,
+  };
+}
+
+function rotatePoint(
+  point: { x: number; y: number; z: number },
+  cameraConfig: CameraConfig
+) {
+  let { x, y, z } = point;
+
+  const rx = degreesToRadians(cameraConfig.rotX);
+  const ry = degreesToRadians(cameraConfig.rotY);
+  const rz = degreesToRadians(cameraConfig.rotZ);
+
+  const cosX = Math.cos(rx);
+  const sinX = Math.sin(rx);
+
+  const y1 = y * cosX - z * sinX;
+  const z1 = y * sinX + z * cosX;
+
+  y = y1;
+  z = z1;
+
+  const cosY = Math.cos(ry);
+  const sinY = Math.sin(ry);
+
+  const x2 = x * cosY + z * sinY;
+  const z2 = -x * sinY + z * cosY;
+
+  x = x2;
+  z = z2;
+
+  const cosZ = Math.cos(rz);
+  const sinZ = Math.sin(rz);
+
+  const x3 = x * cosZ - y * sinZ;
+  const y3 = x * sinZ + y * cosZ;
+
+  return {
+    x: x3,
+    y: y3,
+    z,
+  };
+}
+
+function degreesToRadians(degrees: number) {
+  return (degrees * Math.PI) / 180;
 }
 
 function DarkControlRow({
@@ -1805,7 +2135,7 @@ function drawTransversalWave({
       "v part."
     );
 
-    const accelScale = amplitudeM * omega ** 2 || 1;
+    const accelScale = amplitudeM * (omega ** 2) || 1;
     const accelLength = clamp(
       (probeParticleAcceleration / accelScale) * 48,
       -48,
@@ -1972,7 +2302,7 @@ function drawLongitudinalWave({
       "v part."
     );
 
-    const accelScale = amplitudeM * omega ** 2 || 1;
+    const accelScale = amplitudeM * (omega ** 2) || 1;
     const accelLength = clamp(
       (probeParticleAcceleration / accelScale) * 52,
       -52,
