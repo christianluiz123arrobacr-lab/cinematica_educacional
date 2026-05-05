@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
@@ -11,179 +11,221 @@ import {
 } from "@/components/ui/select";
 import { formatNumber, formatUnit } from "@/lib/utils";
 import { AdvancedTheory } from "@/components/AdvancedTheory";
-import { ITAThermologyTheory } from "@/content/thermology/ita_thermology_theory";
+import { ITAWavesTheory } from "@/content/waves/ita_waves_theory";
+import { Play, Pause, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-type ExpansionMode = "linear" | "surface" | "volume" | "comparison" | "hole";
+type WaveMode = "progressive" | "standing" | "interference";
+type WaveType = "transversal" | "longitudinal";
+type Direction = "right" | "left";
 
-const materials: Record<
-  string,
-  {
-    label: string;
-    alpha: number;
-    color: string;
-  }
-> = {
-  aco: {
-    label: "Aço",
-    alpha: 11e-6,
-    color: "#64748b",
-  },
-  aluminio: {
-    label: "Alumínio",
-    alpha: 23e-6,
-    color: "#94a3b8",
-  },
-  cobre: {
-    label: "Cobre",
-    alpha: 17e-6,
-    color: "#b45309",
-  },
-  latao: {
-    label: "Latão",
-    alpha: 19e-6,
-    color: "#ca8a04",
-  },
-  vidro: {
-    label: "Vidro",
-    alpha: 9e-6,
-    color: "#38bdf8",
-  },
-  concreto: {
-    label: "Concreto",
-    alpha: 12e-6,
-    color: "#78716c",
-  },
-};
+const TWO_PI = 2 * Math.PI;
 
-function getThermalColor(deltaT: number) {
-  if (deltaT > 0) return "#dc2626";
-  if (deltaT < 0) return "#2563eb";
-  return "#475569";
-}
+const clamp = (value: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, value));
 
-function getProcessName(deltaT: number) {
-  if (deltaT > 0) return "Dilatação";
-  if (deltaT < 0) return "Contração";
-  return "Sem variação térmica";
-}
+export const WaveSimulator: React.FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationIdRef = useRef<number | null>(null);
+  const timeRef = useRef(0);
+  const lastTimeRef = useRef(0);
 
-export const ThermalExpansionSimulator: React.FC = () => {
-  const [mode, setMode] = useState<ExpansionMode>("linear");
+  const [mode, setMode] = useState<WaveMode>("progressive");
+  const [waveType, setWaveType] = useState<WaveType>("transversal");
+  const [direction, setDirection] = useState<Direction>("right");
 
-  const [material, setMaterial] = useState("aco");
-  const [material2, setMaterial2] = useState("aluminio");
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [showParticles, setShowParticles] = useState(true);
+  const [showMeasures, setShowMeasures] = useState(true);
 
-  const [initialTemp, setInitialTemp] = useState(20);
-  const [finalTemp, setFinalTemp] = useState(80);
+  const [amplitude, setAmplitude] = useState(50);
+  const [frequency, setFrequency] = useState(1);
+  const [wavelength, setWavelength] = useState(200);
 
-  const [l0, setL0] = useState(10);
-  const [area0, setArea0] = useState(4);
-  const [volume0, setVolume0] = useState(2);
+  const [amplitude2, setAmplitude2] = useState(35);
+  const [phaseDiffDeg, setPhaseDiffDeg] = useState(0);
 
-  const [holeDiameter0, setHoleDiameter0] = useState(0.5);
-  const [plateSide, setPlateSide] = useState(3);
+  const [harmonic, setHarmonic] = useState(2);
+  const [stringLength, setStringLength] = useState(600);
 
-  const selectedMaterial = materials[material];
-  const selectedMaterial2 = materials[material2];
+  const period = useMemo(() => {
+    if (frequency <= 0) return 0;
+    return 1 / frequency;
+  }, [frequency]);
 
-  const alpha = selectedMaterial.alpha;
-  const beta = 2 * alpha;
-  const gamma = 3 * alpha;
+  const velocity = useMemo(() => wavelength * frequency, [wavelength, frequency]);
 
-  const alpha2 = selectedMaterial2.alpha;
+  const k = useMemo(() => TWO_PI / wavelength, [wavelength]);
+  const omega = useMemo(() => TWO_PI * frequency, [frequency]);
 
-  const deltaT = useMemo(
-    () => finalTemp - initialTemp,
-    [finalTemp, initialTemp]
+  const phaseDiffRad = useMemo(
+    () => (phaseDiffDeg * Math.PI) / 180,
+    [phaseDiffDeg]
   );
 
-  const processName = useMemo(() => getProcessName(deltaT), [deltaT]);
+  const standingWavelength = useMemo(() => {
+    if (harmonic <= 0) return 0;
+    return (2 * stringLength) / harmonic;
+  }, [stringLength, harmonic]);
 
-  const deltaL = useMemo(() => l0 * alpha * deltaT, [l0, alpha, deltaT]);
-  const finalLength = useMemo(() => l0 + deltaL, [l0, deltaL]);
-
-  const deltaArea = useMemo(
-    () => area0 * beta * deltaT,
-    [area0, beta, deltaT]
-  );
-  const finalArea = useMemo(() => area0 + deltaArea, [area0, deltaArea]);
-
-  const deltaVolume = useMemo(
-    () => volume0 * gamma * deltaT,
-    [volume0, gamma, deltaT]
-  );
-  const finalVolume = useMemo(
-    () => volume0 + deltaVolume,
-    [volume0, deltaVolume]
+  const standingVelocity = useMemo(
+    () => standingWavelength * frequency,
+    [standingWavelength, frequency]
   );
 
-  const deltaLMaterial1 = useMemo(
-    () => l0 * alpha * deltaT,
-    [l0, alpha, deltaT]
-  );
-  const deltaLMaterial2 = useMemo(
-    () => l0 * alpha2 * deltaT,
-    [l0, alpha2, deltaT]
-  );
+  const resultantAmplitude = useMemo(() => {
+    return Math.sqrt(
+      amplitude ** 2 +
+        amplitude2 ** 2 +
+        2 * amplitude * amplitude2 * Math.cos(phaseDiffRad)
+    );
+  }, [amplitude, amplitude2, phaseDiffRad]);
 
-  const finalLengthMaterial1 = useMemo(
-    () => l0 + deltaLMaterial1,
-    [l0, deltaLMaterial1]
-  );
-  const finalLengthMaterial2 = useMemo(
-    () => l0 + deltaLMaterial2,
-    [l0, deltaLMaterial2]
-  );
+  const interferenceType = useMemo(() => {
+    if (Math.abs(phaseDiffDeg % 360) < 5) return "Construtiva";
+    if (Math.abs((phaseDiffDeg % 360) - 180) < 5) return "Destrutiva";
+    return "Parcial";
+  }, [phaseDiffDeg]);
 
-  const differenceBetweenMaterials = useMemo(
-    () => finalLengthMaterial2 - finalLengthMaterial1,
-    [finalLengthMaterial1, finalLengthMaterial2]
-  );
+  const reset = () => {
+    setAmplitude(50);
+    setAmplitude2(35);
+    setFrequency(1);
+    setWavelength(200);
+    setPhaseDiffDeg(0);
+    setHarmonic(2);
+    setStringLength(600);
+    timeRef.current = 0;
+  };
 
-  const holeArea0 = useMemo(
-    () => Math.PI * (holeDiameter0 / 2) ** 2,
-    [holeDiameter0]
-  );
+  useEffect(() => {
+    timeRef.current = 0;
+  }, [mode, waveType, direction]);
 
-  const holeDeltaDiameter = useMemo(
-    () => holeDiameter0 * alpha * deltaT,
-    [holeDiameter0, alpha, deltaT]
-  );
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-  const holeFinalDiameter = useMemo(
-    () => holeDiameter0 + holeDeltaDiameter,
-    [holeDiameter0, holeDeltaDiameter]
-  );
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-  const holeFinalArea = useMemo(
-    () => Math.PI * (holeFinalDiameter / 2) ** 2,
-    [holeFinalDiameter]
-  );
+    const animate = (now: number) => {
+      const dt = Math.min((now - lastTimeRef.current) / 1000, 0.04);
+      lastTimeRef.current = now;
 
-  const holeDeltaArea = useMemo(
-    () => holeFinalArea - holeArea0,
-    [holeFinalArea, holeArea0]
-  );
-
-  const thermalColor = getThermalColor(deltaT);
-
-  const interpretation = useMemo(() => {
-    if (deltaT > 0) {
-      if (mode === "hole") {
-        return "A placa dilata e o furo também aumenta. Sim, o buraco aumenta. A intuição humana sofre, mas a física vence.";
+      if (isPlaying) {
+        timeRef.current += dt;
       }
-      return "A temperatura aumentou, então as dimensões aumentam.";
-    }
 
-    if (deltaT < 0) {
-      if (mode === "hole") {
-        return "A placa contrai e o furo também diminui.";
+      const t = timeRef.current;
+      const width = canvas.width;
+      const height = canvas.height;
+
+      drawBackground(ctx, width, height);
+
+      if (mode === "progressive") {
+        if (waveType === "transversal") {
+          drawProgressiveTransverseWave({
+            ctx,
+            width,
+            height,
+            amplitude,
+            wavelength,
+            k,
+            omega,
+            t,
+            direction,
+            showParticles,
+            showMeasures,
+          });
+        } else {
+          drawProgressiveLongitudinalWave({
+            ctx,
+            width,
+            height,
+            amplitude,
+            wavelength,
+            k,
+            omega,
+            t,
+            direction,
+            showParticles,
+            showMeasures,
+          });
+        }
       }
-      return "A temperatura diminuiu, então as dimensões diminuem.";
-    }
 
-    return "Sem variação de temperatura, não há dilatação nem contração.";
-  }, [deltaT, mode]);
+      if (mode === "standing") {
+        drawStandingWave({
+          ctx,
+          width,
+          height,
+          amplitude,
+          frequency,
+          harmonic,
+          stringLength,
+          t,
+          showParticles,
+          showMeasures,
+        });
+      }
+
+      if (mode === "interference") {
+        drawInterference({
+          ctx,
+          width,
+          height,
+          amplitude,
+          amplitude2,
+          wavelength,
+          k,
+          omega,
+          phaseDiffRad,
+          t,
+          showMeasures,
+        });
+      }
+
+      drawCanvasInfo({
+        ctx,
+        mode,
+        waveType,
+        velocity: mode === "standing" ? standingVelocity : velocity,
+        wavelength: mode === "standing" ? standingWavelength : wavelength,
+        frequency,
+        period,
+        amplitude,
+      });
+
+      animationIdRef.current = requestAnimationFrame(animate);
+    };
+
+    animationIdRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationIdRef.current) cancelAnimationFrame(animationIdRef.current);
+    };
+  }, [
+    mode,
+    waveType,
+    direction,
+    isPlaying,
+    showParticles,
+    showMeasures,
+    amplitude,
+    amplitude2,
+    frequency,
+    wavelength,
+    k,
+    omega,
+    period,
+    phaseDiffRad,
+    harmonic,
+    stringLength,
+    standingWavelength,
+    standingVelocity,
+    velocity,
+  ]);
 
   return (
     <div className="w-full space-y-6">
@@ -192,11 +234,10 @@ export const ThermalExpansionSimulator: React.FC = () => {
           <Card className="border border-slate-200 shadow-sm">
             <div className="border-b border-slate-200 px-5 py-4">
               <h3 className="text-lg font-bold text-slate-900">
-                Dilatação Térmica
+                Simulador de Ondas
               </h3>
               <p className="mt-1 text-sm text-slate-600">
-                Analise dilatação linear, superficial, volumétrica e a clássica
-                pegadinha da placa com furo.
+                Analise ondas progressivas, estacionárias e interferência.
               </p>
             </div>
 
@@ -205,175 +246,196 @@ export const ThermalExpansionSimulator: React.FC = () => {
                 <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
                   Modo
                 </p>
-                <Select
-                  value={mode}
-                  onValueChange={(value) => setMode(value as ExpansionMode)}
-                >
+                <Select value={mode} onValueChange={(value) => setMode(value as WaveMode)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="linear">Dilatação linear</SelectItem>
-                    <SelectItem value="surface">Dilatação superficial</SelectItem>
-                    <SelectItem value="volume">Dilatação volumétrica</SelectItem>
-                    <SelectItem value="comparison">Comparação entre materiais</SelectItem>
-                    <SelectItem value="hole">Placa com furo</SelectItem>
+                    <SelectItem value="progressive">Onda progressiva</SelectItem>
+                    <SelectItem value="standing">Onda estacionária</SelectItem>
+                    <SelectItem value="interference">Interferência</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
-                  Material
-                </p>
-                <Select value={material} onValueChange={setMaterial}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(materials).map(([key, item]) => (
-                      <SelectItem key={key} value={key}>
-                        {item.label} — α = {formatNumber(item.alpha * 1e6)}×10⁻⁶ °C⁻¹
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {mode === "progressive" && (
+                <>
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+                      Tipo de onda
+                    </p>
+                    <Select
+                      value={waveType}
+                      onValueChange={(value) => setWaveType(value as WaveType)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="transversal">Transversal</SelectItem>
+                        <SelectItem value="longitudinal">Longitudinal</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-              {mode === "comparison" && (
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
-                    Material comparado
-                  </p>
-                  <Select value={material2} onValueChange={setMaterial2}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(materials).map(([key, item]) => (
-                        <SelectItem key={key} value={key}>
-                          {item.label} — α = {formatNumber(item.alpha * 1e6)}×10⁻⁶ °C⁻¹
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+                      Sentido de propagação
+                    </p>
+                    <Select
+                      value={direction}
+                      onValueChange={(value) => setDirection(value as Direction)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="right">Para a direita</SelectItem>
+                        <SelectItem value="left">Para a esquerda</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
               )}
 
               <ControlRow
-                label="Temperatura inicial"
-                symbol="T_i"
-                value={formatUnit(initialTemp, "°C")}
+                label="Amplitude"
+                symbol="A"
+                value={formatUnit(amplitude, "px")}
               >
                 <Slider
-                  value={[initialTemp]}
-                  onValueChange={(value) => setInitialTemp(value[0])}
-                  min={-50}
-                  max={300}
-                  step={1}
+                  value={[amplitude]}
+                  onValueChange={(value) => setAmplitude(value[0])}
+                  min={10}
+                  max={100}
+                  step={5}
                   className="w-full"
                 />
               </ControlRow>
 
               <ControlRow
-                label="Temperatura final"
-                symbol="T_f"
-                value={formatUnit(finalTemp, "°C")}
+                label="Frequência"
+                symbol="f"
+                value={formatUnit(frequency, "Hz")}
               >
                 <Slider
-                  value={[finalTemp]}
-                  onValueChange={(value) => setFinalTemp(value[0])}
-                  min={-50}
-                  max={300}
-                  step={1}
+                  value={[frequency]}
+                  onValueChange={(value) => setFrequency(value[0])}
+                  min={0.1}
+                  max={5}
+                  step={0.1}
                   className="w-full"
                 />
               </ControlRow>
 
-              {(mode === "linear" || mode === "comparison") && (
+              {mode !== "standing" && (
                 <ControlRow
-                  label="Comprimento inicial"
-                  symbol="L_0"
-                  value={formatUnit(l0, "m")}
+                  label="Comprimento de onda"
+                  symbol="λ"
+                  value={formatUnit(wavelength, "px")}
                 >
                   <Slider
-                    value={[l0]}
-                    onValueChange={(value) => setL0(value[0])}
-                    min={1}
-                    max={30}
-                    step={0.5}
+                    value={[wavelength]}
+                    onValueChange={(value) => setWavelength(value[0])}
+                    min={80}
+                    max={500}
+                    step={10}
                     className="w-full"
                   />
                 </ControlRow>
               )}
 
-              {mode === "surface" && (
-                <ControlRow
-                  label="Área inicial"
-                  symbol="A_0"
-                  value={formatUnit(area0, "m²")}
-                >
-                  <Slider
-                    value={[area0]}
-                    onValueChange={(value) => setArea0(value[0])}
-                    min={0.5}
-                    max={30}
-                    step={0.5}
-                    className="w-full"
-                  />
-                </ControlRow>
-              )}
-
-              {mode === "volume" && (
-                <ControlRow
-                  label="Volume inicial"
-                  symbol="V_0"
-                  value={formatUnit(volume0, "m³")}
-                >
-                  <Slider
-                    value={[volume0]}
-                    onValueChange={(value) => setVolume0(value[0])}
-                    min={0.1}
-                    max={20}
-                    step={0.1}
-                    className="w-full"
-                  />
-                </ControlRow>
-              )}
-
-              {mode === "hole" && (
+              {mode === "standing" && (
                 <>
                   <ControlRow
-                    label="Lado da placa"
-                    symbol="a"
-                    value={formatUnit(plateSide, "m")}
+                    label="Comprimento da corda"
+                    symbol="L"
+                    value={formatUnit(stringLength, "px")}
                   >
                     <Slider
-                      value={[plateSide]}
-                      onValueChange={(value) => setPlateSide(value[0])}
-                      min={1}
-                      max={8}
-                      step={0.1}
+                      value={[stringLength]}
+                      onValueChange={(value) => setStringLength(value[0])}
+                      min={300}
+                      max={760}
+                      step={20}
                       className="w-full"
                     />
                   </ControlRow>
 
                   <ControlRow
-                    label="Diâmetro inicial do furo"
-                    symbol="d_0"
-                    value={formatUnit(holeDiameter0, "m")}
+                    label="Harmônico"
+                    symbol="n"
+                    value={String(harmonic)}
                   >
                     <Slider
-                      value={[holeDiameter0]}
-                      onValueChange={(value) => setHoleDiameter0(value[0])}
-                      min={0.1}
-                      max={3}
-                      step={0.05}
+                      value={[harmonic]}
+                      onValueChange={(value) => setHarmonic(value[0])}
+                      min={1}
+                      max={6}
+                      step={1}
                       className="w-full"
                     />
                   </ControlRow>
                 </>
               )}
+
+              {mode === "interference" && (
+                <>
+                  <ControlRow
+                    label="Amplitude da segunda onda"
+                    symbol="A_2"
+                    value={formatUnit(amplitude2, "px")}
+                  >
+                    <Slider
+                      value={[amplitude2]}
+                      onValueChange={(value) => setAmplitude2(value[0])}
+                      min={0}
+                      max={100}
+                      step={5}
+                      className="w-full"
+                    />
+                  </ControlRow>
+
+                  <ControlRow
+                    label="Diferença de fase"
+                    symbol="Δφ"
+                    value={formatUnit(phaseDiffDeg, "°")}
+                  >
+                    <Slider
+                      value={[phaseDiffDeg]}
+                      onValueChange={(value) => setPhaseDiffDeg(value[0])}
+                      min={0}
+                      max={360}
+                      step={5}
+                      className="w-full"
+                    />
+                  </ControlRow>
+                </>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setShowParticles(!showParticles)}
+                  className={`rounded-lg border px-3 py-2 text-sm font-bold ${
+                    showParticles
+                      ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                      : "border-slate-300 bg-white text-slate-700"
+                  }`}
+                >
+                  Partículas
+                </button>
+
+                <button
+                  onClick={() => setShowMeasures(!showMeasures)}
+                  className={`rounded-lg border px-3 py-2 text-sm font-bold ${
+                    showMeasures
+                      ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                      : "border-slate-300 bg-white text-slate-700"
+                  }`}
+                >
+                  Medidas
+                </button>
+              </div>
             </div>
           </Card>
 
@@ -388,159 +450,75 @@ export const ThermalExpansionSimulator: React.FC = () => {
               <MetricCard
                 label={
                   <>
-                    Variação de temperatura{" "}
-                    <MathFormula inline formula={String.raw`\Delta T`} />
+                    Velocidade <MathFormula inline formula={String.raw`v`} />
                   </>
                 }
-                value={formatUnit(deltaT, "°C")}
-                valueClassName={thermalColor === "#dc2626" ? "text-red-700" : thermalColor === "#2563eb" ? "text-blue-700" : "text-slate-900"}
+                value={formatUnit(mode === "standing" ? standingVelocity : velocity, "px/s")}
+                valueClassName="text-indigo-700"
               />
 
               <MetricCard
                 label={
                   <>
-                    Coeficiente linear{" "}
-                    <MathFormula inline formula={String.raw`\alpha`} />
+                    Período <MathFormula inline formula={String.raw`T`} />
                   </>
                 }
-                value={`${formatNumber(alpha * 1e6)}×10⁻⁶ °C⁻¹`}
+                value={formatUnit(period, "s")}
               />
 
-              {mode === "linear" && (
+              <MetricCard
+                label={
+                  <>
+                    Frequência angular{" "}
+                    <MathFormula inline formula={String.raw`\omega`} />
+                  </>
+                }
+                value={formatUnit(omega, "rad/s")}
+              />
+
+              <MetricCard
+                label={
+                  <>
+                    Número de onda <MathFormula inline formula={String.raw`k`} />
+                  </>
+                }
+                value={`${formatNumber(k, 4)} rad/px`}
+              />
+
+              {mode === "interference" && (
                 <>
                   <MetricCard
-                    label={
-                      <>
-                        Dilatação linear{" "}
-                        <MathFormula inline formula={String.raw`\Delta L`} />
-                      </>
+                    label="Tipo de interferência"
+                    value={interferenceType}
+                    valueClassName={
+                      interferenceType === "Construtiva"
+                        ? "text-green-700"
+                        : interferenceType === "Destrutiva"
+                        ? "text-red-700"
+                        : "text-amber-700"
                     }
-                    value={formatUnit(deltaL * 1000, "mm")}
-                    valueClassName={deltaL >= 0 ? "text-red-700" : "text-blue-700"}
                   />
 
                   <MetricCard
-                    label={
-                      <>
-                        Comprimento final{" "}
-                        <MathFormula inline formula={String.raw`L`} />
-                      </>
-                    }
-                    value={formatUnit(finalLength, "m")}
-                  />
-                </>
-              )}
-
-              {mode === "surface" && (
-                <>
-                  <MetricCard
-                    label={
-                      <>
-                        Coeficiente superficial{" "}
-                        <MathFormula inline formula={String.raw`\beta`} />
-                      </>
-                    }
-                    value={`${formatNumber(beta * 1e6)}×10⁻⁶ °C⁻¹`}
-                  />
-
-                  <MetricCard
-                    label={
-                      <>
-                        Dilatação superficial{" "}
-                        <MathFormula inline formula={String.raw`\Delta A`} />
-                      </>
-                    }
-                    value={formatUnit(deltaArea, "m²")}
-                    valueClassName={deltaArea >= 0 ? "text-red-700" : "text-blue-700"}
-                  />
-
-                  <MetricCard
-                    label={
-                      <>
-                        Área final <MathFormula inline formula={String.raw`A`} />
-                      </>
-                    }
-                    value={formatUnit(finalArea, "m²")}
-                  />
-                </>
-              )}
-
-              {mode === "volume" && (
-                <>
-                  <MetricCard
-                    label={
-                      <>
-                        Coeficiente volumétrico{" "}
-                        <MathFormula inline formula={String.raw`\gamma`} />
-                      </>
-                    }
-                    value={`${formatNumber(gamma * 1e6)}×10⁻⁶ °C⁻¹`}
-                  />
-
-                  <MetricCard
-                    label={
-                      <>
-                        Dilatação volumétrica{" "}
-                        <MathFormula inline formula={String.raw`\Delta V`} />
-                      </>
-                    }
-                    value={formatUnit(deltaVolume, "m³")}
-                    valueClassName={deltaVolume >= 0 ? "text-red-700" : "text-blue-700"}
-                  />
-
-                  <MetricCard
-                    label={
-                      <>
-                        Volume final{" "}
-                        <MathFormula inline formula={String.raw`V`} />
-                      </>
-                    }
-                    value={formatUnit(finalVolume, "m³")}
-                  />
-                </>
-              )}
-
-              {mode === "comparison" && (
-                <>
-                  <MetricCard
-                    label={`${selectedMaterial.label}: ΔL`}
-                    value={formatUnit(deltaLMaterial1 * 1000, "mm")}
-                  />
-
-                  <MetricCard
-                    label={`${selectedMaterial2.label}: ΔL`}
-                    value={formatUnit(deltaLMaterial2 * 1000, "mm")}
-                  />
-
-                  <MetricCard
-                    label="Diferença final"
-                    value={formatUnit(differenceBetweenMaterials * 1000, "mm")}
+                    label="Amplitude resultante"
+                    value={formatUnit(resultantAmplitude, "px")}
                     valueClassName="text-purple-700"
                   />
                 </>
               )}
 
-              {mode === "hole" && (
-                <>
-                  <MetricCard
-                    label="Diâmetro final do furo"
-                    value={formatUnit(holeFinalDiameter, "m")}
-                    valueClassName={holeDeltaDiameter >= 0 ? "text-red-700" : "text-blue-700"}
-                  />
-
-                  <MetricCard
-                    label="Variação do diâmetro"
-                    value={formatUnit(holeDeltaDiameter * 1000, "mm")}
-                  />
-
-                  <MetricCard
-                    label="Variação da área do furo"
-                    value={formatUnit(holeDeltaArea, "m²")}
-                  />
-                </>
+              {mode === "standing" && (
+                <MetricCard
+                  label={
+                    <>
+                      Comprimento de onda permitido{" "}
+                      <MathFormula inline formula={String.raw`\lambda_n`} />
+                    </>
+                  }
+                  value={formatUnit(standingWavelength, "px")}
+                  valueClassName="text-purple-700"
+                />
               )}
-
-              <MetricCard label="Processo" value={processName} />
             </div>
           </Card>
         </div>
@@ -548,74 +526,40 @@ export const ThermalExpansionSimulator: React.FC = () => {
         <div className="space-y-4 xl:col-span-8">
           <Card className="overflow-hidden border border-slate-200 shadow-sm">
             <div className="border-b border-slate-200 px-5 py-4">
-              <h4 className="text-base font-bold text-slate-900">
-                Simulação Visual
-              </h4>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h4 className="text-base font-bold text-slate-900">
+                  Simulação Visual
+                </h4>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={() => setIsPlaying(!isPlaying)}
+                  >
+                    {isPlaying ? (
+                      <Pause className="h-4 w-4" />
+                    ) : (
+                      <Play className="h-4 w-4" />
+                    )}
+                  </Button>
+
+                  <Button variant="secondary" size="icon" onClick={reset}>
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
             </div>
 
             <div className="bg-slate-50 p-4 md:p-5">
-              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                {mode === "linear" && (
-                  <LinearExpansionVisual
-                    material={selectedMaterial.label}
-                    color={selectedMaterial.color}
-                    l0={l0}
-                    finalLength={finalLength}
-                    deltaL={deltaL}
-                    thermalColor={thermalColor}
+              <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                <div className="overflow-x-auto">
+                  <canvas
+                    ref={canvasRef}
+                    width={980}
+                    height={420}
+                    className="mx-auto w-full min-w-[780px] rounded-lg border border-slate-200 bg-slate-50"
                   />
-                )}
-
-                {mode === "surface" && (
-                  <SurfaceExpansionVisual
-                    material={selectedMaterial.label}
-                    color={selectedMaterial.color}
-                    area0={area0}
-                    finalArea={finalArea}
-                    deltaArea={deltaArea}
-                    thermalColor={thermalColor}
-                  />
-                )}
-
-                {mode === "volume" && (
-                  <VolumeExpansionVisual
-                    material={selectedMaterial.label}
-                    color={selectedMaterial.color}
-                    volume0={volume0}
-                    finalVolume={finalVolume}
-                    deltaVolume={deltaVolume}
-                    thermalColor={thermalColor}
-                  />
-                )}
-
-                {mode === "comparison" && (
-                  <ComparisonVisual
-                    material1={selectedMaterial.label}
-                    material2={selectedMaterial2.label}
-                    color1={selectedMaterial.color}
-                    color2={selectedMaterial2.color}
-                    l0={l0}
-                    finalLength1={finalLengthMaterial1}
-                    finalLength2={finalLengthMaterial2}
-                  />
-                )}
-
-                {mode === "hole" && (
-                  <HoleExpansionVisual
-                    material={selectedMaterial.label}
-                    color={selectedMaterial.color}
-                    plateSide={plateSide}
-                    holeDiameter0={holeDiameter0}
-                    holeFinalDiameter={holeFinalDiameter}
-                    thermalColor={thermalColor}
-                  />
-                )}
-
-                <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-sm font-bold text-slate-800">
-                    Interpretação física
-                  </p>
-                  <p className="mt-2 text-sm text-slate-700">{interpretation}</p>
                 </div>
               </div>
             </div>
@@ -630,121 +574,37 @@ export const ThermalExpansionSimulator: React.FC = () => {
 
             <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2">
               <CalcMiniCard
-                title="Temperaturas"
+                title="Parâmetros básicos"
                 values={[
-                  ["Ti", formatUnit(initialTemp, "°C")],
-                  ["Tf", formatUnit(finalTemp, "°C")],
-                  ["ΔT", formatUnit(deltaT, "°C")],
+                  ["A", formatUnit(amplitude, "px")],
+                  ["f", formatUnit(frequency, "Hz")],
+                  ["λ", formatUnit(mode === "standing" ? standingWavelength : wavelength, "px")],
                 ]}
               />
 
               <CalcMiniCard
-                title="Material"
+                title="Grandezas derivadas"
                 values={[
-                  ["Material", selectedMaterial.label],
-                  ["α", `${formatNumber(alpha * 1e6)}×10⁻⁶ °C⁻¹`],
+                  ["v", formatUnit(mode === "standing" ? standingVelocity : velocity, "px/s")],
+                  ["T", formatUnit(period, "s")],
                 ]}
               />
 
-              {mode === "linear" && (
-                <>
-                  <CalcMiniCard
-                    title="Dimensão"
-                    values={[
-                      ["L0", formatUnit(l0, "m")],
-                      ["L", formatUnit(finalLength, "m")],
-                    ]}
-                  />
+              <CalcMiniCard
+                title="Forma matemática"
+                values={[
+                  ["k", `${formatNumber(k, 4)} rad/px`],
+                  ["ω", formatUnit(omega, "rad/s")],
+                ]}
+              />
 
-                  <CalcMiniCard
-                    title="Resultado"
-                    values={[
-                      ["ΔL", formatUnit(deltaL, "m")],
-                      ["ΔL em mm", formatUnit(deltaL * 1000, "mm")],
-                    ]}
-                  />
-                </>
-              )}
-
-              {mode === "surface" && (
-                <>
-                  <CalcMiniCard
-                    title="Área"
-                    values={[
-                      ["A0", formatUnit(area0, "m²")],
-                      ["A", formatUnit(finalArea, "m²")],
-                    ]}
-                  />
-
-                  <CalcMiniCard
-                    title="Resultado"
-                    values={[
-                      ["β", `${formatNumber(beta * 1e6)}×10⁻⁶ °C⁻¹`],
-                      ["ΔA", formatUnit(deltaArea, "m²")],
-                    ]}
-                  />
-                </>
-              )}
-
-              {mode === "volume" && (
-                <>
-                  <CalcMiniCard
-                    title="Volume"
-                    values={[
-                      ["V0", formatUnit(volume0, "m³")],
-                      ["V", formatUnit(finalVolume, "m³")],
-                    ]}
-                  />
-
-                  <CalcMiniCard
-                    title="Resultado"
-                    values={[
-                      ["γ", `${formatNumber(gamma * 1e6)}×10⁻⁶ °C⁻¹`],
-                      ["ΔV", formatUnit(deltaVolume, "m³")],
-                    ]}
-                  />
-                </>
-              )}
-
-              {mode === "comparison" && (
-                <>
-                  <CalcMiniCard
-                    title={selectedMaterial.label}
-                    values={[
-                      ["α1", `${formatNumber(alpha * 1e6)}×10⁻⁶`],
-                      ["ΔL1", formatUnit(deltaLMaterial1 * 1000, "mm")],
-                    ]}
-                  />
-
-                  <CalcMiniCard
-                    title={selectedMaterial2.label}
-                    values={[
-                      ["α2", `${formatNumber(alpha2 * 1e6)}×10⁻⁶`],
-                      ["ΔL2", formatUnit(deltaLMaterial2 * 1000, "mm")],
-                    ]}
-                  />
-                </>
-              )}
-
-              {mode === "hole" && (
-                <>
-                  <CalcMiniCard
-                    title="Furo"
-                    values={[
-                      ["d0", formatUnit(holeDiameter0, "m")],
-                      ["d", formatUnit(holeFinalDiameter, "m")],
-                    ]}
-                  />
-
-                  <CalcMiniCard
-                    title="Área do furo"
-                    values={[
-                      ["A0", formatUnit(holeArea0, "m²")],
-                      ["A", formatUnit(holeFinalArea, "m²")],
-                    ]}
-                  />
-                </>
-              )}
+              <CalcMiniCard
+                title="Modo atual"
+                values={[
+                  ["Modo", getModeLabel(mode)],
+                  ["Tipo", mode === "progressive" ? getWaveTypeLabel(waveType) : "—"],
+                ]}
+              />
             </div>
           </Card>
 
@@ -757,117 +617,583 @@ export const ThermalExpansionSimulator: React.FC = () => {
 
             <div className="space-y-5 p-5">
               <CalcSection
-                title="Variação de temperatura"
+                title="Relação fundamental da ondulatória"
                 formulas={[
-                  String.raw`\Delta T = T_f - T_i`,
-                  String.raw`\Delta T = ${formatNumber(finalTemp)} - ${formatNumber(initialTemp)} = ${formatNumber(deltaT)}\,^\circ C`,
+                  String.raw`v = \lambda f`,
+                  String.raw`v = ${formatNumber(
+                    mode === "standing" ? standingWavelength : wavelength
+                  )}\cdot ${formatNumber(frequency)} = ${formatNumber(
+                    mode === "standing" ? standingVelocity : velocity
+                  )}\,\text{px/s}`,
                 ]}
               />
-
-              {mode === "linear" && (
-                <>
-                  <CalcSection
-                    title="Dilatação linear"
-                    formulas={[
-                      String.raw`\Delta L = L_0\alpha\Delta T`,
-                      String.raw`\Delta L = ${formatNumber(l0)}\cdot ${formatNumber(alpha * 1e6)}\times 10^{-6}\cdot ${formatNumber(deltaT)} = ${formatNumber(deltaL, 6)}\,\text{m}`,
-                      String.raw`L = L_0 + \Delta L = ${formatNumber(l0)} + ${formatNumber(deltaL, 6)} = ${formatNumber(finalLength, 6)}\,\text{m}`,
-                    ]}
-                  />
-                </>
-              )}
-
-              {mode === "surface" && (
-                <>
-                  <CalcSection
-                    title="Dilatação superficial"
-                    formulas={[
-                      String.raw`\beta = 2\alpha`,
-                      String.raw`\beta = 2\cdot ${formatNumber(alpha * 1e6)}\times 10^{-6} = ${formatNumber(beta * 1e6)}\times 10^{-6}\,^\circ C^{-1}`,
-                      String.raw`\Delta A = A_0\beta\Delta T`,
-                      String.raw`\Delta A = ${formatNumber(area0)}\cdot ${formatNumber(beta * 1e6)}\times 10^{-6}\cdot ${formatNumber(deltaT)} = ${formatNumber(deltaArea, 6)}\,\text{m}^2`,
-                      String.raw`A = A_0 + \Delta A = ${formatNumber(area0)} + ${formatNumber(deltaArea, 6)} = ${formatNumber(finalArea, 6)}\,\text{m}^2`,
-                    ]}
-                  />
-                </>
-              )}
-
-              {mode === "volume" && (
-                <>
-                  <CalcSection
-                    title="Dilatação volumétrica"
-                    formulas={[
-                      String.raw`\gamma = 3\alpha`,
-                      String.raw`\gamma = 3\cdot ${formatNumber(alpha * 1e6)}\times 10^{-6} = ${formatNumber(gamma * 1e6)}\times 10^{-6}\,^\circ C^{-1}`,
-                      String.raw`\Delta V = V_0\gamma\Delta T`,
-                      String.raw`\Delta V = ${formatNumber(volume0)}\cdot ${formatNumber(gamma * 1e6)}\times 10^{-6}\cdot ${formatNumber(deltaT)} = ${formatNumber(deltaVolume, 6)}\,\text{m}^3`,
-                      String.raw`V = V_0 + \Delta V = ${formatNumber(volume0)} + ${formatNumber(deltaVolume, 6)} = ${formatNumber(finalVolume, 6)}\,\text{m}^3`,
-                    ]}
-                  />
-                </>
-              )}
-
-              {mode === "comparison" && (
-                <>
-                  <CalcSection
-                    title="Comparação entre materiais"
-                    formulas={[
-                      String.raw`\Delta L_1 = L_0\alpha_1\Delta T`,
-                      String.raw`\Delta L_1 = ${formatNumber(l0)}\cdot ${formatNumber(alpha * 1e6)}\times 10^{-6}\cdot ${formatNumber(deltaT)} = ${formatNumber(deltaLMaterial1, 6)}\,\text{m}`,
-                      String.raw`\Delta L_2 = L_0\alpha_2\Delta T`,
-                      String.raw`\Delta L_2 = ${formatNumber(l0)}\cdot ${formatNumber(alpha2 * 1e6)}\times 10^{-6}\cdot ${formatNumber(deltaT)} = ${formatNumber(deltaLMaterial2, 6)}\,\text{m}`,
-                      String.raw`L_2 - L_1 = ${formatNumber(finalLengthMaterial2, 6)} - ${formatNumber(finalLengthMaterial1, 6)} = ${formatNumber(differenceBetweenMaterials, 6)}\,\text{m}`,
-                    ]}
-                  />
-                </>
-              )}
-
-              {mode === "hole" && (
-                <>
-                  <CalcSection
-                    title="Placa com furo"
-                    formulas={[
-                      String.raw`\text{O furo dilata como se fosse feito do mesmo material da placa.}`,
-                      String.raw`\Delta d = d_0\alpha\Delta T`,
-                      String.raw`\Delta d = ${formatNumber(holeDiameter0)}\cdot ${formatNumber(alpha * 1e6)}\times 10^{-6}\cdot ${formatNumber(deltaT)} = ${formatNumber(holeDeltaDiameter, 6)}\,\text{m}`,
-                      String.raw`d = d_0 + \Delta d = ${formatNumber(holeDiameter0)} + ${formatNumber(holeDeltaDiameter, 6)} = ${formatNumber(holeFinalDiameter, 6)}\,\text{m}`,
-                    ]}
-                  />
-
-                  <CalcSection
-                    title="Área do furo"
-                    formulas={[
-                      String.raw`A_0 = \pi\left(\frac{d_0}{2}\right)^2 = ${formatNumber(holeArea0, 6)}\,\text{m}^2`,
-                      String.raw`A = \pi\left(\frac{d}{2}\right)^2 = ${formatNumber(holeFinalArea, 6)}\,\text{m}^2`,
-                      String.raw`\Delta A = A - A_0 = ${formatNumber(holeFinalArea, 6)} - ${formatNumber(holeArea0, 6)} = ${formatNumber(holeDeltaArea, 6)}\,\text{m}^2`,
-                    ]}
-                  />
-                </>
-              )}
 
               <CalcSection
-                title="Interpretação"
+                title="Período, número de onda e frequência angular"
                 formulas={[
-                  deltaT > 0
-                    ? String.raw`\Delta T > 0 \Rightarrow \text{ocorre dilatação.}`
-                    : deltaT < 0
-                    ? String.raw`\Delta T < 0 \Rightarrow \text{ocorre contração.}`
-                    : String.raw`\Delta T = 0 \Rightarrow \text{não há alteração dimensional.}`,
+                  String.raw`T = \frac{1}{f} = \frac{1}{${formatNumber(frequency)}} = ${formatNumber(period)}\,\text{s}`,
+                  String.raw`k = \frac{2\pi}{\lambda} = \frac{2\pi}{${formatNumber(
+                    mode === "standing" ? standingWavelength : wavelength
+                  )}} = ${formatNumber(
+                    mode === "standing" ? TWO_PI / standingWavelength : k,
+                    4
+                  )}\,\text{rad/px}`,
+                  String.raw`\omega = 2\pi f = 2\pi\cdot ${formatNumber(
+                    frequency
+                  )} = ${formatNumber(omega, 4)}\,\text{rad/s}`,
                 ]}
               />
+
+              {mode === "progressive" && (
+                <CalcSection
+                  title="Equação da onda progressiva"
+                  formulas={[
+                    direction === "right"
+                      ? String.raw`y(x,t) = A\sin(kx-\omega t)`
+                      : String.raw`y(x,t) = A\sin(kx+\omega t)`,
+                    direction === "right"
+                      ? String.raw`y(x,t) = ${formatNumber(amplitude)}\sin(${formatNumber(
+                          k,
+                          4
+                        )}x - ${formatNumber(omega, 4)}t)`
+                      : String.raw`y(x,t) = ${formatNumber(amplitude)}\sin(${formatNumber(
+                          k,
+                          4
+                        )}x + ${formatNumber(omega, 4)}t)`,
+                    waveType === "transversal"
+                      ? String.raw`\text{Na onda transversal, a perturbação é perpendicular à propagação.}`
+                      : String.raw`\text{Na onda longitudinal, a perturbação é paralela à propagação.}`,
+                  ]}
+                />
+              )}
+
+              {mode === "standing" && (
+                <CalcSection
+                  title="Onda estacionária em corda fixa nas extremidades"
+                  formulas={[
+                    String.raw`\lambda_n = \frac{2L}{n}`,
+                    String.raw`\lambda_${harmonic} = \frac{2\cdot ${formatNumber(
+                      stringLength
+                    )}}{${harmonic}} = ${formatNumber(standingWavelength)}\,\text{px}`,
+                    String.raw`f_n = \frac{nv}{2L}`,
+                    String.raw`\text{O modo }n=${harmonic}\text{ possui }${harmonic}\text{ ventre(s) e }${
+                      harmonic + 1
+                    }\text{ nó(s).}`,
+                  ]}
+                />
+              )}
+
+              {mode === "interference" && (
+                <CalcSection
+                  title="Interferência de duas ondas"
+                  formulas={[
+                    String.raw`y_1 = A_1\sin(kx-\omega t)`,
+                    String.raw`y_2 = A_2\sin(kx-\omega t+\Delta\varphi)`,
+                    String.raw`y_R = y_1 + y_2`,
+                    String.raw`A_R = \sqrt{A_1^2 + A_2^2 + 2A_1A_2\cos\Delta\varphi}`,
+                    String.raw`A_R = \sqrt{${formatNumber(amplitude)}^2 + ${formatNumber(
+                      amplitude2
+                    )}^2 + 2\cdot ${formatNumber(amplitude)}\cdot ${formatNumber(
+                      amplitude2
+                    )}\cos(${formatNumber(phaseDiffDeg)}^\circ)} = ${formatNumber(
+                      resultantAmplitude
+                    )}\,\text{px}`,
+                  ]}
+                />
+              )}
             </div>
           </Card>
         </div>
       </div>
 
       <AdvancedTheory
-        title={ITAThermologyTheory.title}
-        introduction={ITAThermologyTheory.introduction}
-        sections={ITAThermologyTheory.sections}
+        title={ITAWavesTheory.title}
+        introduction={ITAWavesTheory.introduction}
+        sections={ITAWavesTheory.sections}
       />
     </div>
   );
 };
+
+function drawBackground(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "#f8fafc";
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.strokeStyle = "#e2e8f0";
+  ctx.lineWidth = 1;
+
+  for (let x = 0; x <= width; x += 50) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, height);
+    ctx.stroke();
+  }
+
+  for (let y = 0; y <= height; y += 50) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(width, y);
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = "#94a3b8";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, height / 2);
+  ctx.lineTo(width, height / 2);
+  ctx.stroke();
+}
+
+function drawProgressiveTransverseWave({
+  ctx,
+  width,
+  height,
+  amplitude,
+  wavelength,
+  k,
+  omega,
+  t,
+  direction,
+  showParticles,
+  showMeasures,
+}: {
+  ctx: CanvasRenderingContext2D;
+  width: number;
+  height: number;
+  amplitude: number;
+  wavelength: number;
+  k: number;
+  omega: number;
+  t: number;
+  direction: Direction;
+  showParticles: boolean;
+  showMeasures: boolean;
+}) {
+  const centerY = height / 2;
+  const sign = direction === "right" ? -1 : 1;
+
+  ctx.beginPath();
+  ctx.strokeStyle = "#4f46e5";
+  ctx.lineWidth = 4;
+  ctx.lineCap = "round";
+
+  for (let x = 0; x <= width; x++) {
+    const y = centerY + amplitude * Math.sin(k * x + sign * omega * t);
+    if (x === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+
+  ctx.stroke();
+
+  if (showParticles) {
+    for (let x = 60; x < width; x += 70) {
+      const y = centerY + amplitude * Math.sin(k * x + sign * omega * t);
+      ctx.fillStyle = "#ef4444";
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, TWO_PI);
+      ctx.fill();
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  }
+
+  if (showMeasures) {
+    drawAmplitudeMeasure(ctx, 100, centerY, amplitude);
+    drawWavelengthMeasure(ctx, 180, centerY + amplitude + 55, wavelength);
+    drawCrestValleyLabels(ctx, centerY, amplitude);
+  }
+}
+
+function drawProgressiveLongitudinalWave({
+  ctx,
+  width,
+  height,
+  amplitude,
+  wavelength,
+  k,
+  omega,
+  t,
+  direction,
+  showParticles,
+  showMeasures,
+}: {
+  ctx: CanvasRenderingContext2D;
+  width: number;
+  height: number;
+  amplitude: number;
+  wavelength: number;
+  k: number;
+  omega: number;
+  t: number;
+  direction: Direction;
+  showParticles: boolean;
+  showMeasures: boolean;
+}) {
+  const centerY = height / 2;
+  const sign = direction === "right" ? -1 : 1;
+  const numParticles = 54;
+  const spacing = width / numParticles;
+
+  for (let i = 0; i <= numParticles; i++) {
+    const xEq = i * spacing;
+    const displacement = amplitude * 0.7 * Math.sin(k * xEq + sign * omega * t);
+    const x = xEq + displacement;
+
+    ctx.fillStyle = i % 5 === 0 ? "#ef4444" : "#4f46e5";
+    ctx.beginPath();
+    ctx.arc(x, centerY, i % 5 === 0 ? 6 : 4, 0, TWO_PI);
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(79,70,229,0.18)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x, centerY - 70);
+    ctx.lineTo(x, centerY + 70);
+    ctx.stroke();
+  }
+
+  ctx.beginPath();
+  ctx.strokeStyle = "rgba(15,23,42,0.35)";
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 6]);
+
+  for (let x = 0; x <= width; x++) {
+    const y = centerY + 105 + amplitude * 0.45 * Math.sin(k * x + sign * omega * t);
+    if (x === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  if (showMeasures) {
+    drawWavelengthMeasure(ctx, 180, centerY + 155, wavelength);
+    ctx.fillStyle = "#475569";
+    ctx.font = "bold 12px Arial";
+    ctx.fillText("compressões e rarefações se propagam pelo meio", 26, 40);
+  }
+
+  if (!showParticles) {
+    ctx.fillStyle = "#64748b";
+    ctx.font = "bold 13px Arial";
+    ctx.fillText("Partículas ocultas. Ative o botão para ver o movimento do meio.", 26, 70);
+  }
+}
+
+function drawStandingWave({
+  ctx,
+  width,
+  height,
+  amplitude,
+  frequency,
+  harmonic,
+  stringLength,
+  t,
+  showParticles,
+  showMeasures,
+}: {
+  ctx: CanvasRenderingContext2D;
+  width: number;
+  height: number;
+  amplitude: number;
+  frequency: number;
+  harmonic: number;
+  stringLength: number;
+  t: number;
+  showParticles: boolean;
+  showMeasures: boolean;
+}) {
+  const centerY = height / 2;
+  const startX = (width - stringLength) / 2;
+  const endX = startX + stringLength;
+  const omega = TWO_PI * frequency;
+
+  ctx.strokeStyle = "#0f172a";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(startX, centerY - 95);
+  ctx.lineTo(startX, centerY + 95);
+  ctx.moveTo(endX, centerY - 95);
+  ctx.lineTo(endX, centerY + 95);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.strokeStyle = "#7c3aed";
+  ctx.lineWidth = 4;
+  ctx.lineCap = "round";
+
+  for (let x = startX; x <= endX; x++) {
+    const localX = x - startX;
+    const y =
+      centerY +
+      amplitude *
+        Math.sin((harmonic * Math.PI * localX) / stringLength) *
+        Math.cos(omega * t);
+
+    if (x === startX) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+
+  ctx.stroke();
+
+  if (showParticles) {
+    for (let i = 0; i <= 24; i++) {
+      const x = startX + (i / 24) * stringLength;
+      const localX = x - startX;
+      const y =
+        centerY +
+        amplitude *
+          Math.sin((harmonic * Math.PI * localX) / stringLength) *
+          Math.cos(omega * t);
+
+      ctx.fillStyle = "#ef4444";
+      ctx.beginPath();
+      ctx.arc(x, y, 5, 0, TWO_PI);
+      ctx.fill();
+    }
+  }
+
+  if (showMeasures) {
+    for (let n = 0; n <= harmonic; n++) {
+      const x = startX + (n / harmonic) * stringLength;
+      ctx.fillStyle = "#0f172a";
+      ctx.beginPath();
+      ctx.arc(x, centerY, 6, 0, TWO_PI);
+      ctx.fill();
+
+      ctx.font = "bold 11px Arial";
+      ctx.fillText("nó", x - 8, centerY + 22);
+    }
+
+    ctx.fillStyle = "#475569";
+    ctx.font = "bold 13px Arial";
+    ctx.fillText(`${harmonic}º harmônico`, 28, 40);
+    ctx.fillText(`${harmonic} ventre(s), ${harmonic + 1} nó(s)`, 28, 62);
+  }
+}
+
+function drawInterference({
+  ctx,
+  width,
+  height,
+  amplitude,
+  amplitude2,
+  wavelength,
+  k,
+  omega,
+  phaseDiffRad,
+  t,
+  showMeasures,
+}: {
+  ctx: CanvasRenderingContext2D;
+  width: number;
+  height: number;
+  amplitude: number;
+  amplitude2: number;
+  wavelength: number;
+  k: number;
+  omega: number;
+  phaseDiffRad: number;
+  t: number;
+  showMeasures: boolean;
+}) {
+  const centerY = height / 2;
+
+  drawWaveLine(ctx, width, centerY - 70, amplitude * 0.6, k, omega, t, 0, "#3b82f6", 2);
+  drawWaveLine(ctx, width, centerY + 70, amplitude2 * 0.6, k, omega, t, phaseDiffRad, "#ef4444", 2);
+
+  ctx.beginPath();
+  ctx.strokeStyle = "#7c3aed";
+  ctx.lineWidth = 4;
+  ctx.lineCap = "round";
+
+  for (let x = 0; x <= width; x++) {
+    const y1 = amplitude * Math.sin(k * x - omega * t);
+    const y2 = amplitude2 * Math.sin(k * x - omega * t + phaseDiffRad);
+    const y = centerY + 0.65 * (y1 + y2);
+
+    if (x === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+
+  ctx.stroke();
+
+  if (showMeasures) {
+    drawWavelengthMeasure(ctx, 180, centerY + 150, wavelength);
+
+    ctx.fillStyle = "#2563eb";
+    ctx.font = "bold 12px Arial";
+    ctx.fillText("onda 1", 24, centerY - 118);
+
+    ctx.fillStyle = "#dc2626";
+    ctx.fillText("onda 2", 24, centerY + 26);
+
+    ctx.fillStyle = "#7c3aed";
+    ctx.fillText("onda resultante", 24, centerY - 8);
+  }
+}
+
+function drawWaveLine(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  centerY: number,
+  amplitude: number,
+  k: number,
+  omega: number,
+  t: number,
+  phase: number,
+  color: string,
+  lineWidth: number
+) {
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lineWidth;
+  ctx.setLineDash([6, 6]);
+
+  for (let x = 0; x <= width; x++) {
+    const y = centerY + amplitude * Math.sin(k * x - omega * t + phase);
+    if (x === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawAmplitudeMeasure(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  centerY: number,
+  amplitude: number
+) {
+  drawArrow(ctx, x, centerY, x, centerY - amplitude, "#dc2626", "A");
+  drawArrow(ctx, x + 20, centerY, x + 20, centerY + amplitude, "#dc2626", "A");
+}
+
+function drawWavelengthMeasure(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  wavelength: number
+) {
+  drawArrow(ctx, x, y, x + wavelength, y, "#059669", "λ");
+}
+
+function drawCrestValleyLabels(
+  ctx: CanvasRenderingContext2D,
+  centerY: number,
+  amplitude: number
+) {
+  ctx.fillStyle = "#334155";
+  ctx.font = "bold 12px Arial";
+  ctx.fillText("crista", 255, centerY - amplitude - 12);
+  ctx.fillText("vale", 350, centerY + amplitude + 22);
+}
+
+function drawArrow(
+  ctx: CanvasRenderingContext2D,
+  fromX: number,
+  fromY: number,
+  toX: number,
+  toY: number,
+  color: string,
+  label: string
+) {
+  const angle = Math.atan2(toY - fromY, toX - fromX);
+  const head = 9;
+
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 2.5;
+
+  ctx.beginPath();
+  ctx.moveTo(fromX, fromY);
+  ctx.lineTo(toX, toY);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(toX, toY);
+  ctx.lineTo(toX - head * Math.cos(angle - Math.PI / 6), toY - head * Math.sin(angle - Math.PI / 6));
+  ctx.lineTo(toX - head * Math.cos(angle + Math.PI / 6), toY - head * Math.sin(angle + Math.PI / 6));
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.font = "bold 12px Arial";
+  ctx.fillText(label, toX + 8, toY - 6);
+}
+
+function drawCanvasInfo({
+  ctx,
+  mode,
+  waveType,
+  velocity,
+  wavelength,
+  frequency,
+  period,
+  amplitude,
+}: {
+  ctx: CanvasRenderingContext2D;
+  mode: WaveMode;
+  waveType: WaveType;
+  velocity: number;
+  wavelength: number;
+  frequency: number;
+  period: number;
+  amplitude: number;
+}) {
+  ctx.fillStyle = "rgba(255,255,255,0.92)";
+  ctx.strokeStyle = "#e2e8f0";
+  ctx.lineWidth = 1;
+  roundRect(ctx, 20, 18, 255, 122, 12);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = "#0f172a";
+  ctx.font = "bold 13px Arial";
+  ctx.fillText(getModeLabel(mode).toUpperCase(), 38, 44);
+
+  ctx.font = "12px Arial";
+  ctx.fillText(`tipo: ${mode === "progressive" ? getWaveTypeLabel(waveType) : "—"}`, 38, 68);
+  ctx.fillText(`A = ${formatNumber(amplitude)} px`, 38, 88);
+  ctx.fillText(`λ = ${formatNumber(wavelength)} px`, 38, 108);
+  ctx.fillText(`f = ${formatNumber(frequency)} Hz`, 150, 88);
+  ctx.fillText(`v = ${formatNumber(velocity)} px/s`, 150, 108);
+  ctx.fillText(`T = ${formatNumber(period)} s`, 150, 128);
+}
+
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number
+) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+}
+
+function getModeLabel(mode: WaveMode) {
+  if (mode === "progressive") return "Onda progressiva";
+  if (mode === "standing") return "Onda estacionária";
+  return "Interferência";
+}
+
+function getWaveTypeLabel(type: WaveType) {
+  if (type === "transversal") return "Transversal";
+  return "Longitudinal";
+}
 
 function ControlRow({
   label,
@@ -947,271 +1273,6 @@ function CalcSection({
           <MathFormula key={index} formula={formula} />
         ))}
       </div>
-    </div>
-  );
-}
-
-function LinearExpansionVisual({
-  material,
-  color,
-  l0,
-  finalLength,
-  deltaL,
-  thermalColor,
-}: {
-  material: string;
-  color: string;
-  l0: number;
-  finalLength: number;
-  deltaL: number;
-  thermalColor: string;
-}) {
-  const baseWidth = 520;
-  const ratio = finalLength / l0;
-  const finalWidth = Math.max(120, Math.min(760, baseWidth * ratio));
-
-  return (
-    <div className="space-y-6">
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
-        <p className="mb-4 text-sm font-bold text-slate-800">
-          Barra de {material}
-        </p>
-
-        <div className="relative flex h-40 items-center justify-center overflow-x-auto">
-          <div
-            className="absolute h-10 rounded-lg border border-slate-400 bg-slate-300 opacity-40"
-            style={{ width: `${baseWidth}px` }}
-          />
-
-          <div
-            className="relative flex h-12 items-center justify-center rounded-lg border-2 text-xs font-bold text-white shadow-md transition-all"
-            style={{
-              width: `${finalWidth}px`,
-              backgroundColor: color,
-              borderColor: thermalColor,
-            }}
-          >
-            L = {formatNumber(finalLength, 6)} m
-          </div>
-        </div>
-
-        <p className="text-center text-sm font-bold" style={{ color: thermalColor }}>
-          ΔL = {formatNumber(deltaL * 1000, 4)} mm
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function SurfaceExpansionVisual({
-  material,
-  color,
-  area0,
-  finalArea,
-  deltaArea,
-  thermalColor,
-}: {
-  material: string;
-  color: string;
-  area0: number;
-  finalArea: number;
-  deltaArea: number;
-  thermalColor: string;
-}) {
-  const baseSide = 170;
-  const ratio = Math.sqrt(finalArea / area0);
-  const finalSide = Math.max(80, Math.min(280, baseSide * ratio));
-
-  return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-5 text-center">
-      <p className="mb-4 text-sm font-bold text-slate-800">
-        Chapa de {material}
-      </p>
-
-      <div className="relative flex h-72 items-center justify-center">
-        <div
-          className="absolute rounded-xl border border-slate-400 bg-slate-300 opacity-40"
-          style={{
-            width: `${baseSide}px`,
-            height: `${baseSide}px`,
-          }}
-        />
-
-        <div
-          className="relative flex items-center justify-center rounded-xl border-4 font-bold text-white shadow-md transition-all"
-          style={{
-            width: `${finalSide}px`,
-            height: `${finalSide}px`,
-            backgroundColor: color,
-            borderColor: thermalColor,
-          }}
-        >
-          A = {formatNumber(finalArea, 5)} m²
-        </div>
-      </div>
-
-      <p className="text-sm font-bold" style={{ color: thermalColor }}>
-        ΔA = {formatNumber(deltaArea, 6)} m²
-      </p>
-    </div>
-  );
-}
-
-function VolumeExpansionVisual({
-  material,
-  color,
-  volume0,
-  finalVolume,
-  deltaVolume,
-  thermalColor,
-}: {
-  material: string;
-  color: string;
-  volume0: number;
-  finalVolume: number;
-  deltaVolume: number;
-  thermalColor: string;
-}) {
-  const baseSize = 150;
-  const ratio = Math.cbrt(finalVolume / volume0);
-  const finalSize = Math.max(90, Math.min(240, baseSize * ratio));
-
-  return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-5 text-center">
-      <p className="mb-4 text-sm font-bold text-slate-800">
-        Corpo volumétrico de {material}
-      </p>
-
-      <div className="flex h-72 items-center justify-center">
-        <div
-          className="relative flex items-center justify-center rounded-2xl border-4 font-bold text-white shadow-xl transition-all"
-          style={{
-            width: `${finalSize}px`,
-            height: `${finalSize}px`,
-            backgroundColor: color,
-            borderColor: thermalColor,
-            transform: "rotateX(10deg) rotateY(-10deg)",
-          }}
-        >
-          V = {formatNumber(finalVolume, 5)} m³
-        </div>
-      </div>
-
-      <p className="text-sm font-bold" style={{ color: thermalColor }}>
-        ΔV = {formatNumber(deltaVolume, 6)} m³
-      </p>
-    </div>
-  );
-}
-
-function ComparisonVisual({
-  material1,
-  material2,
-  color1,
-  color2,
-  l0,
-  finalLength1,
-  finalLength2,
-}: {
-  material1: string;
-  material2: string;
-  color1: string;
-  color2: string;
-  l0: number;
-  finalLength1: number;
-  finalLength2: number;
-}) {
-  const baseWidth = 480;
-  const width1 = Math.max(120, Math.min(760, baseWidth * (finalLength1 / l0)));
-  const width2 = Math.max(120, Math.min(760, baseWidth * (finalLength2 / l0)));
-
-  return (
-    <div className="space-y-5 rounded-xl border border-slate-200 bg-slate-50 p-5">
-      <p className="text-sm font-bold text-slate-800">
-        Comparação entre materiais
-      </p>
-
-      <div>
-        <p className="mb-2 text-sm font-bold text-slate-700">{material1}</p>
-        <div
-          className="flex h-10 items-center justify-center rounded-lg text-xs font-bold text-white"
-          style={{
-            width: `${width1}px`,
-            backgroundColor: color1,
-          }}
-        >
-          {formatNumber(finalLength1, 6)} m
-        </div>
-      </div>
-
-      <div>
-        <p className="mb-2 text-sm font-bold text-slate-700">{material2}</p>
-        <div
-          className="flex h-10 items-center justify-center rounded-lg text-xs font-bold text-white"
-          style={{
-            width: `${width2}px`,
-            backgroundColor: color2,
-          }}
-        >
-          {formatNumber(finalLength2, 6)} m
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function HoleExpansionVisual({
-  material,
-  color,
-  plateSide,
-  holeDiameter0,
-  holeFinalDiameter,
-  thermalColor,
-}: {
-  material: string;
-  color: string;
-  plateSide: number;
-  holeDiameter0: number;
-  holeFinalDiameter: number;
-  thermalColor: string;
-}) {
-  const plateSize = 260;
-  const holeRatio = holeFinalDiameter / plateSide;
-  const holeSize = Math.max(20, Math.min(180, plateSize * holeRatio));
-
-  return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-5 text-center">
-      <p className="mb-4 text-sm font-bold text-slate-800">
-        Placa de {material} com furo
-      </p>
-
-      <div className="flex h-80 items-center justify-center">
-        <div
-          className="relative flex items-center justify-center rounded-2xl border-4 shadow-md"
-          style={{
-            width: `${plateSize}px`,
-            height: `${plateSize}px`,
-            backgroundColor: color,
-            borderColor: thermalColor,
-          }}
-        >
-          <div
-            className="rounded-full border-4 border-slate-300 bg-white shadow-inner transition-all"
-            style={{
-              width: `${holeSize}px`,
-              height: `${holeSize}px`,
-            }}
-          />
-
-          <div className="absolute bottom-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-slate-700">
-            d = {formatNumber(holeFinalDiameter, 5)} m
-          </div>
-        </div>
-      </div>
-
-      <p className="text-sm text-slate-600">
-        d₀ = {formatNumber(holeDiameter0, 5)} m
-      </p>
     </div>
   );
 }
