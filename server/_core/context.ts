@@ -1,4 +1,4 @@
-import type { NodeHTTPCreateContextFnOptions } from "@trpc/server/adapters/node-http";
+import type { IncomingMessage, ServerResponse } from "node:http";
 import { supabaseAdmin } from "./supabaseAdmin";
 
 export type AuthUser = {
@@ -7,19 +7,25 @@ export type AuthUser = {
   role: "admin" | "student";
 };
 
+export type CreateContextOptions = {
+  req: IncomingMessage;
+  res: ServerResponse;
+};
+
 export type TrpcContext = {
-  req: NodeHTTPCreateContextFnOptions["req"];
-  res: NodeHTTPCreateContextFnOptions["res"];
+  req: IncomingMessage;
+  res: ServerResponse;
   user: AuthUser | null;
 };
 
 export async function createContext(
-  opts: NodeHTTPCreateContextFnOptions
+  opts: CreateContextOptions
 ): Promise<TrpcContext> {
   let user: AuthUser | null = null;
 
   try {
     const authHeader = opts.req.headers.authorization;
+
     const token =
       typeof authHeader === "string" && authHeader.startsWith("Bearer ")
         ? authHeader.slice(7)
