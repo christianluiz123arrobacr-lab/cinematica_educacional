@@ -49,7 +49,8 @@ export const StandingWaveSimulator: React.FC = () => {
   const [probePercent, setProbePercent] = useState(35);
   const [time, setTime] = useState(0);
 
-  const visualQuantity: TubeQuantity = system === "string_fixed" ? "displacement" : tubeQuantity;
+  const visualQuantity: TubeQuantity =
+    system === "string_fixed" ? "displacement" : tubeQuantity;
 
   const harmonicNumber = useMemo(() => {
     if (system === "tube_open_closed") {
@@ -102,11 +103,6 @@ export const StandingWaveSimulator: React.FC = () => {
 
   const omega = useMemo(() => TWO_PI * frequency, [frequency]);
 
-  const k = useMemo(() => {
-    if (wavelength <= 0) return 0;
-    return TWO_PI / wavelength;
-  }, [wavelength]);
-
   const amplitudeM = useMemo(() => amplitudeCm / 100, [amplitudeCm]);
 
   const probeX = useMemo(() => {
@@ -132,7 +128,7 @@ export const StandingWaveSimulator: React.FC = () => {
   }, [amplitudeM, probeShape, omega, time]);
 
   const probeAcceleration = useMemo(() => {
-    return -omega ** 2 * probeValue;
+    return -(omega ** 2) * probeValue;
   }, [omega, probeValue]);
 
   const localMaxAmplitude = useMemo(() => {
@@ -360,13 +356,17 @@ export const StandingWaveSimulator: React.FC = () => {
 
                   <Select
                     value={tubeQuantity}
-                    onValueChange={(value) => setTubeQuantity(value as TubeQuantity)}
+                    onValueChange={(value) =>
+                      setTubeQuantity(value as TubeQuantity)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="displacement">Deslocamento do ar</SelectItem>
+                      <SelectItem value="displacement">
+                        Deslocamento do ar
+                      </SelectItem>
                       <SelectItem value="pressure">Pressão do ar</SelectItem>
                     </SelectContent>
                   </Select>
@@ -491,23 +491,38 @@ export const StandingWaveSimulator: React.FC = () => {
               </ControlRow>
 
               <div className="grid grid-cols-2 gap-3">
-                <ToggleButton active={showParticles} onClick={() => setShowParticles(!showParticles)}>
+                <ToggleButton
+                  active={showParticles}
+                  onClick={() => setShowParticles(!showParticles)}
+                >
                   Partículas
                 </ToggleButton>
 
-                <ToggleButton active={showEnvelope} onClick={() => setShowEnvelope(!showEnvelope)}>
+                <ToggleButton
+                  active={showEnvelope}
+                  onClick={() => setShowEnvelope(!showEnvelope)}
+                >
                   Envoltória
                 </ToggleButton>
 
-                <ToggleButton active={showMarkers} onClick={() => setShowMarkers(!showMarkers)}>
+                <ToggleButton
+                  active={showMarkers}
+                  onClick={() => setShowMarkers(!showMarkers)}
+                >
                   Nós/Ventres
                 </ToggleButton>
 
-                <ToggleButton active={showProbe} onClick={() => setShowProbe(!showProbe)}>
+                <ToggleButton
+                  active={showProbe}
+                  onClick={() => setShowProbe(!showProbe)}
+                >
                   Ponto x₀
                 </ToggleButton>
 
-                <ToggleButton active={showEnergy} onClick={() => setShowEnergy(!showEnergy)}>
+                <ToggleButton
+                  active={showEnergy}
+                  onClick={() => setShowEnergy(!showEnergy)}
+                >
                   Energia
                 </ToggleButton>
 
@@ -535,10 +550,7 @@ export const StandingWaveSimulator: React.FC = () => {
                 valueClassName="text-purple-700"
               />
 
-              <MetricCard
-                label="Grandeza visualizada"
-                value={quantityLabel}
-              />
+              <MetricCard label="Grandeza visualizada" value={quantityLabel} />
 
               <MetricCard
                 label={
@@ -596,14 +608,16 @@ export const StandingWaveSimulator: React.FC = () => {
                     Valor em <MathFormula inline formula={String.raw`x_0`} />
                   </>
                 }
-                value={formatUnit(probeValue, system === "string_fixed" || visualQuantity === "displacement" ? "m" : "u.p.")}
+                value={formatUnit(
+                  probeValue,
+                  system === "string_fixed" || visualQuantity === "displacement"
+                    ? "m"
+                    : "u.p."
+                )}
                 valueClassName={probeValue >= 0 ? "text-red-700" : "text-blue-700"}
               />
 
-              <MetricCard
-                label="Interpretação"
-                value={interpretation}
-              />
+              <MetricCard label="Interpretação" value={interpretation} />
             </div>
           </Card>
         </div>
@@ -712,7 +726,12 @@ export const StandingWaveSimulator: React.FC = () => {
                   title="Velocidade na corda"
                   formulas={[
                     String.raw`v = \sqrt{\frac{F}{\mu}}`,
-                    String.raw`v = \sqrt{\frac{${formatNumber(tension)}}{${formatNumber(linearDensity, 4)}}} = ${formatNumber(waveSpeed, 4)}\,\text{m/s}`,
+                    String.raw`v = \sqrt{\frac{${formatNumber(
+                      tension
+                    )}}{${formatNumber(linearDensity, 4)}}} = ${formatNumber(
+                      waveSpeed,
+                      4
+                    )}\,\text{m/s}`,
                   ]}
                 />
               )}
@@ -739,9 +758,20 @@ export const StandingWaveSimulator: React.FC = () => {
                   }
                   formulas={[
                     String.raw`\lambda_n = \frac{2L}{n}`,
-                    String.raw`\lambda_${harmonicNumber} = \frac{2\cdot ${formatNumber(length)}}{${harmonicNumber}} = ${formatNumber(wavelength, 4)}\,\text{m}`,
+                    String.raw`\lambda_${harmonicNumber} = \frac{2\cdot ${formatNumber(
+                      length
+                    )}}{${harmonicNumber}} = ${formatNumber(
+                      wavelength,
+                      4
+                    )}\,\text{m}`,
                     String.raw`f_n = \frac{v}{\lambda_n} = \frac{nv}{2L}`,
-                    String.raw`f_${harmonicNumber} = \frac{${harmonicNumber}\cdot ${formatNumber(waveSpeed, 4)}}{2\cdot ${formatNumber(length)}} = ${formatNumber(frequency, 4)}\,\text{Hz}`,
+                    String.raw`f_${harmonicNumber} = \frac{${harmonicNumber}\cdot ${formatNumber(
+                      waveSpeed,
+                      4
+                    )}}{2\cdot ${formatNumber(length)}} = ${formatNumber(
+                      frequency,
+                      4
+                    )}\,\text{Hz}`,
                   ]}
                 />
               ) : (
@@ -750,9 +780,20 @@ export const StandingWaveSimulator: React.FC = () => {
                   formulas={[
                     String.raw`n = 1,3,5,7,\ldots`,
                     String.raw`\lambda_n = \frac{4L}{n}`,
-                    String.raw`\lambda_${harmonicNumber} = \frac{4\cdot ${formatNumber(length)}}{${harmonicNumber}} = ${formatNumber(wavelength, 4)}\,\text{m}`,
+                    String.raw`\lambda_${harmonicNumber} = \frac{4\cdot ${formatNumber(
+                      length
+                    )}}{${harmonicNumber}} = ${formatNumber(
+                      wavelength,
+                      4
+                    )}\,\text{m}`,
                     String.raw`f_n = \frac{v}{\lambda_n} = \frac{nv}{4L}`,
-                    String.raw`f_${harmonicNumber} = \frac{${harmonicNumber}\cdot ${formatNumber(waveSpeed, 4)}}{4\cdot ${formatNumber(length)}} = ${formatNumber(frequency, 4)}\,\text{Hz}`,
+                    String.raw`f_${harmonicNumber} = \frac{${harmonicNumber}\cdot ${formatNumber(
+                      waveSpeed,
+                      4
+                    )}}{4\cdot ${formatNumber(length)}} = ${formatNumber(
+                      frequency,
+                      4
+                    )}\,\text{Hz}`,
                   ]}
                 />
               )}
@@ -761,8 +802,14 @@ export const StandingWaveSimulator: React.FC = () => {
                 title="Forma temporal da onda estacionária"
                 formulas={[
                   getStandingEquation(system, visualQuantity),
-                  String.raw`\omega = 2\pi f = 2\pi\cdot ${formatNumber(frequency, 4)} = ${formatNumber(omega, 4)}\,\text{rad/s}`,
-                  String.raw`T = \frac{1}{f} = \frac{1}{${formatNumber(frequency, 4)}} = ${formatNumber(period, 4)}\,\text{s}`,
+                  String.raw`\omega = 2\pi f = 2\pi\cdot ${formatNumber(
+                    frequency,
+                    4
+                  )} = ${formatNumber(omega, 4)}\,\text{rad/s}`,
+                  String.raw`T = \frac{1}{f} = \frac{1}{${formatNumber(
+                    frequency,
+                    4
+                  )}} = ${formatNumber(period, 4)}\,\text{s}`,
                 ]}
               />
 
@@ -770,10 +817,22 @@ export const StandingWaveSimulator: React.FC = () => {
                 title="Ponto analisado"
                 formulas={[
                   String.raw`x_0 = ${formatNumber(probeX, 4)}\,\text{m}`,
-                  String.raw`\text{amplitude local} = A|\text{forma}(x_0)| = ${formatNumber(localMaxAmplitude, 4)}\,\text{m}`,
-                  String.raw`\text{valor atual em }x_0 = ${formatNumber(probeValue, 4)}`,
-                  String.raw`v_{\text{local}} = ${formatNumber(probeVelocity, 4)}\,\text{m/s}`,
-                  String.raw`a_{\text{local}} = ${formatNumber(probeAcceleration, 4)}\,\text{m/s}^2`,
+                  String.raw`\text{amplitude local} = A|\text{forma}(x_0)| = ${formatNumber(
+                    localMaxAmplitude,
+                    4
+                  )}\,\text{m}`,
+                  String.raw`\text{valor atual em }x_0 = ${formatNumber(
+                    probeValue,
+                    4
+                  )}`,
+                  String.raw`v_{\text{local}} = ${formatNumber(
+                    probeVelocity,
+                    4
+                  )}\,\text{m/s}`,
+                  String.raw`a_{\text{local}} = ${formatNumber(
+                    probeAcceleration,
+                    4
+                  )}\,\text{m/s}^2`,
                 ]}
               />
 
@@ -797,8 +856,14 @@ export const StandingWaveSimulator: React.FC = () => {
                 title="Energia relativa local"
                 formulas={[
                   String.raw`E_{\text{local}} \propto A_{\text{local}}^2\omega^2`,
-                  String.raw`E_{\text{local}} \propto ${formatNumber(localMaxAmplitude, 4)}^2\cdot ${formatNumber(omega, 4)}^2`,
-                  String.raw`E_{\text{local}} \propto ${formatNumber(relativeEnergyLocal, 4)}`,
+                  String.raw`E_{\text{local}} \propto ${formatNumber(
+                    localMaxAmplitude,
+                    4
+                  )}^2\cdot ${formatNumber(omega, 4)}^2`,
+                  String.raw`E_{\text{local}} \propto ${formatNumber(
+                    relativeEnergyLocal,
+                    4
+                  )}`,
                 ]}
               />
             </div>
@@ -883,20 +948,11 @@ function getNodeAntinodePositions({
 }) {
   const nodes: number[] = [];
   const antinodes: number[] = [];
-
   const samples = 2000;
-  let lastAbs = Math.abs(
-    getStandingShape({
-      system,
-      quantity,
-      harmonicNumber,
-      x: 0,
-      length,
-    })
-  );
 
   for (let i = 0; i <= samples; i++) {
     const x = (i / samples) * length;
+
     const shape = getStandingShape({
       system,
       quantity,
@@ -939,12 +995,6 @@ function getNodeAntinodePositions({
         pushUnique(antinodes, x, length * 0.03);
       }
     }
-
-    lastAbs = absShape;
-  }
-
-  if (lastAbs < 0.003) {
-    pushUnique(nodes, length, length * 0.03);
   }
 
   return {
@@ -1097,7 +1147,12 @@ function drawBackground(
   ctx.stroke();
 }
 
-function metersToCanvasX(x: number, length: number, startX: number, endX: number) {
+function metersToCanvasX(
+  x: number,
+  length: number,
+  startX: number,
+  endX: number
+) {
   return startX + (x / length) * (endX - startX);
 }
 
@@ -1236,7 +1291,6 @@ function drawStandingSystem({
   if (showProbe) {
     drawProbe({
       ctx,
-      system,
       quantity,
       length,
       startX,
@@ -1313,7 +1367,11 @@ function drawSystemBoundaries({
 
   ctx.fillStyle = quantity === "pressure" ? "#dc2626" : "#7c3aed";
   ctx.font = "bold 12px Arial";
-  ctx.fillText(quantity === "pressure" ? "pressão" : "deslocamento", startX + 8, centerY - 92);
+  ctx.fillText(
+    quantity === "pressure" ? "pressão" : "deslocamento",
+    startX + 8,
+    centerY - 92
+  );
 }
 
 function drawEnvelope({
@@ -1406,7 +1464,6 @@ function drawAntinode(ctx: CanvasRenderingContext2D, x: number, y: number) {
 
 function drawProbe({
   ctx,
-  system,
   quantity,
   length,
   startX,
@@ -1420,7 +1477,6 @@ function drawProbe({
   probeAcceleration,
 }: {
   ctx: CanvasRenderingContext2D;
-  system: StandingSystem;
   quantity: TubeQuantity;
   length: number;
   startX: number;
@@ -1467,7 +1523,11 @@ function drawProbe({
     "v local"
   );
 
-  const accelScale = Math.max(Math.abs(probeAcceleration), amplitudeM * 100, 0.01);
+  const accelScale = Math.max(
+    Math.abs(probeAcceleration),
+    amplitudeM * 100,
+    0.01
+  );
   const accelLength = clamp((probeAcceleration / accelScale) * 48, -48, 48);
 
   drawArrow(
@@ -1545,9 +1605,21 @@ function drawEnergyPanel({
 
   ctx.fillStyle = "#475569";
   ctx.font = "12px Arial";
-  ctx.fillText(`A local = ${formatNumber(localMaxAmplitude, 4)} m`, x + 18, y + 78);
-  ctx.fillText(`v local = ${formatNumber(probeVelocity, 3)} m/s`, x + 18, y + 96);
-  ctx.fillText(`a local = ${formatNumber(probeAcceleration, 3)} m/s²`, x + 18, y + 114);
+  ctx.fillText(
+    `A local = ${formatNumber(localMaxAmplitude, 4)} m`,
+    x + 18,
+    y + 78
+  );
+  ctx.fillText(
+    `v local = ${formatNumber(probeVelocity, 3)} m/s`,
+    x + 18,
+    y + 96
+  );
+  ctx.fillText(
+    `a local = ${formatNumber(probeAcceleration, 3)} m/s²`,
+    x + 18,
+    y + 114
+  );
 }
 
 function drawInfoBox({
