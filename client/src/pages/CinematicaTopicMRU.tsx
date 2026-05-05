@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
-import MathFormula from "@/components/MathFormula";
+import { MathFormula } from "@/components/MathFormula";
 
 export default function CinematicaTopicMRU() {
   const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
@@ -308,7 +308,7 @@ export default function CinematicaTopicMRU() {
                       <td className="border border-slate-300 p-4 font-semibold">Velocidade Escalar</td>
                       <td className="border border-slate-300 p-4">A taxa de variação da posição com o tempo (constante no MRU)</td>
                       <td className="border border-slate-300 p-4">m/s</td>
-                      <td className="border border-slate-300 p-4 text-sm">v > 0: movimento progressivo; v < 0: movimento retrógrado</td>
+                      <td className="border border-slate-300 p-4 text-sm">v &gt; 0: movimento progressivo; v &lt; 0: movimento retrógrado</td>
                     </tr>
                     <tr className="hover:bg-slate-50 bg-slate-50">
                       <td className="border border-slate-300 p-4 font-bold text-lg">t</td>
@@ -342,8 +342,8 @@ export default function CinematicaTopicMRU() {
                     O sinal de <MathFormula formula="v" display={false} /> indica a direção do movimento:
                   </p>
                   <ul className="list-disc list-inside text-orange-800 space-y-1 ml-2">
-                    <li><strong>v > 0:</strong> Movimento progressivo (no sentido positivo da trajetória)</li>
-                    <li><strong>v < 0:</strong> Movimento retrógrado (no sentido negativo da trajetória)</li>
+                    <li><strong>v &gt; 0:</strong> Movimento progressivo (no sentido positivo da trajetória)</li>
+                    <li><strong>v &lt; 0:</strong> Movimento retrógrado (no sentido negativo da trajetória)</li>
                     <li><strong>v = 0:</strong> Móvel em repouso (não é MRU, pois não há movimento)</li>
                   </ul>
                 </div>
@@ -373,7 +373,6 @@ export default function CinematicaTopicMRU() {
                 <p className="font-semibold text-slate-900 mb-4">Resolução Passo a Passo:</p>
 
                 <div className="space-y-6">
-                  {/* Passo 1 */}
                   <div>
                     <p className="font-semibold text-slate-900 mb-3">Passo 1: Conversão da Velocidade</p>
                     <p className="text-slate-700 mb-3">
@@ -384,7 +383,6 @@ export default function CinematicaTopicMRU() {
                     </div>
                   </div>
 
-                  {/* Passo 2 */}
                   <div>
                     <p className="font-semibold text-slate-900 mb-3">Passo 2: Identificação dos Dados</p>
                     <p className="text-slate-700 mb-3">
@@ -399,7 +397,6 @@ export default function CinematicaTopicMRU() {
                     </div>
                   </div>
 
-                  {/* Passo 3 - Item 1 */}
                   <div>
                     <p className="font-semibold text-slate-900 mb-3">Passo 3: Equação Horária (Item 1)</p>
                     <p className="text-slate-700 mb-3">
@@ -413,7 +410,6 @@ export default function CinematicaTopicMRU() {
                     </p>
                   </div>
 
-                  {/* Passo 4 - Item 2 */}
                   <div>
                     <p className="font-semibold text-slate-900 mb-3">Passo 4: Posição em t = 10 s (Item 2)</p>
                     <p className="text-slate-700 mb-3">
@@ -429,7 +425,6 @@ export default function CinematicaTopicMRU() {
                     </p>
                   </div>
 
-                  {/* Passo 5 - Item 3 */}
                   <div>
                     <p className="font-semibold text-slate-900 mb-3">Passo 5: Instante em que s = 270 m (Item 3)</p>
                     <p className="text-slate-700 mb-3">
@@ -446,7 +441,6 @@ export default function CinematicaTopicMRU() {
                     </p>
                   </div>
 
-                  {/* Passo 6 - Item 4 */}
                   <div>
                     <p className="font-semibold text-slate-900 mb-3">Passo 6: Deslocamento entre t = 5 s e t = 15 s (Item 4)</p>
                     <p className="text-slate-700 mb-3">
@@ -532,7 +526,7 @@ export default function CinematicaTopicMRU() {
                 <div className="bg-red-50 border-l-4 border-red-400 p-5 rounded">
                   <p className="font-semibold text-red-900 mb-2">⚠️ Armadilha 4: Velocidade Negativa</p>
                   <p className="text-red-800 mb-3">
-                    Quando v < 0, o móvel está em movimento retrógrado (voltando). A equação ainda funciona, mas o espaço diminui com o tempo.
+                    Quando v &lt; 0, o móvel está em movimento retrógrado (voltando). A equação ainda funciona, mas o espaço diminui com o tempo.
                   </p>
                   <div className="bg-white p-3 rounded border border-red-200">
                     <p className="text-red-800 text-sm mb-2">Exemplo: s = 100 - 10t (v = -10 m/s)</p>
