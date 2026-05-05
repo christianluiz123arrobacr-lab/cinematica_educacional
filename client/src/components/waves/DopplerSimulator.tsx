@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { MathFormula } from "@/components/MathFormula";
 import { Card } from "@/components/ui/card";
@@ -12,6 +12,8 @@ import {
 import { formatNumber, formatUnit } from "@/lib/utils";
 import { AdvancedTheory } from "@/components/AdvancedTheory";
 import { ITAWavesTheory } from "@/content/waves/ita_waves_theory";
+import { Button } from "@/components/ui/button";
+import { Play, Pause, RefreshCw } from "lucide-react";
 
 type DopplerMode =
   | "fonte_aproxima"
@@ -21,7 +23,13 @@ type DopplerMode =
   | "ambos_aproximam"
   | "ambos_afastam";
 
+const clamp = (value: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, value));
+
 export const DopplerSimulator: React.FC = () => {
+  const animationIdRef = useRef<number | null>(null);
+  const lastTimeRef = useRef<number>(0);
+
   const [mode, setMode] = useState<DopplerMode>("ambos_aproximam");
 
   const [sourceFrequency, setSourceFrequency] = useState(440);
@@ -29,7 +37,12 @@ export const DopplerSimulator: React.FC = () => {
   const [sourceSpeed, setSourceSpeed] = useState(30);
   const [observerSpeed, setObserverSpeed] = useState(20);
 
-  const effectiveObserverSpeed = useMemo(() => {
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [showWavefronts, setShowWavefronts] = useState(true);
+  const [showGuides, setShowGuides] = useState(true);
+  const [time, setTime] = useState(0);
+
+  const observerSignedSpeed = useMemo(() => {
     if (mode === "observador_aproxima" || mode === "ambos_aproximam") {
       return observerSpeed;
     }
@@ -41,7 +54,7 @@ export const DopplerSimulator: React.FC = () => {
     return 0;
   }, [mode, observerSpeed]);
 
-  const effectiveSourceSpeed = useMemo(() => {
+  const sourceSignedSpeed = useMemo(() => {
     if (mode === "fonte_aproxima" || mode === "ambos_aproximam") {
       return sourceSpeed;
     }
@@ -53,16 +66,34 @@ export const DopplerSimulator: React.FC = () => {
     return 0;
   }, [mode, sourceSpeed]);
 
+  const movingSourceSpeed = useMemo(() => {
+    if (
+      mode === "fonte_aproxima" ||
+      mode === "fonte_afasta" ||
+      mode === "ambos_aproximam" ||
+      mode === "ambos_afastam"
+    ) {
+      return sourceSpeed;
+    }
+
+    return 0;
+  }, [mode, sourceSpeed]);
+
   const apparentFrequency = useMemo(() => {
-    const numerator = soundSpeed + effectiveObserverSpeed;
-    const denominator = soundSpeed - effectiveSourceSpeed;
+    const denominator = soundSpeed - sourceSignedSpeed;
+    const numerator = soundSpeed + observerSignedSpeed;
 
     if (Math.abs(denominator) < 1e-9) {
       return Infinity;
     }
 
     return sourceFrequency * (numerator / denominator);
-  }, [sourceFrequency, soundSpeed, effectiveObserverSpeed, effectiveSourceSpeed]);
+  }, [
+    sourceFrequency,
+    soundSpeed,
+    sourceSignedSpeed,
+    observerSignedSpeed,
+  ]);
 
   const frequencyDifference = useMemo(() => {
     if (!Number.isFinite(apparentFrequency)) return Infinity;
@@ -71,49 +102,88 @@ export const DopplerSimulator: React.FC = () => {
 
   const machNumber = useMemo(() => {
     if (soundSpeed <= 0) return 0;
-    return sourceSpeed / soundSpeed;
-  }, [sourceSpeed, soundSpeed]);
+    return movingSourceSpeed / soundSpeed;
+  }, [movingSourceSpeed, soundSpeed]);
+
+  const emittedWavelength = useMemo(() => {
+    if (sourceFrequency <= 0) return 0;
+    return soundSpeed / sourceFrequency;
+  }, [soundSpeed, sourceFrequency]);
 
   const wavelengthAhead = useMemo(() => {
     if (sourceFrequency <= 0) return 0;
-    return (soundSpeed - sourceSpeed) / sourceFrequency;
-  }, [soundSpeed, sourceSpeed, sourceFrequency]);
+    return (soundSpeed - movingSourceSpeed) / sourceFrequency;
+  }, [soundSpeed, movingSourceSpeed, sourceFrequency]);
 
   const wavelengthBehind = useMemo(() => {
     if (sourceFrequency <= 0) return 0;
-    return (soundSpeed + sourceSpeed) / sourceFrequency;
-  }, [soundSpeed, sourceSpeed, sourceFrequency]);
+    return (soundSpeed + movingSourceSpeed) / sourceFrequency;
+  }, [soundSpeed, movingSourceSpeed, sourceFrequency]);
 
   const modeLabel = useMemo(() => {
-    if (mode === "fonte_aproxima") return "Fonte se aproxima do observador parado";
-    if (mode === "fonte_afasta") return "Fonte se afasta do observador parado";
-    if (mode === "observador_aproxima") return "Observador se aproxima da fonte parada";
-    if (mode === "observador_afasta") return "Observador se afasta da fonte parada";
+    if (mode === "fonte_aproxima") return "Fonte se aproxima";
+    if (mode === "fonte_afasta") return "Fonte se afasta";
+    if (mode === "observador_aproxima") return "Observador se aproxima";
+    if (mode === "observador_afasta") return "Observador se afasta";
     if (mode === "ambos_aproximam") return "Fonte e observador se aproximam";
     return "Fonte e observador se afastam";
   }, [mode]);
 
-  const perception = useMemo(() => {
+  const interpretation = useMemo(() => {
     if (!Number.isFinite(apparentFrequency)) {
-      return "Caso limite: a fonte se aproxima da velocidade do som.";
+      return "No limite em que a fonte atinge a velocidade do som, a fórmula simples deixa de ser suficiente.";
     }
 
-    if (frequencyDifference > 0) return "O som percebido fica mais agudo.";
-    if (frequencyDifference < 0) return "O som percebido fica mais grave.";
-    return "A frequência percebida não muda.";
+    if (frequencyDifference > 0) {
+      return "A frequência percebida aumenta. O observador escuta um som mais agudo.";
+    }
+
+    if (frequencyDifference < 0) {
+      return "A frequência percebida diminui. O observador escuta um som mais grave.";
+    }
+
+    return "Não há variação perceptível de frequência neste caso.";
   }, [apparentFrequency, frequencyDifference]);
 
-  const dangerMessage = useMemo(() => {
+  const physicalWarning = useMemo(() => {
     if (machNumber >= 1) {
-      return "Fonte em regime supersônico. O modelo Doppler simples deixa de ser suficiente.";
+      return "Regime supersônico: aparece cone de Mach e o modelo simples do Doppler fica limitado.";
     }
 
     if (machNumber >= 0.8) {
-      return "A fonte está perto da velocidade do som. O efeito fica muito intenso.";
+      return "A fonte está perto da velocidade do som. A compressão das frentes de onda fica muito intensa.";
     }
 
-    return "Regime subsônico dentro do modelo simples.";
+    return "Regime subsônico normal.";
   }, [machNumber]);
+
+  useEffect(() => {
+    if (!isPlaying) {
+      lastTimeRef.current = 0;
+      return;
+    }
+
+    const animate = (now: number) => {
+      if (!lastTimeRef.current) {
+        lastTimeRef.current = now;
+      }
+
+      const dt = Math.min((now - lastTimeRef.current) / 1000, 0.04);
+      lastTimeRef.current = now;
+
+      setTime((prev) => prev + dt);
+
+      animationIdRef.current = requestAnimationFrame(animate);
+    };
+
+    animationIdRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationIdRef.current) {
+        cancelAnimationFrame(animationIdRef.current);
+      }
+    };
+  }, [isPlaying]);
 
   const reset = () => {
     setMode("ambos_aproximam");
@@ -121,6 +191,11 @@ export const DopplerSimulator: React.FC = () => {
     setSoundSpeed(340);
     setSourceSpeed(30);
     setObserverSpeed(20);
+    setIsPlaying(true);
+    setShowWavefronts(true);
+    setShowGuides(true);
+    setTime(0);
+    lastTimeRef.current = 0;
   };
 
   return (
@@ -133,7 +208,8 @@ export const DopplerSimulator: React.FC = () => {
                 Efeito Doppler
               </h3>
               <p className="mt-1 text-sm text-slate-600">
-                Analise a mudança aparente de frequência causada pelo movimento relativo entre fonte e observador.
+                Analise a mudança aparente de frequência causada pelo movimento
+                relativo entre a fonte e o observador.
               </p>
             </div>
 
@@ -143,17 +219,32 @@ export const DopplerSimulator: React.FC = () => {
                   Situação
                 </p>
 
-                <Select value={mode} onValueChange={(value) => setMode(value as DopplerMode)}>
+                <Select
+                  value={mode}
+                  onValueChange={(value) => setMode(value as DopplerMode)}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="fonte_aproxima">Fonte se aproxima</SelectItem>
-                    <SelectItem value="fonte_afasta">Fonte se afasta</SelectItem>
-                    <SelectItem value="observador_aproxima">Observador se aproxima</SelectItem>
-                    <SelectItem value="observador_afasta">Observador se afasta</SelectItem>
-                    <SelectItem value="ambos_aproximam">Ambos se aproximam</SelectItem>
-                    <SelectItem value="ambos_afastam">Ambos se afastam</SelectItem>
+                    <SelectItem value="fonte_aproxima">
+                      Fonte se aproxima
+                    </SelectItem>
+                    <SelectItem value="fonte_afasta">
+                      Fonte se afasta
+                    </SelectItem>
+                    <SelectItem value="observador_aproxima">
+                      Observador se aproxima
+                    </SelectItem>
+                    <SelectItem value="observador_afasta">
+                      Observador se afasta
+                    </SelectItem>
+                    <SelectItem value="ambos_aproximam">
+                      Ambos se aproximam
+                    </SelectItem>
+                    <SelectItem value="ambos_afastam">
+                      Ambos se afastam
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -197,7 +288,7 @@ export const DopplerSimulator: React.FC = () => {
                   value={[sourceSpeed]}
                   onValueChange={(value) => setSourceSpeed(value[0])}
                   min={0}
-                  max={420}
+                  max={380}
                   step={1}
                   className="w-full"
                 />
@@ -218,12 +309,29 @@ export const DopplerSimulator: React.FC = () => {
                 />
               </ControlRow>
 
-              <button
-                onClick={reset}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50"
-              >
-                Resetar valores
-              </button>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setShowWavefronts(!showWavefronts)}
+                  className={`rounded-lg border px-3 py-2 text-sm font-bold ${
+                    showWavefronts
+                      ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                      : "border-slate-300 bg-white text-slate-700"
+                  }`}
+                >
+                  Ondas
+                </button>
+
+                <button
+                  onClick={() => setShowGuides(!showGuides)}
+                  className={`rounded-lg border px-3 py-2 text-sm font-bold ${
+                    showGuides
+                      ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                      : "border-slate-300 bg-white text-slate-700"
+                  }`}
+                >
+                  Guias
+                </button>
+              </div>
             </div>
           </Card>
 
@@ -244,7 +352,8 @@ export const DopplerSimulator: React.FC = () => {
               <MetricCard
                 label={
                   <>
-                    Frequência emitida <MathFormula inline formula={String.raw`f`} />
+                    Frequência emitida{" "}
+                    <MathFormula inline formula={String.raw`f`} />
                   </>
                 }
                 value={formatUnit(sourceFrequency, "Hz")}
@@ -253,7 +362,8 @@ export const DopplerSimulator: React.FC = () => {
               <MetricCard
                 label={
                   <>
-                    Frequência percebida <MathFormula inline formula={String.raw`f'`} />
+                    Frequência percebida{" "}
+                    <MathFormula inline formula={String.raw`f'`} />
                   </>
                 }
                 value={
@@ -261,23 +371,35 @@ export const DopplerSimulator: React.FC = () => {
                     ? formatUnit(apparentFrequency, "Hz")
                     : "indefinida"
                 }
-                valueClassName={frequencyDifference >= 0 ? "text-red-700" : "text-blue-700"}
+                valueClassName={
+                  Number.isFinite(frequencyDifference) && frequencyDifference >= 0
+                    ? "text-red-700"
+                    : "text-blue-700"
+                }
               />
 
               <MetricCard
                 label="Diferença de frequência"
                 value={
                   Number.isFinite(frequencyDifference)
-                    ? formatUnit(frequencyDifference, "Hz")
+                    ? `${frequencyDifference >= 0 ? "+" : ""}${formatNumber(
+                        frequencyDifference,
+                        2
+                      )} Hz`
                     : "indefinida"
                 }
-                valueClassName={frequencyDifference >= 0 ? "text-red-700" : "text-blue-700"}
+                valueClassName={
+                  Number.isFinite(frequencyDifference) && frequencyDifference >= 0
+                    ? "text-red-700"
+                    : "text-blue-700"
+                }
               />
 
               <MetricCard
                 label={
                   <>
-                    Número de Mach <MathFormula inline formula={String.raw`M`} />
+                    Número de Mach{" "}
+                    <MathFormula inline formula={String.raw`M`} />
                   </>
                 }
                 value={formatNumber(machNumber, 3)}
@@ -290,14 +412,11 @@ export const DopplerSimulator: React.FC = () => {
                 }
               />
 
-              <MetricCard
-                label="Interpretação"
-                value={perception}
-              />
+              <MetricCard label="Interpretação" value={interpretation} />
 
               <MetricCard
                 label="Aviso físico"
-                value={dangerMessage}
+                value={physicalWarning}
                 valueClassName={
                   machNumber >= 1
                     ? "text-red-700"
@@ -313,20 +432,44 @@ export const DopplerSimulator: React.FC = () => {
         <div className="space-y-4 xl:col-span-8">
           <Card className="overflow-hidden border border-slate-200 shadow-sm">
             <div className="border-b border-slate-200 px-5 py-4">
-              <h4 className="text-base font-bold text-slate-900">
-                Simulação Visual
-              </h4>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h4 className="text-base font-bold text-slate-900">
+                  Simulação Visual
+                </h4>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={() => setIsPlaying(!isPlaying)}
+                  >
+                    {isPlaying ? (
+                      <Pause className="h-4 w-4" />
+                    ) : (
+                      <Play className="h-4 w-4" />
+                    )}
+                  </Button>
+
+                  <Button variant="secondary" size="icon" onClick={reset}>
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
             </div>
 
             <div className="bg-slate-50 p-4 md:p-5">
               <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                <DopplerVisual
+                <DopplerAnimationScene
                   mode={mode}
+                  time={time}
                   sourceFrequency={sourceFrequency}
+                  soundSpeed={soundSpeed}
+                  sourceSpeed={sourceSpeed}
+                  observerSpeed={observerSpeed}
                   apparentFrequency={apparentFrequency}
                   machNumber={machNumber}
-                  sourceSpeed={sourceSpeed}
-                  soundSpeed={soundSpeed}
+                  showWavefronts={showWavefronts}
+                  showGuides={showGuides}
                 />
               </div>
             </div>
@@ -344,22 +487,22 @@ export const DopplerSimulator: React.FC = () => {
                 title="Fonte"
                 values={[
                   ["f", formatUnit(sourceFrequency, "Hz")],
-                  ["vf", formatUnit(sourceSpeed, "m/s")],
+                  ["v_f", formatUnit(sourceSpeed, "m/s")],
                   ["M", formatNumber(machNumber, 3)],
                 ]}
               />
 
               <CalcMiniCard
-                title="Observador e meio"
+                title="Meio e observador"
                 values={[
                   ["v", formatUnit(soundSpeed, "m/s")],
-                  ["vo", formatUnit(observerSpeed, "m/s")],
+                  ["v_o", formatUnit(observerSpeed, "m/s")],
                   ["caso", modeLabel],
                 ]}
               />
 
               <CalcMiniCard
-                title="Resultado percebido"
+                title="Resultado"
                 values={[
                   [
                     "f'",
@@ -370,15 +513,19 @@ export const DopplerSimulator: React.FC = () => {
                   [
                     "Δf",
                     Number.isFinite(frequencyDifference)
-                      ? formatUnit(frequencyDifference, "Hz")
+                      ? `${frequencyDifference >= 0 ? "+" : ""}${formatNumber(
+                          frequencyDifference,
+                          2
+                        )} Hz`
                       : "indefinida",
                   ],
                 ]}
               />
 
               <CalcMiniCard
-                title="Comprimentos de onda"
+                title="Comprimento de onda"
                 values={[
+                  ["emitido", formatUnit(emittedWavelength, "m")],
                   ["à frente", formatUnit(wavelengthAhead, "m")],
                   ["atrás", formatUnit(wavelengthBehind, "m")],
                 ]}
@@ -395,23 +542,30 @@ export const DopplerSimulator: React.FC = () => {
 
             <div className="space-y-5 p-5">
               <CalcSection
-                title="Fórmula geral com sinais"
+                title="Fórmula geral"
                 formulas={[
-                  String.raw`f' = f\frac{v \pm v_o}{v \mp v_f}`,
-                  String.raw`\text{Observador aproximando: }v+v_o`,
-                  String.raw`\text{Observador afastando: }v-v_o`,
-                  String.raw`\text{Fonte aproximando: }v-v_f`,
-                  String.raw`\text{Fonte afastando: }v+v_f`,
+                  String.raw`f' = f\frac{v + v_o}{v - v_f}`,
+                  String.raw`\text{Aqui, }v_o > 0\text{ quando o observador se aproxima, e }v_o < 0\text{ quando se afasta.}`,
+                  String.raw`\text{Da mesma forma, }v_f > 0\text{ quando a fonte se aproxima, e }v_f < 0\text{ quando se afasta.}`,
                 ]}
               />
 
               <CalcSection
                 title="Substituição no caso escolhido"
                 formulas={[
-                  String.raw`f' = ${formatNumber(sourceFrequency)}\cdot\frac{${formatNumber(soundSpeed)} ${effectiveObserverSpeed >= 0 ? "+" : "-"} ${formatNumber(Math.abs(effectiveObserverSpeed))}}{${formatNumber(soundSpeed)} ${effectiveSourceSpeed >= 0 ? "-" : "+"} ${formatNumber(Math.abs(effectiveSourceSpeed))}}`,
+                  String.raw`f' = ${formatNumber(sourceFrequency)}\cdot \frac{${formatNumber(
+                    soundSpeed
+                  )} ${observerSignedSpeed >= 0 ? "+" : "-"} ${formatNumber(
+                    Math.abs(observerSignedSpeed)
+                  )}}{${formatNumber(soundSpeed)} ${
+                    sourceSignedSpeed >= 0 ? "-" : "+"
+                  } ${formatNumber(Math.abs(sourceSignedSpeed))}}`,
                   Number.isFinite(apparentFrequency)
-                    ? String.raw`f' = ${formatNumber(apparentFrequency, 4)}\,\text{Hz}`
-                    : String.raw`f' \text{ fica indefinida no limite }v_f \to v.`,
+                    ? String.raw`f' = ${formatNumber(
+                        apparentFrequency,
+                        4
+                      )}\,\text{Hz}`
+                    : String.raw`f' \text{ fica indefinida no limite } v_f \to v.`,
                 ]}
               />
 
@@ -419,7 +573,9 @@ export const DopplerSimulator: React.FC = () => {
                 title="Número de Mach"
                 formulas={[
                   String.raw`M = \frac{v_f}{v}`,
-                  String.raw`M = \frac{${formatNumber(sourceSpeed)}}{${formatNumber(soundSpeed)}} = ${formatNumber(machNumber, 4)}`,
+                  String.raw`M = \frac{${formatNumber(sourceSpeed)}}{${formatNumber(
+                    soundSpeed
+                  )}} = ${formatNumber(machNumber, 4)}`,
                   machNumber >= 1
                     ? String.raw`M \geq 1 \Rightarrow \text{regime supersônico.}`
                     : String.raw`M < 1 \Rightarrow \text{regime subsônico.}`,
@@ -427,23 +583,36 @@ export const DopplerSimulator: React.FC = () => {
               />
 
               <CalcSection
-                title="Comprimentos de onda à frente e atrás da fonte"
+                title="Comprimentos de onda à frente e atrás"
                 formulas={[
-                  String.raw`\lambda_{\text{frente}} = \frac{v - v_f}{f}`,
-                  String.raw`\lambda_{\text{frente}} = \frac{${formatNumber(soundSpeed)} - ${formatNumber(sourceSpeed)}}{${formatNumber(sourceFrequency)}} = ${formatNumber(wavelengthAhead, 4)}\,\text{m}`,
-                  String.raw`\lambda_{\text{atrás}} = \frac{v + v_f}{f}`,
-                  String.raw`\lambda_{\text{atrás}} = \frac{${formatNumber(soundSpeed)} + ${formatNumber(sourceSpeed)}}{${formatNumber(sourceFrequency)}} = ${formatNumber(wavelengthBehind, 4)}\,\text{m}`,
+                  String.raw`\lambda_0 = \frac{v}{f} = \frac{${formatNumber(
+                    soundSpeed
+                  )}}{${formatNumber(sourceFrequency)}} = ${formatNumber(
+                    emittedWavelength,
+                    4
+                  )}\,\text{m}`,
+                  String.raw`\lambda_{\text{frente}} = \frac{v - v_f}{f} = ${formatNumber(
+                    wavelengthAhead,
+                    4
+                  )}\,\text{m}`,
+                  String.raw`\lambda_{\text{atrás}} = \frac{v + v_f}{f} = ${formatNumber(
+                    wavelengthBehind,
+                    4
+                  )}\,\text{m}`,
                 ]}
               />
 
               <CalcSection
-                title="Interpretação"
+                title="Interpretação física"
                 formulas={[
                   Number.isFinite(apparentFrequency) && apparentFrequency > sourceFrequency
                     ? String.raw`f' > f \Rightarrow \text{o som percebido fica mais agudo.}`
                     : Number.isFinite(apparentFrequency) && apparentFrequency < sourceFrequency
                     ? String.raw`f' < f \Rightarrow \text{o som percebido fica mais grave.}`
-                    : String.raw`f' \approx f \Rightarrow \text{não há alteração relevante de frequência.}`,
+                    : String.raw`f' \approx f \Rightarrow \text{não há mudança perceptível relevante.}`,
+                  machNumber >= 1
+                    ? String.raw`\text{Quando a fonte atinge ou supera }v,\text{ surge o cone de Mach.}`
+                    : String.raw`\text{Em regime subsônico, as frentes de onda se espalham normalmente pelo meio.}`,
                 ]}
               />
             </div>
@@ -460,157 +629,398 @@ export const DopplerSimulator: React.FC = () => {
   );
 };
 
-function DopplerVisual({
+function DopplerAnimationScene({
   mode,
+  time,
   sourceFrequency,
+  soundSpeed,
+  sourceSpeed,
+  observerSpeed,
   apparentFrequency,
   machNumber,
-  sourceSpeed,
-  soundSpeed,
+  showWavefronts,
+  showGuides,
 }: {
   mode: DopplerMode;
+  time: number;
   sourceFrequency: number;
+  soundSpeed: number;
+  sourceSpeed: number;
+  observerSpeed: number;
   apparentFrequency: number;
   machNumber: number;
-  sourceSpeed: number;
-  soundSpeed: number;
+  showWavefronts: boolean;
+  showGuides: boolean;
 }) {
-  const approaching =
-    mode === "fonte_aproxima" ||
-    mode === "observador_aproxima" ||
-    mode === "ambos_aproximam";
+  const width = 920;
+  const height = 420;
+  const centerY = 215;
 
-  const sourceX = approaching ? 380 : 540;
-  const observerX = approaching ? 620 : 300;
+  const loopDuration = 4.5;
+  const cycleTime = time % loopDuration;
 
-  const compressed = Number.isFinite(apparentFrequency)
-    ? apparentFrequency >= sourceFrequency
-    : true;
+  const waveVisualSpeed = 130;
+  const sourceVisualSpeed = clamp(
+    (sourceSpeed / soundSpeed) * waveVisualSpeed * 1.05,
+    0,
+    150
+  );
+  const observerVisualSpeed = clamp(
+    (observerSpeed / soundSpeed) * waveVisualSpeed * 1.1,
+    0,
+    95
+  );
 
-  const frontSpacing = compressed ? 24 : 44;
-  const backSpacing = compressed ? 52 : 32;
+  const scenario = useMemo(() => {
+    switch (mode) {
+      case "fonte_aproxima":
+        return {
+          sourceStart: 170,
+          sourceDir: 1,
+          observerStart: 760,
+          observerDir: 0,
+        };
+      case "fonte_afasta":
+        return {
+          sourceStart: 360,
+          sourceDir: 1,
+          observerStart: 180,
+          observerDir: 0,
+        };
+      case "observador_aproxima":
+        return {
+          sourceStart: 220,
+          sourceDir: 0,
+          observerStart: 760,
+          observerDir: -1,
+        };
+      case "observador_afasta":
+        return {
+          sourceStart: 220,
+          sourceDir: 0,
+          observerStart: 600,
+          observerDir: 1,
+        };
+      case "ambos_aproximam":
+        return {
+          sourceStart: 180,
+          sourceDir: 1,
+          observerStart: 760,
+          observerDir: -1,
+        };
+      case "ambos_afastam":
+      default:
+        return {
+          sourceStart: 330,
+          sourceDir: -1,
+          observerStart: 590,
+          observerDir: 1,
+        };
+    }
+  }, [mode]);
+
+  const getSourceXAt = (t: number) => {
+    return clamp(
+      scenario.sourceStart + scenario.sourceDir * sourceVisualSpeed * t,
+      110,
+      810
+    );
+  };
+
+  const getObserverXAt = (t: number) => {
+    return clamp(
+      scenario.observerStart + scenario.observerDir * observerVisualSpeed * t,
+      110,
+      810
+    );
+  };
+
+  const sourceX = getSourceXAt(cycleTime);
+  const observerX = getObserverXAt(cycleTime);
+
+  const emissionInterval = clamp(180 / sourceFrequency, 0.08, 0.42);
+  const pulses = [];
+
+  for (let i = 0; i < 26; i++) {
+    const emissionTime = cycleTime - i * emissionInterval;
+    if (emissionTime < 0) break;
+
+    const x0 = getSourceXAt(emissionTime);
+    const radius = waveVisualSpeed * (cycleTime - emissionTime);
+
+    pulses.push({
+      x: x0,
+      r: radius,
+      opacity: Math.max(0.08, 0.85 - i * 0.06),
+    });
+  }
+
+  const observerGlow = pulses.some((pulse) => {
+    const distance = Math.abs(observerX - pulse.x);
+    return Math.abs(distance - pulse.r) < 9;
+  });
+
+  const compressionColor = Number.isFinite(apparentFrequency) && apparentFrequency >= sourceFrequency
+    ? "#dc2626"
+    : "#2563eb";
 
   return (
     <div className="overflow-x-auto">
       <svg
-        width="920"
-        height="420"
-        viewBox="0 0 920 420"
+        width={width}
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
         className="mx-auto w-full min-w-[760px] rounded-lg border border-slate-200 bg-slate-50"
       >
-        <rect width="920" height="420" fill="#f8fafc" />
+        <rect width={width} height={height} fill="#f8fafc" />
 
-        <line x1="70" y1="310" x2="850" y2="310" stroke="#cbd5e1" strokeWidth="3" />
+        {Array.from({ length: 14 }).map((_, index) => (
+          <line
+            key={`grid-v-${index}`}
+            x1={40 + index * 60}
+            y1="0"
+            x2={40 + index * 60}
+            y2={height}
+            stroke="#e2e8f0"
+            strokeWidth="1"
+          />
+        ))}
 
-        {machNumber < 1 ? (
-          <>
-            {Array.from({ length: 7 }).map((_, index) => {
-              const r = 28 + index * frontSpacing;
-              return (
-                <circle
-                  key={`front-${index}`}
-                  cx={sourceX}
-                  cy="210"
-                  r={r}
-                  fill="none"
-                  stroke="#4f46e5"
-                  strokeWidth="2"
-                  opacity={Math.max(0.12, 0.8 - index * 0.08)}
-                />
-              );
-            })}
+        {Array.from({ length: 7 }).map((_, index) => (
+          <line
+            key={`grid-h-${index}`}
+            x1="0"
+            y1={30 + index * 55}
+            x2={width}
+            y2={30 + index * 55}
+            stroke="#eef2f7"
+            strokeWidth="1"
+          />
+        ))}
 
-            {Array.from({ length: 5 }).map((_, index) => {
-              const r = 40 + index * backSpacing;
-              return (
-                <circle
-                  key={`back-${index}`}
-                  cx={sourceX}
-                  cy="210"
-                  r={r}
-                  fill="none"
-                  stroke="#94a3b8"
-                  strokeWidth="2"
-                  opacity={Math.max(0.08, 0.45 - index * 0.06)}
-                />
-              );
-            })}
-          </>
-        ) : (
-          <g opacity="0.9">
+        <line
+          x1="60"
+          y1="320"
+          x2="860"
+          y2="320"
+          stroke="#cbd5e1"
+          strokeWidth="4"
+        />
+
+        {showWavefronts &&
+          machNumber < 1 &&
+          pulses.map((pulse, index) => (
+            <circle
+              key={`pulse-${index}`}
+              cx={pulse.x}
+              cy={centerY}
+              r={pulse.r}
+              fill="none"
+              stroke={index < 3 ? compressionColor : "#64748b"}
+              strokeWidth={index < 3 ? 2.6 : 2}
+              opacity={pulse.opacity}
+            />
+          ))}
+
+        {showWavefronts && machNumber >= 1 && (
+          <g opacity="0.95">
             <path
-              d={`M ${sourceX} 210 L ${sourceX - 260} 90 L ${sourceX - 260} 330 Z`}
+              d={`M ${sourceX} ${centerY}
+                  L ${sourceX - 230} ${centerY - 120}
+                  L ${sourceX - 230} ${centerY + 120} Z`}
               fill="#ef4444"
-              opacity="0.16"
+              opacity="0.14"
               stroke="#dc2626"
               strokeWidth="3"
             />
-            <text x={sourceX - 250} y="80" fontSize="13" fontWeight="700" fill="#dc2626">
+            <text
+              x={sourceX - 225}
+              y={centerY - 132}
+              fontSize="13"
+              fontWeight="700"
+              fill="#dc2626"
+            >
               cone de Mach
             </text>
           </g>
         )}
 
-        <g transform={`translate(${sourceX}, 210)`}>
-          <rect x="-42" y="-28" width="84" height="56" rx="14" fill="#ef4444" />
-          <text x="0" y="5" textAnchor="middle" fill="white" fontSize="14" fontWeight="700">
+        {showGuides && (
+          <>
+            <text x="58" y="44" fontSize="18" fontWeight="800" fill="#0f172a">
+              Efeito Doppler — animação
+            </text>
+
+            <text x="58" y="68" fontSize="13" fill="#475569">
+              Ondas comprimidas na frente → frequência maior
+            </text>
+
+            <text x="58" y="88" fontSize="13" fill="#475569">
+              Ondas espaçadas atrás → frequência menor
+            </text>
+          </>
+        )}
+
+        <g transform={`translate(${sourceX}, ${centerY})`}>
+          <rect
+            x="-44"
+            y="-30"
+            width="88"
+            height="60"
+            rx="16"
+            fill="#ef4444"
+            stroke="#b91c1c"
+            strokeWidth="2"
+          />
+          <text
+            x="0"
+            y="6"
+            textAnchor="middle"
+            fill="white"
+            fontSize="14"
+            fontWeight="700"
+          >
             Fonte
           </text>
         </g>
 
-        <g transform={`translate(${observerX}, 210)`}>
-          <circle cx="0" cy="0" r="31" fill="#3b82f6" />
-          <text x="0" y="5" textAnchor="middle" fill="white" fontSize="13" fontWeight="700">
+        <g transform={`translate(${observerX}, ${centerY})`}>
+          {observerGlow && (
+            <circle
+              cx="0"
+              cy="0"
+              r="42"
+              fill="none"
+              stroke="#22c55e"
+              strokeWidth="6"
+              opacity="0.35"
+            />
+          )}
+          <circle
+            cx="0"
+            cy="0"
+            r="32"
+            fill="#3b82f6"
+            stroke="#1d4ed8"
+            strokeWidth="2"
+          />
+          <text
+            x="0"
+            y="5"
+            textAnchor="middle"
+            fill="white"
+            fontSize="13"
+            fontWeight="700"
+          >
             Obs.
           </text>
         </g>
 
-        <line
-          x1={sourceX}
-          y1="278"
-          x2={approaching ? sourceX + 72 : sourceX - 72}
-          y2="278"
-          stroke="#ef4444"
-          strokeWidth="4"
-        />
-        <polygon
-          points={
-            approaching
-              ? `${sourceX + 84},278 ${sourceX + 64},266 ${sourceX + 64},290`
-              : `${sourceX - 84},278 ${sourceX - 64},266 ${sourceX - 64},290`
-          }
-          fill="#ef4444"
-        />
+        {showGuides && (
+          <>
+            <VelocityArrow
+              x={sourceX}
+              y={282}
+              direction={scenario.sourceDir}
+              color="#ef4444"
+              label={`v_f = ${formatNumber(sourceSpeed)} m/s`}
+            />
 
-        <text x="60" y="55" fontSize="18" fontWeight="800" fill="#0f172a">
-          Efeito Doppler
-        </text>
-
-        <text x="60" y="84" fontSize="13" fill="#475569">
-          Ondas comprimidas significam maior frequência percebida.
-        </text>
-
-        <text x="60" y="112" fontSize="13" fill="#475569">
-          Ondas espaçadas significam menor frequência percebida.
-        </text>
+            <VelocityArrow
+              x={observerX}
+              y={112}
+              direction={scenario.observerDir}
+              color="#2563eb"
+              label={`v_o = ${formatNumber(observerSpeed)} m/s`}
+            />
+          </>
+        )}
 
         <text
-          x="60"
-          y="365"
+          x="58"
+          y="366"
           fontSize="14"
           fontWeight="700"
-          fill={compressed ? "#dc2626" : "#2563eb"}
+          fill={compressionColor}
         >
           {Number.isFinite(apparentFrequency)
             ? `f' = ${formatNumber(apparentFrequency, 2)} Hz`
-            : "f' indefinida no limite supersônico"}
+            : "f' indefinida no limite do modelo"}
         </text>
 
-        <text x="60" y="390" fontSize="13" fill="#475569">
-          vf = {formatNumber(sourceSpeed)} m/s, v = {formatNumber(soundSpeed)} m/s, M = {formatNumber(machNumber, 3)}
+        <text x="58" y="390" fontSize="13" fill="#475569">
+          f = {formatNumber(sourceFrequency)} Hz, v = {formatNumber(soundSpeed)} m/s, M ={" "}
+          {formatNumber(machNumber, 3)}
         </text>
       </svg>
     </div>
+  );
+}
+
+function VelocityArrow({
+  x,
+  y,
+  direction,
+  color,
+  label,
+}: {
+  x: number;
+  y: number;
+  direction: number;
+  color: string;
+  label: string;
+}) {
+  if (direction === 0) {
+    return (
+      <g>
+        <text
+          x={x}
+          y={y}
+          textAnchor="middle"
+          fontSize="12"
+          fontWeight="700"
+          fill={color}
+        >
+          parado
+        </text>
+      </g>
+    );
+  }
+
+  const length = 64;
+  const x2 = x + direction * length;
+  const headSize = 10;
+
+  return (
+    <g>
+      <line
+        x1={x}
+        y1={y}
+        x2={x2}
+        y2={y}
+        stroke={color}
+        strokeWidth="4"
+        strokeLinecap="round"
+      />
+      <polygon
+        points={
+          direction > 0
+            ? `${x2 + headSize},${y} ${x2 - 2},${y - 8} ${x2 - 2},${y + 8}`
+            : `${x2 - headSize},${y} ${x2 + 2},${y - 8} ${x2 + 2},${y + 8}`
+        }
+        fill={color}
+      />
+      <text
+        x={direction > 0 ? x + 10 : x - 10}
+        y={y - 10}
+        textAnchor={direction > 0 ? "start" : "end"}
+        fontSize="12"
+        fontWeight="700"
+        fill={color}
+      >
+        {label}
+      </text>
+    </g>
   );
 }
 
