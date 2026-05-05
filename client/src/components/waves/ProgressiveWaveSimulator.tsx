@@ -598,7 +598,8 @@ export const ProgressiveWaveSimulator: React.FC = () => {
               <MetricCard
                 label={
                   <>
-                    Velocidade da onda <MathFormula inline formula={String.raw`v`} />
+                    Velocidade da onda{" "}
+                    <MathFormula inline formula={String.raw`v`} />
                   </>
                 }
                 value={formatUnit(velocity, "m/s")}
@@ -769,9 +770,13 @@ export const ProgressiveWaveSimulator: React.FC = () => {
                 title="Relação fundamental da ondulatória"
                 formulas={[
                   String.raw`v = \lambda f`,
-                  String.raw`v = ${formatNumber(physicalWavelength, 4)}\cdot ${formatNumber(
-                    frequency
-                  )} = ${formatNumber(velocity, 4)}\,\text{m/s}`,
+                  String.raw`v = ${formatNumber(
+                    physicalWavelength,
+                    4
+                  )}\cdot ${formatNumber(frequency)} = ${formatNumber(
+                    velocity,
+                    4
+                  )}\,\text{m/s}`,
                 ]}
               />
 
@@ -798,20 +803,20 @@ export const ProgressiveWaveSimulator: React.FC = () => {
                     ? String.raw`y(x,t) = A\sin(kx-\omega t+\varphi_0)`
                     : String.raw`y(x,t) = A\sin(kx+\omega t+\varphi_0)`,
                   direction === "right"
-                    ? String.raw`y(x,t) = ${formatNumber(amplitudeM, 3)}\sin(${formatNumber(
-                        k,
+                    ? String.raw`y(x,t) = ${formatNumber(
+                        amplitudeM,
+                        3
+                      )}\sin(${formatNumber(k, 4)}x - ${formatNumber(
+                        omega,
                         4
-                      )}x - ${formatNumber(omega, 4)}t + ${formatNumber(
-                        phaseRad,
+                      )}t + ${formatNumber(phaseRad, 4)})`
+                    : String.raw`y(x,t) = ${formatNumber(
+                        amplitudeM,
+                        3
+                      )}\sin(${formatNumber(k, 4)}x + ${formatNumber(
+                        omega,
                         4
-                      )})`
-                    : String.raw`y(x,t) = ${formatNumber(amplitudeM, 3)}\sin(${formatNumber(
-                        k,
-                        4
-                      )}x + ${formatNumber(omega, 4)}t + ${formatNumber(
-                        phaseRad,
-                        4
-                      )})`,
+                      )}t + ${formatNumber(phaseRad, 4)})`,
                 ]}
               />
 
@@ -1048,13 +1053,24 @@ function Wave3DModal({
     cameraConfig,
   ]);
 
+  const phaseCirclePoints = useMemo(() => {
+    return buildProjectedPhaseCircle({
+      xMeters: probeX,
+      visibleMeters,
+      amplitudeM,
+      cameraConfig,
+    });
+  }, [probeX, visibleMeters, amplitudeM, cameraConfig]);
+
   const projectedProbe = useMemo(() => {
     const phase = k * probeX + directionSign * omega * time + phaseRad;
     const y = amplitudeM * Math.sin(phase);
+    const z = amplitudeM * Math.cos(phase);
 
     return project3DPoint({
       xMeters: probeX,
       yMeters: y,
+      zMeters: z,
       visibleMeters,
       amplitudeM,
       cameraConfig,
@@ -1075,6 +1091,7 @@ function Wave3DModal({
     return project3DPoint({
       xMeters: originX,
       yMeters: 0,
+      zMeters: 0,
       visibleMeters,
       amplitudeM,
       cameraConfig,
@@ -1082,14 +1099,29 @@ function Wave3DModal({
   }, [originX, visibleMeters, amplitudeM, cameraConfig]);
 
   const projectedFront = useMemo(() => {
+    const phase = k * frontX + directionSign * omega * time + phaseRad;
+    const y = amplitudeM * Math.sin(phase);
+    const z = amplitudeM * Math.cos(phase);
+
     return project3DPoint({
       xMeters: frontX,
-      yMeters: 0,
+      yMeters: y,
+      zMeters: z,
       visibleMeters,
       amplitudeM,
       cameraConfig,
     });
-  }, [frontX, visibleMeters, amplitudeM, cameraConfig]);
+  }, [
+    frontX,
+    k,
+    directionSign,
+    omega,
+    time,
+    phaseRad,
+    amplitudeM,
+    visibleMeters,
+    cameraConfig,
+  ]);
 
   const gridLines = useMemo(() => {
     return build3DGridLines(cameraConfig);
@@ -1152,6 +1184,13 @@ function Wave3DModal({
     setCameraRotY(DEFAULT_CAMERA_ROT_Y);
     setCameraRotZ(DEFAULT_CAMERA_ROT_Z);
     setCameraZoom(DEFAULT_CAMERA_ZOOM);
+  };
+
+  const setPerfectCycleView = () => {
+    setCameraRotX(0);
+    setCameraRotY(90);
+    setCameraRotZ(0);
+    setCameraZoom(1.25);
   };
 
   return (
@@ -1222,13 +1261,23 @@ function Wave3DModal({
                   Câmera 3D
                 </p>
 
-                <button
-                  type="button"
-                  onClick={resetCamera}
-                  className="rounded-lg border border-slate-700 px-2 py-1 text-xs font-bold text-slate-300 hover:bg-slate-800"
-                >
-                  Resetar
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={setPerfectCycleView}
+                    className="rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-2 py-1 text-xs font-bold text-cyan-200 hover:bg-cyan-500/20"
+                  >
+                    Ciclo
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={resetCamera}
+                    className="rounded-lg border border-slate-700 px-2 py-1 text-xs font-bold text-slate-300 hover:bg-slate-800"
+                  >
+                    Resetar
+                  </button>
+                </div>
               </div>
 
               <div className="mt-5 space-y-5">
@@ -1295,9 +1344,9 @@ function Wave3DModal({
                 Leitura física
               </p>
               <p className="mt-2 text-sm leading-relaxed text-slate-300">
-                A rotação 3D muda a câmera, não muda a física. O eixo z é uma
-                profundidade visual. A partícula da corda continua oscilando,
-                não girando em círculo no espaço.
+                A rotação 3D muda a câmera, não muda a física. O eixo z mostra
+                a fase como cosseno para formar o ciclo visual. A partícula da
+                corda continua oscilando; ela não gira em círculo no espaço.
               </p>
             </div>
 
@@ -1309,18 +1358,26 @@ function Wave3DModal({
               <div className="mt-3 space-y-2 text-sm text-slate-300">
                 <DarkMetric
                   label="Tipo"
-                  value={waveType === "transversal" ? "Transversal" : "Longitudinal"}
+                  value={
+                    waveType === "transversal" ? "Transversal" : "Longitudinal"
+                  }
                 />
                 <DarkMetric
                   label="Sentido"
                   value={direction === "right" ? "Direita" : "Esquerda"}
                 />
                 <DarkMetric label="A" value={formatUnit(amplitudeM, "m")} />
-                <DarkMetric label="λ" value={formatUnit(physicalWavelength, "m")} />
+                <DarkMetric
+                  label="λ"
+                  value={formatUnit(physicalWavelength, "m")}
+                />
                 <DarkMetric label="f" value={formatUnit(frequency, "Hz")} />
                 <DarkMetric label="v" value={formatUnit(velocity, "m/s")} />
                 <DarkMetric label="x₀" value={formatUnit(probeX, "m")} />
-                <DarkMetric label="y(x₀,t)" value={formatUnit(probeDisplacement, "m")} />
+                <DarkMetric
+                  label="y(x₀,t)"
+                  value={formatUnit(probeDisplacement, "m")}
+                />
               </div>
             </div>
           </div>
@@ -1361,7 +1418,7 @@ function Wave3DModal({
                   </text>
 
                   <text x="408" y="74" fill="#94a3b8" fontSize="13">
-                    Controle X, Y, Z e zoom para olhar a onda por diferentes ângulos.
+                    Clique em Ciclo ou use Rotação Y = 90° para ver o ciclo de fase.
                   </text>
 
                   {gridLines.map((line) => (
@@ -1420,6 +1477,17 @@ function Wave3DModal({
                       strokeWidth="3"
                       opacity="0.55"
                       strokeDasharray="8 8"
+                    />
+                  )}
+
+                  {phaseCirclePoints.length > 0 && (
+                    <polyline
+                      points={phaseCirclePoints}
+                      fill="none"
+                      stroke="#67e8f9"
+                      strokeWidth="2.5"
+                      opacity="0.42"
+                      strokeDasharray="6 6"
                     />
                   )}
 
@@ -1576,7 +1644,7 @@ function Wave3DModal({
                   </text>
 
                   <text x="48" y="420" fill="#94a3b8" fontSize="13">
-                    Ao variar x, a fase muda e aparece a senoide no espaço.
+                    No 3D, o eixo z usa cosseno para mostrar o ciclo de fase.
                   </text>
 
                   <rect
@@ -1664,7 +1732,7 @@ function buildProjectedWavePoints({
     return "";
   }
 
-  const samples = 220;
+  const samples = 260;
   const points: string[] = [];
 
   for (let i = 0; i <= samples; i++) {
@@ -1677,10 +1745,12 @@ function buildProjectedWavePoints({
 
     const phase = k * xMeters + directionSign * omega * time + phaseRad;
     const yMeters = amplitudeM * Math.sin(phase);
+    const zMeters = amplitudeM * Math.cos(phase);
 
     const point = project3DPoint({
       xMeters,
       yMeters,
+      zMeters,
       visibleMeters,
       amplitudeM,
       cameraConfig,
@@ -1695,12 +1765,14 @@ function buildProjectedWavePoints({
 function project3DPoint({
   xMeters,
   yMeters,
+  zMeters = 0,
   visibleMeters,
   amplitudeM,
   cameraConfig,
 }: {
   xMeters: number;
   yMeters: number;
+  zMeters?: number;
   visibleMeters: number;
   amplitudeM: number;
   cameraConfig: CameraConfig;
@@ -1712,10 +1784,45 @@ function project3DPoint({
     {
       x: (xNorm - 0.5) * 8.6,
       y: (yMeters / safeAmplitude) * 1.65,
-      z: 0,
+      z: (zMeters / safeAmplitude) * 1.65,
     },
     cameraConfig
   );
+}
+
+function buildProjectedPhaseCircle({
+  xMeters,
+  visibleMeters,
+  amplitudeM,
+  cameraConfig,
+}: {
+  xMeters: number;
+  visibleMeters: number;
+  amplitudeM: number;
+  cameraConfig: CameraConfig;
+}) {
+  const points: string[] = [];
+  const samples = 160;
+
+  for (let i = 0; i <= samples; i++) {
+    const angle = (TWO_PI * i) / samples;
+
+    const yMeters = amplitudeM * Math.sin(angle);
+    const zMeters = amplitudeM * Math.cos(angle);
+
+    const point = project3DPoint({
+      xMeters,
+      yMeters,
+      zMeters,
+      visibleMeters,
+      amplitudeM,
+      cameraConfig,
+    });
+
+    points.push(`${point.x.toFixed(2)},${point.y.toFixed(2)}`);
+  }
+
+  return points.join(" ");
 }
 
 function build3DGridLines(cameraConfig: CameraConfig) {
@@ -2123,7 +2230,11 @@ function drawTransversalWave({
     ctx.stroke();
 
     const velocityScale = amplitudeM * omega || 1;
-    const vectorLength = clamp((probeParticleVelocity / velocityScale) * 58, -58, 58);
+    const vectorLength = clamp(
+      (probeParticleVelocity / velocityScale) * 58,
+      -58,
+      58
+    );
 
     drawArrow(
       ctx,
@@ -2265,7 +2376,8 @@ function drawLongitudinalWave({
 
   if (showProbe) {
     const baseProbeX = metersToCanvasX(probeX, visibleMeters, width);
-    const probeCanvasX = baseProbeX + displacementPx * (probeDisplacement / amplitudeM);
+    const probeCanvasX =
+      baseProbeX + displacementPx * (probeDisplacement / amplitudeM);
 
     ctx.strokeStyle = "#f97316";
     ctx.lineWidth = 2;
@@ -2397,8 +2509,16 @@ function drawEnergyPanel({
   ctx.fillStyle = "#475569";
   ctx.font = "12px Arial";
   ctx.fillText(`A²ω² = ${formatNumber(relativeEnergy, 4)}`, x + 18, y + 78);
-  ctx.fillText(`v máx. part. = ${formatNumber(maxParticleVelocity, 3)} m/s`, x + 18, y + 96);
-  ctx.fillText(`a máx. part. = ${formatNumber(maxParticleAcceleration, 3)} m/s²`, x + 18, y + 114);
+  ctx.fillText(
+    `v máx. part. = ${formatNumber(maxParticleVelocity, 3)} m/s`,
+    x + 18,
+    y + 96
+  );
+  ctx.fillText(
+    `a máx. part. = ${formatNumber(maxParticleAcceleration, 3)} m/s²`,
+    x + 18,
+    y + 114
+  );
 }
 
 function drawInfoBox({
@@ -2438,9 +2558,17 @@ function drawInfoBox({
   ctx.fillText("ONDA PROGRESSIVA", 38, 44);
 
   ctx.font = "12px Arial";
-  ctx.fillText(`tipo: ${waveType === "transversal" ? "Transversal" : "Longitudinal"}`, 38, 68);
+  ctx.fillText(
+    `tipo: ${waveType === "transversal" ? "Transversal" : "Longitudinal"}`,
+    38,
+    68
+  );
   ctx.fillText(`meio: ${mediumLabel}`, 38, 88);
-  ctx.fillText(`sentido: ${direction === "right" ? "direita" : "esquerda"}`, 38, 108);
+  ctx.fillText(
+    `sentido: ${direction === "right" ? "direita" : "esquerda"}`,
+    38,
+    108
+  );
   ctx.fillText(`A = ${formatNumber(amplitudeCm)} cm`, 38, 128);
   ctx.fillText(`λ = ${formatNumber(wavelength, 2)} m`, 38, 148);
 
@@ -2482,7 +2610,11 @@ function drawProbeLabel({
   ctx.fillStyle = "#475569";
   ctx.font = "12px Arial";
   ctx.fillText(`x₀ = ${formatNumber(probeX, 2)} m`, boxX + 12, boxY + 40);
-  ctx.fillText(`y = ${formatNumber(probeDisplacement, 3)} m`, boxX + 95, boxY + 40);
+  ctx.fillText(
+    `y = ${formatNumber(probeDisplacement, 3)} m`,
+    boxX + 95,
+    boxY + 40
+  );
 }
 
 function drawArrow(
