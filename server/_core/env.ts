@@ -6,6 +6,10 @@ export const ENV = {
   ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
   isProduction: process.env.NODE_ENV === "production",
 
+  // Forge / Manus runtime
+  forgeApiUrl: process.env.FORGE_API_URL ?? "",
+  forgeApiKey: process.env.FORGE_API_KEY ?? "",
+
   // OpenAI
   openaiApiUrl: process.env.OPENAI_API_URL ?? "https://api.openai.com/v1",
   openaiApiKey: process.env.OPENAI_API_KEY ?? "",
