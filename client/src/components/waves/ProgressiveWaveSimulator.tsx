@@ -12,7 +12,7 @@ import {
 import { formatNumber, formatUnit } from "@/lib/utils";
 import { AdvancedTheory } from "@/components/AdvancedTheory";
 import { ITAWavesTheory } from "@/content/waves/ita_waves_theory";
-import { Play, Pause, RefreshCw } from "lucide-react";
+import { Play, Pause, RefreshCw, Box, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type WaveType = "transversal" | "longitudinal";
@@ -20,6 +20,7 @@ type Direction = "right" | "left";
 type WaveMedium = "custom" | "air" | "water" | "steel" | "string";
 
 const TWO_PI = 2 * Math.PI;
+const DEFAULT_3D_SPEED = 0.22;
 
 const waveMedia: Record<
   WaveMedium,
@@ -73,12 +74,16 @@ export const ProgressiveWaveSimulator: React.FC = () => {
   const [showMeasures, setShowMeasures] = useState(true);
   const [showProbe, setShowProbe] = useState(true);
   const [showEnergy, setShowEnergy] = useState(true);
+  const [show3DModal, setShow3DModal] = useState(false);
 
   const [amplitudeCm, setAmplitudeCm] = useState(20);
   const [frequency, setFrequency] = useState(1);
   const [wavelengthM, setWavelengthM] = useState(2);
   const [phaseDeg, setPhaseDeg] = useState(0);
   const [probePercent, setProbePercent] = useState(35);
+
+  const [waveOriginPercent3D, setWaveOriginPercent3D] = useState(0);
+  const [wave3DSpeed, setWave3DSpeed] = useState(DEFAULT_3D_SPEED);
 
   const [time, setTime] = useState(0);
 
@@ -180,6 +185,8 @@ export const ProgressiveWaveSimulator: React.FC = () => {
     setWavelengthM(2);
     setPhaseDeg(0);
     setProbePercent(35);
+    setWaveOriginPercent3D(0);
+    setWave3DSpeed(DEFAULT_3D_SPEED);
     setTime(0);
     lastTimeRef.current = 0;
   };
@@ -245,7 +252,6 @@ export const ProgressiveWaveSimulator: React.FC = () => {
       showMeasures,
       showProbe,
       probeX,
-      probePercent,
       probeDisplacement,
       probeParticleVelocity,
       probeParticleAcceleration,
@@ -311,7 +317,6 @@ export const ProgressiveWaveSimulator: React.FC = () => {
     showProbe,
     showEnergy,
     probeX,
-    probePercent,
     probeDisplacement,
     probeParticleVelocity,
     probeParticleAcceleration,
@@ -531,6 +536,15 @@ export const ProgressiveWaveSimulator: React.FC = () => {
                   Energia
                 </button>
               </div>
+
+              <Button
+                type="button"
+                onClick={() => setShow3DModal(true)}
+                className="w-full gap-2 bg-slate-950 text-white hover:bg-slate-800"
+              >
+                <Box className="h-4 w-4" />
+                Ver em 3D
+              </Button>
             </div>
           </Card>
 
@@ -618,10 +632,7 @@ export const ProgressiveWaveSimulator: React.FC = () => {
                 }
               />
 
-              <MetricCard
-                label="Interpretação"
-                value={interpretation}
-              />
+              <MetricCard label="Interpretação" value={interpretation} />
             </div>
           </Card>
         </div>
@@ -836,9 +847,699 @@ export const ProgressiveWaveSimulator: React.FC = () => {
         introduction={ITAWavesTheory.introduction}
         sections={ITAWavesTheory.sections}
       />
+
+      {show3DModal && (
+        <Wave3DModal
+          onClose={() => setShow3DModal(false)}
+          waveType={waveType}
+          direction={direction}
+          directionSign={directionSign}
+          amplitudeM={amplitudeM}
+          physicalWavelength={physicalWavelength}
+          frequency={frequency}
+          velocity={velocity}
+          visibleMeters={visibleMeters}
+          k={k}
+          omega={omega}
+          phaseRad={phaseRad}
+          time={time}
+          probeX={probeX}
+          probeDisplacement={probeDisplacement}
+          originPercent={waveOriginPercent3D}
+          setOriginPercent={setWaveOriginPercent3D}
+          wave3DSpeed={wave3DSpeed}
+          setWave3DSpeed={setWave3DSpeed}
+        />
+      )}
     </div>
   );
 };
+
+function Wave3DModal({
+  onClose,
+  waveType,
+  direction,
+  directionSign,
+  amplitudeM,
+  physicalWavelength,
+  frequency,
+  velocity,
+  visibleMeters,
+  k,
+  omega,
+  phaseRad,
+  time,
+  probeX,
+  probeDisplacement,
+  originPercent,
+  setOriginPercent,
+  wave3DSpeed,
+  setWave3DSpeed,
+}: {
+  onClose: () => void;
+  waveType: WaveType;
+  direction: Direction;
+  directionSign: number;
+  amplitudeM: number;
+  physicalWavelength: number;
+  frequency: number;
+  velocity: number;
+  visibleMeters: number;
+  k: number;
+  omega: number;
+  phaseRad: number;
+  time: number;
+  probeX: number;
+  probeDisplacement: number;
+  originPercent: number;
+  setOriginPercent: React.Dispatch<React.SetStateAction<number>>;
+  wave3DSpeed: number;
+  setWave3DSpeed: React.Dispatch<React.SetStateAction<number>>;
+}) {
+  const originX = useMemo(() => {
+    return (originPercent / 100) * visibleMeters;
+  }, [originPercent, visibleMeters]);
+
+  const waveProgress = useMemo(() => {
+    const cycleSize = visibleMeters + physicalWavelength;
+    return (time * wave3DSpeed * Math.max(physicalWavelength, 0.4)) % cycleSize;
+  }, [time, wave3DSpeed, physicalWavelength, visibleMeters]);
+
+  const frontX = useMemo(() => {
+    if (direction === "right") {
+      return clamp(originX + waveProgress, 0, visibleMeters);
+    }
+
+    return clamp(originX - waveProgress, 0, visibleMeters);
+  }, [direction, originX, waveProgress, visibleMeters]);
+
+  const trigPhase = useMemo(() => {
+    return k * probeX + directionSign * omega * time + phaseRad;
+  }, [k, probeX, directionSign, omega, time, phaseRad]);
+
+  const wavePoints = useMemo(() => {
+    return buildProjectedWavePoints({
+      originX,
+      frontX,
+      visibleMeters,
+      amplitudeM,
+      k,
+      omega,
+      phaseRad,
+      directionSign,
+      time,
+      direction,
+    });
+  }, [
+    originX,
+    frontX,
+    visibleMeters,
+    amplitudeM,
+    k,
+    omega,
+    phaseRad,
+    directionSign,
+    time,
+    direction,
+  ]);
+
+  const fullGhostWave = useMemo(() => {
+    return buildProjectedWavePoints({
+      originX: 0,
+      frontX: visibleMeters,
+      visibleMeters,
+      amplitudeM,
+      k,
+      omega,
+      phaseRad,
+      directionSign,
+      time,
+      direction: "right",
+    });
+  }, [visibleMeters, amplitudeM, k, omega, phaseRad, directionSign, time]);
+
+  const projectedProbe = useMemo(() => {
+    const phase = k * probeX + directionSign * omega * time + phaseRad;
+    const y = amplitudeM * Math.sin(phase);
+    return project3DPoint({
+      xMeters: probeX,
+      yMeters: y,
+      visibleMeters,
+      amplitudeM,
+    });
+  }, [probeX, k, directionSign, omega, time, phaseRad, amplitudeM, visibleMeters]);
+
+  const projectedOrigin = useMemo(() => {
+    return project3DPoint({
+      xMeters: originX,
+      yMeters: 0,
+      visibleMeters,
+      amplitudeM,
+    });
+  }, [originX, visibleMeters, amplitudeM]);
+
+  const projectedFront = useMemo(() => {
+    return project3DPoint({
+      xMeters: frontX,
+      yMeters: 0,
+      visibleMeters,
+      amplitudeM,
+    });
+  }, [frontX, visibleMeters, amplitudeM]);
+
+  const circle = {
+    cx: 185,
+    cy: 250,
+    r: 72,
+  };
+
+  const circlePoint = {
+    x: circle.cx + circle.r * Math.cos(trigPhase),
+    y: circle.cy - circle.r * Math.sin(trigPhase),
+  };
+
+  const projectionY = circle.cy - circle.r * Math.sin(trigPhase);
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+      <div className="max-h-[92vh] w-full max-w-7xl overflow-y-auto rounded-3xl border border-slate-700 bg-slate-950 shadow-2xl">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-800 bg-slate-950/95 px-5 py-4 backdrop-blur">
+          <div>
+            <h3 className="text-xl font-black text-white">
+              Visualização 3D da Onda Progressiva
+            </h3>
+            <p className="mt-1 text-sm text-slate-400">
+              A onda nasce da origem escolhida e se desenvolve lentamente para mostrar a fase se propagando.
+            </p>
+          </div>
+
+          <Button
+            type="button"
+            variant="secondary"
+            size="icon"
+            onClick={onClose}
+            className="bg-slate-800 text-white hover:bg-slate-700"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 p-5 xl:grid-cols-12">
+          <div className="space-y-4 xl:col-span-3">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+              <p className="text-sm font-bold text-slate-200">
+                Controles da visualização
+              </p>
+
+              <div className="mt-5 space-y-5">
+                <DarkControlRow
+                  label="Origem da onda"
+                  value={`${formatNumber(originX, 2)} m`}
+                >
+                  <Slider
+                    value={[originPercent]}
+                    onValueChange={(value) => setOriginPercent(value[0])}
+                    min={0}
+                    max={100}
+                    step={1}
+                    className="w-full"
+                  />
+                </DarkControlRow>
+
+                <DarkControlRow
+                  label="Velocidade visual 3D"
+                  value={`${formatNumber(wave3DSpeed, 2)}x`}
+                >
+                  <Slider
+                    value={[wave3DSpeed]}
+                    onValueChange={(value) => setWave3DSpeed(value[0])}
+                    min={0.04}
+                    max={0.8}
+                    step={0.02}
+                    className="w-full"
+                  />
+                </DarkControlRow>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4">
+              <p className="text-sm font-bold text-cyan-200">
+                Leitura física
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-300">
+                O círculo trigonométrico representa a fase da oscilação. Ele não
+                é a trajetória real da partícula. Na onda transversal simples, a
+                partícula sobe e desce enquanto a fase se propaga pelo espaço.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+              <p className="text-sm font-bold text-slate-200">
+                Dados atuais
+              </p>
+
+              <div className="mt-3 space-y-2 text-sm text-slate-300">
+                <DarkMetric label="Tipo" value={waveType === "transversal" ? "Transversal" : "Longitudinal"} />
+                <DarkMetric label="Sentido" value={direction === "right" ? "Direita" : "Esquerda"} />
+                <DarkMetric label="A" value={formatUnit(amplitudeM, "m")} />
+                <DarkMetric label="λ" value={formatUnit(physicalWavelength, "m")} />
+                <DarkMetric label="f" value={formatUnit(frequency, "Hz")} />
+                <DarkMetric label="v" value={formatUnit(velocity, "m/s")} />
+                <DarkMetric label="x₀" value={formatUnit(probeX, "m")} />
+                <DarkMetric label="y(x₀,t)" value={formatUnit(probeDisplacement, "m")} />
+              </div>
+            </div>
+          </div>
+
+          <div className="xl:col-span-9">
+            <div className="rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-950 via-slate-950 to-indigo-950 p-4">
+              <div className="overflow-x-auto">
+                <svg
+                  width="1040"
+                  height="620"
+                  viewBox="0 0 1040 620"
+                  className="mx-auto min-w-[900px] rounded-2xl border border-slate-800 bg-slate-950"
+                >
+                  <defs>
+                    <filter id="cyanGlow" x="-40%" y="-40%" width="180%" height="180%">
+                      <feGaussianBlur stdDeviation="4" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+
+                    <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#22d3ee" />
+                      <stop offset="50%" stopColor="#818cf8" />
+                      <stop offset="100%" stopColor="#c084fc" />
+                    </linearGradient>
+                  </defs>
+
+                  <rect width="1040" height="620" fill="#020617" />
+
+                  {Array.from({ length: 12 }).map((_, index) => (
+                    <line
+                      key={`grid-x-${index}`}
+                      x1={370 + index * 48}
+                      y1={170 + index * 16}
+                      x2={470 + index * 48}
+                      y2={500 + index * 16}
+                      stroke="#1e293b"
+                      strokeWidth="1"
+                    />
+                  ))}
+
+                  {Array.from({ length: 8 }).map((_, index) => (
+                    <line
+                      key={`grid-y-${index}`}
+                      x1="330"
+                      y1={185 + index * 44}
+                      x2="930"
+                      y2={315 + index * 44}
+                      stroke="#1e293b"
+                      strokeWidth="1"
+                    />
+                  ))}
+
+                  <text x="42" y="48" fill="#f8fafc" fontSize="21" fontWeight="900">
+                    Ciclo trigonométrico → fase → onda
+                  </text>
+
+                  <text x="408" y="48" fill="#f8fafc" fontSize="21" fontWeight="900">
+                    Onda em perspectiva 3D
+                  </text>
+
+                  <text x="408" y="74" fill="#94a3b8" fontSize="13">
+                    A curva aparece como uma senoide em perspectiva, nascendo da origem escolhida.
+                  </text>
+
+                  <line
+                    x1="390"
+                    y1="430"
+                    x2="935"
+                    y2="535"
+                    stroke="#475569"
+                    strokeWidth="3"
+                  />
+                  <line
+                    x1="390"
+                    y1="430"
+                    x2="390"
+                    y2="210"
+                    stroke="#475569"
+                    strokeWidth="3"
+                  />
+                  <line
+                    x1="390"
+                    y1="430"
+                    x2="470"
+                    y2="495"
+                    stroke="#475569"
+                    strokeWidth="3"
+                  />
+
+                  <text x="930" y="558" fill="#94a3b8" fontSize="13" fontWeight="700">
+                    x
+                  </text>
+                  <text x="368" y="208" fill="#94a3b8" fontSize="13" fontWeight="700">
+                    y
+                  </text>
+                  <text x="476" y="512" fill="#94a3b8" fontSize="13" fontWeight="700">
+                    profundidade
+                  </text>
+
+                  {fullGhostWave.length > 0 && (
+                    <polyline
+                      points={fullGhostWave}
+                      fill="none"
+                      stroke="#334155"
+                      strokeWidth="3"
+                      opacity="0.55"
+                      strokeDasharray="8 8"
+                    />
+                  )}
+
+                  <circle
+                    cx={projectedOrigin.x}
+                    cy={projectedOrigin.y}
+                    r="8"
+                    fill="#f97316"
+                    stroke="#fed7aa"
+                    strokeWidth="3"
+                  />
+                  <text
+                    x={projectedOrigin.x + 12}
+                    y={projectedOrigin.y - 10}
+                    fill="#fed7aa"
+                    fontSize="12"
+                    fontWeight="800"
+                  >
+                    origem
+                  </text>
+
+                  <circle
+                    cx={projectedFront.x}
+                    cy={projectedFront.y}
+                    r="7"
+                    fill="#22d3ee"
+                    stroke="#cffafe"
+                    strokeWidth="2"
+                  />
+                  <text
+                    x={projectedFront.x + 12}
+                    y={projectedFront.y + 4}
+                    fill="#cffafe"
+                    fontSize="12"
+                    fontWeight="800"
+                  >
+                    frente da onda
+                  </text>
+
+                  {wavePoints.length > 0 && (
+                    <>
+                      <polyline
+                        points={wavePoints}
+                        fill="none"
+                        stroke="#22d3ee"
+                        strokeWidth="11"
+                        opacity="0.16"
+                        filter="url(#cyanGlow)"
+                      />
+                      <polyline
+                        points={wavePoints}
+                        fill="none"
+                        stroke="url(#waveGradient)"
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        filter="url(#cyanGlow)"
+                      />
+                    </>
+                  )}
+
+                  <circle
+                    cx={projectedProbe.x}
+                    cy={projectedProbe.y}
+                    r="9"
+                    fill="#fb923c"
+                    stroke="#ffedd5"
+                    strokeWidth="3"
+                  />
+                  <text
+                    x={projectedProbe.x + 14}
+                    y={projectedProbe.y - 10}
+                    fill="#fed7aa"
+                    fontSize="12"
+                    fontWeight="800"
+                  >
+                    ponto x₀
+                  </text>
+
+                  <circle
+                    cx={circle.cx}
+                    cy={circle.cy}
+                    r={circle.r}
+                    fill="rgba(15,23,42,0.65)"
+                    stroke="#67e8f9"
+                    strokeWidth="3"
+                  />
+
+                  <line
+                    x1={circle.cx - circle.r - 22}
+                    y1={circle.cy}
+                    x2={circle.cx + circle.r + 22}
+                    y2={circle.cy}
+                    stroke="#334155"
+                    strokeWidth="2"
+                  />
+
+                  <line
+                    x1={circle.cx}
+                    y1={circle.cy - circle.r - 22}
+                    x2={circle.cx}
+                    y2={circle.cy + circle.r + 22}
+                    stroke="#334155"
+                    strokeWidth="2"
+                  />
+
+                  <line
+                    x1={circle.cx}
+                    y1={circle.cy}
+                    x2={circlePoint.x}
+                    y2={circlePoint.y}
+                    stroke="#f97316"
+                    strokeWidth="4"
+                  />
+
+                  <circle
+                    cx={circlePoint.x}
+                    cy={circlePoint.y}
+                    r="8"
+                    fill="#f97316"
+                    stroke="#ffedd5"
+                    strokeWidth="3"
+                  />
+
+                  <line
+                    x1={circlePoint.x}
+                    y1={circlePoint.y}
+                    x2={circle.cx + circle.r + 70}
+                    y2={projectionY}
+                    stroke="#f97316"
+                    strokeWidth="2"
+                    strokeDasharray="6 6"
+                  />
+
+                  <circle
+                    cx={circle.cx + circle.r + 70}
+                    cy={projectionY}
+                    r="6"
+                    fill="#22d3ee"
+                  />
+
+                  <text
+                    x="48"
+                    y="375"
+                    fill="#e2e8f0"
+                    fontSize="14"
+                    fontWeight="800"
+                  >
+                    A projeção vertical do círculo gera o seno.
+                  </text>
+
+                  <text x="48" y="400" fill="#94a3b8" fontSize="13">
+                    Para um ponto fixo da corda, o movimento é MHS.
+                  </text>
+
+                  <text x="48" y="420" fill="#94a3b8" fontSize="13">
+                    Ao variar x, a fase muda e aparece a senoide no espaço.
+                  </text>
+
+                  <rect
+                    x="395"
+                    y="98"
+                    width="310"
+                    height="82"
+                    rx="16"
+                    fill="rgba(15,23,42,0.86)"
+                    stroke="#334155"
+                  />
+
+                  <text x="416" y="128" fill="#e2e8f0" fontSize="13" fontWeight="800">
+                    Frente visual da onda
+                  </text>
+
+                  <text x="416" y="153" fill="#94a3b8" fontSize="12">
+                    origem = {formatNumber(originX, 2)} m
+                  </text>
+
+                  <text x="416" y="171" fill="#94a3b8" fontSize="12">
+                    frente = {formatNumber(frontX, 2)} m
+                  </text>
+
+                  <rect
+                    x="725"
+                    y="98"
+                    width="250"
+                    height="82"
+                    rx="16"
+                    fill="rgba(15,23,42,0.86)"
+                    stroke="#334155"
+                  />
+
+                  <text x="746" y="128" fill="#e2e8f0" fontSize="13" fontWeight="800">
+                    Equação visualizada
+                  </text>
+
+                  <text x="746" y="153" fill="#94a3b8" fontSize="12">
+                    y(x,t) = A sen(kx {direction === "right" ? "- ωt" : "+ ωt"} + φ₀)
+                  </text>
+
+                  <text x="746" y="171" fill="#94a3b8" fontSize="12">
+                    A = {formatNumber(amplitudeM, 2)} m, λ = {formatNumber(physicalWavelength, 2)} m
+                  </text>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function buildProjectedWavePoints({
+  originX,
+  frontX,
+  visibleMeters,
+  amplitudeM,
+  k,
+  omega,
+  phaseRad,
+  directionSign,
+  time,
+  direction,
+}: {
+  originX: number;
+  frontX: number;
+  visibleMeters: number;
+  amplitudeM: number;
+  k: number;
+  omega: number;
+  phaseRad: number;
+  directionSign: number;
+  time: number;
+  direction: Direction;
+}) {
+  const start = Math.min(originX, frontX);
+  const end = Math.max(originX, frontX);
+
+  if (Math.abs(end - start) < visibleMeters * 0.01) {
+    return "";
+  }
+
+  const samples = 180;
+  const points: string[] = [];
+
+  for (let i = 0; i <= samples; i++) {
+    const alpha = i / samples;
+    const xMeters = direction === "right"
+      ? start + alpha * (end - start)
+      : end - alpha * (end - start);
+
+    const phase = k * xMeters + directionSign * omega * time + phaseRad;
+    const yMeters = amplitudeM * Math.sin(phase);
+
+    const point = project3DPoint({
+      xMeters,
+      yMeters,
+      visibleMeters,
+      amplitudeM,
+    });
+
+    points.push(`${point.x.toFixed(2)},${point.y.toFixed(2)}`);
+  }
+
+  return points.join(" ");
+}
+
+function project3DPoint({
+  xMeters,
+  yMeters,
+  visibleMeters,
+  amplitudeM,
+}: {
+  xMeters: number;
+  yMeters: number;
+  visibleMeters: number;
+  amplitudeM: number;
+}) {
+  const xNorm = visibleMeters > 0 ? xMeters / visibleMeters : 0;
+  const safeAmplitude = Math.max(amplitudeM, 0.02);
+  const yNorm = yMeters / safeAmplitude;
+
+  const baseX = 390;
+  const baseY = 430;
+
+  const projectedX = baseX + xNorm * 530 + xNorm * 62;
+  const depthDrop = xNorm * 98;
+  const projectedY = baseY + depthDrop - yNorm * 78;
+
+  return {
+    x: projectedX,
+    y: projectedY,
+  };
+}
+
+function DarkControlRow({
+  label,
+  value,
+  children,
+}: {
+  label: string;
+  value: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between gap-4">
+        <span className="text-sm font-medium text-slate-300">{label}</span>
+        <span className="text-sm font-black text-cyan-200">{value}</span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function DarkMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-800 bg-slate-950 px-3 py-2">
+      <span className="text-slate-500">{label}</span>
+      <span className="font-bold text-slate-200">{value}</span>
+    </div>
+  );
+}
 
 function ControlRow({
   label,
@@ -999,7 +1700,6 @@ function drawTransversalWave({
   showMeasures: boolean;
   showProbe: boolean;
   probeX: number;
-  probePercent: number;
   probeDisplacement: number;
   probeParticleVelocity: number;
   probeParticleAcceleration: number;
@@ -1167,7 +1867,6 @@ function drawLongitudinalWave({
   showMeasures: boolean;
   showProbe: boolean;
   probeX: number;
-  probePercent: number;
   probeDisplacement: number;
   probeParticleVelocity: number;
   probeParticleAcceleration: number;
