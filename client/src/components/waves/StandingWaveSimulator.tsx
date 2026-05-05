@@ -1626,4 +1626,138 @@ function drawEnergyPanel({
   ctx.fillText("Energia local relativa", x + 18, y + 28);
 
   ctx.fillStyle = "#e2e8f0";
-  roundRect(ctx
+  roundRect(ctx, x + 18, y + 44, 240, 14, 7);
+  ctx.fill();
+
+  ctx.fillStyle = "#7c3aed";
+  roundRect(ctx, x + 18, y + 44, (240 * energyPercent) / 100, 14, 7);
+  ctx.fill();
+
+  ctx.fillStyle = "#475569";
+  ctx.font = "12px Arial";
+  ctx.fillText(
+    `A local = ${formatNumber(localMaxAmplitude, 4)}`,
+    x + 18,
+    y + 78
+  );
+  ctx.fillText(
+    `v local = ${formatNumber(probeVelocity, 3)} m/s`,
+    x + 18,
+    y + 96
+  );
+  ctx.fillText(
+    `a local = ${formatNumber(probeAcceleration, 3)} m/s²`,
+    x + 18,
+    y + 114
+  );
+}
+
+function drawInfoBox({
+  ctx,
+  systemLabel,
+  quantityLabel,
+  harmonicNumber,
+  length,
+  wavelength,
+  frequency,
+  waveSpeed,
+  period,
+  probeX,
+  probeValue,
+}: {
+  ctx: CanvasRenderingContext2D;
+  systemLabel: string;
+  quantityLabel: string;
+  harmonicNumber: number;
+  length: number;
+  wavelength: number;
+  frequency: number;
+  waveSpeed: number;
+  period: number;
+  probeX: number;
+  probeValue: number;
+}) {
+  ctx.fillStyle = "rgba(255,255,255,0.94)";
+  ctx.strokeStyle = "#e2e8f0";
+  ctx.lineWidth = 1;
+  roundRect(ctx, 20, 18, 350, 188, 14);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = "#0f172a";
+  ctx.font = "bold 13px Arial";
+  ctx.fillText("ONDA ESTACIONÁRIA", 38, 44);
+
+  ctx.font = "12px Arial";
+  ctx.fillText(`sistema: ${systemLabel}`, 38, 68);
+  ctx.fillText(`visual: ${quantityLabel}`, 38, 88);
+  ctx.fillText(`n = ${harmonicNumber}`, 38, 108);
+  ctx.fillText(`L = ${formatNumber(length, 2)} m`, 38, 128);
+  ctx.fillText(`λ = ${formatNumber(wavelength, 2)} m`, 38, 148);
+
+  ctx.fillText(`f = ${formatNumber(frequency, 2)} Hz`, 190, 108);
+  ctx.fillText(`v = ${formatNumber(waveSpeed, 2)} m/s`, 190, 128);
+  ctx.fillText(`T = ${formatNumber(period, 2)} s`, 190, 148);
+
+  ctx.fillText(`x₀ = ${formatNumber(probeX, 2)} m`, 38, 172);
+  ctx.fillText(`valor = ${formatNumber(probeValue, 3)}`, 190, 172);
+}
+
+function drawArrow(
+  ctx: CanvasRenderingContext2D,
+  fromX: number,
+  fromY: number,
+  toX: number,
+  toY: number,
+  color: string,
+  label: string
+) {
+  const angle = Math.atan2(toY - fromY, toX - fromX);
+  const head = 9;
+
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 2.5;
+
+  ctx.beginPath();
+  ctx.moveTo(fromX, fromY);
+  ctx.lineTo(toX, toY);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(toX, toY);
+  ctx.lineTo(
+    toX - head * Math.cos(angle - Math.PI / 6),
+    toY - head * Math.sin(angle - Math.PI / 6)
+  );
+  ctx.lineTo(
+    toX - head * Math.cos(angle + Math.PI / 6),
+    toY - head * Math.sin(angle + Math.PI / 6)
+  );
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.font = "bold 12px Arial";
+  ctx.fillText(label, toX + 8, toY - 6);
+}
+
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number
+) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+}
