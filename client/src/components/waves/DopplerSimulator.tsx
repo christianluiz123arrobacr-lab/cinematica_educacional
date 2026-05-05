@@ -23,6 +23,8 @@ type DopplerMode =
   | "ambos_aproximam"
   | "ambos_afastam";
 
+type SourceVisual = "ambulance" | "speaker" | "car";
+
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
 
@@ -31,6 +33,7 @@ export const DopplerSimulator: React.FC = () => {
   const lastTimeRef = useRef<number>(0);
 
   const [mode, setMode] = useState<DopplerMode>("ambos_aproximam");
+  const [sourceVisual, setSourceVisual] = useState<SourceVisual>("ambulance");
 
   const [sourceFrequency, setSourceFrequency] = useState(440);
   const [soundSpeed, setSoundSpeed] = useState(340);
@@ -40,6 +43,7 @@ export const DopplerSimulator: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [showWavefronts, setShowWavefronts] = useState(true);
   const [showGuides, setShowGuides] = useState(true);
+  const [showPitchMeter, setShowPitchMeter] = useState(true);
   const [time, setTime] = useState(0);
 
   const observerSignedSpeed = useMemo(() => {
@@ -88,16 +92,16 @@ export const DopplerSimulator: React.FC = () => {
     }
 
     return sourceFrequency * (numerator / denominator);
-  }, [
-    sourceFrequency,
-    soundSpeed,
-    sourceSignedSpeed,
-    observerSignedSpeed,
-  ]);
+  }, [sourceFrequency, soundSpeed, sourceSignedSpeed, observerSignedSpeed]);
 
   const frequencyDifference = useMemo(() => {
     if (!Number.isFinite(apparentFrequency)) return Infinity;
     return apparentFrequency - sourceFrequency;
+  }, [apparentFrequency, sourceFrequency]);
+
+  const frequencyRatio = useMemo(() => {
+    if (!Number.isFinite(apparentFrequency) || sourceFrequency <= 0) return 1;
+    return apparentFrequency / sourceFrequency;
   }, [apparentFrequency, sourceFrequency]);
 
   const machNumber = useMemo(() => {
@@ -128,6 +132,13 @@ export const DopplerSimulator: React.FC = () => {
     if (mode === "ambos_aproximam") return "Fonte e observador se aproximam";
     return "Fonte e observador se afastam";
   }, [mode]);
+
+  const pitchLabel = useMemo(() => {
+    if (!Number.isFinite(apparentFrequency)) return "limite do modelo";
+    if (frequencyRatio > 1.04) return "mais agudo";
+    if (frequencyRatio < 0.96) return "mais grave";
+    return "quase igual";
+  }, [apparentFrequency, frequencyRatio]);
 
   const interpretation = useMemo(() => {
     if (!Number.isFinite(apparentFrequency)) {
@@ -187,6 +198,7 @@ export const DopplerSimulator: React.FC = () => {
 
   const reset = () => {
     setMode("ambos_aproximam");
+    setSourceVisual("ambulance");
     setSourceFrequency(440);
     setSoundSpeed(340);
     setSourceSpeed(30);
@@ -194,6 +206,7 @@ export const DopplerSimulator: React.FC = () => {
     setIsPlaying(true);
     setShowWavefronts(true);
     setShowGuides(true);
+    setShowPitchMeter(true);
     setTime(0);
     lastTimeRef.current = 0;
   };
@@ -208,8 +221,8 @@ export const DopplerSimulator: React.FC = () => {
                 Efeito Doppler
               </h3>
               <p className="mt-1 text-sm text-slate-600">
-                Analise a mudança aparente de frequência causada pelo movimento
-                relativo entre a fonte e o observador.
+                Veja como o movimento relativo altera a frequência percebida.
+                Sim, agora a animação finalmente faz jus ao nome “simulador”.
               </p>
             </div>
 
@@ -245,6 +258,26 @@ export const DopplerSimulator: React.FC = () => {
                     <SelectItem value="ambos_afastam">
                       Ambos se afastam
                     </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+                  Aparência da fonte
+                </p>
+
+                <Select
+                  value={sourceVisual}
+                  onValueChange={(value) => setSourceVisual(value as SourceVisual)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ambulance">Ambulância</SelectItem>
+                    <SelectItem value="speaker">Alto-falante</SelectItem>
+                    <SelectItem value="car">Carro</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -309,10 +342,10 @@ export const DopplerSimulator: React.FC = () => {
                 />
               </ControlRow>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => setShowWavefronts(!showWavefronts)}
-                  className={`rounded-lg border px-3 py-2 text-sm font-bold ${
+                  className={`rounded-lg border px-2 py-2 text-xs font-bold ${
                     showWavefronts
                       ? "border-indigo-300 bg-indigo-50 text-indigo-700"
                       : "border-slate-300 bg-white text-slate-700"
@@ -323,13 +356,24 @@ export const DopplerSimulator: React.FC = () => {
 
                 <button
                   onClick={() => setShowGuides(!showGuides)}
-                  className={`rounded-lg border px-3 py-2 text-sm font-bold ${
+                  className={`rounded-lg border px-2 py-2 text-xs font-bold ${
                     showGuides
                       ? "border-indigo-300 bg-indigo-50 text-indigo-700"
                       : "border-slate-300 bg-white text-slate-700"
                   }`}
                 >
                   Guias
+                </button>
+
+                <button
+                  onClick={() => setShowPitchMeter(!showPitchMeter)}
+                  className={`rounded-lg border px-2 py-2 text-xs font-bold ${
+                    showPitchMeter
+                      ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                      : "border-slate-300 bg-white text-slate-700"
+                  }`}
+                >
+                  Tom
                 </button>
               </div>
             </div>
@@ -375,6 +419,18 @@ export const DopplerSimulator: React.FC = () => {
                   Number.isFinite(frequencyDifference) && frequencyDifference >= 0
                     ? "text-red-700"
                     : "text-blue-700"
+                }
+              />
+
+              <MetricCard
+                label="Tom percebido"
+                value={pitchLabel}
+                valueClassName={
+                  pitchLabel === "mais agudo"
+                    ? "text-red-700"
+                    : pitchLabel === "mais grave"
+                    ? "text-blue-700"
+                    : "text-slate-900"
                 }
               />
 
@@ -461,15 +517,18 @@ export const DopplerSimulator: React.FC = () => {
               <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                 <DopplerAnimationScene
                   mode={mode}
+                  sourceVisual={sourceVisual}
                   time={time}
                   sourceFrequency={sourceFrequency}
                   soundSpeed={soundSpeed}
                   sourceSpeed={sourceSpeed}
                   observerSpeed={observerSpeed}
                   apparentFrequency={apparentFrequency}
+                  frequencyRatio={frequencyRatio}
                   machNumber={machNumber}
                   showWavefronts={showWavefronts}
                   showGuides={showGuides}
+                  showPitchMeter={showPitchMeter}
                 />
               </div>
             </div>
@@ -631,26 +690,32 @@ export const DopplerSimulator: React.FC = () => {
 
 function DopplerAnimationScene({
   mode,
+  sourceVisual,
   time,
   sourceFrequency,
   soundSpeed,
   sourceSpeed,
   observerSpeed,
   apparentFrequency,
+  frequencyRatio,
   machNumber,
   showWavefronts,
   showGuides,
+  showPitchMeter,
 }: {
   mode: DopplerMode;
+  sourceVisual: SourceVisual;
   time: number;
   sourceFrequency: number;
   soundSpeed: number;
   sourceSpeed: number;
   observerSpeed: number;
   apparentFrequency: number;
+  frequencyRatio: number;
   machNumber: number;
   showWavefronts: boolean;
   showGuides: boolean;
+  showPitchMeter: boolean;
 }) {
   const width = 920;
   const height = 420;
@@ -739,19 +804,23 @@ function DopplerAnimationScene({
   const observerX = getObserverXAt(cycleTime);
 
   const emissionInterval = clamp(180 / sourceFrequency, 0.08, 0.42);
-  const pulses = [];
+  const pulses: { x: number; r: number; opacity: number; side: "front" | "back" }[] = [];
 
-  for (let i = 0; i < 26; i++) {
+  for (let i = 0; i < 28; i++) {
     const emissionTime = cycleTime - i * emissionInterval;
     if (emissionTime < 0) break;
 
     const x0 = getSourceXAt(emissionTime);
     const radius = waveVisualSpeed * (cycleTime - emissionTime);
 
+    const sourceMovementDir = scenario.sourceDir === 0 ? 1 : scenario.sourceDir;
+    const pulseSide = x0 <= sourceX === sourceMovementDir > 0 ? "back" : "front";
+
     pulses.push({
       x: x0,
       r: radius,
-      opacity: Math.max(0.08, 0.85 - i * 0.06),
+      opacity: Math.max(0.07, 0.9 - i * 0.055),
+      side: pulseSide,
     });
   }
 
@@ -760,9 +829,13 @@ function DopplerAnimationScene({
     return Math.abs(distance - pulse.r) < 9;
   });
 
-  const compressionColor = Number.isFinite(apparentFrequency) && apparentFrequency >= sourceFrequency
-    ? "#dc2626"
-    : "#2563eb";
+  const isHigherPitch =
+    Number.isFinite(apparentFrequency) && apparentFrequency > sourceFrequency;
+
+  const frontWaveColor = isHigherPitch ? "#dc2626" : "#2563eb";
+  const backWaveColor = isHigherPitch ? "#2563eb" : "#dc2626";
+
+  const pitchPointerX = clamp(460 + (frequencyRatio - 1) * 260, 260, 660);
 
   return (
     <div className="overflow-x-auto">
@@ -816,26 +889,35 @@ function DopplerAnimationScene({
               cy={centerY}
               r={pulse.r}
               fill="none"
-              stroke={index < 3 ? compressionColor : "#64748b"}
-              strokeWidth={index < 3 ? 2.6 : 2}
+              stroke={pulse.side === "front" ? frontWaveColor : backWaveColor}
+              strokeWidth={pulse.side === "front" ? 2.8 : 2.1}
               opacity={pulse.opacity}
             />
           ))}
 
         {showWavefronts && machNumber >= 1 && (
-          <g opacity="0.95">
+          <g opacity="0.96">
             <path
               d={`M ${sourceX} ${centerY}
-                  L ${sourceX - 230} ${centerY - 120}
-                  L ${sourceX - 230} ${centerY + 120} Z`}
+                  L ${sourceX - 240} ${centerY - 125}
+                  L ${sourceX - 240} ${centerY + 125} Z`}
               fill="#ef4444"
-              opacity="0.14"
+              opacity="0.15"
               stroke="#dc2626"
               strokeWidth="3"
             />
+            <path
+              d={`M ${sourceX} ${centerY}
+                  L ${sourceX - 195} ${centerY - 90}
+                  L ${sourceX - 195} ${centerY + 90} Z`}
+              fill="none"
+              stroke="#f97316"
+              strokeWidth="2"
+              strokeDasharray="8,6"
+            />
             <text
-              x={sourceX - 225}
-              y={centerY - 132}
+              x={sourceX - 230}
+              y={centerY - 138}
               fontSize="13"
               fontWeight="700"
               fill="#dc2626"
@@ -852,69 +934,43 @@ function DopplerAnimationScene({
             </text>
 
             <text x="58" y="68" fontSize="13" fill="#475569">
-              Ondas comprimidas na frente → frequência maior
+              Frente comprimida: frequência percebida maior.
             </text>
 
             <text x="58" y="88" fontSize="13" fill="#475569">
-              Ondas espaçadas atrás → frequência menor
+              Atrás espaçado: frequência percebida menor.
             </text>
+
+            <g>
+              <rect
+                x="650"
+                y="36"
+                width="205"
+                height="72"
+                rx="14"
+                fill="white"
+                stroke="#e2e8f0"
+              />
+              <circle cx="674" cy="60" r="7" fill="#dc2626" />
+              <text x="690" y="64" fontSize="12" fill="#475569">
+                ondas comprimidas
+              </text>
+              <circle cx="674" cy="86" r="7" fill="#2563eb" />
+              <text x="690" y="90" fontSize="12" fill="#475569">
+                ondas espaçadas
+              </text>
+            </g>
           </>
         )}
 
-        <g transform={`translate(${sourceX}, ${centerY})`}>
-          <rect
-            x="-44"
-            y="-30"
-            width="88"
-            height="60"
-            rx="16"
-            fill="#ef4444"
-            stroke="#b91c1c"
-            strokeWidth="2"
-          />
-          <text
-            x="0"
-            y="6"
-            textAnchor="middle"
-            fill="white"
-            fontSize="14"
-            fontWeight="700"
-          >
-            Fonte
-          </text>
-        </g>
+        <SourceIcon
+          x={sourceX}
+          y={centerY}
+          visual={sourceVisual}
+          direction={scenario.sourceDir}
+        />
 
-        <g transform={`translate(${observerX}, ${centerY})`}>
-          {observerGlow && (
-            <circle
-              cx="0"
-              cy="0"
-              r="42"
-              fill="none"
-              stroke="#22c55e"
-              strokeWidth="6"
-              opacity="0.35"
-            />
-          )}
-          <circle
-            cx="0"
-            cy="0"
-            r="32"
-            fill="#3b82f6"
-            stroke="#1d4ed8"
-            strokeWidth="2"
-          />
-          <text
-            x="0"
-            y="5"
-            textAnchor="middle"
-            fill="white"
-            fontSize="13"
-            fontWeight="700"
-          >
-            Obs.
-          </text>
-        </g>
+        <ObserverIcon x={observerX} y={centerY} active={observerGlow} />
 
         {showGuides && (
           <>
@@ -936,12 +992,62 @@ function DopplerAnimationScene({
           </>
         )}
 
+        {showPitchMeter && (
+          <g>
+            <rect
+              x="245"
+              y="350"
+              width="430"
+              height="46"
+              rx="18"
+              fill="white"
+              stroke="#e2e8f0"
+            />
+            <text x="266" y="378" fontSize="12" fontWeight="700" fill="#2563eb">
+              mais grave
+            </text>
+            <text x="438" y="378" fontSize="12" fontWeight="700" fill="#64748b">
+              igual
+            </text>
+            <text x="590" y="378" fontSize="12" fontWeight="700" fill="#dc2626">
+              mais agudo
+            </text>
+
+            <line
+              x1="260"
+              y1="334"
+              x2="660"
+              y2="334"
+              stroke="#cbd5e1"
+              strokeWidth="7"
+              strokeLinecap="round"
+            />
+            <line
+              x1="460"
+              y1="334"
+              x2={pitchPointerX}
+              y2="334"
+              stroke={isHigherPitch ? "#dc2626" : "#2563eb"}
+              strokeWidth="7"
+              strokeLinecap="round"
+            />
+            <circle
+              cx={pitchPointerX}
+              cy="334"
+              r="12"
+              fill={isHigherPitch ? "#dc2626" : "#2563eb"}
+              stroke="white"
+              strokeWidth="3"
+            />
+          </g>
+        )}
+
         <text
           x="58"
           y="366"
           fontSize="14"
           fontWeight="700"
-          fill={compressionColor}
+          fill={isHigherPitch ? "#dc2626" : "#2563eb"}
         >
           {Number.isFinite(apparentFrequency)
             ? `f' = ${formatNumber(apparentFrequency, 2)} Hz`
@@ -954,6 +1060,148 @@ function DopplerAnimationScene({
         </text>
       </svg>
     </div>
+  );
+}
+
+function SourceIcon({
+  x,
+  y,
+  visual,
+  direction,
+}: {
+  x: number;
+  y: number;
+  visual: SourceVisual;
+  direction: number;
+}) {
+  const flip = direction < 0 ? -1 : 1;
+
+  if (visual === "speaker") {
+    return (
+      <g transform={`translate(${x}, ${y}) scale(${flip}, 1)`}>
+        <rect x="-36" y="-28" width="38" height="56" rx="8" fill="#ef4444" />
+        <polygon points="0,-20 35,-38 35,38 0,20" fill="#dc2626" />
+        <text
+          x="0"
+          y="58"
+          textAnchor="middle"
+          fontSize="12"
+          fontWeight="700"
+          fill="#b91c1c"
+          transform={`scale(${flip}, 1)`}
+        >
+          Fonte
+        </text>
+      </g>
+    );
+  }
+
+  if (visual === "car") {
+    return (
+      <g transform={`translate(${x}, ${y}) scale(${flip}, 1)`}>
+        <rect x="-48" y="-26" width="96" height="44" rx="14" fill="#ef4444" />
+        <rect x="-22" y="-48" width="45" height="30" rx="8" fill="#fca5a5" />
+        <circle cx="-28" cy="22" r="10" fill="#0f172a" />
+        <circle cx="30" cy="22" r="10" fill="#0f172a" />
+        <text
+          x="0"
+          y="60"
+          textAnchor="middle"
+          fontSize="12"
+          fontWeight="700"
+          fill="#b91c1c"
+          transform={`scale(${flip}, 1)`}
+        >
+          Carro
+        </text>
+      </g>
+    );
+  }
+
+  return (
+    <g transform={`translate(${x}, ${y}) scale(${flip}, 1)`}>
+      <rect x="-56" y="-28" width="112" height="52" rx="14" fill="#ef4444" />
+      <rect x="-20" y="-50" width="45" height="28" rx="8" fill="#bfdbfe" />
+      <rect x="-51" y="-15" width="30" height="18" rx="4" fill="#ffffff" />
+      <rect x="18" y="-15" width="30" height="18" rx="4" fill="#ffffff" />
+      <rect x="-8" y="-64" width="26" height="14" rx="4" fill="#2563eb" />
+      <rect x="18" y="-64" width="26" height="14" rx="4" fill="#dc2626" />
+      <circle cx="-34" cy="26" r="10" fill="#0f172a" />
+      <circle cx="34" cy="26" r="10" fill="#0f172a" />
+      <text
+        x="0"
+        y="62"
+        textAnchor="middle"
+        fontSize="12"
+        fontWeight="700"
+        fill="#b91c1c"
+        transform={`scale(${flip}, 1)`}
+      >
+        Ambulância
+      </text>
+    </g>
+  );
+}
+
+function ObserverIcon({
+  x,
+  y,
+  active,
+}: {
+  x: number;
+  y: number;
+  active: boolean;
+}) {
+  return (
+    <g transform={`translate(${x}, ${y})`}>
+      {active && (
+        <>
+          <circle
+            cx="0"
+            cy="0"
+            r="46"
+            fill="none"
+            stroke="#22c55e"
+            strokeWidth="7"
+            opacity="0.3"
+          />
+          <circle
+            cx="0"
+            cy="0"
+            r="56"
+            fill="none"
+            stroke="#22c55e"
+            strokeWidth="4"
+            opacity="0.18"
+          />
+        </>
+      )}
+
+      <circle
+        cx="0"
+        cy="-18"
+        r="17"
+        fill="#3b82f6"
+        stroke="#1d4ed8"
+        strokeWidth="2"
+      />
+      <path
+        d="M -28 34 C -22 5 22 5 28 34 Z"
+        fill="#3b82f6"
+        stroke="#1d4ed8"
+        strokeWidth="2"
+      />
+      <text
+        x="0"
+        y="60"
+        textAnchor="middle"
+        fontSize="12"
+        fontWeight="700"
+        fill="#1d4ed8"
+      >
+        Observador
+      </text>
+    </g>
   );
 }
 
