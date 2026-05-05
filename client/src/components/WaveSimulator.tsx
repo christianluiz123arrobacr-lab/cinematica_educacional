@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 type WaveMode = "progressive" | "standing" | "interference";
 type WaveType = "transversal" | "longitudinal";
 type Direction = "right" | "left";
+type WaveMedium = "custom" | "air" | "water" | "steel" | "string";
 
 interface WaveSimulatorProps {
   initialMode?: WaveMode;
@@ -27,6 +28,44 @@ interface WaveSimulatorProps {
 }
 
 const TWO_PI = 2 * Math.PI;
+
+const waveMedia: Record<
+  WaveMedium,
+  {
+    label: string;
+    speed: number | null;
+    description: string;
+  }
+> = {
+  custom: {
+    label: "Meio personalizado",
+    speed: null,
+    description: "A velocidade será calculada por v = λf.",
+  },
+  air: {
+    label: "Ar",
+    speed: 340,
+    description: "Aproximação para som no ar em temperatura ambiente.",
+  },
+  water: {
+    label: "Água",
+    speed: 1480,
+    description: "Aproximação para ondas sonoras na água.",
+  },
+  steel: {
+    label: "Aço",
+    speed: 5000,
+    description: "Aproximação para ondas mecânicas longitudinais no aço.",
+  },
+  string: {
+    label: "Corda genérica",
+    speed: 20,
+    description: "Modelo didático para onda em corda.",
+  },
+};
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, value));
 
 export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
   initialMode = "progressive",
@@ -47,6 +86,11 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
   const [showParticles, setShowParticles] = useState(true);
   const [showMeasures, setShowMeasures] = useState(true);
 
+  const [waveMedium, setWaveMedium] = useState<WaveMedium>("custom");
+  const [progressiveAmplitudeCm, setProgressiveAmplitudeCm] = useState(20);
+  const [progressiveWavelengthM, setProgressiveWavelengthM] = useState(2);
+  const [phaseInitialDeg, setPhaseInitialDeg] = useState(0);
+
   const [amplitude, setAmplitude] = useState(50);
   const [frequency, setFrequency] = useState(1);
   const [wavelength, setWavelength] = useState(200);
@@ -62,10 +106,48 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
     timeRef.current = 0;
   }, [initialMode, lockedMode]);
 
+  const selectedMedium = waveMedia[waveMedium];
+
   const period = useMemo(() => {
     if (frequency <= 0) return 0;
     return 1 / frequency;
   }, [frequency]);
+
+  const phaseInitialRad = useMemo(
+    () => (phaseInitialDeg * Math.PI) / 180,
+    [phaseInitialDeg]
+  );
+
+  const progressiveAmplitudeM = useMemo(
+    () => progressiveAmplitudeCm / 100,
+    [progressiveAmplitudeCm]
+  );
+
+  const progressiveWavelengthPhysical = useMemo(() => {
+    if (selectedMedium.speed) {
+      return selectedMedium.speed / frequency;
+    }
+
+    return progressiveWavelengthM;
+  }, [selectedMedium.speed, frequency, progressiveWavelengthM]);
+
+  const progressiveSpeed = useMemo(
+    () => progressiveWavelengthPhysical * frequency,
+    [progressiveWavelengthPhysical, frequency]
+  );
+
+  const progressiveK = useMemo(() => {
+    if (progressiveWavelengthPhysical <= 0) return 0;
+    return TWO_PI / progressiveWavelengthPhysical;
+  }, [progressiveWavelengthPhysical]);
+
+  const progressiveAmplitudePx = useMemo(() => {
+    return clamp(progressiveAmplitudeCm * 2.2, 10, 100);
+  }, [progressiveAmplitudeCm]);
+
+  const progressiveVisualWavelengthPx = useMemo(() => {
+    return clamp(progressiveWavelengthPhysical * 120, 90, 520);
+  }, [progressiveWavelengthPhysical]);
 
   const velocity = useMemo(() => wavelength * frequency, [wavelength, frequency]);
 
@@ -88,17 +170,26 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
   );
 
   const activeWavelength = useMemo(() => {
-    return mode === "standing" ? standingWavelength : wavelength;
-  }, [mode, standingWavelength, wavelength]);
+    if (mode === "progressive") return progressiveWavelengthPhysical;
+    if (mode === "standing") return standingWavelength;
+    return wavelength;
+  }, [mode, progressiveWavelengthPhysical, standingWavelength, wavelength]);
 
   const activeVelocity = useMemo(() => {
-    return mode === "standing" ? standingVelocity : velocity;
-  }, [mode, standingVelocity, velocity]);
+    if (mode === "progressive") return progressiveSpeed;
+    if (mode === "standing") return standingVelocity;
+    return velocity;
+  }, [mode, progressiveSpeed, standingVelocity, velocity]);
 
   const activeK = useMemo(() => {
+    if (mode === "progressive") return progressiveK;
     if (activeWavelength <= 0) return 0;
     return TWO_PI / activeWavelength;
-  }, [activeWavelength]);
+  }, [mode, progressiveK, activeWavelength]);
+
+  const activeWavelengthUnit = mode === "progressive" ? "m" : "px";
+  const activeVelocityUnit = mode === "progressive" ? "m/s" : "px/s";
+  const activeKUnit = mode === "progressive" ? "rad/m" : "rad/px";
 
   const resultantAmplitude = useMemo(() => {
     return Math.sqrt(
@@ -122,7 +213,21 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
     return "Parcial";
   }, [phaseDiffDeg]);
 
+  const progressiveInterpretation = useMemo(() => {
+    if (waveMedium !== "custom") {
+      return `No meio escolhido, a velocidade foi fixada em aproximadamente ${formatNumber(
+        progressiveSpeed
+      )} m/s; por isso o comprimento de onda muda quando a frequência muda.`;
+    }
+
+    return "No modo personalizado, você controla o comprimento de onda e a velocidade sai de v = λf.";
+  }, [waveMedium, progressiveSpeed]);
+
   const reset = () => {
+    setWaveMedium("custom");
+    setProgressiveAmplitudeCm(20);
+    setProgressiveWavelengthM(2);
+    setPhaseInitialDeg(0);
     setAmplitude(50);
     setAmplitude2(35);
     setFrequency(1);
@@ -135,7 +240,7 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
 
   useEffect(() => {
     timeRef.current = 0;
-  }, [mode, waveType, direction]);
+  }, [mode, waveType, direction, phaseInitialDeg, waveMedium]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -164,28 +269,33 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
             ctx,
             width,
             height,
-            amplitude,
-            wavelength,
-            k,
+            amplitudePx: progressiveAmplitudePx,
+            wavelengthPx: progressiveVisualWavelengthPx,
+            kVisual: TWO_PI / progressiveVisualWavelengthPx,
             omega,
+            phaseInitialRad,
             t,
             direction,
             showParticles,
             showMeasures,
+            amplitudeLabel: `${formatNumber(progressiveAmplitudeM, 2)} m`,
+            wavelengthLabel: `${formatNumber(progressiveWavelengthPhysical, 2)} m`,
           });
         } else {
           drawProgressiveLongitudinalWave({
             ctx,
             width,
             height,
-            amplitude,
-            wavelength,
-            k,
+            amplitudePx: progressiveAmplitudePx,
+            wavelengthPx: progressiveVisualWavelengthPx,
+            kVisual: TWO_PI / progressiveVisualWavelengthPx,
             omega,
+            phaseInitialRad,
             t,
             direction,
             showParticles,
             showMeasures,
+            wavelengthLabel: `${formatNumber(progressiveWavelengthPhysical, 2)} m`,
           });
         }
       }
@@ -229,7 +339,12 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
         wavelength: activeWavelength,
         frequency,
         period,
-        amplitude,
+        amplitudeLabel:
+          mode === "progressive"
+            ? `${formatNumber(progressiveAmplitudeCm)} cm`
+            : `${formatNumber(amplitude)} px`,
+        wavelengthUnit: activeWavelengthUnit,
+        velocityUnit: activeVelocityUnit,
       });
 
       animationIdRef.current = requestAnimationFrame(animate);
@@ -247,6 +362,17 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
     isPlaying,
     showParticles,
     showMeasures,
+    waveMedium,
+    progressiveAmplitudeCm,
+    progressiveAmplitudeM,
+    progressiveWavelengthM,
+    progressiveWavelengthPhysical,
+    progressiveSpeed,
+    progressiveK,
+    progressiveAmplitudePx,
+    progressiveVisualWavelengthPx,
+    phaseInitialDeg,
+    phaseInitialRad,
     amplitude,
     amplitude2,
     frequency,
@@ -257,8 +383,13 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
     phaseDiffRad,
     harmonic,
     stringLength,
-    activeWavelength,
+    standingWavelength,
+    standingVelocity,
+    velocity,
     activeVelocity,
+    activeWavelength,
+    activeWavelengthUnit,
+    activeVelocityUnit,
   ]);
 
   return (
@@ -324,6 +455,31 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
 
                   <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                     <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+                      Meio de propagação
+                    </p>
+                    <Select
+                      value={waveMedium}
+                      onValueChange={(value) => setWaveMedium(value as WaveMedium)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="custom">Meio personalizado</SelectItem>
+                        <SelectItem value="air">Ar</SelectItem>
+                        <SelectItem value="water">Água</SelectItem>
+                        <SelectItem value="steel">Aço</SelectItem>
+                        <SelectItem value="string">Corda genérica</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <p className="mt-2 text-xs text-slate-500">
+                      {selectedMedium.description}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
                       Sentido de propagação
                     </p>
                     <Select
@@ -339,23 +495,40 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
                       </SelectContent>
                     </Select>
                   </div>
+
+                  <ControlRow
+                    label="Amplitude"
+                    symbol="A"
+                    value={formatUnit(progressiveAmplitudeCm, "cm")}
+                  >
+                    <Slider
+                      value={[progressiveAmplitudeCm]}
+                      onValueChange={(value) => setProgressiveAmplitudeCm(value[0])}
+                      min={2}
+                      max={50}
+                      step={1}
+                      className="w-full"
+                    />
+                  </ControlRow>
                 </>
               )}
 
-              <ControlRow
-                label="Amplitude"
-                symbol="A"
-                value={formatUnit(amplitude, "px")}
-              >
-                <Slider
-                  value={[amplitude]}
-                  onValueChange={(value) => setAmplitude(value[0])}
-                  min={10}
-                  max={100}
-                  step={5}
-                  className="w-full"
-                />
-              </ControlRow>
+              {mode !== "progressive" && (
+                <ControlRow
+                  label="Amplitude visual"
+                  symbol="A"
+                  value={formatUnit(amplitude, "px")}
+                >
+                  <Slider
+                    value={[amplitude]}
+                    onValueChange={(value) => setAmplitude(value[0])}
+                    min={10}
+                    max={100}
+                    step={5}
+                    className="w-full"
+                  />
+                </ControlRow>
+              )}
 
               <ControlRow
                 label="Frequência"
@@ -372,9 +545,57 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
                 />
               </ControlRow>
 
-              {mode !== "standing" && (
+              {mode === "progressive" && waveMedium === "custom" && (
                 <ControlRow
                   label="Comprimento de onda"
+                  symbol="λ"
+                  value={formatUnit(progressiveWavelengthM, "m")}
+                >
+                  <Slider
+                    value={[progressiveWavelengthM]}
+                    onValueChange={(value) => setProgressiveWavelengthM(value[0])}
+                    min={0.2}
+                    max={10}
+                    step={0.1}
+                    className="w-full"
+                  />
+                </ControlRow>
+              )}
+
+              {mode === "progressive" && waveMedium !== "custom" && (
+                <div className="rounded-xl border border-slate-200 bg-white p-4">
+                  <p className="text-sm font-medium text-slate-600">
+                    Comprimento de onda calculado
+                  </p>
+                  <p className="mt-2 text-lg font-bold text-indigo-700">
+                    {formatNumber(progressiveWavelengthPhysical, 2)} m
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Como v foi fixada pelo meio, λ = v/f.
+                  </p>
+                </div>
+              )}
+
+              {mode === "progressive" && (
+                <ControlRow
+                  label="Fase inicial"
+                  symbol="φ₀"
+                  value={formatUnit(phaseInitialDeg, "°")}
+                >
+                  <Slider
+                    value={[phaseInitialDeg]}
+                    onValueChange={(value) => setPhaseInitialDeg(value[0])}
+                    min={0}
+                    max={360}
+                    step={5}
+                    className="w-full"
+                  />
+                </ControlRow>
+              )}
+
+              {mode === "interference" && (
+                <ControlRow
+                  label="Comprimento de onda visual"
                   symbol="λ"
                   value={formatUnit(wavelength, "px")}
                 >
@@ -491,14 +712,43 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
             </div>
 
             <div className="space-y-3 p-5">
+              {mode === "progressive" && (
+                <>
+                  <MetricCard
+                    label="Meio de propagação"
+                    value={selectedMedium.label}
+                    valueClassName="text-indigo-700"
+                  />
+
+                  <MetricCard
+                    label={
+                      <>
+                        Amplitude <MathFormula inline formula={String.raw`A`} />
+                      </>
+                    }
+                    value={formatUnit(progressiveAmplitudeM, "m")}
+                  />
+                </>
+              )}
+
               <MetricCard
                 label={
                   <>
                     Velocidade <MathFormula inline formula={String.raw`v`} />
                   </>
                 }
-                value={formatUnit(activeVelocity, "px/s")}
+                value={formatUnit(activeVelocity, activeVelocityUnit)}
                 valueClassName="text-indigo-700"
+              />
+
+              <MetricCard
+                label={
+                  <>
+                    Comprimento de onda{" "}
+                    <MathFormula inline formula={String.raw`\lambda`} />
+                  </>
+                }
+                value={formatUnit(activeWavelength, activeWavelengthUnit)}
               />
 
               <MetricCard
@@ -526,8 +776,15 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
                     Número de onda <MathFormula inline formula={String.raw`k`} />
                   </>
                 }
-                value={`${formatNumber(activeK, 4)} rad/px`}
+                value={`${formatNumber(activeK, 4)} ${activeKUnit}`}
               />
+
+              {mode === "progressive" && (
+                <MetricCard
+                  label="Interpretação"
+                  value={progressiveInterpretation}
+                />
+              )}
 
               {mode === "interference" && (
                 <>
@@ -620,16 +877,21 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
               <CalcMiniCard
                 title="Parâmetros básicos"
                 values={[
-                  ["A", formatUnit(amplitude, "px")],
+                  [
+                    "A",
+                    mode === "progressive"
+                      ? formatUnit(progressiveAmplitudeM, "m")
+                      : formatUnit(amplitude, "px"),
+                  ],
                   ["f", formatUnit(frequency, "Hz")],
-                  ["λ", formatUnit(activeWavelength, "px")],
+                  ["λ", formatUnit(activeWavelength, activeWavelengthUnit)],
                 ]}
               />
 
               <CalcMiniCard
                 title="Grandezas derivadas"
                 values={[
-                  ["v", formatUnit(activeVelocity, "px/s")],
+                  ["v", formatUnit(activeVelocity, activeVelocityUnit)],
                   ["T", formatUnit(period, "s")],
                 ]}
               />
@@ -637,7 +899,7 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
               <CalcMiniCard
                 title="Forma matemática"
                 values={[
-                  ["k", `${formatNumber(activeK, 4)} rad/px`],
+                  ["k", `${formatNumber(activeK, 4)} ${activeKUnit}`],
                   ["ω", formatUnit(omega, "rad/s")],
                 ]}
               />
@@ -649,6 +911,16 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
                   ["Tipo", mode === "progressive" ? getWaveTypeLabel(waveType) : "—"],
                 ]}
               />
+
+              {mode === "progressive" && (
+                <CalcMiniCard
+                  title="Onda progressiva"
+                  values={[
+                    ["Meio", selectedMedium.label],
+                    ["φ₀", formatUnit(phaseInitialDeg, "°")],
+                  ]}
+                />
+              )}
             </div>
           </Card>
 
@@ -664,34 +936,46 @@ export const WaveSimulator: React.FC<WaveSimulatorProps> = ({
                 title="Relação fundamental da ondulatória"
                 formulas={[
                   String.raw`v = \lambda f`,
-                  String.raw`v = ${formatNumber(activeWavelength)}\cdot ${formatNumber(frequency)} = ${formatNumber(activeVelocity)}\,\text{px/s}`,
+                  String.raw`v = ${formatNumber(activeWavelength, 4)}\cdot ${formatNumber(frequency)} = ${formatNumber(activeVelocity, 4)}\,\text{${activeVelocityUnit}}`,
                 ]}
               />
 
               <CalcSection
                 title="Período, número de onda e frequência angular"
                 formulas={[
-                  String.raw`T = \frac{1}{f} = \frac{1}{${formatNumber(frequency)}} = ${formatNumber(period)}\,\text{s}`,
-                  String.raw`k = \frac{2\pi}{\lambda} = \frac{2\pi}{${formatNumber(activeWavelength)}} = ${formatNumber(activeK, 4)}\,\text{rad/px}`,
+                  String.raw`T = \frac{1}{f} = \frac{1}{${formatNumber(frequency)}} = ${formatNumber(period, 4)}\,\text{s}`,
+                  String.raw`k = \frac{2\pi}{\lambda} = \frac{2\pi}{${formatNumber(activeWavelength, 4)}} = ${formatNumber(activeK, 4)}\,\text{${activeKUnit}}`,
                   String.raw`\omega = 2\pi f = 2\pi\cdot ${formatNumber(frequency)} = ${formatNumber(omega, 4)}\,\text{rad/s}`,
                 ]}
               />
 
               {mode === "progressive" && (
-                <CalcSection
-                  title="Equação da onda progressiva"
-                  formulas={[
-                    direction === "right"
-                      ? String.raw`y(x,t) = A\sin(kx-\omega t)`
-                      : String.raw`y(x,t) = A\sin(kx+\omega t)`,
-                    direction === "right"
-                      ? String.raw`y(x,t) = ${formatNumber(amplitude)}\sin(${formatNumber(k, 4)}x - ${formatNumber(omega, 4)}t)`
-                      : String.raw`y(x,t) = ${formatNumber(amplitude)}\sin(${formatNumber(k, 4)}x + ${formatNumber(omega, 4)}t)`,
-                    waveType === "transversal"
-                      ? String.raw`\text{Na onda transversal, a perturbação é perpendicular à propagação.}`
-                      : String.raw`\text{Na onda longitudinal, a perturbação é paralela à propagação.}`,
-                  ]}
-                />
+                <>
+                  <CalcSection
+                    title="Equação da onda progressiva"
+                    formulas={[
+                      direction === "right"
+                        ? String.raw`y(x,t) = A\sin(kx-\omega t+\varphi_0)`
+                        : String.raw`y(x,t) = A\sin(kx+\omega t+\varphi_0)`,
+                      direction === "right"
+                        ? String.raw`y(x,t) = ${formatNumber(progressiveAmplitudeM, 3)}\sin(${formatNumber(progressiveK, 4)}x - ${formatNumber(omega, 4)}t + ${formatNumber(phaseInitialRad, 4)})`
+                        : String.raw`y(x,t) = ${formatNumber(progressiveAmplitudeM, 3)}\sin(${formatNumber(progressiveK, 4)}x + ${formatNumber(omega, 4)}t + ${formatNumber(phaseInitialRad, 4)})`,
+                      waveType === "transversal"
+                        ? String.raw`\text{Na onda transversal, a perturbação é perpendicular à propagação.}`
+                        : String.raw`\text{Na onda longitudinal, a perturbação é paralela à propagação.}`,
+                    ]}
+                  />
+
+                  <CalcSection
+                    title="Meio de propagação"
+                    formulas={[
+                      selectedMedium.speed
+                        ? String.raw`v_{\text{meio}} \approx ${formatNumber(selectedMedium.speed)}\,\text{m/s}`
+                        : String.raw`\text{No meio personalizado, a velocidade é definida por }v=\lambda f.`,
+                      String.raw`\lambda = \frac{v}{f} = \frac{${formatNumber(progressiveSpeed, 4)}}{${formatNumber(frequency)}} = ${formatNumber(progressiveWavelengthPhysical, 4)}\,\text{m}`,
+                    ]}
+                  />
+                </>
               )}
 
               {mode === "standing" && (
@@ -766,26 +1050,32 @@ function drawProgressiveTransverseWave({
   ctx,
   width,
   height,
-  amplitude,
-  wavelength,
-  k,
+  amplitudePx,
+  wavelengthPx,
+  kVisual,
   omega,
+  phaseInitialRad,
   t,
   direction,
   showParticles,
   showMeasures,
+  amplitudeLabel,
+  wavelengthLabel,
 }: {
   ctx: CanvasRenderingContext2D;
   width: number;
   height: number;
-  amplitude: number;
-  wavelength: number;
-  k: number;
+  amplitudePx: number;
+  wavelengthPx: number;
+  kVisual: number;
   omega: number;
+  phaseInitialRad: number;
   t: number;
   direction: Direction;
   showParticles: boolean;
   showMeasures: boolean;
+  amplitudeLabel: string;
+  wavelengthLabel: string;
 }) {
   const centerY = height / 2;
   const sign = direction === "right" ? -1 : 1;
@@ -796,7 +1086,10 @@ function drawProgressiveTransverseWave({
   ctx.lineCap = "round";
 
   for (let x = 0; x <= width; x++) {
-    const y = centerY + amplitude * Math.sin(k * x + sign * omega * t);
+    const y =
+      centerY +
+      amplitudePx * Math.sin(kVisual * x + sign * omega * t + phaseInitialRad);
+
     if (x === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
   }
@@ -805,7 +1098,10 @@ function drawProgressiveTransverseWave({
 
   if (showParticles) {
     for (let x = 60; x < width; x += 70) {
-      const y = centerY + amplitude * Math.sin(k * x + sign * omega * t);
+      const y =
+        centerY +
+        amplitudePx * Math.sin(kVisual * x + sign * omega * t + phaseInitialRad);
+
       ctx.fillStyle = "#ef4444";
       ctx.beginPath();
       ctx.arc(x, y, 6, 0, TWO_PI);
@@ -817,9 +1113,9 @@ function drawProgressiveTransverseWave({
   }
 
   if (showMeasures) {
-    drawAmplitudeMeasure(ctx, 100, centerY, amplitude);
-    drawWavelengthMeasure(ctx, 180, centerY + amplitude + 55, wavelength);
-    drawCrestValleyLabels(ctx, centerY, amplitude);
+    drawAmplitudeMeasure(ctx, 100, centerY, amplitudePx, amplitudeLabel);
+    drawWavelengthMeasure(ctx, 180, centerY + amplitudePx + 55, wavelengthPx, wavelengthLabel);
+    drawCrestValleyLabels(ctx, centerY, amplitudePx);
   }
 }
 
@@ -827,48 +1123,55 @@ function drawProgressiveLongitudinalWave({
   ctx,
   width,
   height,
-  amplitude,
-  wavelength,
-  k,
+  amplitudePx,
+  wavelengthPx,
+  kVisual,
   omega,
+  phaseInitialRad,
   t,
   direction,
   showParticles,
   showMeasures,
+  wavelengthLabel,
 }: {
   ctx: CanvasRenderingContext2D;
   width: number;
   height: number;
-  amplitude: number;
-  wavelength: number;
-  k: number;
+  amplitudePx: number;
+  wavelengthPx: number;
+  kVisual: number;
   omega: number;
+  phaseInitialRad: number;
   t: number;
   direction: Direction;
   showParticles: boolean;
   showMeasures: boolean;
+  wavelengthLabel: string;
 }) {
   const centerY = height / 2;
   const sign = direction === "right" ? -1 : 1;
   const numParticles = 54;
   const spacing = width / numParticles;
 
-  for (let i = 0; i <= numParticles; i++) {
-    const xEq = i * spacing;
-    const displacement = amplitude * 0.7 * Math.sin(k * xEq + sign * omega * t);
-    const x = xEq + displacement;
+  if (showParticles) {
+    for (let i = 0; i <= numParticles; i++) {
+      const xEq = i * spacing;
+      const displacement =
+        amplitudePx * 0.7 * Math.sin(kVisual * xEq + sign * omega * t + phaseInitialRad);
+      const x = xEq + displacement;
 
-    ctx.fillStyle = i % 5 === 0 ? "#ef4444" : "#4f46e5";
-    ctx.beginPath();
-    ctx.arc(x, centerY, i % 5 === 0 ? 6 : 4, 0, TWO_PI);
-    ctx.fill();
+      ctx.fillStyle = i % 5 === 0 ? "#ef4444" : "#4f46e5";
+      ctx.beginPath();
+      ctx.arc(x, centerY, i % 5 === 0 ? 6 : 4, 0, TWO_PI);
+      ctx.fill();
 
-    ctx.strokeStyle = "rgba(79,70,229,0.18)";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(x, centerY - 70);
-    ctx.lineTo(x, centerY + 70);
-    ctx.stroke();
+      ctx.strokeStyle = "rgba(79,70,229,0.18)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x, centerY - 70);
+      ctx.lineTo(x, centerY + 70);
+      ctx.stroke();
+    }
   }
 
   ctx.beginPath();
@@ -877,7 +1180,11 @@ function drawProgressiveLongitudinalWave({
   ctx.setLineDash([6, 6]);
 
   for (let x = 0; x <= width; x++) {
-    const y = centerY + 105 + amplitude * 0.45 * Math.sin(k * x + sign * omega * t);
+    const y =
+      centerY +
+      105 +
+      amplitudePx * 0.45 * Math.sin(kVisual * x + sign * omega * t + phaseInitialRad);
+
     if (x === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
   }
@@ -886,7 +1193,7 @@ function drawProgressiveLongitudinalWave({
   ctx.setLineDash([]);
 
   if (showMeasures) {
-    drawWavelengthMeasure(ctx, 180, centerY + 155, wavelength);
+    drawWavelengthMeasure(ctx, 180, centerY + 155, wavelengthPx, wavelengthLabel);
     ctx.fillStyle = "#475569";
     ctx.font = "bold 12px Arial";
     ctx.fillText("compressões e rarefações se propagam pelo meio", 26, 40);
@@ -1038,7 +1345,7 @@ function drawInterference({
   ctx.stroke();
 
   if (showMeasures) {
-    drawWavelengthMeasure(ctx, 180, centerY + 150, wavelength);
+    drawWavelengthMeasure(ctx, 180, centerY + 150, wavelength, "λ");
 
     ctx.fillStyle = "#2563eb";
     ctx.font = "bold 12px Arial";
@@ -1083,9 +1390,10 @@ function drawAmplitudeMeasure(
   ctx: CanvasRenderingContext2D,
   x: number,
   centerY: number,
-  amplitude: number
+  amplitude: number,
+  label: string
 ) {
-  drawArrow(ctx, x, centerY, x, centerY - amplitude, "#dc2626", "A");
+  drawArrow(ctx, x, centerY, x, centerY - amplitude, "#dc2626", `A = ${label}`);
   drawArrow(ctx, x + 20, centerY, x + 20, centerY + amplitude, "#dc2626", "A");
 }
 
@@ -1093,9 +1401,10 @@ function drawWavelengthMeasure(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
-  wavelength: number
+  wavelength: number,
+  label: string
 ) {
-  drawArrow(ctx, x, y, x + wavelength, y, "#059669", "λ");
+  drawArrow(ctx, x, y, x + wavelength, y, "#059669", `λ = ${label}`);
 }
 
 function drawCrestValleyLabels(
@@ -1149,7 +1458,9 @@ function drawCanvasInfo({
   wavelength,
   frequency,
   period,
-  amplitude,
+  amplitudeLabel,
+  wavelengthUnit,
+  velocityUnit,
 }: {
   ctx: CanvasRenderingContext2D;
   mode: WaveMode;
@@ -1158,12 +1469,14 @@ function drawCanvasInfo({
   wavelength: number;
   frequency: number;
   period: number;
-  amplitude: number;
+  amplitudeLabel: string;
+  wavelengthUnit: string;
+  velocityUnit: string;
 }) {
   ctx.fillStyle = "rgba(255,255,255,0.92)";
   ctx.strokeStyle = "#e2e8f0";
   ctx.lineWidth = 1;
-  roundRect(ctx, 20, 18, 255, 122, 12);
+  roundRect(ctx, 20, 18, 285, 122, 12);
   ctx.fill();
   ctx.stroke();
 
@@ -1173,11 +1486,11 @@ function drawCanvasInfo({
 
   ctx.font = "12px Arial";
   ctx.fillText(`tipo: ${mode === "progressive" ? getWaveTypeLabel(waveType) : "—"}`, 38, 68);
-  ctx.fillText(`A = ${formatNumber(amplitude)} px`, 38, 88);
-  ctx.fillText(`λ = ${formatNumber(wavelength)} px`, 38, 108);
-  ctx.fillText(`f = ${formatNumber(frequency)} Hz`, 150, 88);
-  ctx.fillText(`v = ${formatNumber(velocity)} px/s`, 150, 108);
-  ctx.fillText(`T = ${formatNumber(period)} s`, 150, 128);
+  ctx.fillText(`A = ${amplitudeLabel}`, 38, 88);
+  ctx.fillText(`λ = ${formatNumber(wavelength, 2)} ${wavelengthUnit}`, 38, 108);
+  ctx.fillText(`f = ${formatNumber(frequency)} Hz`, 172, 88);
+  ctx.fillText(`v = ${formatNumber(velocity, 2)} ${velocityUnit}`, 172, 108);
+  ctx.fillText(`T = ${formatNumber(period, 2)} s`, 172, 128);
 }
 
 function roundRect(
