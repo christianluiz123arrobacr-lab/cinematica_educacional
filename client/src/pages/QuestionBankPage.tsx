@@ -55,8 +55,8 @@ function parseVetFiltersFromUrl() {
 }
 
 function toggleValue(list: string[], value: string) {
-  return list.includes(value)
-    ? list.filter((item) => item !== value)
+  return list.some((item) => normalizeText(item) === normalizeText(value))
+    ? list.filter((item) => normalizeText(item) !== normalizeText(value))
     : [...list, value];
 }
 
@@ -101,9 +101,7 @@ function getQuestionSubtopicsForTopics(
     return getQuestionSubtopics(question);
   }
 
-  const selectedNormalized = selectedTopics.map((topic) =>
-    normalizeText(topic)
-  );
+  const selectedNormalized = selectedTopics.map((topic) => normalizeText(topic));
 
   const subtopics = grouped
     .filter((item) => selectedNormalized.includes(normalizeText(item.topic)))
@@ -121,11 +119,65 @@ function matchesMultiList(values: string[], selected: string[]) {
   return selected.some((item) => normalizedValues.includes(normalizeText(item)));
 }
 
-function getMultiSelectLabel(selected: string[], placeholder: string) {
+function formatSubject(value: string) {
+  const normalized = normalizeText(value);
+
+  if (normalized === "fisica") return "Física";
+  if (normalized === "matematica") return "Matemática";
+  if (normalized === "quimica") return "Química";
+
+  return value;
+}
+
+function formatDifficulty(value: string) {
+  const normalized = normalizeText(value);
+
+  if (normalized === "facil") return "Fácil";
+  if (normalized === "medio") return "Médio";
+  if (normalized === "dificil") return "Difícil";
+
+  return value;
+}
+
+function getMultiSelectLabel(
+  selected: string[],
+  placeholder: string,
+  getItemLabel?: (value: string) => string
+) {
   if (selected.length === 0) return placeholder;
-  if (selected.length === 1) return selected[0];
+  if (selected.length === 1) {
+    return getItemLabel ? getItemLabel(selected[0]) : selected[0];
+  }
 
   return `${selected.length} selecionados`;
+}
+
+function sortSubjects(subjects: string[]) {
+  const order: Record<string, number> = {
+    fisica: 1,
+    matematica: 2,
+    quimica: 3,
+  };
+
+  return [...subjects].sort(
+    (a, b) =>
+      (order[normalizeText(a)] ?? 99) - (order[normalizeText(b)] ?? 99) ||
+      a.localeCompare(b, "pt-BR")
+  );
+}
+
+function sortDifficulties(difficulties: string[]) {
+  const order: Record<string, number> = {
+    facil: 1,
+    medio: 2,
+    dificil: 3,
+  };
+
+  return [...difficulties].sort(
+    (a, b) =>
+      (order[normalizeText(a)] ?? 99) - (order[normalizeText(b)] ?? 99) ||
+      a.localeCompare(b, "pt-BR")
+  );
 }
 
 type MultiSelectDropdownProps = {
@@ -135,6 +187,7 @@ type MultiSelectDropdownProps = {
   onToggle: (value: string) => void;
   placeholder: string;
   emptyMessage: string;
+  getItemLabel?: (value: string) => string;
 };
 
 function MultiSelectDropdown({
@@ -144,6 +197,7 @@ function MultiSelectDropdown({
   onToggle,
   placeholder,
   emptyMessage,
+  getItemLabel,
 }: MultiSelectDropdownProps) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -174,7 +228,7 @@ function MultiSelectDropdown({
         className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-left text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-between"
       >
         <span className="truncate">
-          {getMultiSelectLabel(selected, placeholder)}
+          {getMultiSelectLabel(selected, placeholder, getItemLabel)}
         </span>
 
         <ChevronDown
@@ -205,7 +259,9 @@ function MultiSelectDropdown({
                       className="h-4 w-4 rounded border-slate-300"
                     />
 
-                    <span className="text-sm text-slate-700">{item}</span>
+                    <span className="text-sm text-slate-700">
+                      {getItemLabel ? getItemLabel(item) : item}
+                    </span>
                   </label>
                 );
               })}
@@ -225,18 +281,11 @@ export default function QuestionBankPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
 
-  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
-  const [selectedSubjects, setSelectedSubjects] = useState<string[]>(
-    initialVetFilters.subjects
-  );
-  const [selectedTopics, setSelectedTopics] = useState<string[]>(
-    initialVetFilters.topics
-  );
-  const [selectedSubtopics, setSelectedSubtopics] = useState<string[]>([]);
-  const [selectedYears, setSelectedYears] = useState<string[]>([]);
   const [selectedInstitutions, setSelectedInstitutions] = useState<string[]>(
     initialVetFilters.institution ? [initialVetFilters.institution] : []
   );
+  const [selectedSubtopics, setSelectedSubtopics] = useState<string[]>([]);
+  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
 
   const [vetTopics, setVetTopics] = useState<string[]>(
     initialVetFilters.topics
@@ -248,9 +297,63 @@ export default function QuestionBankPage() {
   const effectiveTopics =
     selectedTopics.length > 0 ? selectedTopics : vetTopics;
 
+  const availableInstitutions = useMemo(() => {
+    return Array.from(
+      new Set(
+        questions
+          .map((q) => q.institution?.trim())
+          .filter(
+            (institution): institution is string =>
+              !!institution && institution !== ""
+          )
+      )
+    ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [questions]);
+
+  const questionsForYears = useMemo(() => {
+    return questions.filter((q) =>
+      matchesMulti(q.institution, selectedInstitutions)
+    );
+  }, [questions, selectedInstitutions]);
+
+  const availableYears = useMemo(() => {
+    return Array.from(
+      new Set(questionsForYears.map((q) => String(q.year)).filter(Boolean))
+    ).sort((a, b) => Number(b) - Number(a));
+  }, [questionsForYears]);
+
+  const questionsForSubjects = useMemo(() => {
+    return questions.filter((q) => {
+      const matchesInstitution = matchesMulti(
+        q.institution,
+        selectedInstitutions
+      );
+      const matchesYear = matchesMulti(String(q.year), selectedYears);
+
+      return matchesInstitution && matchesYear;
+    });
+  }, [questions, selectedInstitutions, selectedYears]);
+
+  const availableSubjects = useMemo(() => {
+    return sortSubjects(
+      Array.from(
+        new Set(questionsForSubjects.map((q) => q.subject).filter(Boolean))
+      )
+    );
+  }, [questionsForSubjects]);
+
   const questionsForTopics = useMemo(() => {
-    return questions.filter((q) => matchesMulti(q.subject, selectedSubjects));
-  }, [questions, selectedSubjects]);
+    return questions.filter((q) => {
+      const matchesInstitution = matchesMulti(
+        q.institution,
+        selectedInstitutions
+      );
+      const matchesYear = matchesMulti(String(q.year), selectedYears);
+      const matchesSubject = matchesMulti(q.subject, selectedSubjects);
+
+      return matchesInstitution && matchesYear && matchesSubject;
+    });
+  }, [questions, selectedInstitutions, selectedYears, selectedSubjects]);
 
   const availableTopics = useMemo(() => {
     return Array.from(
@@ -264,15 +367,26 @@ export default function QuestionBankPage() {
 
   const questionsForSubtopics = useMemo(() => {
     return questions.filter((q) => {
+      const matchesInstitution = matchesMulti(
+        q.institution,
+        selectedInstitutions
+      );
+      const matchesYear = matchesMulti(String(q.year), selectedYears);
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
       const matchesTopic = matchesMultiList(
         getQuestionTopics(q),
         effectiveTopics
       );
 
-      return matchesSubject && matchesTopic;
+      return matchesInstitution && matchesYear && matchesSubject && matchesTopic;
     });
-  }, [questions, selectedSubjects, effectiveTopics]);
+  }, [
+    questions,
+    selectedInstitutions,
+    selectedYears,
+    selectedSubjects,
+    effectiveTopics,
+  ]);
 
   const availableSubtopics = useMemo(() => {
     return Array.from(
@@ -284,12 +398,13 @@ export default function QuestionBankPage() {
     ).sort((a, b) => a.localeCompare(b, "pt-BR"));
   }, [questionsForSubtopics, effectiveTopics]);
 
-  const questionsForYears = useMemo(() => {
+  const questionsForDifficulties = useMemo(() => {
     return questions.filter((q) => {
-      const matchesDifficulty = matchesMulti(
-        q.difficulty,
-        selectedDifficulties
+      const matchesInstitution = matchesMulti(
+        q.institution,
+        selectedInstitutions
       );
+      const matchesYear = matchesMulti(String(q.year), selectedYears);
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
       const matchesTopic = matchesMultiList(
         getQuestionTopics(q),
@@ -301,7 +416,8 @@ export default function QuestionBankPage() {
       );
 
       return (
-        matchesDifficulty &&
+        matchesInstitution &&
+        matchesYear &&
         matchesSubject &&
         matchesTopic &&
         matchesSubtopic
@@ -309,64 +425,25 @@ export default function QuestionBankPage() {
     });
   }, [
     questions,
-    selectedDifficulties,
-    selectedSubjects,
-    effectiveTopics,
-    selectedSubtopics,
-  ]);
-
-  const availableYears = useMemo(() => {
-    return Array.from(
-      new Set(questionsForYears.map((q) => String(q.year)).filter(Boolean))
-    ).sort((a, b) => Number(b) - Number(a));
-  }, [questionsForYears]);
-
-  const questionsForInstitutions = useMemo(() => {
-    return questions.filter((q) => {
-      const matchesDifficulty = matchesMulti(
-        q.difficulty,
-        selectedDifficulties
-      );
-      const matchesSubject = matchesMulti(q.subject, selectedSubjects);
-      const matchesTopic = matchesMultiList(
-        getQuestionTopics(q),
-        effectiveTopics
-      );
-      const matchesSubtopic = matchesMultiList(
-        getQuestionSubtopicsForTopics(q, effectiveTopics),
-        selectedSubtopics
-      );
-      const matchesYear = matchesMulti(String(q.year), selectedYears);
-
-      return (
-        matchesDifficulty &&
-        matchesSubject &&
-        matchesTopic &&
-        matchesSubtopic &&
-        matchesYear
-      );
-    });
-  }, [
-    questions,
-    selectedDifficulties,
-    selectedSubjects,
-    effectiveTopics,
-    selectedSubtopics,
+    selectedInstitutions,
     selectedYears,
+    selectedSubjects,
+    effectiveTopics,
+    selectedSubtopics,
   ]);
 
-  const availableInstitutions = useMemo(() => {
-    return Array.from(
-      new Set(
-        questionsForInstitutions
-          .map((q) => q.institution?.trim())
-          .filter(
-            (institution): institution is string =>
-              !!institution && institution !== ""
-          )
+  const availableDifficulties = useMemo(() => {
+    return sortDifficulties(
+      Array.from(
+        new Set(
+          questionsForDifficulties
+            .map((q) => q.difficulty)
+            .filter(Boolean)
+            .map((item) => String(item))
+        )
       )
-    ).sort((a, b) => a.localeCompare(b, "pt-BR"));
-  }, [questionsForInstitutions]);
+    );
+  }, [questionsForDifficulties]);
 
   const totalSubjects = useMemo(
     () => new Set(questions.map((q) => q.subject).filter(Boolean)).size,
@@ -447,7 +524,11 @@ export default function QuestionBankPage() {
     let filtered = questions;
 
     filtered = filtered.filter((q) =>
-      matchesMulti(q.difficulty, selectedDifficulties)
+      matchesMulti(q.institution, selectedInstitutions)
+    );
+
+    filtered = filtered.filter((q) =>
+      matchesMulti(String(q.year), selectedYears)
     );
 
     filtered = filtered.filter((q) =>
@@ -466,33 +547,36 @@ export default function QuestionBankPage() {
         selectedSubtopics
       )
     );
-
+  
+  const [selectedYears, setSelectedYears] = useState<string[]>([]);
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>(
+    initialVetFilters.subjects
+  );
+  const [selectedTopics, setSelectedTopics] = useState<string[]>(
+    initialVetFilters.topics
+  );
     filtered = filtered.filter((q) =>
-      matchesMulti(String(q.year), selectedYears)
-    );
-
-    filtered = filtered.filter((q) =>
-      matchesMulti(q.institution, selectedInstitutions)
+      matchesMulti(q.difficulty, selectedDifficulties)
     );
 
     setFilteredQuestions(filtered);
   }, [
     questions,
-    selectedDifficulties,
+    selectedInstitutions,
+    selectedYears,
     selectedSubjects,
     effectiveTopics,
     selectedSubtopics,
-    selectedYears,
-    selectedInstitutions,
+    selectedDifficulties,
   ]);
 
   function clearAllFilters() {
-    setSelectedDifficulties([]);
+    setSelectedInstitutions([]);
+    setSelectedYears([]);
     setSelectedSubjects([]);
     setSelectedTopics([]);
     setSelectedSubtopics([]);
-    setSelectedYears([]);
-    setSelectedInstitutions([]);
+    setSelectedDifficulties([]);
     setVetTopics([]);
     setVetBlock("");
   }
@@ -701,137 +785,90 @@ export default function QuestionBankPage() {
                 <h3 className="text-lg font-bold text-slate-900">Filtros</h3>
 
                 <p className="text-sm text-slate-500">
-                  Você pode combinar várias opções ao mesmo tempo
+                  Ordem estratégica: instituição, ano, disciplina, conteúdo,
+                  assunto e dificuldade.
                 </p>
               </div>
             </div>
 
-            <div className="space-y-8">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-3">
-                  Dificuldade
-                </label>
+            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <MultiSelectDropdown
+                title="Instituição"
+                items={availableInstitutions}
+                selected={selectedInstitutions}
+                onToggle={(value) =>
+                  setSelectedInstitutions((prev) => toggleValue(prev, value))
+                }
+                placeholder="Todas"
+                emptyMessage="Nenhuma instituição disponível."
+              />
 
-                <div className="flex flex-wrap gap-3">
-                  {["facil", "medio", "dificil"].map((diff) => {
-                    const selected = selectedDifficulties.includes(diff);
+              <MultiSelectDropdown
+                title="Ano"
+                items={availableYears}
+                selected={selectedYears}
+                onToggle={(value) =>
+                  setSelectedYears((prev) => toggleValue(prev, value))
+                }
+                placeholder="Todos"
+                emptyMessage="Nenhum ano disponível."
+              />
 
-                    return (
-                      <button
-                        key={diff}
-                        onClick={() =>
-                          setSelectedDifficulties((prev) =>
-                            toggleValue(prev, diff)
-                          )
-                        }
-                        className={`px-4 py-2.5 rounded-full border text-sm font-semibold transition-all ${
-                          selected
-                            ? diff === "facil"
-                              ? "bg-green-500 border-green-500 text-white shadow-sm"
-                              : diff === "medio"
-                                ? "bg-yellow-500 border-yellow-500 text-white shadow-sm"
-                                : "bg-red-500 border-red-500 text-white shadow-sm"
-                            : "bg-white border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-50"
-                        }`}
-                      >
-                        {diff === "facil"
-                          ? "Fácil"
-                          : diff === "medio"
-                            ? "Médio"
-                            : "Difícil"}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              <MultiSelectDropdown
+                title="Disciplina"
+                items={availableSubjects}
+                selected={selectedSubjects}
+                onToggle={(value) =>
+                  setSelectedSubjects((prev) => toggleValue(prev, value))
+                }
+                placeholder="Todas"
+                emptyMessage="Nenhuma disciplina disponível."
+                getItemLabel={formatSubject}
+              />
 
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-3">
-                  Disciplina
-                </label>
+              <MultiSelectDropdown
+                title="Conteúdo"
+                items={availableTopics}
+                selected={selectedTopics}
+                onToggle={(value) =>
+                  setSelectedTopics((prev) => toggleValue(prev, value))
+                }
+                placeholder="Todos"
+                emptyMessage="Nenhum conteúdo disponível."
+              />
 
-                <div className="flex flex-wrap gap-3">
-                  {["fisica", "matematica", "quimica"].map((subj) => {
-                    const selected = selectedSubjects.includes(subj);
+              <MultiSelectDropdown
+                title="Assunto"
+                items={availableSubtopics}
+                selected={selectedSubtopics}
+                onToggle={(value) =>
+                  setSelectedSubtopics((prev) => toggleValue(prev, value))
+                }
+                placeholder="Todos"
+                emptyMessage="Nenhum assunto disponível."
+              />
 
-                    return (
-                      <button
-                        key={subj}
-                        onClick={() =>
-                          setSelectedSubjects((prev) => toggleValue(prev, subj))
-                        }
-                        className={`px-4 py-2.5 rounded-full border text-sm font-semibold transition-all ${
-                          selected
-                            ? "bg-blue-600 border-blue-600 text-white shadow-sm"
-                            : "bg-white border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-50"
-                        }`}
-                      >
-                        {subj === "fisica"
-                          ? "Física"
-                          : subj === "matematica"
-                            ? "Matemática"
-                            : "Química"}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              <MultiSelectDropdown
+                title="Dificuldade"
+                items={availableDifficulties}
+                selected={selectedDifficulties}
+                onToggle={(value) =>
+                  setSelectedDifficulties((prev) => toggleValue(prev, value))
+                }
+                placeholder="Todas"
+                emptyMessage="Nenhuma dificuldade disponível."
+                getItemLabel={formatDifficulty}
+              />
+            </div>
 
-              <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
-                <MultiSelectDropdown
-                  title="Conteúdo"
-                  items={availableTopics}
-                  selected={selectedTopics}
-                  onToggle={(value) =>
-                    setSelectedTopics((prev) => toggleValue(prev, value))
-                  }
-                  placeholder="Todos"
-                  emptyMessage="Nenhum conteúdo disponível."
-                />
-
-                <MultiSelectDropdown
-                  title="Assunto"
-                  items={availableSubtopics}
-                  selected={selectedSubtopics}
-                  onToggle={(value) =>
-                    setSelectedSubtopics((prev) => toggleValue(prev, value))
-                  }
-                  placeholder="Todos"
-                  emptyMessage="Nenhum assunto disponível."
-                />
-
-                <MultiSelectDropdown
-                  title="Ano"
-                  items={availableYears}
-                  selected={selectedYears}
-                  onToggle={(value) =>
-                    setSelectedYears((prev) => toggleValue(prev, value))
-                  }
-                  placeholder="Todos"
-                  emptyMessage="Nenhum ano disponível."
-                />
-
-                <MultiSelectDropdown
-                  title="Instituição"
-                  items={availableInstitutions}
-                  selected={selectedInstitutions}
-                  onToggle={(value) =>
-                    setSelectedInstitutions((prev) => toggleValue(prev, value))
-                  }
-                  placeholder="Todas"
-                  emptyMessage="Nenhuma instituição disponível."
-                />
-              </div>
-
-              <div className="flex justify-end">
-                <Button
-                  variant="outline"
-                  onClick={clearAllFilters}
-                  className="rounded-xl"
-                >
-                  Limpar filtros
-                </Button>
-              </div>
+            <div className="flex justify-end mt-6">
+              <Button
+                variant="outline"
+                onClick={clearAllFilters}
+                className="rounded-xl"
+              >
+                Limpar filtros
+              </Button>
             </div>
           </Card>
         </section>
@@ -840,12 +877,12 @@ export default function QuestionBankPage() {
           {filteredQuestions.length > 0 ? (
             <InteractiveQuiz
               key={[
-                selectedDifficulties.join("|"),
+                selectedInstitutions.join("|"),
+                selectedYears.join("|"),
                 selectedSubjects.join("|"),
                 selectedTopics.join("|"),
                 selectedSubtopics.join("|"),
-                selectedYears.join("|"),
-                selectedInstitutions.join("|"),
+                selectedDifficulties.join("|"),
                 vetTopics.join("|"),
               ].join("::")}
               questions={filteredQuestions}
