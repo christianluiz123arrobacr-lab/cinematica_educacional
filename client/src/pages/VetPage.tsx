@@ -13,6 +13,7 @@ import {
   Clock3,
   BarChart3,
   ArrowRight,
+  Activity,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -46,18 +47,21 @@ const secondaryModules = [
 
 const planSteps = [
   {
-    title: "Prioridades",
-    description: "O VET aponta os conteúdos que merecem sua atenção primeiro.",
-    icon: Flame,
+    title: "Diagnóstico",
+    description:
+      "O VET lê seu objetivo, desempenho, erros, tempo restante e peso dos conteúdos.",
+    icon: Activity,
   },
   {
-    title: "Treino",
-    description: "A prioridade vira uma meta prática de questões e revisão.",
-    icon: Clock3,
+    title: "Plano",
+    description:
+      "O diagnóstico vira prioridades, blocos de treino e uma ordem de ataque.",
+    icon: BrainCircuit,
   },
   {
     title: "Questões",
-    description: "Você já começa resolvendo questões reais alinhadas ao plano.",
+    description:
+      "Você executa o plano resolvendo questões reais alinhadas ao seu momento.",
     icon: CheckCircle2,
   },
 ];
@@ -126,19 +130,19 @@ export default function VetPage() {
               </div>
 
               <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
-                Seu treino precisa de direção, não de mais abas abertas
+                Antes de treinar mais, descubra onde atacar primeiro
               </h2>
 
               <p className="text-emerald-50 max-w-3xl leading-relaxed">
-                O VET organiza seu estudo em uma sequência simples: entender o
-                objetivo, definir prioridades, montar o treino e entregar
-                questões reais para executar.
+                O VET começa pelo diagnóstico: ele cruza seu objetivo,
+                desempenho, tempo até a prova e peso dos conteúdos para indicar
+                sua próxima ação com mais precisão.
               </p>
 
               <div className="flex flex-wrap gap-3 mt-7">
-                <Link href="/vet/plano">
+                <Link href="/vet/diagnostico">
                   <Button className="bg-white text-emerald-700 hover:bg-emerald-50 rounded-2xl px-6 py-5 font-bold">
-                    Abrir Plano VET
+                    Abrir diagnóstico
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
@@ -198,7 +202,7 @@ export default function VetPage() {
               <div className="flex items-start justify-between gap-4 flex-wrap mb-6">
                 <div className="flex items-center gap-4">
                   <div className="h-14 w-14 rounded-2xl bg-emerald-100 flex items-center justify-center">
-                    <BrainCircuit className="w-7 h-7 text-emerald-700" />
+                    <Activity className="w-7 h-7 text-emerald-700" />
                   </div>
 
                   <div>
@@ -208,16 +212,16 @@ export default function VetPage() {
                     </div>
 
                     <h3 className="text-3xl font-bold text-slate-900">
-                      Plano VET
+                      Diagnóstico VET
                     </h3>
                   </div>
                 </div>
               </div>
 
               <p className="text-slate-600 leading-relaxed text-base mb-7 max-w-3xl">
-                Aqui ficam juntas as três partes que realmente importam:
-                prioridades, treino recomendado e questões recomendadas. Menos
-                clique perdido, mais execução.
+                O diagnóstico é o ponto de partida. Ele mostra seu momento
+                atual, seu risco, seus conteúdos críticos e o próximo passo
+                antes de transformar tudo em um Plano VET executável.
               </p>
 
               <div className="grid md:grid-cols-3 gap-4 mb-8">
@@ -225,9 +229,11 @@ export default function VetPage() {
                   <div className="w-10 h-10 rounded-xl bg-red-100 text-red-700 flex items-center justify-center mb-3">
                     <Flame className="w-5 h-5" />
                   </div>
-                  <p className="font-bold text-slate-900 mb-1">Prioridade</p>
+                  <p className="font-bold text-slate-900 mb-1">
+                    Conteúdos críticos
+                  </p>
                   <p className="text-sm text-slate-600">
-                    O que atacar primeiro com base no peso e desempenho.
+                    O VET mostra onde seu desempenho está mais perigoso.
                   </p>
                 </div>
 
@@ -235,9 +241,11 @@ export default function VetPage() {
                   <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center mb-3">
                     <BarChart3 className="w-5 h-5" />
                   </div>
-                  <p className="font-bold text-slate-900 mb-1">Treino</p>
+                  <p className="font-bold text-slate-900 mb-1">
+                    Leitura estratégica
+                  </p>
                   <p className="text-sm text-slate-600">
-                    Uma meta prática para transformar diagnóstico em ação.
+                    Aproveitamento, erros, tempo restante e peso da prova.
                   </p>
                 </div>
 
@@ -245,24 +253,29 @@ export default function VetPage() {
                   <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-3">
                     <CheckCircle2 className="w-5 h-5" />
                   </div>
-                  <p className="font-bold text-slate-900 mb-1">Questões</p>
+                  <p className="font-bold text-slate-900 mb-1">
+                    Próximo passo
+                  </p>
                   <p className="text-sm text-slate-600">
-                    Questões reais já alinhadas com o bloco recomendado.
+                    O diagnóstico indica por onde começar sem estudar no escuro.
                   </p>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Link href="/vet/plano">
+                <Link href="/vet/diagnostico">
                   <Button className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl px-7 py-5 font-bold">
-                    Começar pelo Plano VET
+                    Abrir diagnóstico
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
 
-                <Link href="/vet/simulado">
-                  <Button variant="outline" className="rounded-2xl px-7 py-5 font-bold">
-                    Ir para simulado
+                <Link href="/vet/plano">
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl px-7 py-5 font-bold"
+                  >
+                    Ir para Plano VET
                   </Button>
                 </Link>
               </div>
@@ -280,15 +293,15 @@ export default function VetPage() {
                   Leitura do VET
                 </h3>
                 <p className="text-sm text-slate-500">
-                  O papel da página inicial
+                  Como usar esta central
                 </p>
               </div>
             </div>
 
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
               <p className="text-slate-700 leading-relaxed">
-                Use esta tela como ponto de partida. Configure seu objetivo,
-                abra o Plano VET para executar o treino e use o simulado para
+                Comece pelo diagnóstico para entender seu cenário. Depois use o
+                Plano VET para executar o treino e finalize com simulados para
                 medir se a estratégia está funcionando.
               </p>
             </div>
@@ -296,19 +309,19 @@ export default function VetPage() {
             <div className="mt-5 grid grid-cols-2 gap-3">
               <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
                 <p className="text-sm text-emerald-700 font-semibold mb-1">
-                  Caminho principal
+                  Entrada
                 </p>
                 <p className="text-xl font-bold text-slate-900">
-                  Plano VET
+                  Diagnóstico
                 </p>
               </div>
 
               <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4">
                 <p className="text-sm text-blue-700 font-semibold mb-1">
-                  Medição
+                  Execução
                 </p>
                 <p className="text-xl font-bold text-slate-900">
-                  Simulado
+                  Plano VET
                 </p>
               </div>
             </div>
@@ -321,7 +334,7 @@ export default function VetPage() {
               Prévia da estratégia
             </h2>
             <p className="text-sm text-slate-500">
-              O Plano VET organiza seus conteúdos nestes três blocos.
+              Depois do diagnóstico, o Plano VET organiza seus conteúdos nestes três blocos.
             </p>
           </div>
 
