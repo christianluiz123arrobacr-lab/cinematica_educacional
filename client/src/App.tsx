@@ -33,6 +33,7 @@ import AdminUploadsPage from "./pages/AdminUploadsPage";
 import AdminVetPage from "./pages/AdminVetPage";
 import AdminLogsPage from "./pages/AdminLogsPage";
 import AdminQuestionEditPage from "./pages/AdminQuestionEditPage";
+import AdminQuestionReportsPage from "./pages/AdminQuestionReportsPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import DinamicaHome from "./pages/DinamicaHome";
@@ -152,6 +153,7 @@ function PrivateRouter() {
         <Route path="/admin/uploads" component={AdminUploadsPage} />
         <Route path="/admin/vet" component={AdminVetPage} />
         <Route path="/admin/logs" component={AdminLogsPage} />
+        <Route path="/admin/reports" component={AdminQuestionReportsPage} />
 
         <Route path="/fisica-i" component={FisicaIHome} />
         <Route path="/fisica-ii" component={FisicaIIHome} />
