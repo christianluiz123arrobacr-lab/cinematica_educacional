@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { ComponentType } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -179,12 +180,20 @@ function sortDifficulties(values: string[]) {
   );
 }
 
+function areNormalizedListsEqual(a: string[], b: string[]) {
+  if (a.length !== b.length) return false;
+
+  return a.every((item, index) => normalizeText(item) === normalizeText(b[index]));
+}
+
 function keepOnlyAvailableSelected(selected: string[], available: string[]) {
   const availableNormalized = available.map((item) => normalizeText(item));
 
-  return selected.filter((item) =>
+  const filtered = selected.filter((item) =>
     availableNormalized.includes(normalizeText(item))
   );
+
+  return areNormalizedListsEqual(selected, filtered) ? selected : filtered;
 }
 
 function getMultiSelectLabel(
@@ -193,6 +202,7 @@ function getMultiSelectLabel(
   formatter?: (value: string) => string
 ) {
   if (selected.length === 0) return placeholder;
+
   if (selected.length === 1) {
     return formatter ? formatter(selected[0]) : selected[0];
   }
@@ -209,7 +219,7 @@ type MultiSelectDropdownProps = {
   placeholder: string;
   emptyMessage: string;
   formatter?: (value: string) => string;
-  icon?: React.ComponentType<{ className?: string }>;
+  icon?: ComponentType<{ className?: string }>;
 };
 
 function MultiSelectDropdown({
@@ -265,7 +275,7 @@ function MultiSelectDropdown({
         />
       </button>
 
-      {open && (
+      {open ? (
         <div className="absolute z-30 mt-2 w-full rounded-2xl border border-slate-200 bg-white shadow-xl p-3 max-h-64 overflow-y-auto">
           {items.length > 0 ? (
             <div className="space-y-2">
@@ -297,7 +307,7 @@ function MultiSelectDropdown({
             <p className="text-sm text-slate-500 px-2 py-2">{emptyMessage}</p>
           )}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -329,17 +339,23 @@ export default function QuestionBankPage() {
   const [selectedInstitutions, setSelectedInstitutions] = useState<string[]>(
     initialVetFilters.institution ? [initialVetFilters.institution] : []
   );
+
   const [selectedYears, setSelectedYears] = useState<string[]>([]);
+
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>(
     initialVetFilters.subjects
   );
+
   const [selectedTopics, setSelectedTopics] = useState<string[]>(
     initialVetFilters.topics
   );
+
   const [selectedSubtopics, setSelectedSubtopics] = useState<string[]>([]);
+
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
 
   const [vetTopics, setVetTopics] = useState<string[]>(initialVetFilters.topics);
+
   const [vetBlock, setVetBlock] = useState<string>(initialVetFilters.block);
 
   const hasVetFilter = vetTopics.length > 0;
@@ -378,6 +394,7 @@ export default function QuestionBankPage() {
         q.institution,
         selectedInstitutions
       );
+
       const matchesYear = matchesMulti(String(q.year), selectedYears);
 
       return matchesInstitution && matchesYear;
@@ -398,6 +415,7 @@ export default function QuestionBankPage() {
         q.institution,
         selectedInstitutions
       );
+
       const matchesYear = matchesMulti(String(q.year), selectedYears);
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
 
@@ -421,8 +439,10 @@ export default function QuestionBankPage() {
         q.institution,
         selectedInstitutions
       );
+
       const matchesYear = matchesMulti(String(q.year), selectedYears);
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
+
       const matchesTopic = matchesMultiList(
         getQuestionTopics(q),
         effectiveTopics
@@ -454,12 +474,15 @@ export default function QuestionBankPage() {
         q.institution,
         selectedInstitutions
       );
+
       const matchesYear = matchesMulti(String(q.year), selectedYears);
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
+
       const matchesTopic = matchesMultiList(
         getQuestionTopics(q),
         effectiveTopics
       );
+
       const matchesSubtopic = matchesMultiList(
         getQuestionSubtopicsForTopics(q, effectiveTopics),
         selectedSubtopics
@@ -541,7 +564,9 @@ export default function QuestionBankPage() {
 
     const counts = questions.reduce<Record<string, number>>((acc, q) => {
       if (!q.subject) return acc;
+
       acc[q.subject] = (acc[q.subject] || 0) + 1;
+
       return acc;
     }, {});
 
@@ -563,7 +588,9 @@ export default function QuestionBankPage() {
 
     const counts = questions.reduce<Record<string, number>>((acc, q) => {
       if (!q.difficulty) return acc;
+
       acc[q.difficulty] = (acc[q.difficulty] || 0) + 1;
+
       return acc;
     }, {});
 
@@ -585,8 +612,11 @@ export default function QuestionBankPage() {
   const filteredDifficultyStats = useMemo(() => {
     const counts = filteredQuestions.reduce<Record<string, number>>((acc, q) => {
       const difficulty = String(q.difficulty ?? "");
+
       if (!difficulty) return acc;
+
       acc[difficulty] = (acc[difficulty] || 0) + 1;
+
       return acc;
     }, {});
 
@@ -698,6 +728,7 @@ export default function QuestionBankPage() {
   useEffect(() => {
     async function loadQuestions() {
       const data = await getQuestions();
+
       setQuestions(data);
       setFilteredQuestions(data);
     }
@@ -766,54 +797,58 @@ export default function QuestionBankPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/30 to-slate-100">
-      <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-slate-200/70">
-        <div className="container py-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/70">
+        <div className="container py-2.5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
             <Link href="/">
-              <a className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
+              <a className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
                 <ArrowLeft className="w-4 h-4" />
                 Voltar
               </a>
             </Link>
 
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-500 flex items-center justify-center shadow-lg">
-                <Zap className="w-6 h-6 text-white" />
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-500 flex items-center justify-center shadow-md shrink-0">
+                <Zap className="w-5 h-5 text-white" />
               </div>
 
-              <div>
-                <h1 className="text-3xl font-bold text-slate-900">
+              <div className="min-w-0">
+                <h1 className="text-xl md:text-2xl font-bold text-slate-900 leading-tight truncate">
                   Banco de Questões
                 </h1>
-                <p className="text-sm text-slate-500">
+
+                <p className="text-xs text-slate-500 truncate">
                   Premium • Questões comentadas
                 </p>
               </div>
             </div>
           </div>
 
-          <Card className="hidden md:flex items-center gap-4 px-5 py-4 border-violet-100 bg-white shadow-sm">
-            <div className="w-12 h-12 rounded-2xl bg-violet-600 flex items-center justify-center">
-              <BookMarked className="w-6 h-6 text-white" />
+          <Card className="hidden sm:flex items-center gap-3 px-4 py-2.5 border-violet-100 bg-white shadow-sm rounded-2xl">
+            <div className="w-9 h-9 rounded-xl bg-violet-600 flex items-center justify-center">
+              <BookMarked className="w-5 h-5 text-white" />
             </div>
 
             <div>
-              <p className="text-3xl font-bold text-slate-900 leading-none">
+              <p className="text-xl font-bold text-slate-900 leading-none">
                 {filteredQuestions.length}
               </p>
-              <p className="text-sm font-semibold text-violet-700">questões</p>
+
+              <p className="text-xs font-semibold text-violet-700">
+                questões
+              </p>
             </div>
           </Card>
         </div>
       </header>
 
-      <main className="container py-10 space-y-8">
-        {hasVetFilter && (
+      <main className="container py-8 space-y-7">
+        {hasVetFilter ? (
           <section>
             <Card className="p-4 md:p-5 border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50">
               <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
                     <BrainCircuit className="w-5 h-5 text-emerald-700" />
                   </div>
 
@@ -850,59 +885,67 @@ export default function QuestionBankPage() {
               </div>
             </Card>
           </section>
-        )}
+        ) : null}
 
         <section className="grid md:grid-cols-3 gap-5">
-          <Card className="p-6 border-violet-100 bg-white shadow-sm">
+          <Card className="p-5 border-violet-100 bg-white shadow-sm">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-violet-100 flex items-center justify-center">
-                <BookMarked className="w-7 h-7 text-violet-600" />
+              <div className="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center">
+                <BookMarked className="w-6 h-6 text-violet-600" />
               </div>
 
               <div>
                 <p className="text-3xl font-bold text-slate-900">
                   {questions.length}
                 </p>
-                <p className="text-base font-semibold text-slate-800">
+
+                <p className="text-sm font-semibold text-slate-800">
                   Total de Questões
                 </p>
-                <p className="text-sm text-slate-500">Disponíveis</p>
+
+                <p className="text-xs text-slate-500">Disponíveis</p>
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 border-blue-100 bg-white shadow-sm">
+          <Card className="p-5 border-blue-100 bg-white shadow-sm">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center">
-                <GraduationCap className="w-7 h-7 text-blue-600" />
+              <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center">
+                <GraduationCap className="w-6 h-6 text-blue-600" />
               </div>
 
               <div>
                 <p className="text-3xl font-bold text-slate-900">
                   {totalSubjects}
                 </p>
-                <p className="text-base font-semibold text-slate-800">
+
+                <p className="text-sm font-semibold text-slate-800">
                   Disciplinas
                 </p>
-                <p className="text-sm text-slate-500">Cobertas</p>
+
+                <p className="text-xs text-slate-500">Cobertas</p>
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 border-orange-100 bg-white shadow-sm">
+          <Card className="p-5 border-orange-100 bg-white shadow-sm">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center">
-                <BarChart3 className="w-7 h-7 text-orange-600" />
+              <div className="w-12 h-12 rounded-2xl bg-orange-100 flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-orange-600" />
               </div>
 
               <div>
                 <p className="text-3xl font-bold text-slate-900">
                   {totalDifficulties}
                 </p>
-                <p className="text-base font-semibold text-slate-800">
+
+                <p className="text-sm font-semibold text-slate-800">
                   Dificuldades
                 </p>
-                <p className="text-sm text-slate-500">Fácil, Média, Difícil</p>
+
+                <p className="text-xs text-slate-500">
+                  Fácil, Média, Difícil
+                </p>
               </div>
             </div>
           </Card>
@@ -928,6 +971,7 @@ export default function QuestionBankPage() {
                         <span className="text-sm font-medium text-slate-700">
                           {item.label}
                         </span>
+
                         <span className="text-sm text-slate-500">
                           {item.count} ({percentage}%)
                         </span>
@@ -976,6 +1020,7 @@ export default function QuestionBankPage() {
                         <span className="text-sm font-medium text-slate-700">
                           {item.label}
                         </span>
+
                         <span className="text-sm text-slate-500">
                           {item.count} ({percentage}%)
                         </span>
@@ -1008,7 +1053,10 @@ export default function QuestionBankPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900">Filtros</h3>
+                  <h3 className="text-xl font-bold text-slate-900">
+                    Filtros
+                  </h3>
+
                   <p className="text-sm text-slate-500">
                     Aplique os filtros na ordem estratégica abaixo.
                   </p>
@@ -1110,6 +1158,7 @@ export default function QuestionBankPage() {
               <div className="mt-6 border-t border-slate-100 pt-5">
                 <div className="flex items-center gap-2 mb-3">
                   <ListFilter className="w-4 h-4 text-slate-500" />
+
                   <p className="text-sm font-semibold text-slate-700">
                     Filtros ativos
                   </p>
@@ -1131,6 +1180,7 @@ export default function QuestionBankPage() {
           <Card className="p-6 bg-white border-slate-200 shadow-sm">
             <div className="flex items-center gap-2 mb-5">
               <BookMarked className="w-5 h-5 text-violet-600" />
+
               <h3 className="text-lg font-bold text-slate-900">
                 Resumo do filtro
               </h3>
@@ -1139,6 +1189,7 @@ export default function QuestionBankPage() {
             <div className="space-y-3 text-sm text-slate-700 mb-6">
               <div className="flex justify-between gap-4">
                 <span className="text-slate-500">Instituição</span>
+
                 <span className="font-semibold text-right">
                   {selectedInstitutions.length > 0
                     ? selectedInstitutions.join(", ")
@@ -1148,13 +1199,17 @@ export default function QuestionBankPage() {
 
               <div className="flex justify-between gap-4">
                 <span className="text-slate-500">Ano</span>
+
                 <span className="font-semibold text-right">
-                  {selectedYears.length > 0 ? selectedYears.join(", ") : "Todos"}
+                  {selectedYears.length > 0
+                    ? selectedYears.join(", ")
+                    : "Todos"}
                 </span>
               </div>
 
               <div className="flex justify-between gap-4">
                 <span className="text-slate-500">Disciplina</span>
+
                 <span className="font-semibold text-right">
                   {selectedSubjects.length > 0
                     ? selectedSubjects.map(formatSubjectLabel).join(", ")
@@ -1164,13 +1219,17 @@ export default function QuestionBankPage() {
 
               <div className="flex justify-between gap-4">
                 <span className="text-slate-500">Conteúdo</span>
+
                 <span className="font-semibold text-right">
-                  {effectiveTopics.length > 0 ? effectiveTopics.join(", ") : "Todos"}
+                  {effectiveTopics.length > 0
+                    ? effectiveTopics.join(", ")
+                    : "Todos"}
                 </span>
               </div>
 
               <div className="flex justify-between gap-4">
                 <span className="text-slate-500">Assunto</span>
+
                 <span className="font-semibold text-right">
                   {selectedSubtopics.length > 0
                     ? selectedSubtopics.join(", ")
@@ -1180,6 +1239,7 @@ export default function QuestionBankPage() {
 
               <div className="flex justify-between gap-4">
                 <span className="text-slate-500">Dificuldade</span>
+
                 <span className="font-semibold text-right">
                   {selectedDifficulties.length > 0
                     ? selectedDifficulties.map(formatDifficultyLabel).join(", ")
@@ -1189,7 +1249,10 @@ export default function QuestionBankPage() {
             </div>
 
             <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4 mb-6">
-              <p className="text-sm text-slate-500 mb-1">Questões encontradas</p>
+              <p className="text-sm text-slate-500 mb-1">
+                Questões encontradas
+              </p>
+
               <p className="text-3xl font-bold text-slate-900">
                 {filteredQuestions.length}
               </p>
@@ -1204,7 +1267,9 @@ export default function QuestionBankPage() {
                 {filteredDifficultyStats.map((item) => {
                   const percentage =
                     filteredQuestions.length > 0
-                      ? Math.round((item.count / filteredQuestions.length) * 100)
+                      ? Math.round(
+                          (item.count / filteredQuestions.length) * 100
+                        )
                       : 0;
 
                   return (
@@ -1214,6 +1279,7 @@ export default function QuestionBankPage() {
                           <span
                             className={`w-2.5 h-2.5 rounded-full ${item.colorClass}`}
                           />
+
                           <span className="text-sm text-slate-700">
                             {item.label}
                           </span>
