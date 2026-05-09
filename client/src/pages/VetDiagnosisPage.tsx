@@ -11,162 +11,72 @@ import {
   Clock3,
   Flame,
   Gauge,
+  History,
   Layers3,
+  LineChart,
   ShieldCheck,
   Target,
   TrendingDown,
   TrendingUp,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import { getQuestions } from "@/services/questions.service";
+import {
+  buildVetEngineResult,
+  formatVetPercent,
+  formatVetTime,
+  prettifyVetText,
+  type VetAttempt,
+  type VetCollectiveContentStat,
+  type VetEngineResult,
+  type VetProfile,
+  type VetStrategicContent,
+  type VetTrainingBlock,
+  type VetWeight,
+} from "@/lib/vetEngine";
 
-type VetProfileRow = {
+type VetProfileRow = VetProfile & {
   id: string;
   user_id: string;
-  target_exam: string;
-  months_until_exam: number;
-  hours_per_day: number;
-  focus_subject: string;
 };
 
-type AttemptRow = {
-  id: string;
-  user_id: string;
-  question_id: string;
-  selected_option: string | null;
-  is_correct: boolean;
-  time_spent_seconds: number | null;
-  answered_at: string;
-  attempt_number: number;
-  subject: string | null;
-  conteudo: string | null;
-  assunto: string | null;
-  banca: string | null;
-  ano: number | null;
-  difficulty: string | null;
-};
-
-type WeightRow = {
-  id: string;
-  exam: string;
-  subject: string;
-  conteudo: string;
-  weight: number;
-};
-
-type SubjectStat = {
-  label: string;
-  total: number;
-  correct: number;
-  wrong: number;
-  accuracy: number;
-};
-
-type ContentDiagnosis = {
-  conteudo: string;
-  subject: string;
-  total: number;
-  correct: number;
-  wrong: number;
-  accuracy: number;
-  weight: number;
-  weaknessScore: number;
-  wrongVolumeScore: number;
-  urgencyTimeScore: number;
-  urgencyScore: number;
-  block: "ataque" | "consolidacao" | "manutencao";
-  hasData: boolean;
-};
-
-function normalizeText(value?: string | null) {
-  return (value || "")
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
-
-function prettify(value?: string | null) {
-  const raw = (value || "").trim();
-
-  if (!raw) return "—";
-
-  const normalized = normalizeText(raw);
-
-  if (normalized === "fisica") return "Física";
-  if (normalized === "matematica") return "Matemática";
-  if (normalized === "quimica") return "Química";
-  if (normalized === "todas") return "Todas";
-
-  return raw
-    .split(" ")
-    .map((part) => (part ? part[0].toUpperCase() + part.slice(1) : part))
-    .join(" ");
-}
-
-function getWeaknessScore(accuracy: number, hasData: boolean) {
-  if (!hasData) return 6;
-  if (accuracy < 35) return 10;
-  if (accuracy < 50) return 8;
-  if (accuracy < 65) return 5;
-  if (accuracy < 80) return 3;
-  return 1;
-}
-
-function getUrgencyTimeScore(monthsUntilExam: number) {
-  if (monthsUntilExam <= 1) return 6;
-  if (monthsUntilExam <= 2) return 5;
-  if (monthsUntilExam <= 4) return 4;
-  if (monthsUntilExam <= 6) return 3;
-  if (monthsUntilExam <= 9) return 2;
-  return 1;
-}
-
-function getWrongVolumeScore(wrong: number) {
-  if (wrong >= 8) return 5;
-  if (wrong >= 5) return 4;
-  if (wrong >= 3) return 3;
-  if (wrong >= 1) return 2;
-  return 0;
-}
-
-function getTrainingBlock(score: number, accuracy: number, hasData: boolean) {
-  if (!hasData) return "consolidacao";
-  if (score >= 18 || accuracy < 45) return "ataque";
-  if (score >= 12 || accuracy < 70) return "consolidacao";
-  return "manutencao";
-}
-
-function getRiskMeta(score: number, hasEnoughData: boolean) {
-  if (!hasEnoughData) {
+function getRiskMeta(engine: VetEngineResult | null) {
+  if (!engine || engine.totalAttempts < 5) {
     return {
       label: "dados insuficientes",
       title: "Dados insuficientes",
-      description: "Responda mais questões para o VET medir seu risco com mais precisão.",
+      description:
+        "Responda mais questões para o VET medir seu risco com mais precisão.",
       className: "border-slate-200 bg-slate-50 text-slate-700",
       iconClassName: "bg-slate-100 text-slate-700",
       icon: Activity,
     };
   }
 
-  if (score >= 19) {
+  const topScore = engine.topPriority?.priorityScore ?? 0;
+
+  if (topScore >= 65) {
     return {
       label: "alto",
       title: "Risco alto",
-      description: "Existe conteúdo importante com baixo aproveitamento ou alto volume de erros.",
+      description:
+        "Existe conteúdo importante, recorrente ou recente em que seu desempenho está perigoso.",
       className: "border-red-200 bg-red-50 text-red-700",
       iconClassName: "bg-red-100 text-red-700",
       icon: AlertTriangle,
     };
   }
 
-  if (score >= 13) {
+  if (topScore >= 40) {
     return {
       label: "moderado",
       title: "Risco moderado",
-      description: "Você tem pontos frágeis relevantes, mas ainda dá para estabilizar com treino direcionado.",
+      description:
+        "Você tem pontos frágeis relevantes, mas ainda dá para estabilizar com treino direcionado.",
       className: "border-amber-200 bg-amber-50 text-amber-700",
       iconClassName: "bg-amber-100 text-amber-700",
       icon: Gauge,
@@ -176,14 +86,15 @@ function getRiskMeta(score: number, hasEnoughData: boolean) {
   return {
     label: "controlado",
     title: "Risco controlado",
-    description: "O cenário geral está aceitável, mas ainda exige manutenção e revisão constante.",
+    description:
+      "O cenário geral está aceitável, mas ainda exige manutenção e revisão constante.",
     className: "border-emerald-200 bg-emerald-50 text-emerald-700",
     iconClassName: "bg-emerald-100 text-emerald-700",
     icon: ShieldCheck,
   };
 }
 
-function getBlockMeta(block: ContentDiagnosis["block"]) {
+function getBlockMeta(block: VetTrainingBlock) {
   if (block === "ataque") {
     return {
       label: "Ataque",
@@ -210,48 +121,209 @@ function getBlockMeta(block: ContentDiagnosis["block"]) {
   };
 }
 
-function groupBySubject(attempts: AttemptRow[]): SubjectStat[] {
-  const map = new Map<string, { total: number; correct: number; wrong: number }>();
+function getTrendLabel(score?: number) {
+  if (!score && score !== 0) return "sem dados";
+  if (score >= 8) return "subindo";
+  if (score >= 5) return "estável";
+  return "caindo";
+}
 
-  for (const attempt of attempts) {
-    const label = normalizeText(attempt.subject) || "não informado";
-    const current = map.get(label) ?? { total: 0, correct: 0, wrong: 0 };
-
-    current.total += 1;
-
-    if (attempt.is_correct) {
-      current.correct += 1;
-    } else {
-      current.wrong += 1;
-    }
-
-    map.set(label, current);
+function getCollectiveGapText(content: VetStrategicContent) {
+  if (!content.collective || !content.personal.hasData) {
+    return "Sem média coletiva suficiente.";
   }
 
-  return Array.from(map.entries())
-    .map(([label, value]) => ({
-      label,
-      total: value.total,
-      correct: value.correct,
-      wrong: value.wrong,
-      accuracy: value.total ? (value.correct / value.total) * 100 : 0,
-    }))
-    .sort((a, b) => a.accuracy - b.accuracy || b.total - a.total);
+  const gap = content.collective.collective_accuracy - content.personal.accuracy;
+
+  if (gap > 8) {
+    return `${Math.round(gap)} p.p. abaixo da média`;
+  }
+
+  if (gap < -8) {
+    return `${Math.abs(Math.round(gap))} p.p. acima da média`;
+  }
+
+  return "próximo da média";
 }
 
-function formatPercent(value: number) {
-  return `${Math.round(value)}%`;
+function getStrategicSummary(engine: VetEngineResult | null) {
+  if (!engine) {
+    return "Configure seu objetivo para liberar a leitura estratégica.";
+  }
+
+  const top = engine.topPriority;
+
+  if (!top) {
+    return "Ainda não há dados suficientes para gerar uma prioridade. Responda questões e confira os pesos da prova para o VET começar a trabalhar.";
+  }
+
+  const historical = top.historical;
+  const collective = top.collective;
+
+  const historicalPart = historical
+    ? `apareceu em ${historical.yearsAppeared} de ${historical.totalYearsAnalyzed} ano(s) analisados`
+    : "ainda não tem histórico suficiente na prova";
+
+  const collectivePart =
+    collective && top.personal.hasData
+      ? `a média dos outros alunos é ${formatVetPercent(
+          collective.collective_accuracy
+        )}`
+      : "a média coletiva ainda não tem volume suficiente";
+
+  return `Seu foco imediato deve ser ${prettifyVetText(
+    top.conteudo
+  )}. Esse conteúdo ${historicalPart}, tem peso ${top.weight}, seu aproveitamento é ${
+    top.personal.hasData ? formatVetPercent(top.personal.accuracy) : "sem dados"
+  }, ${collectivePart} e faltam ${
+    engine.profile.months_until_exam
+  } mês(es) para sua prova. Por isso ele entrou como ${getBlockMeta(
+    top.block
+  ).label}.`;
 }
 
-function formatTime(seconds: number) {
-  if (!seconds || seconds <= 0) return "—";
+function StatCard({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  className = "border-slate-200 bg-white",
+  iconClassName = "bg-slate-100 text-slate-700",
+}: {
+  title: string;
+  value: string;
+  subtitle: string;
+  icon: React.ComponentType<{ className?: string }>;
+  className?: string;
+  iconClassName?: string;
+}) {
+  return (
+    <Card className={`p-5 ${className}`}>
+      <div className="flex items-center gap-3 mb-3">
+        <div
+          className={`w-11 h-11 rounded-2xl flex items-center justify-center ${iconClassName}`}
+        >
+          <Icon className="w-5 h-5" />
+        </div>
 
-  const minutes = Math.floor(seconds / 60);
-  const rest = Math.round(seconds % 60);
+        <div>
+          <p className="text-sm opacity-80">{title}</p>
+          <p className="text-2xl font-bold leading-tight">{value}</p>
+        </div>
+      </div>
 
-  if (minutes <= 0) return `${rest}s`;
+      <p className="text-sm opacity-80">{subtitle}</p>
+    </Card>
+  );
+}
 
-  return `${minutes}m ${rest}s`;
+function StrategicContentCard({
+  content,
+  rank,
+}: {
+  content: VetStrategicContent;
+  rank: number;
+}) {
+  const blockMeta = getBlockMeta(content.block);
+  const BlockIcon = blockMeta.icon;
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+        <div>
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <span className="inline-flex rounded-full bg-slate-900 text-white px-3 py-1 text-xs font-bold">
+              #{rank}
+            </span>
+
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold ${blockMeta.className}`}
+            >
+              <BlockIcon className="w-3.5 h-3.5" />
+              {blockMeta.label}
+            </span>
+
+            <span className="inline-flex rounded-full bg-white border border-slate-200 px-3 py-1 text-xs font-bold text-slate-600">
+              score {Math.round(content.priorityScore)}
+            </span>
+          </div>
+
+          <h3 className="text-lg font-bold text-slate-900">
+            {prettifyVetText(content.conteudo)}
+          </h3>
+
+          <p className="text-sm text-slate-500">
+            {prettifyVetText(content.subject)}
+          </p>
+        </div>
+
+        <div className="text-right">
+          <p className="text-2xl font-bold text-slate-900">
+            {content.historical
+              ? formatVetPercent(content.historical.recurrenceRate * 100)
+              : "—"}
+          </p>
+          <p className="text-xs text-slate-500">recorrência</p>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-5 gap-3 mb-4">
+        <div className="rounded-2xl bg-white border border-slate-200 p-3">
+          <p className="text-xs text-slate-500 mb-1">Peso</p>
+          <p className="font-bold text-slate-900">{content.weight}</p>
+        </div>
+
+        <div className="rounded-2xl bg-white border border-slate-200 p-3">
+          <p className="text-xs text-slate-500 mb-1">Seu acerto</p>
+          <p className="font-bold text-slate-900">
+            {content.personal.hasData
+              ? formatVetPercent(content.personal.accuracy)
+              : "sem dados"}
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-white border border-slate-200 p-3">
+          <p className="text-xs text-slate-500 mb-1">Média geral</p>
+          <p className="font-bold text-slate-900">
+            {content.collective
+              ? formatVetPercent(content.collective.collective_accuracy)
+              : "—"}
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-white border border-slate-200 p-3">
+          <p className="text-xs text-slate-500 mb-1">Últimos anos</p>
+          <p className="font-bold text-slate-900">
+            {content.historical
+              ? `${content.historical.totalQuestions} questões`
+              : "—"}
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-white border border-slate-200 p-3">
+          <p className="text-xs text-slate-500 mb-1">Tendência</p>
+          <p className="font-bold text-slate-900">
+            {getTrendLabel(content.historical?.trendScore)}
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-white bg-white/80 p-4">
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">
+          Por que o VET escolheu isso?
+        </p>
+
+        <ul className="space-y-2">
+          {content.explanation.slice(0, 4).map((line, index) => (
+            <li key={index} className="flex items-start gap-2 text-sm text-slate-700">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+              <span>{line}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
 }
 
 export default function VetDiagnosisPage() {
@@ -261,8 +333,12 @@ export default function VetDiagnosisPage() {
   const [error, setError] = useState("");
 
   const [profile, setProfile] = useState<VetProfileRow | null>(null);
-  const [attempts, setAttempts] = useState<AttemptRow[]>([]);
-  const [weights, setWeights] = useState<WeightRow[]>([]);
+  const [attempts, setAttempts] = useState<VetAttempt[]>([]);
+  const [weights, setWeights] = useState<VetWeight[]>([]);
+  const [collectiveStats, setCollectiveStats] = useState<
+    VetCollectiveContentStat[]
+  >([]);
+  const [engine, setEngine] = useState<VetEngineResult | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -274,56 +350,113 @@ export default function VetDiagnosisPage() {
       setLoading(true);
       setError("");
 
-      const { data: profileData, error: profileError } = await supabase
-        .from("user_vet_profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      try {
+        const { data: profileData, error: profileError } = await supabase
+          .from("user_vet_profiles")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
-      if (profileError) {
-        console.error(profileError);
-        setError("Não foi possível carregar o objetivo do VET.");
+        if (profileError) {
+          console.error(profileError);
+          setError("Não foi possível carregar o objetivo do VET.");
+          setLoading(false);
+          return;
+        }
+
+        const currentProfile = (profileData as VetProfileRow | null) ?? null;
+        setProfile(currentProfile);
+
+        if (!currentProfile) {
+          setEngine(null);
+          setLoading(false);
+          return;
+        }
+
+        const [
+          attemptsResponse,
+          weightsResponse,
+          collectiveResponse,
+          questionsData,
+        ] = await Promise.all([
+          supabase
+            .from("user_question_attempts")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("answered_at", { ascending: false }),
+
+          supabase
+            .from("vet_exam_content_weights")
+            .select("*")
+            .eq("exam", currentProfile.target_exam),
+
+          supabase
+            .from("vet_content_collective_stats")
+            .select("*")
+            .eq("exam", currentProfile.target_exam),
+
+          getQuestions(),
+        ]);
+
+        if (attemptsResponse.error) {
+          console.error(attemptsResponse.error);
+          setError("Não foi possível carregar suas tentativas.");
+          setLoading(false);
+          return;
+        }
+
+        if (weightsResponse.error) {
+          console.error(weightsResponse.error);
+          setError("Não foi possível carregar os pesos da prova.");
+          setLoading(false);
+          return;
+        }
+
+        if (collectiveResponse.error) {
+          console.error(collectiveResponse.error);
+          setError("Não foi possível carregar a média coletiva dos alunos.");
+          setLoading(false);
+          return;
+        }
+
+        const loadedAttempts = (attemptsResponse.data as VetAttempt[]) ?? [];
+        const loadedWeights = (weightsResponse.data as VetWeight[]) ?? [];
+        const loadedCollective =
+          ((collectiveResponse.data as VetCollectiveContentStat[]) ?? []).map(
+            (item) => ({
+              ...item,
+              total_attempts: Number(item.total_attempts ?? 0),
+              correct_attempts: Number(item.correct_attempts ?? 0),
+              wrong_attempts: Number(item.wrong_attempts ?? 0),
+              collective_accuracy: Number(item.collective_accuracy ?? 0),
+              avg_time_seconds:
+                item.avg_time_seconds === null ||
+                item.avg_time_seconds === undefined
+                  ? null
+                  : Number(item.avg_time_seconds),
+            })
+          );
+
+        setAttempts(loadedAttempts);
+        setWeights(loadedWeights);
+        setCollectiveStats(loadedCollective);
+
+        const result = buildVetEngineResult({
+          profile: currentProfile,
+          attempts: loadedAttempts,
+          questions: questionsData,
+          weights: loadedWeights,
+          collectiveStats: loadedCollective,
+          yearsBack: 5,
+        });
+
+        setEngine(result);
+      } catch (err) {
+        console.error(err);
+        setError("Ocorreu um erro inesperado ao carregar o diagnóstico.");
+      } finally {
         setLoading(false);
-        return;
       }
-
-      const currentProfile = (profileData as VetProfileRow | null) ?? null;
-
-      setProfile(currentProfile);
-
-      if (!currentProfile) {
-        setLoading(false);
-        return;
-      }
-
-      const { data: attemptsData, error: attemptsError } = await supabase
-        .from("user_question_attempts")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("answered_at", { ascending: false });
-
-      if (attemptsError) {
-        console.error(attemptsError);
-        setError("Não foi possível carregar suas tentativas.");
-        setLoading(false);
-        return;
-      }
-
-      const { data: weightsData, error: weightsError } = await supabase
-        .from("vet_exam_content_weights")
-        .select("*")
-        .eq("exam", currentProfile.target_exam);
-
-      if (weightsError) {
-        console.error(weightsError);
-        setError("Não foi possível carregar os pesos da prova.");
-        setLoading(false);
-        return;
-      }
-
-      setAttempts((attemptsData as AttemptRow[]) ?? []);
-      setWeights((weightsData as WeightRow[]) ?? []);
-      setLoading(false);
     }
 
     if (!authLoading) {
@@ -331,224 +464,24 @@ export default function VetDiagnosisPage() {
     }
   }, [user?.id, authLoading]);
 
-  const filteredAttempts = useMemo(() => {
-    if (!profile) return [];
-
-    if (profile.focus_subject === "todas") {
-      return attempts;
-    }
-
-    return attempts.filter(
-      (attempt) =>
-        normalizeText(attempt.subject) === normalizeText(profile.focus_subject)
-    );
-  }, [attempts, profile]);
-
-  const totalAttempts = filteredAttempts.length;
-
-  const totalCorrect = useMemo(() => {
-    return filteredAttempts.filter((attempt) => attempt.is_correct).length;
-  }, [filteredAttempts]);
-
-  const totalWrong = totalAttempts - totalCorrect;
-
-  const generalAccuracy =
-    totalAttempts > 0 ? (totalCorrect / totalAttempts) * 100 : 0;
-
-  const averageTime = useMemo(() => {
-    const timed = filteredAttempts.filter(
-      (attempt) => typeof attempt.time_spent_seconds === "number"
-    );
-
-    if (timed.length === 0) return 0;
-
-    return (
-      timed.reduce(
-        (sum, attempt) => sum + (attempt.time_spent_seconds ?? 0),
-        0
-      ) / timed.length
-    );
-  }, [filteredAttempts]);
-
-  const hasEnoughData = totalAttempts >= 5;
-
-  const subjectStats = useMemo(
-    () => groupBySubject(filteredAttempts),
-    [filteredAttempts]
-  );
-
-  const bestSubject = useMemo(() => {
-    return [...subjectStats]
-      .filter((item) => item.total >= 2)
-      .sort((a, b) => b.accuracy - a.accuracy || b.total - a.total)[0];
-  }, [subjectStats]);
-
-  const worstSubject = useMemo(() => {
-    return [...subjectStats]
-      .filter((item) => item.total >= 2)
-      .sort((a, b) => a.accuracy - b.accuracy || b.total - a.total)[0];
-  }, [subjectStats]);
-
-  const contentDiagnosis = useMemo(() => {
-    if (!profile) return [];
-
-    const contentMap = new Map<
-      string,
-      {
-        conteudo: string;
-        subject: string;
-        total: number;
-        correct: number;
-        wrong: number;
-      }
-    >();
-
-    for (const attempt of filteredAttempts) {
-      const key = normalizeText(attempt.conteudo);
-
-      if (!key) continue;
-
-      const current =
-        contentMap.get(key) ??
-        {
-          conteudo: attempt.conteudo || key,
-          subject: attempt.subject || profile.focus_subject,
-          total: 0,
-          correct: 0,
-          wrong: 0,
-        };
-
-      current.total += 1;
-
-      if (attempt.is_correct) {
-        current.correct += 1;
-      } else {
-        current.wrong += 1;
-      }
-
-      contentMap.set(key, current);
-    }
-
-    for (const weight of weights) {
-      const sameSubject =
-        profile.focus_subject === "todas" ||
-        normalizeText(weight.subject) === normalizeText(profile.focus_subject);
-
-      if (!sameSubject) continue;
-
-      const key = normalizeText(weight.conteudo);
-
-      if (!key || contentMap.has(key)) continue;
-
-      contentMap.set(key, {
-        conteudo: weight.conteudo,
-        subject: weight.subject,
-        total: 0,
-        correct: 0,
-        wrong: 0,
-      });
-    }
-
-    const urgencyTimeScore = getUrgencyTimeScore(profile.months_until_exam);
-
-    return Array.from(contentMap.values())
-      .map((value) => {
-        const hasData = value.total > 0;
-        const accuracy = hasData ? (value.correct / value.total) * 100 : 0;
-
-        const matchedWeight = weights.find((row) => {
-          const sameSubject =
-            profile.focus_subject === "todas" ||
-            normalizeText(row.subject) === normalizeText(value.subject);
-
-          return (
-            sameSubject &&
-            normalizeText(row.conteudo) === normalizeText(value.conteudo)
-          );
-        });
-
-        const weight = matchedWeight?.weight ?? 3;
-        const weaknessScore = getWeaknessScore(accuracy, hasData);
-        const wrongVolumeScore = getWrongVolumeScore(value.wrong);
-        const urgencyScore =
-          weight + weaknessScore + urgencyTimeScore + wrongVolumeScore;
-
-        const block = getTrainingBlock(urgencyScore, accuracy, hasData);
-
-        return {
-          conteudo: value.conteudo,
-          subject: value.subject,
-          total: value.total,
-          correct: value.correct,
-          wrong: value.wrong,
-          accuracy,
-          weight,
-          weaknessScore,
-          wrongVolumeScore,
-          urgencyTimeScore,
-          urgencyScore,
-          block,
-          hasData,
-        };
-      })
-      .sort((a, b) => {
-        if (b.urgencyScore !== a.urgencyScore) {
-          return b.urgencyScore - a.urgencyScore;
-        }
-
-        if (a.accuracy !== b.accuracy) {
-          return a.accuracy - b.accuracy;
-        }
-
-        return b.weight - a.weight;
-      });
-  }, [filteredAttempts, profile, weights]);
-
-  const urgentContent = contentDiagnosis[0] ?? null;
-  const secondContent = contentDiagnosis[1] ?? null;
-  const thirdContent = contentDiagnosis[2] ?? null;
-
-  const riskMeta = getRiskMeta(urgentContent?.urgencyScore ?? 0, hasEnoughData);
+  const riskMeta = getRiskMeta(engine);
   const RiskIcon = riskMeta.icon;
 
-  const attackCount = contentDiagnosis.filter(
-    (item) => item.block === "ataque"
-  ).length;
+  const topPriority = engine?.topPriority ?? null;
 
-  const consolidationCount = contentDiagnosis.filter(
-    (item) => item.block === "consolidacao"
-  ).length;
+  const topHistorical = useMemo(() => {
+    return (engine?.historicalMetrics ?? []).slice(0, 5);
+  }, [engine]);
 
-  const maintenanceCount = contentDiagnosis.filter(
-    (item) => item.block === "manutencao"
-  ).length;
+  const topStrategic = useMemo(() => {
+    return (engine?.strategicContents ?? []).slice(0, 5);
+  }, [engine]);
 
-  const strategicFocus = useMemo(() => {
-    if (!profile) {
-      return "Configure seu objetivo para liberar a leitura estratégica.";
-    }
-
-    if (!urgentContent) {
-      return "Ainda não há dados suficientes para gerar uma prioridade. Configure os pesos da prova e responda algumas questões para o VET começar a trabalhar.";
-    }
-
-    const subject =
-      profile.focus_subject === "todas"
-        ? worstSubject?.label
-          ? prettify(worstSubject.label)
-          : "sua disciplina mais fraca"
-        : prettify(profile.focus_subject);
-
-    const second = secondContent
-      ? ` Depois disso, avance para ${prettify(secondContent.conteudo)}.`
-      : "";
-
-    return `Seu foco imediato deve ser ${prettify(
-      urgentContent.conteudo
-    )}. Esse conteúdo aparece como prioridade porque combina peso ${urgentContent.weight}, aproveitamento ${formatPercent(
-      urgentContent.accuracy
-    )}, ${urgentContent.wrong} erro(s) e ${profile.months_until_exam} mês(es) até a prova. Na prática, o VET recomenda concentrar o próximo bloco de estudo em ${subject}.${second}`;
-  }, [profile, urgentContent, secondContent, worstSubject]);
+  const collectiveCompared = useMemo(() => {
+    return (engine?.strategicContents ?? [])
+      .filter((content) => content.collective && content.personal.hasData)
+      .slice(0, 5);
+  }, [engine]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-50">
@@ -566,7 +499,7 @@ export default function VetDiagnosisPage() {
               Diagnóstico do VET
             </h1>
             <p className="text-sm text-slate-500">
-              Leitura estratégica do seu momento atual
+              Análise por histórico da prova, desempenho pessoal e média dos alunos
             </p>
           </div>
         </div>
@@ -599,9 +532,8 @@ export default function VetDiagnosisPage() {
                   Configure seu objetivo primeiro
                 </h2>
                 <p className="text-slate-600 mb-5">
-                  O diagnóstico precisa saber sua prova-alvo, tempo restante e
-                  foco de estudo. Sem isso, o VET fica cego, e IA cega só serve
-                  para dar palpite ruim com confiança.
+                  O diagnóstico precisa saber sua prova-alvo, tempo restante e foco de estudo.
+                  Sem isso, o VET vira um palpiteiro de jaleco.
                 </p>
 
                 <Link href="/vet/objetivo">
@@ -631,15 +563,15 @@ export default function VetDiagnosisPage() {
                   </h2>
 
                   <p className="text-emerald-50 leading-relaxed max-w-3xl">
-                    O VET cruza seu objetivo, tempo restante, histórico de
-                    questões, peso dos conteúdos e aproveitamento para apontar
-                    onde você deve atacar primeiro.
+                    Agora o VET cruza seu desempenho, o histórico dos últimos anos da prova,
+                    os pesos dos conteúdos e a média coletiva dos alunos para apontar
+                    o que realmente merece prioridade.
                   </p>
 
                   <div className="flex flex-wrap gap-3 mt-7">
                     <Link href="/vet/plano">
                       <Button className="bg-white text-emerald-700 hover:bg-emerald-50 rounded-2xl px-6 py-5 font-bold">
-                        Abrir Plano VET
+                        Transformar em Plano VET
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
                     </Link>
@@ -662,37 +594,23 @@ export default function VetDiagnosisPage() {
 
                   <div className="space-y-3">
                     <div className="rounded-2xl bg-white/12 border border-white/15 p-4">
-                      <p className="text-xs text-emerald-100 mb-1">
-                        Prova-alvo
-                      </p>
+                      <p className="text-xs text-emerald-100 mb-1">Prova-alvo</p>
                       <p className="font-bold">{profile.target_exam}</p>
                     </div>
 
                     <div className="rounded-2xl bg-white/12 border border-white/15 p-4">
-                      <p className="text-xs text-emerald-100 mb-1">
-                        Tempo restante
-                      </p>
-                      <p className="font-bold">
-                        {profile.months_until_exam} mês(es)
-                      </p>
+                      <p className="text-xs text-emerald-100 mb-1">Tempo restante</p>
+                      <p className="font-bold">{profile.months_until_exam} mês(es)</p>
                     </div>
 
                     <div className="rounded-2xl bg-white/12 border border-white/15 p-4">
-                      <p className="text-xs text-emerald-100 mb-1">
-                        Foco
-                      </p>
-                      <p className="font-bold">
-                        {prettify(profile.focus_subject)}
-                      </p>
+                      <p className="text-xs text-emerald-100 mb-1">Foco</p>
+                      <p className="font-bold">{prettifyVetText(profile.focus_subject)}</p>
                     </div>
 
                     <div className="rounded-2xl bg-white/12 border border-white/15 p-4">
-                      <p className="text-xs text-emerald-100 mb-1">
-                        Carga diária
-                      </p>
-                      <p className="font-bold">
-                        {profile.hours_per_day}h por dia
-                      </p>
+                      <p className="text-xs text-emerald-100 mb-1">Carga diária</p>
+                      <p className="font-bold">{profile.hours_per_day}h por dia</p>
                     </div>
                   </div>
                 </div>
@@ -700,81 +618,57 @@ export default function VetDiagnosisPage() {
             </Card>
 
             <section className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
-              <Card className="p-5 bg-white border-slate-200">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center">
-                    <BarChart3 className="w-5 h-5 text-slate-700" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-500">Aproveitamento</p>
-                    <p className="text-2xl font-bold text-slate-900">
-                      {formatPercent(generalAccuracy)}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-sm text-slate-500">
-                  {totalCorrect} acertos em {totalAttempts} tentativa(s)
-                </p>
-              </Card>
+              <StatCard
+                title="Aproveitamento"
+                value={engine ? formatVetPercent(engine.generalAccuracy) : "0%"}
+                subtitle={`${engine?.totalCorrect ?? 0} acertos em ${
+                  engine?.totalAttempts ?? 0
+                } tentativa(s)`}
+                icon={BarChart3}
+              />
 
-              <Card className="p-5 bg-white border-red-200">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-11 h-11 rounded-2xl bg-red-100 flex items-center justify-center">
-                    <TrendingDown className="w-5 h-5 text-red-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-500">Ponto crítico</p>
-                    <p className="text-xl font-bold text-slate-900">
-                      {worstSubject?.label
-                        ? prettify(worstSubject.label)
-                        : "Sem dados"}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-sm text-slate-500">
-                  {worstSubject
-                    ? `${formatPercent(worstSubject.accuracy)} de acerto`
-                    : "Responda mais questões"}
-                </p>
-              </Card>
+              <StatCard
+                title="Ponto crítico"
+                value={
+                  engine?.weakestSubject
+                    ? prettifyVetText(engine.weakestSubject.subject)
+                    : "Sem dados"
+                }
+                subtitle={
+                  engine?.weakestSubject
+                    ? `${formatVetPercent(engine.weakestSubject.accuracy)} de acerto`
+                    : "Responda mais questões"
+                }
+                icon={TrendingDown}
+                className="border-red-200 bg-white text-slate-900"
+                iconClassName="bg-red-100 text-red-600"
+              />
 
-              <Card className="p-5 bg-white border-emerald-200">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-11 h-11 rounded-2xl bg-emerald-100 flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-emerald-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-500">Ponto forte</p>
-                    <p className="text-xl font-bold text-slate-900">
-                      {bestSubject?.label
-                        ? prettify(bestSubject.label)
-                        : "Sem dados"}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-sm text-slate-500">
-                  {bestSubject
-                    ? `${formatPercent(bestSubject.accuracy)} de acerto`
-                    : "Responda mais questões"}
-                </p>
-              </Card>
+              <StatCard
+                title="Ponto forte"
+                value={
+                  engine?.strongestSubject
+                    ? prettifyVetText(engine.strongestSubject.subject)
+                    : "Sem dados"
+                }
+                subtitle={
+                  engine?.strongestSubject
+                    ? `${formatVetPercent(engine.strongestSubject.accuracy)} de acerto`
+                    : "Responda mais questões"
+                }
+                icon={TrendingUp}
+                className="border-emerald-200 bg-white text-slate-900"
+                iconClassName="bg-emerald-100 text-emerald-600"
+              />
 
-              <Card className={`p-5 border ${riskMeta.className}`}>
-                <div className="flex items-center gap-3 mb-3">
-                  <div
-                    className={`w-11 h-11 rounded-2xl flex items-center justify-center ${riskMeta.iconClassName}`}
-                  >
-                    <RiskIcon className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="text-sm opacity-80">Risco atual</p>
-                    <p className="text-xl font-bold capitalize">
-                      {riskMeta.label}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-sm opacity-80">{riskMeta.description}</p>
-              </Card>
+              <StatCard
+                title="Risco atual"
+                value={riskMeta.label}
+                subtitle={riskMeta.description}
+                icon={RiskIcon}
+                className={`border ${riskMeta.className}`}
+                iconClassName={riskMeta.iconClassName}
+              />
             </section>
 
             <section className="grid xl:grid-cols-[1.2fr_0.8fr] gap-6 items-start">
@@ -789,28 +683,26 @@ export default function VetDiagnosisPage() {
                       Leitura estratégica
                     </h2>
                     <p className="text-sm text-slate-500">
-                      O que o VET faria se fosse um professor chato, mas útil.
+                      Agora baseada em você, na prova e na média dos alunos.
                     </p>
                   </div>
                 </div>
 
                 <p className="text-slate-700 leading-relaxed mb-5">
-                  {strategicFocus}
+                  {getStrategicSummary(engine)}
                 </p>
 
                 <div className="grid md:grid-cols-3 gap-3">
                   <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
                     <p className="text-2xl font-bold text-red-700">
-                      {attackCount}
+                      {engine?.attack.length ?? 0}
                     </p>
-                    <p className="text-sm font-semibold text-red-700">
-                      em ataque
-                    </p>
+                    <p className="text-sm font-semibold text-red-700">em ataque</p>
                   </div>
 
                   <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
                     <p className="text-2xl font-bold text-amber-700">
-                      {consolidationCount}
+                      {engine?.consolidation.length ?? 0}
                     </p>
                     <p className="text-sm font-semibold text-amber-700">
                       em consolidação
@@ -819,7 +711,7 @@ export default function VetDiagnosisPage() {
 
                   <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
                     <p className="text-2xl font-bold text-emerald-700">
-                      {maintenanceCount}
+                      {engine?.maintenance.length ?? 0}
                     </p>
                     <p className="text-sm font-semibold text-emerald-700">
                       em manutenção
@@ -836,21 +728,30 @@ export default function VetDiagnosisPage() {
                   </h2>
                 </div>
 
-                {urgentContent ? (
+                {topPriority ? (
                   <div className="space-y-4">
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                      <p className="text-sm text-slate-500 mb-1">
-                        Comece por
-                      </p>
+                      <p className="text-sm text-slate-500 mb-1">Comece por</p>
                       <p className="text-xl font-bold text-slate-900">
-                        {prettify(urgentContent.conteudo)}
+                        {prettifyVetText(topPriority.conteudo)}
                       </p>
                       <p className="text-sm text-slate-600 mt-2">
-                        Score {urgentContent.urgencyScore} • Peso{" "}
-                        {urgentContent.weight} •{" "}
-                        {urgentContent.hasData
-                          ? `${formatPercent(urgentContent.accuracy)} de acerto`
+                        Score {Math.round(topPriority.priorityScore)} • Peso{" "}
+                        {topPriority.weight} •{" "}
+                        {topPriority.personal.hasData
+                          ? `${formatVetPercent(
+                              topPriority.personal.accuracy
+                            )} de acerto`
                           : "sem dados ainda"}
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4">
+                      <p className="text-sm font-bold text-blue-800 mb-2">
+                        Comparação coletiva
+                      </p>
+                      <p className="text-sm text-blue-800">
+                        {getCollectiveGapText(topPriority)}
                       </p>
                     </div>
 
@@ -864,9 +765,7 @@ export default function VetDiagnosisPage() {
                 ) : (
                   <div>
                     <p className="text-slate-600 mb-4">
-                      Ainda não há conteúdo suficiente para definir o próximo
-                      passo. Responda algumas questões ou confira os pesos da
-                      prova no ADM.
+                      Ainda não há conteúdo suficiente para definir o próximo passo.
                     </p>
 
                     <Link href="/banco-de-questoes">
@@ -883,198 +782,24 @@ export default function VetDiagnosisPage() {
             <section className="grid xl:grid-cols-[1.2fr_0.8fr] gap-6">
               <Card className="p-6 bg-white border-slate-200">
                 <div className="flex items-center gap-2 mb-5">
-                  <Activity className="w-5 h-5 text-slate-700" />
+                  <Flame className="w-5 h-5 text-red-600" />
                   <h2 className="text-xl font-bold text-slate-900">
                     Conteúdos críticos
                   </h2>
                 </div>
 
                 <div className="space-y-4">
-                  {[urgentContent, secondContent, thirdContent]
-                    .filter(Boolean)
-                    .map((item, index) => {
-                      const content = item as ContentDiagnosis;
-                      const blockMeta = getBlockMeta(content.block);
-                      const BlockIcon = blockMeta.icon;
-
-                      return (
-                        <div
-                          key={content.conteudo}
-                          className="rounded-3xl border border-slate-200 bg-slate-50 p-5"
-                        >
-                          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
-                            <div>
-                              <div className="flex flex-wrap items-center gap-2 mb-2">
-                                <span className="inline-flex rounded-full bg-slate-900 text-white px-3 py-1 text-xs font-bold">
-                                  #{index + 1}
-                                </span>
-
-                                <span
-                                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold ${blockMeta.className}`}
-                                >
-                                  <BlockIcon className="w-3.5 h-3.5" />
-                                  {blockMeta.label}
-                                </span>
-                              </div>
-
-                              <h3 className="text-lg font-bold text-slate-900">
-                                {prettify(content.conteudo)}
-                              </h3>
-
-                              <p className="text-sm text-slate-500">
-                                {prettify(content.subject)}
-                              </p>
-                            </div>
-
-                            <div className="text-right">
-                              <p className="text-2xl font-bold text-slate-900">
-                                {content.urgencyScore}
-                              </p>
-                              <p className="text-xs text-slate-500">
-                                score VET
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="grid md:grid-cols-4 gap-3">
-                            <div className="rounded-2xl bg-white border border-slate-200 p-3">
-                              <p className="text-xs text-slate-500 mb-1">
-                                Peso
-                              </p>
-                              <p className="font-bold text-slate-900">
-                                {content.weight}
-                              </p>
-                            </div>
-
-                            <div className="rounded-2xl bg-white border border-slate-200 p-3">
-                              <p className="text-xs text-slate-500 mb-1">
-                                Acerto
-                              </p>
-                              <p className="font-bold text-slate-900">
-                                {content.hasData
-                                  ? formatPercent(content.accuracy)
-                                  : "sem dados"}
-                              </p>
-                            </div>
-
-                            <div className="rounded-2xl bg-white border border-slate-200 p-3">
-                              <p className="text-xs text-slate-500 mb-1">
-                                Erros
-                              </p>
-                              <p className="font-bold text-slate-900">
-                                {content.wrong}
-                              </p>
-                            </div>
-
-                            <div className="rounded-2xl bg-white border border-slate-200 p-3">
-                              <p className="text-xs text-slate-500 mb-1">
-                                Tentativas
-                              </p>
-                              <p className="font-bold text-slate-900">
-                                {content.total}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-
-                  {contentDiagnosis.length === 0 ? (
-                    <p className="text-slate-500">
-                      Ainda não há dados suficientes para gerar prioridades.
-                    </p>
-                  ) : null}
-                </div>
-              </Card>
-
-              <Card className="p-6 bg-white border-slate-200">
-                <div className="flex items-center gap-2 mb-5">
-                  <ShieldCheck className="w-5 h-5 text-slate-700" />
-                  <h2 className="text-xl font-bold text-slate-900">
-                    Como ler esse diagnóstico
-                  </h2>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                    <p className="font-semibold text-slate-900">
-                      Peso da prova
-                    </p>
-                    <p className="text-sm text-slate-600 mt-1">
-                      Conteúdos mais importantes para sua prova-alvo sobem no
-                      ranking de prioridade.
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                    <p className="font-semibold text-slate-900">
-                      Aproveitamento
-                    </p>
-                    <p className="text-sm text-slate-600 mt-1">
-                      Quanto menor seu percentual de acerto, maior a urgência de
-                      treino naquele conteúdo.
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                    <p className="font-semibold text-slate-900">
-                      Volume de erros
-                    </p>
-                    <p className="text-sm text-slate-600 mt-1">
-                      Erros repetidos pesam mais, porque indicam padrão de
-                      falha, não acidente.
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                    <p className="font-semibold text-slate-900">
-                      Tempo restante
-                    </p>
-                    <p className="text-sm text-slate-600 mt-1">
-                      Quanto menos tempo até a prova, menos o VET tolera estudo
-                      aleatório. Brutal, porém justo.
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </section>
-
-            <section className="grid xl:grid-cols-2 gap-6">
-              <Card className="p-6 bg-white border-slate-200">
-                <div className="flex items-center gap-2 mb-5">
-                  <BarChart3 className="w-5 h-5 text-slate-700" />
-                  <h2 className="text-xl font-bold text-slate-900">
-                    Desempenho por disciplina
-                  </h2>
-                </div>
-
-                <div className="space-y-4">
-                  {subjectStats.length > 0 ? (
-                    subjectStats.map((subject) => {
-                      return (
-                        <div key={subject.label}>
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-semibold text-slate-700">
-                              {prettify(subject.label)}
-                            </span>
-                            <span className="text-sm text-slate-500">
-                              {formatPercent(subject.accuracy)} •{" "}
-                              {subject.total} tentativa(s)
-                            </span>
-                          </div>
-
-                          <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                            <div
-                              className="h-full rounded-full bg-emerald-500"
-                              style={{ width: `${subject.accuracy}%` }}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })
+                  {topStrategic.length > 0 ? (
+                    topStrategic.map((content, index) => (
+                      <StrategicContentCard
+                        key={`${content.subject}-${content.conteudo}`}
+                        content={content}
+                        rank={index + 1}
+                      />
+                    ))
                   ) : (
                     <p className="text-slate-500">
-                      Nenhuma tentativa encontrada ainda.
+                      Ainda não há dados suficientes para gerar prioridades.
                     </p>
                   )}
                 </div>
@@ -1082,51 +807,224 @@ export default function VetDiagnosisPage() {
 
               <Card className="p-6 bg-white border-slate-200">
                 <div className="flex items-center gap-2 mb-5">
-                  <Clock3 className="w-5 h-5 text-slate-700" />
+                  <History className="w-5 h-5 text-slate-700" />
                   <h2 className="text-xl font-bold text-slate-900">
-                    Resumo operacional
+                    Histórico da prova
                   </h2>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-3">
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm text-slate-500 mb-1">
-                      Tentativas analisadas
-                    </p>
-                    <p className="text-2xl font-bold text-slate-900">
-                      {totalAttempts}
-                    </p>
-                  </div>
+                <p className="text-sm text-slate-500 mb-5">
+                  Conteúdos mais relevantes considerando frequência, recorrência,
+                  recência, tendência e dificuldade média nos últimos anos.
+                </p>
 
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm text-slate-500 mb-1">
-                      Erros analisados
-                    </p>
-                    <p className="text-2xl font-bold text-slate-900">
-                      {totalWrong}
-                    </p>
-                  </div>
+                <div className="space-y-4">
+                  {topHistorical.length > 0 ? (
+                    topHistorical.map((item, index) => (
+                      <div
+                        key={`${item.subject}-${item.conteudo}`}
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                      >
+                        <div className="flex items-start justify-between gap-4 mb-3">
+                          <div>
+                            <p className="text-xs font-bold text-slate-400">
+                              #{index + 1}
+                            </p>
+                            <p className="font-bold text-slate-900">
+                              {prettifyVetText(item.conteudo)}
+                            </p>
+                            <p className="text-sm text-slate-500">
+                              {prettifyVetText(item.subject)}
+                            </p>
+                          </div>
 
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm text-slate-500 mb-1">
-                      Tempo médio
-                    </p>
-                    <p className="text-2xl font-bold text-slate-900">
-                      {formatTime(averageTime)}
-                    </p>
-                  </div>
+                          <div className="text-right">
+                            <p className="font-bold text-slate-900">
+                              {Math.round(item.historicalScore)}
+                            </p>
+                            <p className="text-xs text-slate-500">score</p>
+                          </div>
+                        </div>
 
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm text-slate-500 mb-1">
-                      Conteúdos avaliados
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div className="rounded-xl bg-white border border-slate-200 p-3">
+                            <p className="text-xs text-slate-500">Questões</p>
+                            <p className="font-bold text-slate-900">
+                              {item.totalQuestions}
+                            </p>
+                          </div>
+
+                          <div className="rounded-xl bg-white border border-slate-200 p-3">
+                            <p className="text-xs text-slate-500">Anos</p>
+                            <p className="font-bold text-slate-900">
+                              {item.yearsAppeared}/{item.totalYearsAnalyzed}
+                            </p>
+                          </div>
+
+                          <div className="rounded-xl bg-white border border-slate-200 p-3">
+                            <p className="text-xs text-slate-500">Última vez</p>
+                            <p className="font-bold text-slate-900">
+                              {item.lastYearAppeared ?? "—"}
+                            </p>
+                          </div>
+
+                          <div className="rounded-xl bg-white border border-slate-200 p-3">
+                            <p className="text-xs text-slate-500">Tendência</p>
+                            <p className="font-bold text-slate-900">
+                              {getTrendLabel(item.trendScore)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-slate-500">
+                      Não há questões suficientes da prova-alvo para calcular o histórico.
                     </p>
-                    <p className="text-2xl font-bold text-slate-900">
-                      {contentDiagnosis.length}
-                    </p>
-                  </div>
+                  )}
                 </div>
               </Card>
             </section>
+
+            <section className="grid xl:grid-cols-[0.8fr_1.2fr] gap-6">
+              <Card className="p-6 bg-white border-slate-200">
+                <div className="flex items-center gap-2 mb-5">
+                  <Users className="w-5 h-5 text-slate-700" />
+                  <h2 className="text-xl font-bold text-slate-900">
+                    Você vs média dos alunos
+                  </h2>
+                </div>
+
+                <div className="space-y-4">
+                  {collectiveCompared.length > 0 ? (
+                    collectiveCompared.map((content) => (
+                      <div
+                        key={`${content.subject}-${content.conteudo}`}
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                      >
+                        <p className="font-bold text-slate-900 mb-1">
+                          {prettifyVetText(content.conteudo)}
+                        </p>
+
+                        <p className="text-sm text-slate-500 mb-3">
+                          {prettifyVetText(content.subject)}
+                        </p>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="rounded-xl bg-white border border-slate-200 p-3">
+                            <p className="text-xs text-slate-500">Você</p>
+                            <p className="font-bold text-slate-900">
+                              {formatVetPercent(content.personal.accuracy)}
+                            </p>
+                          </div>
+
+                          <div className="rounded-xl bg-white border border-slate-200 p-3">
+                            <p className="text-xs text-slate-500">Média</p>
+                            <p className="font-bold text-slate-900">
+                              {formatVetPercent(
+                                content.collective?.collective_accuracy ?? 0
+                              )}
+                            </p>
+                          </div>
+                        </div>
+
+                        <p className="text-sm text-slate-600 mt-3">
+                          {getCollectiveGapText(content)}
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-slate-500">
+                      Ainda não há dados coletivos suficientes para comparação.
+                    </p>
+                  )}
+                </div>
+              </Card>
+
+              <Card className="p-6 bg-white border-slate-200">
+                <div className="flex items-center gap-2 mb-5">
+                  <LineChart className="w-5 h-5 text-slate-700" />
+                  <h2 className="text-xl font-bold text-slate-900">
+                    Desempenho por disciplina
+                  </h2>
+                </div>
+
+                <div className="space-y-4">
+                  {engine?.subjectStats && engine.subjectStats.length > 0 ? (
+                    engine.subjectStats.map((subject) => (
+                      <div key={subject.subject}>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-semibold text-slate-700">
+                            {prettifyVetText(subject.subject)}
+                          </span>
+                          <span className="text-sm text-slate-500">
+                            {formatVetPercent(subject.accuracy)} • {subject.total} tentativa(s)
+                          </span>
+                        </div>
+
+                        <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-emerald-500"
+                            style={{ width: `${subject.accuracy}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-slate-500">
+                      Nenhuma tentativa encontrada ainda.
+                    </p>
+                  )}
+                </div>
+              </Card>
+            </section>
+
+            <Card className="p-6 bg-white border-slate-200">
+              <div className="flex items-center gap-2 mb-5">
+                <ShieldCheck className="w-5 h-5 text-slate-700" />
+                <h2 className="text-xl font-bold text-slate-900">
+                  Como o novo VET chegou nessa análise
+                </h2>
+              </div>
+
+              <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                  <p className="font-semibold text-slate-900">
+                    Histórico da prova
+                  </p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    Mede frequência, recorrência, recência e tendência nos últimos anos.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                  <p className="font-semibold text-slate-900">
+                    Desempenho pessoal
+                  </p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    Usa seus acertos, erros, tentativas e tempo médio por conteúdo.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                  <p className="font-semibold text-slate-900">
+                    Média coletiva
+                  </p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    Compara seu aproveitamento com a média agregada dos alunos.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                  <p className="font-semibold text-slate-900">
+                    Urgência temporal
+                  </p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    Quanto menos tempo até a prova, menor a tolerância para estudo aleatório.
+                  </p>
+                </div>
+              </div>
+            </Card>
           </>
         )}
       </main>
