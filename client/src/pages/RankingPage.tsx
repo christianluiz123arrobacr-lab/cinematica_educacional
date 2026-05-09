@@ -5,12 +5,25 @@ import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
+  ArrowDown,
   ArrowLeft,
-  Trophy,
-  Medal,
+  ArrowUp,
+  Award,
+  BarChart3,
+  CalendarDays,
+  Clock3,
   Crown,
+  Flame,
+  Gauge,
+  Medal,
+  Minus,
   Shield,
+  Star,
+  Target,
+  Timer,
+  Trophy,
   UserCircle2,
+  Zap,
 } from "lucide-react";
 
 type AttemptRow = {
@@ -35,7 +48,19 @@ type ProfileRow = {
   ativo?: boolean | null;
 };
 
-type RankingPeriod = "24h" | "7d" | "30d" | "all";
+type RankingPeriod = "24h" | "season" | "7d" | "30d" | "all";
+type RankingSubject = "all" | "matematica" | "fisica" | "quimica";
+
+type BadgeItem = {
+  label: string;
+  className: string;
+};
+
+type DivisionInfo = {
+  label: string;
+  className: string;
+  description: string;
+};
 
 type RankingEntry = {
   userId: string;
@@ -51,13 +76,25 @@ type RankingEntry = {
   mediumCorrect: number;
   hardCorrect: number;
   veryHardCorrect: number;
+  topStreak: number;
+  positionDelta: number | null;
+  badges: BadgeItem[];
+  division: DivisionInfo;
 };
 
 const PERIOD_OPTIONS: Array<{ key: RankingPeriod; label: string }> = [
   { key: "24h", label: "24h" },
-  { key: "7d", label: "1 semana" },
+  { key: "season", label: "Semana atual" },
+  { key: "7d", label: "7 dias" },
   { key: "30d", label: "1 mês" },
   { key: "all", label: "Todo período" },
+];
+
+const SUBJECT_OPTIONS: Array<{ key: RankingSubject; label: string }> = [
+  { key: "all", label: "Geral" },
+  { key: "matematica", label: "Matemática" },
+  { key: "fisica", label: "Física" },
+  { key: "quimica", label: "Química" },
 ];
 
 const AVATAR_OPTIONS = [
@@ -82,8 +119,26 @@ function getAvatarConfig(avatarKey?: string | null) {
   );
 }
 
+function normalizeText(value?: string | number | null) {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function getSubjectLabel(subject: RankingSubject) {
+  return SUBJECT_OPTIONS.find((item) => item.key === subject)?.label ?? "Geral";
+}
+
+function getRankingTitle(subject: RankingSubject) {
+  if (subject === "all") return "Ranking geral por pontuação";
+
+  return `Ranking de ${getSubjectLabel(subject)} por pontuação`;
+}
+
 function normalizeDifficulty(difficulty?: string | null) {
-  return (difficulty || "").trim().toLowerCase();
+  return normalizeText(difficulty);
 }
 
 function getDifficultyPoints(difficulty?: string | null) {
@@ -108,28 +163,97 @@ function getDifficultyBucket(difficulty?: string | null) {
   return "unknown";
 }
 
-function getCutoffDate(period: RankingPeriod) {
-  if (period === "all") return null;
+function startOfToday(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
 
+function startOfCurrentWeek(date: Date) {
+  const day = date.getDay();
+  const mondayOffset = day === 0 ? -6 : 1 - day;
+  const start = startOfToday(date);
+
+  start.setDate(start.getDate() + mondayOffset);
+
+  return start;
+}
+
+function getPeriodRange(period: RankingPeriod) {
   const now = new Date();
 
-  if (period === "24h") {
-    return new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  if (period === "all") {
+    return {
+      start: null,
+      end: null,
+      previousStart: null,
+      previousEnd: null,
+    };
   }
 
-  if (period === "7d") {
-    const date = new Date(now);
-    date.setDate(date.getDate() - 7);
-    return date;
+  if (period === "season") {
+    const start = startOfCurrentWeek(now);
+    const duration = now.getTime() - start.getTime();
+
+    const previousStart = new Date(start);
+    previousStart.setDate(previousStart.getDate() - 7);
+
+    const previousEnd = new Date(previousStart.getTime() + duration);
+
+    return {
+      start,
+      end: now,
+      previousStart,
+      previousEnd,
+    };
   }
 
-  if (period === "30d") {
-    const date = new Date(now);
-    date.setDate(date.getDate() - 30);
-    return date;
-  }
+  const hours =
+    period === "24h" ? 24 : period === "7d" ? 24 * 7 : 24 * 30;
 
-  return null;
+  const durationMs = hours * 60 * 60 * 1000;
+  const start = new Date(now.getTime() - durationMs);
+  const previousStart = new Date(start.getTime() - durationMs);
+  const previousEnd = start;
+
+  return {
+    start,
+    end: now,
+    previousStart,
+    previousEnd,
+  };
+}
+
+function isInsideRange(
+  date: string,
+  start: Date | null,
+  end: Date | null
+) {
+  const parsed = new Date(date);
+
+  if (Number.isNaN(parsed.getTime())) return false;
+
+  if (start && parsed < start) return false;
+  if (end && parsed > end) return false;
+
+  return true;
+}
+
+function matchesSubject(attempt: AttemptRow, subject: RankingSubject) {
+  if (subject === "all") return true;
+
+  return normalizeText(attempt.subject) === normalizeText(subject);
+}
+
+function filterAttempts(
+  attempts: AttemptRow[],
+  subject: RankingSubject,
+  start: Date | null,
+  end: Date | null
+) {
+  return attempts.filter((attempt) => {
+    if (!matchesSubject(attempt, subject)) return false;
+
+    return isInsideRange(attempt.answered_at, start, end);
+  });
 }
 
 function formatSeconds(seconds?: number | null) {
@@ -158,6 +282,374 @@ function formatDateTime(date?: string | null) {
   });
 }
 
+function getDateKey(date: string) {
+  const parsed = new Date(date);
+
+  if (Number.isNaN(parsed.getTime())) return null;
+
+  const year = parsed.getFullYear();
+  const month = String(parsed.getMonth() + 1).padStart(2, "0");
+  const day = String(parsed.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function getLongestCorrectStreak(attempts: AttemptRow[]) {
+  const days = Array.from(
+    new Set(
+      attempts
+        .filter((attempt) => attempt.is_correct)
+        .map((attempt) => getDateKey(attempt.answered_at))
+        .filter(Boolean) as string[]
+    )
+  ).sort();
+
+  if (days.length === 0) return 0;
+
+  let longest = 1;
+  let current = 1;
+
+  for (let i = 1; i < days.length; i += 1) {
+    const previous = new Date(`${days[i - 1]}T00:00:00`);
+    const actual = new Date(`${days[i]}T00:00:00`);
+    const diffDays =
+      (actual.getTime() - previous.getTime()) / (24 * 60 * 60 * 1000);
+
+    if (diffDays === 1) {
+      current += 1;
+      longest = Math.max(longest, current);
+    } else {
+      current = 1;
+    }
+  }
+
+  return longest;
+}
+
+function getDivision(score: number): DivisionInfo {
+  if (score >= 600) {
+    return {
+      label: "Insano",
+      description: "Pontuação absurda no recorte atual.",
+      className: "bg-violet-100 text-violet-700 border-violet-200",
+    };
+  }
+
+  if (score >= 300) {
+    return {
+      label: "Elite",
+      description: "Muito acima da média.",
+      className: "bg-blue-100 text-blue-700 border-blue-200",
+    };
+  }
+
+  if (score >= 150) {
+    return {
+      label: "Avançado",
+      description: "Ritmo forte de pontuação.",
+      className: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    };
+  }
+
+  if (score >= 50) {
+    return {
+      label: "Intermediário",
+      description: "Boa base de pontuação.",
+      className: "bg-amber-100 text-amber-700 border-amber-200",
+    };
+  }
+
+  return {
+    label: "Base",
+    description: "Início da jornada no ranking.",
+    className: "bg-slate-100 text-slate-700 border-slate-200",
+  };
+}
+
+function getBadges(entry: Omit<RankingEntry, "badges" | "positionDelta">) {
+  const badges: BadgeItem[] = [];
+
+  if (entry.veryHardCorrect >= 5) {
+    badges.push({
+      label: "Caçador de Pedrada",
+      className: "bg-violet-100 text-violet-700 border-violet-200",
+    });
+  }
+
+  if (entry.hardCorrect + entry.veryHardCorrect >= 10) {
+    badges.push({
+      label: "Tanque de Guerra",
+      className: "bg-red-100 text-red-700 border-red-200",
+    });
+  }
+
+  if (entry.topStreak >= 3) {
+    badges.push({
+      label: "Consistente",
+      className: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    });
+  }
+
+  if (entry.totalAttempts >= 5 && entry.accuracy >= 80) {
+    badges.push({
+      label: "Precisão Cirúrgica",
+      className: "bg-blue-100 text-blue-700 border-blue-200",
+    });
+  }
+
+  if (entry.score >= 300) {
+    badges.push({
+      label: "Modo Elite",
+      className: "bg-yellow-100 text-yellow-700 border-yellow-200",
+    });
+  }
+
+  return badges.slice(0, 3);
+}
+
+function getPositionDeltaLabel(delta: number | null) {
+  if (delta === null) {
+    return {
+      label: "novo",
+      icon: Star,
+      className: "bg-blue-100 text-blue-700 border-blue-200",
+    };
+  }
+
+  if (delta > 0) {
+    return {
+      label: `subiu ${delta}`,
+      icon: ArrowUp,
+      className: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    };
+  }
+
+  if (delta < 0) {
+    return {
+      label: `caiu ${Math.abs(delta)}`,
+      icon: ArrowDown,
+      className: "bg-red-100 text-red-700 border-red-200",
+    };
+  }
+
+  return {
+    label: "manteve",
+    icon: Minus,
+    className: "bg-slate-100 text-slate-700 border-slate-200",
+  };
+}
+
+function buildPointDistanceText(points: number) {
+  if (points <= 0) return "Você já está no topo deste recorte.";
+
+  const easy = Math.ceil(points / 2);
+  const medium = Math.ceil(points / 4);
+  const hard = Math.ceil(points / 8);
+  const veryHard = Math.ceil(points / 16);
+
+  return `Para ultrapassar, faltam ${points} ponto(s): ${easy} fácil(is), ${medium} média(s), ${hard} difícil(eis) ou ${veryHard} muito difícil(eis).`;
+}
+
+function buildRankingRows(
+  attempts: AttemptRow[],
+  profiles: ProfileRow[]
+): Array<Omit<RankingEntry, "positionDelta" | "badges">> {
+  const profilesMap = new Map<string, ProfileRow>();
+
+  for (const profile of profiles) {
+    if (profile.ativo === false) continue;
+
+    profilesMap.set(profile.id, profile);
+  }
+
+  const byUser = new Map<string, AttemptRow[]>();
+
+  for (const attempt of attempts) {
+    if (!attempt.user_id) continue;
+    if (!profilesMap.has(attempt.user_id)) continue;
+
+    const current = byUser.get(attempt.user_id) ?? [];
+    current.push(attempt);
+    byUser.set(attempt.user_id, current);
+  }
+
+  const rows: Array<Omit<RankingEntry, "positionDelta" | "badges">> = [];
+
+  for (const [userId, userAttempts] of byUser.entries()) {
+    const profile = profilesMap.get(userId);
+
+    if (!profile) continue;
+
+    const uniqueCorrectByQuestion = new Map<string, AttemptRow>();
+
+    for (const attempt of userAttempts) {
+      if (!attempt.is_correct) continue;
+      if (!attempt.question_id) continue;
+
+      const existing = uniqueCorrectByQuestion.get(attempt.question_id);
+
+      if (!existing) {
+        uniqueCorrectByQuestion.set(attempt.question_id, attempt);
+        continue;
+      }
+
+      const existingDate = new Date(existing.answered_at).getTime();
+      const currentDate = new Date(attempt.answered_at).getTime();
+
+      if (currentDate < existingDate) {
+        uniqueCorrectByQuestion.set(attempt.question_id, attempt);
+      }
+    }
+
+    let score = 0;
+    let easyCorrect = 0;
+    let mediumCorrect = 0;
+    let hardCorrect = 0;
+    let veryHardCorrect = 0;
+
+    for (const attempt of uniqueCorrectByQuestion.values()) {
+      const bucket = getDifficultyBucket(attempt.difficulty);
+      const points = getDifficultyPoints(attempt.difficulty);
+
+      score += points;
+
+      if (bucket === "easy") easyCorrect += 1;
+      if (bucket === "medium") mediumCorrect += 1;
+      if (bucket === "hard") hardCorrect += 1;
+      if (bucket === "very_hard") veryHardCorrect += 1;
+    }
+
+    const correctCount = uniqueCorrectByQuestion.size;
+    const totalAttempts = userAttempts.length;
+    const accuracy =
+      totalAttempts > 0 ? (correctCount / totalAttempts) * 100 : 0;
+
+    const timedAttempts = userAttempts.filter(
+      (attempt) => typeof attempt.time_spent_seconds === "number"
+    );
+
+    const avgTimeSeconds =
+      timedAttempts.length > 0
+        ? timedAttempts.reduce(
+            (sum, attempt) => sum + (attempt.time_spent_seconds ?? 0),
+            0
+          ) / timedAttempts.length
+        : 0;
+
+    const lastActivityAt =
+      userAttempts.length > 0
+        ? userAttempts
+            .map((attempt) => attempt.answered_at)
+            .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0]
+        : null;
+
+    rows.push({
+      userId,
+      nome: profile.nome?.trim() || "Aluno",
+      avatarKey: profile.avatar_key || "avatar_1",
+      score,
+      correctCount,
+      totalAttempts,
+      accuracy,
+      avgTimeSeconds,
+      lastActivityAt,
+      easyCorrect,
+      mediumCorrect,
+      hardCorrect,
+      veryHardCorrect,
+      topStreak: getLongestCorrectStreak(userAttempts),
+      division: getDivision(score),
+    });
+  }
+
+  return rows
+    .filter((row) => row.correctCount > 0)
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+
+      if (b.correctCount !== a.correctCount) {
+        return b.correctCount - a.correctCount;
+      }
+
+      if (b.accuracy !== a.accuracy) {
+        return b.accuracy - a.accuracy;
+      }
+
+      const aTime = a.avgTimeSeconds || Number.MAX_SAFE_INTEGER;
+      const bTime = b.avgTimeSeconds || Number.MAX_SAFE_INTEGER;
+
+      if (aTime !== bTime) return aTime - bTime;
+
+      const aLast = a.lastActivityAt ? new Date(a.lastActivityAt).getTime() : 0;
+      const bLast = b.lastActivityAt ? new Date(b.lastActivityAt).getTime() : 0;
+
+      return bLast - aLast;
+    });
+}
+
+function HighlightCard({
+  title,
+  entry,
+  value,
+  icon: Icon,
+  description,
+}: {
+  title: string;
+  entry: RankingEntry | null;
+  value: string;
+  icon: React.ComponentType<{ className?: string }>;
+  description: string;
+}) {
+  if (!entry) {
+    return (
+      <Card className="p-5 bg-white border-slate-200">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center">
+            <Icon className="w-5 h-5 text-slate-600" />
+          </div>
+
+          <div>
+            <p className="font-bold text-slate-900">{title}</p>
+            <p className="text-sm text-slate-500">Sem dados suficientes</p>
+          </div>
+        </div>
+
+        <p className="text-sm text-slate-500">{description}</p>
+      </Card>
+    );
+  }
+
+  const avatar = getAvatarConfig(entry.avatarKey);
+
+  return (
+    <Link href={`/perfil/${entry.userId}`}>
+      <Card className="p-5 bg-white border-slate-200 cursor-pointer hover:-translate-y-0.5 hover:shadow-lg transition-all">
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatar.bg} text-white flex items-center justify-center text-2xl shadow-md`}
+            >
+              {avatar.emoji}
+            </div>
+
+            <div>
+              <p className="font-bold text-slate-900">{entry.nome}</p>
+              <p className="text-sm text-slate-500">{title}</p>
+            </div>
+          </div>
+
+          <div className="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center">
+            <Icon className="w-5 h-5 text-amber-700" />
+          </div>
+        </div>
+
+        <p className="text-2xl font-bold text-slate-900 mb-1">{value}</p>
+        <p className="text-sm text-slate-500">{description}</p>
+      </Card>
+    </Link>
+  );
+}
+
 export default function RankingPage() {
   const { user, loading: authLoading } = useSupabaseAuth();
 
@@ -165,7 +657,8 @@ export default function RankingPage() {
   const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [period, setPeriod] = useState<RankingPeriod>("7d");
+  const [period, setPeriod] = useState<RankingPeriod>("season");
+  const [subject, setSubject] = useState<RankingSubject>("all");
 
   function getProfileHref(userId: string) {
     return userId === user?.id ? "/perfil" : `/perfil/${userId}`;
@@ -219,154 +712,86 @@ export default function RankingPage() {
     }
   }, [authLoading]);
 
-  const filteredAttempts = useMemo(() => {
-    const cutoff = getCutoffDate(period);
-
-    if (!cutoff) return attempts;
-
-    return attempts.filter(
-      (attempt) => new Date(attempt.answered_at) >= cutoff
-    );
-  }, [attempts, period]);
+  const currentRange = useMemo(() => getPeriodRange(period), [period]);
+  const seasonRange = useMemo(() => getPeriodRange("season"), []);
 
   const ranking = useMemo(() => {
-    const profilesMap = new Map<string, ProfileRow>();
+    const currentAttempts = filterAttempts(
+      attempts,
+      subject,
+      currentRange.start,
+      currentRange.end
+    );
 
-    for (const profile of profiles) {
-      if (profile.ativo === false) continue;
+    const previousAttempts =
+      currentRange.previousStart && currentRange.previousEnd
+        ? filterAttempts(
+            attempts,
+            subject,
+            currentRange.previousStart,
+            currentRange.previousEnd
+          )
+        : [];
 
-      profilesMap.set(profile.id, profile);
-    }
+    const currentRows = buildRankingRows(currentAttempts, profiles);
+    const previousRows = buildRankingRows(previousAttempts, profiles);
 
-    const byUser = new Map<string, AttemptRow[]>();
+    const previousPositionMap = new Map<string, number>();
 
-    for (const attempt of filteredAttempts) {
-      if (!attempt.user_id) continue;
-      if (!profilesMap.has(attempt.user_id)) continue;
+    previousRows.forEach((entry, index) => {
+      previousPositionMap.set(entry.userId, index + 1);
+    });
 
-      const current = byUser.get(attempt.user_id) ?? [];
-      current.push(attempt);
-      byUser.set(attempt.user_id, current);
-    }
+    return currentRows.map((entry, index) => {
+      const currentPosition = index + 1;
+      const previousPosition = previousPositionMap.get(entry.userId);
+      const positionDelta =
+        previousPosition === undefined
+          ? null
+          : previousPosition - currentPosition;
 
-    const rows: RankingEntry[] = [];
+      const baseEntry = {
+        ...entry,
+        positionDelta,
+        badges: [],
+      };
 
-    for (const [userId, userAttempts] of byUser.entries()) {
-      const profile = profilesMap.get(userId);
+      return {
+        ...baseEntry,
+        badges: getBadges(baseEntry),
+      };
+    });
+  }, [
+    attempts,
+    profiles,
+    subject,
+    currentRange.start,
+    currentRange.end,
+    currentRange.previousStart,
+    currentRange.previousEnd,
+  ]);
 
-      if (!profile) continue;
+  const seasonRanking = useMemo(() => {
+    const seasonAttempts = filterAttempts(
+      attempts,
+      subject,
+      seasonRange.start,
+      seasonRange.end
+    );
 
-      const uniqueCorrectByQuestion = new Map<string, AttemptRow>();
+    return buildRankingRows(seasonAttempts, profiles).map((entry) => {
+      const baseEntry = {
+        ...entry,
+        positionDelta: null,
+        badges: [],
+      };
 
-      for (const attempt of userAttempts) {
-        if (!attempt.is_correct) continue;
-        if (!attempt.question_id) continue;
-
-        const existing = uniqueCorrectByQuestion.get(attempt.question_id);
-
-        if (!existing) {
-          uniqueCorrectByQuestion.set(attempt.question_id, attempt);
-          continue;
-        }
-
-        const existingDate = new Date(existing.answered_at).getTime();
-        const currentDate = new Date(attempt.answered_at).getTime();
-
-        if (currentDate < existingDate) {
-          uniqueCorrectByQuestion.set(attempt.question_id, attempt);
-        }
-      }
-
-      let score = 0;
-      let easyCorrect = 0;
-      let mediumCorrect = 0;
-      let hardCorrect = 0;
-      let veryHardCorrect = 0;
-
-      for (const attempt of uniqueCorrectByQuestion.values()) {
-        const bucket = getDifficultyBucket(attempt.difficulty);
-        const points = getDifficultyPoints(attempt.difficulty);
-
-        score += points;
-
-        if (bucket === "easy") easyCorrect += 1;
-        if (bucket === "medium") mediumCorrect += 1;
-        if (bucket === "hard") hardCorrect += 1;
-        if (bucket === "very_hard") veryHardCorrect += 1;
-      }
-
-      const correctCount = uniqueCorrectByQuestion.size;
-      const totalAttempts = userAttempts.length;
-      const accuracy =
-        totalAttempts > 0 ? (correctCount / totalAttempts) * 100 : 0;
-
-      const timedAttempts = userAttempts.filter(
-        (attempt) => typeof attempt.time_spent_seconds === "number"
-      );
-
-      const avgTimeSeconds =
-        timedAttempts.length > 0
-          ? timedAttempts.reduce(
-              (sum, attempt) => sum + (attempt.time_spent_seconds ?? 0),
-              0
-            ) / timedAttempts.length
-          : 0;
-
-      const lastActivityAt =
-        userAttempts.length > 0
-          ? userAttempts
-              .map((attempt) => attempt.answered_at)
-              .sort(
-                (a, b) => new Date(b).getTime() - new Date(a).getTime()
-              )[0]
-          : null;
-
-      rows.push({
-        userId,
-        nome: profile.nome?.trim() || "Aluno",
-        avatarKey: profile.avatar_key || "avatar_1",
-        score,
-        correctCount,
-        totalAttempts,
-        accuracy,
-        avgTimeSeconds,
-        lastActivityAt,
-        easyCorrect,
-        mediumCorrect,
-        hardCorrect,
-        veryHardCorrect,
-      });
-    }
-
-    return rows
-      .filter((row) => row.correctCount > 0)
-      .sort((a, b) => {
-        if (b.score !== a.score) return b.score - a.score;
-
-        if (b.correctCount !== a.correctCount) {
-          return b.correctCount - a.correctCount;
-        }
-
-        if (b.accuracy !== a.accuracy) {
-          return b.accuracy - a.accuracy;
-        }
-
-        const aTime = a.avgTimeSeconds || Number.MAX_SAFE_INTEGER;
-        const bTime = b.avgTimeSeconds || Number.MAX_SAFE_INTEGER;
-
-        if (aTime !== bTime) return aTime - bTime;
-
-        const aLast = a.lastActivityAt
-          ? new Date(a.lastActivityAt).getTime()
-          : 0;
-
-        const bLast = b.lastActivityAt
-          ? new Date(b.lastActivityAt).getTime()
-          : 0;
-
-        return bLast - aLast;
-      });
-  }, [filteredAttempts, profiles]);
+      return {
+        ...baseEntry,
+        badges: getBadges(baseEntry),
+      };
+    });
+  }, [attempts, profiles, subject, seasonRange.start, seasonRange.end]);
 
   const myIndex = useMemo(() => {
     if (!user?.id) return -1;
@@ -378,8 +803,50 @@ export default function RankingPage() {
   const nextEntry = myIndex > 0 ? ranking[myIndex - 1] : null;
   const top3 = ranking.slice(0, 3);
 
+  const pointsToNext =
+    myEntry && nextEntry ? Math.max(1, nextEntry.score - myEntry.score + 1) : 0;
+
+  const bestAccuracy = useMemo(() => {
+    return (
+      [...ranking]
+        .filter((entry) => entry.totalAttempts >= 5)
+        .sort((a, b) => b.accuracy - a.accuracy || b.score - a.score)[0] ??
+      null
+    );
+  }, [ranking]);
+
+  const fastest = useMemo(() => {
+    return (
+      [...ranking]
+        .filter((entry) => entry.correctCount >= 3 && entry.avgTimeSeconds > 0)
+        .sort((a, b) => a.avgTimeSeconds - b.avgTimeSeconds)[0] ?? null
+    );
+  }, [ranking]);
+
+  const mostVeryHard = useMemo(() => {
+    return (
+      [...ranking]
+        .filter((entry) => entry.veryHardCorrect > 0)
+        .sort(
+          (a, b) =>
+            b.veryHardCorrect - a.veryHardCorrect || b.score - a.score
+        )[0] ?? null
+    );
+  }, [ranking]);
+
+  const bestStreak = useMemo(() => {
+    return (
+      [...seasonRanking]
+        .filter((entry) => entry.topStreak > 0)
+        .sort((a, b) => b.topStreak - a.topStreak || b.score - a.score)[0] ??
+      null
+    );
+  }, [seasonRanking]);
+
   function renderTopCard(entry: RankingEntry, position: number) {
     const avatar = getAvatarConfig(entry.avatarKey);
+    const delta = getPositionDeltaLabel(entry.positionDelta);
+    const DeltaIcon = delta.icon;
 
     const positionConfig =
       position === 1
@@ -434,6 +901,21 @@ export default function RankingPage() {
             </div>
           </div>
 
+          <div className="flex flex-wrap gap-2 mb-4">
+            <span
+              className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-bold ${delta.className}`}
+            >
+              <DeltaIcon className="w-3.5 h-3.5" />
+              {delta.label}
+            </span>
+
+            <span
+              className={`inline-flex rounded-full border px-3 py-1 text-xs font-bold ${entry.division.className}`}
+            >
+              {entry.division.label}
+            </span>
+          </div>
+
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="rounded-xl bg-white p-3 border border-slate-200">
               <p className="text-sm text-slate-500 mb-1">Score</p>
@@ -471,6 +953,19 @@ export default function RankingPage() {
               </span>
             </p>
           </div>
+
+          {entry.badges.length > 0 ? (
+            <div className="flex flex-wrap gap-2 mt-4">
+              {entry.badges.map((badge) => (
+                <span
+                  key={badge.label}
+                  className={`inline-flex rounded-full border px-3 py-1 text-xs font-bold ${badge.className}`}
+                >
+                  {badge.label}
+                </span>
+              ))}
+            </div>
+          ) : null}
 
           <div className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-slate-700 bg-white border border-slate-200 rounded-full px-4 py-2">
             <UserCircle2 className="w-4 h-4" />
@@ -513,7 +1008,7 @@ export default function RankingPage() {
               </p>
 
               <h2 className="text-3xl font-bold mb-3">
-                Ranking por pontuação
+                {getRankingTitle(subject)}
               </h2>
 
               <p className="text-amber-50 leading-relaxed max-w-3xl">
@@ -526,43 +1021,74 @@ export default function RankingPage() {
             </Card>
 
             <Card className="p-6 bg-white border-slate-200">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div className="grid xl:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-1">
-                    Período do ranking
-                  </h3>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Target className="w-5 h-5 text-amber-600" />
 
-                  <p className="text-sm text-slate-500">
-                    Escolha o recorte que quer analisar.
-                  </p>
+                    <h3 className="text-xl font-bold text-slate-900">
+                      Ranking por matéria
+                    </h3>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {SUBJECT_OPTIONS.map((option) => (
+                      <Button
+                        key={option.key}
+                        variant={subject === option.key ? "default" : "outline"}
+                        className="rounded-2xl"
+                        onClick={() => setSubject(option.key)}
+                      >
+                        {option.label}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
-                  {PERIOD_OPTIONS.map((option) => (
-                    <Button
-                      key={option.key}
-                      variant={period === option.key ? "default" : "outline"}
-                      className="rounded-2xl"
-                      onClick={() => setPeriod(option.key)}
-                    >
-                      {option.label}
-                    </Button>
-                  ))}
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <CalendarDays className="w-5 h-5 text-amber-600" />
+
+                    <h3 className="text-xl font-bold text-slate-900">
+                      Período
+                    </h3>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {PERIOD_OPTIONS.map((option) => (
+                      <Button
+                        key={option.key}
+                        variant={period === option.key ? "default" : "outline"}
+                        className="rounded-2xl"
+                        onClick={() => setPeriod(option.key)}
+                      >
+                        {option.label}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </Card>
 
             {myEntry ? (
               <Card className="p-6 bg-white border-slate-200">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+                <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5">
                   <div>
                     <p className="text-sm uppercase tracking-wide text-slate-500 mb-2">
                       Sua posição
                     </p>
 
-                    <h3 className="text-3xl font-bold text-slate-900">
-                      #{myIndex + 1}
-                    </h3>
+                    <div className="flex flex-wrap items-center gap-3 mb-2">
+                      <h3 className="text-3xl font-bold text-slate-900">
+                        #{myIndex + 1}
+                      </h3>
+
+                      <span
+                        className={`inline-flex rounded-full border px-3 py-1 text-xs font-bold ${myEntry.division.className}`}
+                      >
+                        {myEntry.division.label}
+                      </span>
+                    </div>
 
                     <p className="text-slate-600 mt-2">
                       Score:{" "}
@@ -570,9 +1096,15 @@ export default function RankingPage() {
                       {myEntry.correctCount} acertos únicos •{" "}
                       {myEntry.accuracy.toFixed(0)}% de taxa
                     </p>
+
+                    <p className="text-sm text-slate-500 mt-3">
+                      {nextEntry
+                        ? buildPointDistanceText(pointsToNext)
+                        : "Você está no topo deste recorte. Aproveite antes que alguém descubra."}
+                    </p>
                   </div>
 
-                  <div className="grid md:grid-cols-3 gap-3 lg:min-w-[520px]">
+                  <div className="grid md:grid-cols-3 gap-3 xl:min-w-[560px]">
                     <div className="rounded-xl bg-slate-50 border border-slate-200 p-4">
                       <p className="text-sm text-slate-500 mb-1">
                         Tempo médio
@@ -599,9 +1131,7 @@ export default function RankingPage() {
                       </p>
 
                       <p className="text-base font-bold text-slate-900">
-                        {nextEntry
-                          ? `${nextEntry.score - myEntry.score} pts`
-                          : "Topo"}
+                        {nextEntry ? `${pointsToNext} pts` : "Topo"}
                       </p>
                     </div>
                   </div>
@@ -629,6 +1159,102 @@ export default function RankingPage() {
               </Card>
             )}
 
+            <section>
+              <div className="flex items-center gap-2 mb-4">
+                <Award className="w-5 h-5 text-amber-600" />
+
+                <h3 className="text-xl font-bold text-slate-900">
+                  Destaques da semana
+                </h3>
+              </div>
+
+              <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <HighlightCard
+                  title="Maior pontuação"
+                  entry={seasonRanking[0] ?? null}
+                  value={seasonRanking[0] ? `${seasonRanking[0].score} pts` : "—"}
+                  icon={Trophy}
+                  description="Top 1 da semana atual."
+                />
+
+                <HighlightCard
+                  title="Mais muito difíceis"
+                  entry={mostVeryHard}
+                  value={
+                    mostVeryHard
+                      ? `${mostVeryHard.veryHardCorrect} acerto(s)`
+                      : "—"
+                  }
+                  icon={Flame}
+                  description="Quem mais acertou pedrada."
+                />
+
+                <HighlightCard
+                  title="Melhor precisão"
+                  entry={bestAccuracy}
+                  value={
+                    bestAccuracy ? `${bestAccuracy.accuracy.toFixed(0)}%` : "—"
+                  }
+                  icon={Gauge}
+                  description="Mínimo de 5 tentativas."
+                />
+
+                <HighlightCard
+                  title="Maior sequência"
+                  entry={bestStreak}
+                  value={bestStreak ? `${bestStreak.topStreak} dia(s)` : "—"}
+                  icon={Zap}
+                  description="Dias consecutivos com acerto."
+                />
+              </div>
+            </section>
+
+            <section>
+              <div className="flex items-center gap-2 mb-4">
+                <BarChart3 className="w-5 h-5 text-blue-600" />
+
+                <h3 className="text-xl font-bold text-slate-900">
+                  Rankings de eficiência
+                </h3>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                <HighlightCard
+                  title="Precisão"
+                  entry={bestAccuracy}
+                  value={
+                    bestAccuracy ? `${bestAccuracy.accuracy.toFixed(0)}%` : "—"
+                  }
+                  icon={Target}
+                  description="Melhor taxa de acerto com mínimo de 5 tentativas."
+                />
+
+                <HighlightCard
+                  title="Velocidade"
+                  entry={fastest}
+                  value={
+                    fastest
+                      ? formatSeconds(Math.round(fastest.avgTimeSeconds))
+                      : "—"
+                  }
+                  icon={Timer}
+                  description="Menor tempo médio com pelo menos 3 acertos."
+                />
+
+                <HighlightCard
+                  title="Pedradas"
+                  entry={mostVeryHard}
+                  value={
+                    mostVeryHard
+                      ? `${mostVeryHard.veryHardCorrect} muito difícil(eis)`
+                      : "—"
+                  }
+                  icon={Flame}
+                  description="Mais acertos em questões muito difíceis."
+                />
+              </div>
+            </section>
+
             <Card className="p-6 bg-white border-slate-200">
               <div className="flex items-center gap-2 mb-4">
                 <Trophy className="w-5 h-5 text-amber-500" />
@@ -643,6 +1269,8 @@ export default function RankingPage() {
                   {ranking.map((entry, index) => {
                     const avatar = getAvatarConfig(entry.avatarKey);
                     const isCurrentUser = entry.userId === user?.id;
+                    const delta = getPositionDeltaLabel(entry.positionDelta);
+                    const DeltaIcon = delta.icon;
 
                     return (
                       <Link
@@ -682,6 +1310,19 @@ export default function RankingPage() {
                                     </span>
                                   ) : null}
 
+                                  <span
+                                    className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-bold ${delta.className}`}
+                                  >
+                                    <DeltaIcon className="w-3 h-3" />
+                                    {delta.label}
+                                  </span>
+
+                                  <span
+                                    className={`inline-flex rounded-full border px-2 py-1 text-xs font-bold ${entry.division.className}`}
+                                  >
+                                    {entry.division.label}
+                                  </span>
+
                                   <span className="px-2 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 inline-flex items-center gap-1">
                                     <UserCircle2 className="w-3 h-3" />
                                     Ver perfil
@@ -693,6 +1334,19 @@ export default function RankingPage() {
                                   {entry.totalAttempts} tentativas •{" "}
                                   {entry.accuracy.toFixed(0)}% de taxa
                                 </p>
+
+                                {entry.badges.length > 0 ? (
+                                  <div className="flex flex-wrap gap-1.5 mt-2">
+                                    {entry.badges.map((badge) => (
+                                      <span
+                                        key={badge.label}
+                                        className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-bold ${badge.className}`}
+                                      >
+                                        {badge.label}
+                                      </span>
+                                    ))}
+                                  </div>
+                                ) : null}
                               </div>
                             </div>
 
