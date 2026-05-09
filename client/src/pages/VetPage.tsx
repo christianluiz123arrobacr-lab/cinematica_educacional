@@ -10,7 +10,6 @@ import {
   Layers3,
   Shield,
   CheckCircle2,
-  Clock3,
   BarChart3,
   ArrowRight,
   Activity,
@@ -202,7 +201,7 @@ export default function VetPage() {
               <div className="flex items-start justify-between gap-4 flex-wrap mb-6">
                 <div className="flex items-center gap-4">
                   <div className="h-14 w-14 rounded-2xl bg-emerald-100 flex items-center justify-center">
-                    <Activity className="w-7 h-7 text-emerald-700" />
+                    <BrainCircuit className="w-7 h-7 text-emerald-700" />
                   </div>
 
                   <div>
@@ -212,16 +211,16 @@ export default function VetPage() {
                     </div>
 
                     <h3 className="text-3xl font-bold text-slate-900">
-                      Diagnóstico VET
+                      Plano VET
                     </h3>
                   </div>
                 </div>
               </div>
 
               <p className="text-slate-600 leading-relaxed text-base mb-7 max-w-3xl">
-                O diagnóstico é o ponto de partida. Ele mostra seu momento
-                atual, seu risco, seus conteúdos críticos e o próximo passo
-                antes de transformar tudo em um Plano VET executável.
+                O Plano VET transforma o diagnóstico em ação: ele organiza suas
+                prioridades, separa os conteúdos por bloco de treino e indica
+                quais questões você deve atacar primeiro.
               </p>
 
               <div className="grid md:grid-cols-3 gap-4 mb-8">
@@ -229,11 +228,13 @@ export default function VetPage() {
                   <div className="w-10 h-10 rounded-xl bg-red-100 text-red-700 flex items-center justify-center mb-3">
                     <Flame className="w-5 h-5" />
                   </div>
+
                   <p className="font-bold text-slate-900 mb-1">
-                    Conteúdos críticos
+                    Prioridades
                   </p>
+
                   <p className="text-sm text-slate-600">
-                    O VET mostra onde seu desempenho está mais perigoso.
+                    O VET mostra o que precisa ser atacado primeiro.
                   </p>
                 </div>
 
@@ -241,11 +242,13 @@ export default function VetPage() {
                   <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center mb-3">
                     <BarChart3 className="w-5 h-5" />
                   </div>
+
                   <p className="font-bold text-slate-900 mb-1">
-                    Leitura estratégica
+                    Treino recomendado
                   </p>
+
                   <p className="text-sm text-slate-600">
-                    Aproveitamento, erros, tempo restante e peso da prova.
+                    Cada conteúdo entra como ataque, consolidação ou manutenção.
                   </p>
                 </div>
 
@@ -253,29 +256,31 @@ export default function VetPage() {
                   <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-3">
                     <CheckCircle2 className="w-5 h-5" />
                   </div>
+
                   <p className="font-bold text-slate-900 mb-1">
-                    Próximo passo
+                    Questões recomendadas
                   </p>
+
                   <p className="text-sm text-slate-600">
-                    O diagnóstico indica por onde começar sem estudar no escuro.
+                    O plano aponta questões reais para executar a estratégia.
                   </p>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Link href="/vet/diagnostico">
+                <Link href="/vet/plano">
                   <Button className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl px-7 py-5 font-bold">
-                    Abrir diagnóstico
+                    Abrir Plano VET
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
 
-                <Link href="/vet/plano">
+                <Link href="/vet/diagnostico">
                   <Button
                     variant="outline"
                     className="rounded-2xl px-7 py-5 font-bold"
                   >
-                    Ir para Plano VET
+                    Ver diagnóstico
                   </Button>
                 </Link>
               </div>
@@ -334,7 +339,8 @@ export default function VetPage() {
               Prévia da estratégia
             </h2>
             <p className="text-sm text-slate-500">
-              Depois do diagnóstico, o Plano VET organiza seus conteúdos nestes três blocos.
+              Depois do diagnóstico, o Plano VET organiza seus conteúdos nestes
+              três blocos.
             </p>
           </div>
 
@@ -353,7 +359,9 @@ export default function VetPage() {
                     <Icon className="w-6 h-6" />
                   </div>
 
-                  <h3 className={`text-xl font-bold mb-3 ${item.titleClassName}`}>
+                  <h3
+                    className={`text-xl font-bold mb-3 ${item.titleClassName}`}
+                  >
                     {item.title}
                   </h3>
 
