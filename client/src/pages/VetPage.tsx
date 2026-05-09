@@ -13,6 +13,7 @@ import {
   BarChart3,
   ArrowRight,
   Activity,
+  Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -24,14 +25,6 @@ const secondaryModules = [
       "Configure sua prova-alvo, tempo até a prova, horas por dia e disciplina foco.",
     href: "/vet/objetivo",
     icon: Target,
-    enabled: true,
-  },
-  {
-    title: "Nivelamento",
-    description:
-      "Veja se você está abaixo, próximo, compatível ou acima da régua da sua prova-alvo.",
-    href: "/vet/nivelamento",
-    icon: Gauge,
     enabled: true,
   },
   {
@@ -333,6 +326,106 @@ export default function VetPage() {
           </Card>
         </section>
 
+        <section className="grid lg:grid-cols-[0.85fr_1.15fr] gap-6 items-stretch">
+          <Card className="p-6 md:p-8 rounded-3xl border-blue-300 bg-gradient-to-br from-white via-blue-50 to-emerald-50 shadow-sm overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-72 h-72 bg-blue-100 rounded-full -mr-36 -mt-36 opacity-80" />
+            <div className="absolute bottom-0 left-0 w-56 h-56 bg-emerald-100 rounded-full -ml-28 -mb-28 opacity-70" />
+
+            <div className="relative">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="h-14 w-14 rounded-2xl bg-blue-100 flex items-center justify-center">
+                  <Gauge className="w-7 h-7 text-blue-700" />
+                </div>
+
+                <div>
+                  <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700 mb-2">
+                    <Trophy className="w-3.5 h-3.5" />
+                    Régua da prova
+                  </div>
+
+                  <h3 className="text-3xl font-bold text-slate-900">
+                    Nivelamento VET
+                  </h3>
+                </div>
+              </div>
+
+              <p className="text-slate-600 leading-relaxed text-base mb-7">
+                O Nivelamento compara seu momento atual com a régua da sua
+                prova-alvo. Ele considera aproveitamento, cobertura dos conteúdos
+                importantes, histórico dos últimos anos e comparação com a média
+                dos outros alunos.
+              </p>
+
+              <div className="flex flex-wrap gap-3">
+                <Link href="/vet/nivelamento">
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-2xl px-7 py-5 font-bold">
+                    Abrir nivelamento
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+
+                <Link href="/vet/diagnostico">
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl px-7 py-5 font-bold bg-white"
+                  >
+                    Ver diagnóstico
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 rounded-3xl border-slate-200 bg-white shadow-sm">
+            <div className="grid md:grid-cols-3 gap-4 h-full">
+              <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+                <div className="w-11 h-11 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center mb-4">
+                  <Target className="w-5 h-5" />
+                </div>
+
+                <p className="font-bold text-slate-900 mb-2">
+                  Régua da prova
+                </p>
+
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Compara sua preparação com o nível esperado para ITA, IME,
+                  ENEM, FUVEST ou outra prova-alvo.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-violet-200 bg-violet-50 p-5">
+                <div className="w-11 h-11 rounded-2xl bg-violet-100 text-violet-700 flex items-center justify-center mb-4">
+                  <BarChart3 className="w-5 h-5" />
+                </div>
+
+                <p className="font-bold text-slate-900 mb-2">
+                  Score ajustado
+                </p>
+
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Junta acertos, cobertura dos conteúdos, recorrência histórica
+                  e comparação coletiva.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+                <div className="w-11 h-11 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-4">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+
+                <p className="font-bold text-slate-900 mb-2">
+                  Próxima decisão
+                </p>
+
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Mostra se você está muito abaixo, baixo, próximo, compatível
+                  ou acima da régua.
+                </p>
+              </div>
+            </div>
+          </Card>
+        </section>
+
         <section>
           <div className="mb-5">
             <h2 className="text-2xl font-bold text-slate-900">
@@ -380,11 +473,11 @@ export default function VetPage() {
               Outros módulos
             </h2>
             <p className="text-sm text-slate-500">
-              Configuração, nivelamento e simulado continuam separados.
+              Configuração e simulado continuam separados.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+          <div className="grid md:grid-cols-2 gap-5">
             {secondaryModules.map((module) => {
               const Icon = module.icon;
 
