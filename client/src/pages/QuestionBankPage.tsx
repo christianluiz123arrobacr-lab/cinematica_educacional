@@ -22,6 +22,7 @@ import {
   Gauge,
   X,
   ListFilter,
+  Search,
 } from "lucide-react";
 
 function normalizeText(value?: string | null) {
@@ -210,6 +211,30 @@ function getMultiSelectLabel(
   return `${selected.length} selecionados`;
 }
 
+function questionMatchesSearch(question: Question, searchTerm: string) {
+  const term = normalizeText(searchTerm);
+
+  if (!term) return true;
+
+  const searchableParts = [
+    question.codigo,
+    question.id,
+    question.statement,
+    question.statementAfterImage,
+    question.exam,
+    question.institution,
+    String(question.year ?? ""),
+    question.subject,
+    formatSubjectLabel(question.subject),
+    question.difficulty,
+    formatDifficultyLabel(String(question.difficulty ?? "")),
+    ...getQuestionTopics(question),
+    ...getQuestionSubtopics(question),
+  ];
+
+  return searchableParts.some((part) => normalizeText(part).includes(term));
+}
+
 type MultiSelectDropdownProps = {
   title: string;
   index?: number;
@@ -336,26 +361,22 @@ export default function QuestionBankPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [selectedInstitutions, setSelectedInstitutions] = useState<string[]>(
     initialVetFilters.institution ? [initialVetFilters.institution] : []
   );
-
   const [selectedYears, setSelectedYears] = useState<string[]>([]);
-
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>(
     initialVetFilters.subjects
   );
-
   const [selectedTopics, setSelectedTopics] = useState<string[]>(
     initialVetFilters.topics
   );
-
   const [selectedSubtopics, setSelectedSubtopics] = useState<string[]>([]);
-
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
 
   const [vetTopics, setVetTopics] = useState<string[]>(initialVetFilters.topics);
-
   const [vetBlock, setVetBlock] = useState<string>(initialVetFilters.block);
 
   const hasVetFilter = vetTopics.length > 0;
@@ -394,7 +415,6 @@ export default function QuestionBankPage() {
         q.institution,
         selectedInstitutions
       );
-
       const matchesYear = matchesMulti(String(q.year), selectedYears);
 
       return matchesInstitution && matchesYear;
@@ -415,7 +435,6 @@ export default function QuestionBankPage() {
         q.institution,
         selectedInstitutions
       );
-
       const matchesYear = matchesMulti(String(q.year), selectedYears);
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
 
@@ -439,10 +458,8 @@ export default function QuestionBankPage() {
         q.institution,
         selectedInstitutions
       );
-
       const matchesYear = matchesMulti(String(q.year), selectedYears);
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
-
       const matchesTopic = matchesMultiList(
         getQuestionTopics(q),
         effectiveTopics
@@ -474,15 +491,12 @@ export default function QuestionBankPage() {
         q.institution,
         selectedInstitutions
       );
-
       const matchesYear = matchesMulti(String(q.year), selectedYears);
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
-
       const matchesTopic = matchesMultiList(
         getQuestionTopics(q),
         effectiveTopics
       );
-
       const matchesSubtopic = matchesMultiList(
         getQuestionSubtopicsForTopics(q, effectiveTopics),
         selectedSubtopics
@@ -564,9 +578,7 @@ export default function QuestionBankPage() {
 
     const counts = questions.reduce<Record<string, number>>((acc, q) => {
       if (!q.subject) return acc;
-
       acc[q.subject] = (acc[q.subject] || 0) + 1;
-
       return acc;
     }, {});
 
@@ -588,9 +600,7 @@ export default function QuestionBankPage() {
 
     const counts = questions.reduce<Record<string, number>>((acc, q) => {
       if (!q.difficulty) return acc;
-
       acc[q.difficulty] = (acc[q.difficulty] || 0) + 1;
-
       return acc;
     }, {});
 
@@ -612,11 +622,8 @@ export default function QuestionBankPage() {
   const filteredDifficultyStats = useMemo(() => {
     const counts = filteredQuestions.reduce<Record<string, number>>((acc, q) => {
       const difficulty = String(q.difficulty ?? "");
-
       if (!difficulty) return acc;
-
       acc[difficulty] = (acc[difficulty] || 0) + 1;
-
       return acc;
     }, {});
 
@@ -648,6 +655,14 @@ export default function QuestionBankPage() {
       label: string;
       onRemove: () => void;
     }> = [];
+
+    if (searchTerm.trim()) {
+      chips.push({
+        key: "search",
+        label: `Busca: ${searchTerm.trim()}`,
+        onRemove: () => setSearchTerm(""),
+      });
+    }
 
     selectedInstitutions.forEach((item) => {
       chips.push({
@@ -717,6 +732,7 @@ export default function QuestionBankPage() {
 
     return chips;
   }, [
+    searchTerm,
     selectedInstitutions,
     selectedYears,
     selectedSubjects,
@@ -728,7 +744,6 @@ export default function QuestionBankPage() {
   useEffect(() => {
     async function loadQuestions() {
       const data = await getQuestions();
-
       setQuestions(data);
       setFilteredQuestions(data);
     }
@@ -738,6 +753,8 @@ export default function QuestionBankPage() {
 
   useEffect(() => {
     let filtered = questions;
+
+    filtered = filtered.filter((q) => questionMatchesSearch(q, searchTerm));
 
     filtered = filtered.filter((q) =>
       matchesMulti(q.institution, selectedInstitutions)
@@ -771,6 +788,7 @@ export default function QuestionBankPage() {
     setFilteredQuestions(filtered);
   }, [
     questions,
+    searchTerm,
     selectedInstitutions,
     selectedYears,
     selectedSubjects,
@@ -780,6 +798,7 @@ export default function QuestionBankPage() {
   ]);
 
   function clearAllFilters() {
+    setSearchTerm("");
     setSelectedInstitutions([]);
     setSelectedYears([]);
     setSelectedSubjects([]);
@@ -887,164 +906,302 @@ export default function QuestionBankPage() {
           </section>
         ) : null}
 
-        <section className="grid md:grid-cols-3 gap-5">
-          <Card className="p-5 border-violet-100 bg-white shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center">
-                <BookMarked className="w-6 h-6 text-violet-600" />
-              </div>
-
-              <div>
-                <p className="text-3xl font-bold text-slate-900">
-                  {questions.length}
-                </p>
-
-                <p className="text-sm font-semibold text-slate-800">
-                  Total de Questões
-                </p>
-
-                <p className="text-xs text-slate-500">Disponíveis</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-5 border-blue-100 bg-white shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center">
-                <GraduationCap className="w-6 h-6 text-blue-600" />
-              </div>
-
-              <div>
-                <p className="text-3xl font-bold text-slate-900">
-                  {totalSubjects}
-                </p>
-
-                <p className="text-sm font-semibold text-slate-800">
-                  Disciplinas
-                </p>
-
-                <p className="text-xs text-slate-500">Cobertas</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-5 border-orange-100 bg-white shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-orange-100 flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-orange-600" />
-              </div>
-
-              <div>
-                <p className="text-3xl font-bold text-slate-900">
-                  {totalDifficulties}
-                </p>
-
-                <p className="text-sm font-semibold text-slate-800">
-                  Dificuldades
-                </p>
-
-                <p className="text-xs text-slate-500">
-                  Fácil, Média, Difícil
-                </p>
-              </div>
-            </div>
-          </Card>
-        </section>
-
-        <section className="grid xl:grid-cols-2 gap-5">
-          <Card className="p-6 bg-white border-slate-200 shadow-sm">
-            <h3 className="text-lg font-bold text-slate-900 mb-5">
-              Questões por disciplina
-            </h3>
-
-            <div className="space-y-4">
-              {subjectStats.length > 0 ? (
-                subjectStats.map((item) => {
-                  const percentage =
-                    questions.length > 0
-                      ? Math.round((item.count / questions.length) * 100)
-                      : 0;
-
-                  return (
-                    <div key={item.key}>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-slate-700">
-                          {item.label}
-                        </span>
-
-                        <span className="text-sm text-slate-500">
-                          {item.count} ({percentage}%)
-                        </span>
-                      </div>
-
-                      <div className="h-2.5 w-full rounded-full bg-slate-100 overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-violet-500"
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <p className="text-sm text-slate-500">
-                  Nenhuma disciplina cadastrada ainda.
-                </p>
-              )}
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-white border-slate-200 shadow-sm">
-            <h3 className="text-lg font-bold text-slate-900 mb-5">
-              Questões por nível
-            </h3>
-
-            <div className="space-y-4">
-              {difficultyStats.length > 0 ? (
-                difficultyStats.map((item) => {
-                  const percentage =
-                    questions.length > 0
-                      ? Math.round((item.count / questions.length) * 100)
-                      : 0;
-
-                  const colorClass =
-                    item.key === "facil"
-                      ? "bg-emerald-500"
-                      : item.key === "medio"
-                        ? "bg-amber-500"
-                        : "bg-rose-500";
-
-                  return (
-                    <div key={item.key}>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-slate-700">
-                          {item.label}
-                        </span>
-
-                        <span className="text-sm text-slate-500">
-                          {item.count} ({percentage}%)
-                        </span>
-                      </div>
-
-                      <div className="h-2.5 w-full rounded-full bg-slate-100 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${colorClass}`}
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <p className="text-sm text-slate-500">
-                  Nenhuma dificuldade cadastrada ainda.
-                </p>
-              )}
-            </div>
-          </Card>
-        </section>
-
         <section className="grid xl:grid-cols-[minmax(0,1fr)_320px] gap-6 items-start">
+          <div className="space-y-5">
+            <div className="grid md:grid-cols-3 gap-4">
+              <Card className="p-4 border-violet-100 bg-white shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-2xl bg-violet-100 flex items-center justify-center">
+                    <BookMarked className="w-5 h-5 text-violet-600" />
+                  </div>
+
+                  <div>
+                    <p className="text-2xl font-bold text-slate-900 leading-tight">
+                      {questions.length}
+                    </p>
+
+                    <p className="text-sm font-semibold text-slate-800">
+                      Total de Questões
+                    </p>
+
+                    <p className="text-xs text-slate-500">Disponíveis</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-4 border-blue-100 bg-white shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-2xl bg-blue-100 flex items-center justify-center">
+                    <GraduationCap className="w-5 h-5 text-blue-600" />
+                  </div>
+
+                  <div>
+                    <p className="text-2xl font-bold text-slate-900 leading-tight">
+                      {totalSubjects}
+                    </p>
+
+                    <p className="text-sm font-semibold text-slate-800">
+                      Disciplinas
+                    </p>
+
+                    <p className="text-xs text-slate-500">Cobertas</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-4 border-orange-100 bg-white shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-2xl bg-orange-100 flex items-center justify-center">
+                    <BarChart3 className="w-5 h-5 text-orange-600" />
+                  </div>
+
+                  <div>
+                    <p className="text-2xl font-bold text-slate-900 leading-tight">
+                      {totalDifficulties}
+                    </p>
+
+                    <p className="text-sm font-semibold text-slate-800">
+                      Dificuldades
+                    </p>
+
+                    <p className="text-xs text-slate-500">
+                      Fácil, Média, Difícil
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-4">
+              <Card className="p-5 bg-white border-slate-200 shadow-sm">
+                <h3 className="text-base font-bold text-slate-900 mb-4">
+                  Questões por disciplina
+                </h3>
+
+                <div className="space-y-3">
+                  {subjectStats.length > 0 ? (
+                    subjectStats.map((item) => {
+                      const percentage =
+                        questions.length > 0
+                          ? Math.round((item.count / questions.length) * 100)
+                          : 0;
+
+                      return (
+                        <div key={item.key}>
+                          <div className="flex justify-between items-center mb-1.5">
+                            <span className="text-sm font-medium text-slate-700">
+                              {item.label}
+                            </span>
+
+                            <span className="text-xs text-slate-500">
+                              {item.count} ({percentage}%)
+                            </span>
+                          </div>
+
+                          <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-violet-500"
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p className="text-sm text-slate-500">
+                      Nenhuma disciplina cadastrada ainda.
+                    </p>
+                  )}
+                </div>
+              </Card>
+
+              <Card className="p-5 bg-white border-slate-200 shadow-sm">
+                <h3 className="text-base font-bold text-slate-900 mb-4">
+                  Questões por nível
+                </h3>
+
+                <div className="space-y-3">
+                  {difficultyStats.length > 0 ? (
+                    difficultyStats.map((item) => {
+                      const percentage =
+                        questions.length > 0
+                          ? Math.round((item.count / questions.length) * 100)
+                          : 0;
+
+                      const colorClass =
+                        item.key === "facil"
+                          ? "bg-emerald-500"
+                          : item.key === "medio"
+                            ? "bg-amber-500"
+                            : "bg-rose-500";
+
+                      return (
+                        <div key={item.key}>
+                          <div className="flex justify-between items-center mb-1.5">
+                            <span className="text-sm font-medium text-slate-700">
+                              {item.label}
+                            </span>
+
+                            <span className="text-xs text-slate-500">
+                              {item.count} ({percentage}%)
+                            </span>
+                          </div>
+
+                          <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${colorClass}`}
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p className="text-sm text-slate-500">
+                      Nenhuma dificuldade cadastrada ainda.
+                    </p>
+                  )}
+                </div>
+              </Card>
+            </div>
+          </div>
+
+          <Card className="p-5 bg-white border-slate-200 shadow-sm xl:sticky xl:top-24">
+            <div className="flex items-center gap-2 mb-5">
+              <BookMarked className="w-5 h-5 text-violet-600" />
+
+              <h3 className="text-lg font-bold text-slate-900">
+                Resumo do filtro
+              </h3>
+            </div>
+
+            <div className="space-y-3 text-sm text-slate-700 mb-5">
+              <div className="flex justify-between gap-4">
+                <span className="text-slate-500">Busca</span>
+
+                <span className="font-semibold text-right">
+                  {searchTerm.trim() ? searchTerm.trim() : "—"}
+                </span>
+              </div>
+
+              <div className="flex justify-between gap-4">
+                <span className="text-slate-500">Instituição</span>
+
+                <span className="font-semibold text-right">
+                  {selectedInstitutions.length > 0
+                    ? selectedInstitutions.join(", ")
+                    : "Todas"}
+                </span>
+              </div>
+
+              <div className="flex justify-between gap-4">
+                <span className="text-slate-500">Ano</span>
+
+                <span className="font-semibold text-right">
+                  {selectedYears.length > 0
+                    ? selectedYears.join(", ")
+                    : "Todos"}
+                </span>
+              </div>
+
+              <div className="flex justify-between gap-4">
+                <span className="text-slate-500">Disciplina</span>
+
+                <span className="font-semibold text-right">
+                  {selectedSubjects.length > 0
+                    ? selectedSubjects.map(formatSubjectLabel).join(", ")
+                    : "Todas"}
+                </span>
+              </div>
+
+              <div className="flex justify-between gap-4">
+                <span className="text-slate-500">Conteúdo</span>
+
+                <span className="font-semibold text-right">
+                  {effectiveTopics.length > 0
+                    ? effectiveTopics.join(", ")
+                    : "Todos"}
+                </span>
+              </div>
+
+              <div className="flex justify-between gap-4">
+                <span className="text-slate-500">Assunto</span>
+
+                <span className="font-semibold text-right">
+                  {selectedSubtopics.length > 0
+                    ? selectedSubtopics.join(", ")
+                    : "Todos"}
+                </span>
+              </div>
+
+              <div className="flex justify-between gap-4">
+                <span className="text-slate-500">Dificuldade</span>
+
+                <span className="font-semibold text-right">
+                  {selectedDifficulties.length > 0
+                    ? selectedDifficulties.map(formatDifficultyLabel).join(", ")
+                    : "Todas"}
+                </span>
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4 mb-5">
+              <p className="text-sm text-slate-500 mb-1">
+                Questões encontradas
+              </p>
+
+              <p className="text-3xl font-bold text-slate-900">
+                {filteredQuestions.length}
+              </p>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-bold text-slate-900 mb-4">
+                Questões por dificuldade
+              </h4>
+
+              <div className="space-y-4">
+                {filteredDifficultyStats.map((item) => {
+                  const percentage =
+                    filteredQuestions.length > 0
+                      ? Math.round(
+                          (item.count / filteredQuestions.length) * 100
+                        )
+                      : 0;
+
+                  return (
+                    <div key={item.key}>
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`w-2.5 h-2.5 rounded-full ${item.colorClass}`}
+                          />
+
+                          <span className="text-sm text-slate-700">
+                            {item.label}
+                          </span>
+                        </div>
+
+                        <span className="text-sm text-slate-500">
+                          {item.count} ({percentage}%)
+                        </span>
+                      </div>
+
+                      <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${item.colorClass}`}
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </Card>
+        </section>
+
+        <section>
           <Card className="p-6 bg-white border-slate-200 shadow-sm">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
               <div className="flex items-center gap-3">
@@ -1058,7 +1215,7 @@ export default function QuestionBankPage() {
                   </h3>
 
                   <p className="text-sm text-slate-500">
-                    Aplique os filtros na ordem estratégica abaixo.
+                    Busque por código, palavra-chave ou use a ordem estratégica.
                   </p>
                 </div>
               </div>
@@ -1070,6 +1227,23 @@ export default function QuestionBankPage() {
               >
                 Limpar filtros
               </Button>
+            </div>
+
+            <div className="mb-5">
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Buscar questão
+              </label>
+
+              <div className="relative">
+                <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+
+                <input
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Buscar por código, enunciado, banca, conteúdo ou assunto..."
+                  className="w-full rounded-xl border border-slate-300 bg-white pl-11 pr-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                />
+              </div>
             </div>
 
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -1176,138 +1350,13 @@ export default function QuestionBankPage() {
               </div>
             ) : null}
           </Card>
-
-          <Card className="p-6 bg-white border-slate-200 shadow-sm">
-            <div className="flex items-center gap-2 mb-5">
-              <BookMarked className="w-5 h-5 text-violet-600" />
-
-              <h3 className="text-lg font-bold text-slate-900">
-                Resumo do filtro
-              </h3>
-            </div>
-
-            <div className="space-y-3 text-sm text-slate-700 mb-6">
-              <div className="flex justify-between gap-4">
-                <span className="text-slate-500">Instituição</span>
-
-                <span className="font-semibold text-right">
-                  {selectedInstitutions.length > 0
-                    ? selectedInstitutions.join(", ")
-                    : "Todas"}
-                </span>
-              </div>
-
-              <div className="flex justify-between gap-4">
-                <span className="text-slate-500">Ano</span>
-
-                <span className="font-semibold text-right">
-                  {selectedYears.length > 0
-                    ? selectedYears.join(", ")
-                    : "Todos"}
-                </span>
-              </div>
-
-              <div className="flex justify-between gap-4">
-                <span className="text-slate-500">Disciplina</span>
-
-                <span className="font-semibold text-right">
-                  {selectedSubjects.length > 0
-                    ? selectedSubjects.map(formatSubjectLabel).join(", ")
-                    : "Todas"}
-                </span>
-              </div>
-
-              <div className="flex justify-between gap-4">
-                <span className="text-slate-500">Conteúdo</span>
-
-                <span className="font-semibold text-right">
-                  {effectiveTopics.length > 0
-                    ? effectiveTopics.join(", ")
-                    : "Todos"}
-                </span>
-              </div>
-
-              <div className="flex justify-between gap-4">
-                <span className="text-slate-500">Assunto</span>
-
-                <span className="font-semibold text-right">
-                  {selectedSubtopics.length > 0
-                    ? selectedSubtopics.join(", ")
-                    : "Todos"}
-                </span>
-              </div>
-
-              <div className="flex justify-between gap-4">
-                <span className="text-slate-500">Dificuldade</span>
-
-                <span className="font-semibold text-right">
-                  {selectedDifficulties.length > 0
-                    ? selectedDifficulties.map(formatDifficultyLabel).join(", ")
-                    : "Todas"}
-                </span>
-              </div>
-            </div>
-
-            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4 mb-6">
-              <p className="text-sm text-slate-500 mb-1">
-                Questões encontradas
-              </p>
-
-              <p className="text-3xl font-bold text-slate-900">
-                {filteredQuestions.length}
-              </p>
-            </div>
-
-            <div>
-              <h4 className="text-sm font-bold text-slate-900 mb-4">
-                Questões por dificuldade
-              </h4>
-
-              <div className="space-y-4">
-                {filteredDifficultyStats.map((item) => {
-                  const percentage =
-                    filteredQuestions.length > 0
-                      ? Math.round(
-                          (item.count / filteredQuestions.length) * 100
-                        )
-                      : 0;
-
-                  return (
-                    <div key={item.key}>
-                      <div className="flex justify-between items-center mb-2">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`w-2.5 h-2.5 rounded-full ${item.colorClass}`}
-                          />
-
-                          <span className="text-sm text-slate-700">
-                            {item.label}
-                          </span>
-                        </div>
-
-                        <span className="text-sm text-slate-500">
-                          {item.count} ({percentage}%)
-                        </span>
-                      </div>
-
-                      <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${item.colorClass}`}
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </Card>
         </section>
 
         <section>
           {filteredQuestions.length > 0 ? (
             <InteractiveQuiz
               key={[
+                searchTerm,
                 selectedInstitutions.join("|"),
                 selectedYears.join("|"),
                 selectedSubjects.join("|"),
