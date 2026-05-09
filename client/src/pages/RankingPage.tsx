@@ -50,6 +50,7 @@ type RankingEntry = {
   easyCorrect: number;
   mediumCorrect: number;
   hardCorrect: number;
+  veryHardCorrect: number;
 };
 
 const PERIOD_OPTIONS: Array<{ key: RankingPeriod; label: string }> = [
@@ -81,22 +82,28 @@ function getAvatarConfig(avatarKey?: string | null) {
   );
 }
 
+function normalizeDifficulty(difficulty?: string | null) {
+  return (difficulty || "").trim().toLowerCase();
+}
+
 function getDifficultyPoints(difficulty?: string | null) {
-  const value = (difficulty || "").trim().toLowerCase();
+  const value = normalizeDifficulty(difficulty);
 
   if (value === "facil") return 2;
   if (value === "medio") return 4;
-  if (value === "dificil") return 7;
+  if (value === "dificil") return 8;
+  if (value === "muito_dificil") return 16;
 
   return 0;
 }
 
 function getDifficultyBucket(difficulty?: string | null) {
-  const value = (difficulty || "").trim().toLowerCase();
+  const value = normalizeDifficulty(difficulty);
 
   if (value === "facil") return "easy";
   if (value === "medio") return "medium";
   if (value === "dificil") return "hard";
+  if (value === "muito_dificil") return "very_hard";
 
   return "unknown";
 }
@@ -176,9 +183,7 @@ export default function RankingPage() {
             .select("*")
             .order("answered_at", { ascending: false }),
 
-          supabase
-            .from("profiles")
-            .select("id, nome, avatar_key, ativo"),
+          supabase.from("profiles").select("id, nome, avatar_key, ativo"),
         ]);
 
         if (attemptsResult.error) {
@@ -276,6 +281,7 @@ export default function RankingPage() {
       let easyCorrect = 0;
       let mediumCorrect = 0;
       let hardCorrect = 0;
+      let veryHardCorrect = 0;
 
       for (const attempt of uniqueCorrectByQuestion.values()) {
         const bucket = getDifficultyBucket(attempt.difficulty);
@@ -286,6 +292,7 @@ export default function RankingPage() {
         if (bucket === "easy") easyCorrect += 1;
         if (bucket === "medium") mediumCorrect += 1;
         if (bucket === "hard") hardCorrect += 1;
+        if (bucket === "very_hard") veryHardCorrect += 1;
       }
 
       const correctCount = uniqueCorrectByQuestion.size;
@@ -310,8 +317,7 @@ export default function RankingPage() {
           ? userAttempts
               .map((attempt) => attempt.answered_at)
               .sort(
-                (a, b) =>
-                  new Date(b).getTime() - new Date(a).getTime()
+                (a, b) => new Date(b).getTime() - new Date(a).getTime()
               )[0]
           : null;
 
@@ -328,6 +334,7 @@ export default function RankingPage() {
         easyCorrect,
         mediumCorrect,
         hardCorrect,
+        veryHardCorrect,
       });
     }
 
@@ -419,9 +426,7 @@ export default function RankingPage() {
             </div>
 
             <div>
-              <p className="text-xl font-bold text-slate-900">
-                {entry.nome}
-              </p>
+              <p className="text-xl font-bold text-slate-900">{entry.nome}</p>
 
               <p className="text-sm text-slate-500">
                 {entry.correctCount} acertos únicos
@@ -450,11 +455,13 @@ export default function RankingPage() {
           <div className="text-sm text-slate-600 space-y-1">
             <p>
               Fácil:{" "}
-              <span className="font-semibold">{entry.easyCorrect}</span> •
+              <span className="font-semibold">{entry.easyCorrect}</span> •{" "}
               Médio:{" "}
-              <span className="font-semibold">{entry.mediumCorrect}</span> •
+              <span className="font-semibold">{entry.mediumCorrect}</span> •{" "}
               Difícil:{" "}
-              <span className="font-semibold">{entry.hardCorrect}</span>
+              <span className="font-semibold">{entry.hardCorrect}</span> •{" "}
+              Muito difícil:{" "}
+              <span className="font-semibold">{entry.veryHardCorrect}</span>
             </p>
 
             <p>
@@ -512,8 +519,9 @@ export default function RankingPage() {
               <p className="text-amber-50 leading-relaxed max-w-3xl">
                 O ranking considera apenas questões únicas acertadas no período
                 escolhido. A pontuação é: <strong>fácil = 2</strong>,{" "}
-                <strong>médio = 4</strong> e{" "}
-                <strong>difícil = 7</strong>.
+                <strong>médio = 4</strong>,{" "}
+                <strong>difícil = 8</strong> e{" "}
+                <strong>muito difícil = 16</strong>.
               </p>
             </Card>
 
@@ -610,9 +618,7 @@ export default function RankingPage() {
 
             {top3.length > 0 ? (
               <div className="grid xl:grid-cols-3 gap-4">
-                {top3.map((entry, index) =>
-                  renderTopCard(entry, index + 1)
-                )}
+                {top3.map((entry, index) => renderTopCard(entry, index + 1))}
               </div>
             ) : (
               <Card className="p-8">
@@ -690,7 +696,7 @@ export default function RankingPage() {
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 xl:min-w-[620px]">
+                            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 xl:min-w-[760px]">
                               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                                 <p className="text-xs text-slate-500 mb-1">
                                   Score
@@ -728,6 +734,16 @@ export default function RankingPage() {
 
                                 <p className="text-lg font-bold text-slate-900">
                                   {entry.hardCorrect}
+                                </p>
+                              </div>
+
+                              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <p className="text-xs text-slate-500 mb-1">
+                                  Muito difícil
+                                </p>
+
+                                <p className="text-lg font-bold text-slate-900">
+                                  {entry.veryHardCorrect}
                                 </p>
                               </div>
 
@@ -792,7 +808,8 @@ export default function RankingPage() {
                   </p>
 
                   <p className="text-sm text-slate-600">
-                    Fácil vale 2, médio vale 4 e difícil vale 7.
+                    Fácil vale 2, médio vale 4, difícil vale 8 e muito difícil
+                    vale 16.
                   </p>
                 </div>
 
