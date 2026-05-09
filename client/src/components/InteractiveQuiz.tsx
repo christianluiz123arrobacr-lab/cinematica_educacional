@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import { Button } from "@/components/ui/button";
 import "katex/dist/katex.min.css";
 import { MathFormula } from "./MathFormula";
 import {
