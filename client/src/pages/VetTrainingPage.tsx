@@ -1,160 +1,58 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
+import type { ComponentType } from "react";
 import {
   ArrowLeft,
+  ArrowRight,
+  BarChart3,
   BrainCircuit,
-  Flame,
-  Shield,
-  Layers3,
-  Clock3,
-  Target,
   CalendarDays,
+  CheckCircle2,
+  Clock3,
+  Flame,
+  History,
+  Layers3,
+  Loader2,
+  Shield,
+  ShieldCheck,
+  Sparkles,
+  Target,
+  TrendingUp,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import { getQuestions } from "@/services/questions.service";
+import {
+  buildVetEngineResult,
+  formatVetPercent,
+  formatVetTime,
+  normalizeVetText,
+  prettifyVetText,
+  type VetAttempt,
+  type VetCollectiveContentStat,
+  type VetEngineResult,
+  type VetProfile,
+  type VetStrategicContent,
+  type VetTrainingBlock,
+  type VetWeight,
+} from "@/lib/vetEngine";
 
-type VetProfileRow = {
+type VetProfileRow = VetProfile & {
   id: string;
   user_id: string;
-  target_exam: string;
-  months_until_exam: number;
-  hours_per_day: number;
-  focus_subject: string;
-  study_days_per_week: number | null;
-  study_weekdays: string[] | null;
+  study_days_per_week?: number | null;
+  study_weekdays?: string[] | null;
 };
 
-type AttemptRow = {
-  id: string;
-  user_id: string;
-  question_id: string;
-  selected_option: string | null;
-  is_correct: boolean;
-  time_spent_seconds: number | null;
-  answered_at: string;
-  attempt_number: number;
-  subject: string | null;
-  conteudo: string | null;
-  assunto: string | null;
-  banca: string | null;
-  ano: number | null;
-  difficulty: string | null;
+type WeeklyStrategy = {
+  attackPercent: number;
+  consolidationPercent: number;
+  maintenancePercent: number;
+  reading: string;
 };
-
-type WeightRow = {
-  id: string;
-  exam: string;
-  subject: string;
-  conteudo: string;
-  weight: number;
-};
-
-type TrainingItem = {
-  conteudo: string;
-  total: number;
-  correct: number;
-  wrong: number;
-  accuracy: number;
-  weight: number;
-  weaknessScore: number;
-  urgencyTimeScore: number;
-  wrongVolumeScore: number;
-  noAttemptPenalty: number;
-  priorityScore: number;
-  block: "ataque" | "consolidacao" | "manutencao";
-  reason: string;
-  hasAttempts: boolean;
-};
-
-function normalizeText(value?: string | null) {
-  return (value || "")
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
-
-function prettify(value?: string | null) {
-  const text = (value || "").trim();
-  if (!text) return "Não informado";
-  return text.charAt(0).toUpperCase() + text.slice(1);
-}
-
-function getWeaknessScore(accuracy: number, total: number) {
-  if (total === 0) return 6;
-  if (accuracy < 40) return 10;
-  if (accuracy < 55) return 7;
-  if (accuracy < 70) return 4;
-  return 1;
-}
-
-function getUrgencyTimeScore(monthsUntilExam: number) {
-  if (monthsUntilExam <= 2) return 5;
-  if (monthsUntilExam <= 4) return 4;
-  if (monthsUntilExam <= 6) return 3;
-  if (monthsUntilExam <= 9) return 2;
-  return 1;
-}
-
-function getWrongVolumeScore(wrong: number) {
-  if (wrong >= 6) return 4;
-  if (wrong >= 4) return 3;
-  if (wrong >= 2) return 2;
-  if (wrong >= 1) return 1;
-  return 0;
-}
-
-function getNoAttemptPenalty(total: number, weight: number) {
-  if (total > 0) return 0;
-  if (weight >= 8) return 6;
-  if (weight >= 6) return 4;
-  if (weight >= 4) return 2;
-  return 1;
-}
-
-function getTrainingBlock(score: number): "ataque" | "consolidacao" | "manutencao" {
-  if (score >= 15) return "ataque";
-  if (score >= 9) return "consolidacao";
-  return "manutencao";
-}
-
-function buildReason(params: {
-  block: "ataque" | "consolidacao" | "manutencao";
-  weight: number;
-  accuracy: number;
-  wrong: number;
-  total: number;
-}) {
-  const { block, weight, accuracy, wrong, total } = params;
-
-  if (total === 0) {
-    if (block === "ataque") {
-      return weight >= 8
-        ? "Entrou em ataque porque tem peso alto na prova e ainda não foi treinado."
-        : "Entrou em ataque porque é importante para a prova e ainda não foi treinado.";
-    }
-
-    if (block === "consolidacao") {
-      return "Entrou em consolidação porque ainda não foi treinado e precisa entrar no ciclo de estudo.";
-    }
-
-    return "Entrou em manutenção porque ainda não foi treinado, mas não é o foco principal no momento.";
-  }
-
-  if (block === "ataque") {
-    return `Entrou em ataque porque tem peso ${
-      weight >= 8 ? "alto" : "relevante"
-    } na prova, seu aproveitamento está em ${accuracy.toFixed(0)}% e há ${wrong} erro(s) acumulado(s).`;
-  }
-
-  if (block === "consolidacao") {
-    return "Entrou em consolidação porque ainda precisa subir consistência, mas não é seu gargalo máximo agora.";
-  }
-
-  return "Entrou em manutenção porque, no momento, não precisa roubar foco dos conteúdos mais urgentes.";
-}
 
 function weekdayLabel(day: string) {
   const map: Record<string, string> = {
@@ -170,6 +68,368 @@ function weekdayLabel(day: string) {
   return map[day] ?? day;
 }
 
+function buildBankUrl(profile: VetProfile, content: VetStrategicContent) {
+  const params = new URLSearchParams();
+
+  params.set("institution", profile.target_exam);
+  params.set("subject", content.subject);
+  params.set("topics", content.conteudo);
+  params.set("block", content.block);
+
+  return `/banco-de-questoes?${params.toString()}`;
+}
+
+function getBlockMeta(block: VetTrainingBlock) {
+  if (block === "ataque") {
+    return {
+      label: "Ataque",
+      description:
+        "Prioridade máxima: conteúdos com peso alto, recorrência, baixo desempenho ou urgência.",
+      icon: Flame,
+      borderClassName: "border-red-200",
+      cardClassName: "border-red-200 bg-red-50",
+      iconClassName: "bg-red-100 text-red-700",
+      titleClassName: "text-red-700",
+      buttonClassName: "bg-red-600 hover:bg-red-700 text-white",
+      progressClassName: "bg-red-500",
+    };
+  }
+
+  if (block === "consolidacao") {
+    return {
+      label: "Consolidação",
+      description:
+        "Estabilização: conteúdos importantes que ainda oscilam e precisam de repetição inteligente.",
+      icon: Layers3,
+      borderClassName: "border-amber-200",
+      cardClassName: "border-amber-200 bg-amber-50",
+      iconClassName: "bg-amber-100 text-amber-700",
+      titleClassName: "text-amber-700",
+      buttonClassName: "bg-amber-600 hover:bg-amber-700 text-white",
+      progressClassName: "bg-amber-500",
+    };
+  }
+
+  return {
+    label: "Manutenção",
+    description:
+      "Revisão ativa: conteúdos controlados que não podem desaparecer da rotina.",
+    icon: Shield,
+    borderClassName: "border-emerald-200",
+    cardClassName: "border-emerald-200 bg-emerald-50",
+    iconClassName: "bg-emerald-100 text-emerald-700",
+    titleClassName: "text-emerald-700",
+    buttonClassName: "bg-emerald-600 hover:bg-emerald-700 text-white",
+    progressClassName: "bg-emerald-500",
+  };
+}
+
+function getTrendLabel(score?: number) {
+  if (!score && score !== 0) return "sem dados";
+  if (score >= 8) return "subindo";
+  if (score >= 5) return "estável";
+  return "caindo";
+}
+
+function getWeeklyStrategy(profile: VetProfile, engine: VetEngineResult | null): WeeklyStrategy {
+  const attackCount = engine?.attack.length ?? 0;
+  const months = profile.months_until_exam;
+
+  if (months <= 2) {
+    return {
+      attackPercent: attackCount > 0 ? 70 : 55,
+      consolidationPercent: attackCount > 0 ? 20 : 30,
+      maintenancePercent: attackCount > 0 ? 10 : 15,
+      reading:
+        "Falta pouco tempo. O treino precisa ser agressivo, com foco brutal nos gargalos e pouca tolerância para estudo aleatório.",
+    };
+  }
+
+  if (months <= 4) {
+    return {
+      attackPercent: attackCount > 0 ? 60 : 45,
+      consolidationPercent: attackCount > 0 ? 30 : 40,
+      maintenancePercent: 10,
+      reading:
+        "Ainda dá para corrigir rota, mas o VET precisa priorizar conteúdos críticos sem abandonar consolidação.",
+    };
+  }
+
+  if (months <= 6) {
+    return {
+      attackPercent: attackCount > 0 ? 50 : 35,
+      consolidationPercent: attackCount > 0 ? 35 : 45,
+      maintenancePercent: 15,
+      reading:
+        "Sua janela permite equilíbrio: atacar fraquezas, consolidar conteúdos médios e manter o que já está sob controle.",
+    };
+  }
+
+  return {
+    attackPercent: attackCount > 0 ? 40 : 30,
+    consolidationPercent: 40,
+    maintenancePercent: attackCount > 0 ? 20 : 30,
+    reading:
+      "Com mais tempo até a prova, o treino pode ser mais distribuído, mas ainda guiado por prioridade. Nada de virar turista de conteúdo.",
+  };
+}
+
+function getContentTimeGuidance(block: VetTrainingBlock, hoursPerWeek: number) {
+  if (block === "ataque") {
+    if (hoursPerWeek <= 6) return "1 bloco forte por semana";
+    if (hoursPerWeek <= 12) return "2 blocos por semana";
+    return "2 a 3 blocos por semana";
+  }
+
+  if (block === "consolidacao") {
+    if (hoursPerWeek <= 6) return "1 bloco curto por semana";
+    if (hoursPerWeek <= 12) return "1 a 2 blocos por semana";
+    return "2 blocos por semana";
+  }
+
+  if (hoursPerWeek <= 6) return "revisão rápida";
+  if (hoursPerWeek <= 12) return "1 revisão semanal";
+  return "1 a 2 revisões semanais";
+}
+
+function StrategyStatCard({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  iconClassName,
+  className = "border-slate-200 bg-white",
+}: {
+  title: string;
+  value: string;
+  subtitle: string;
+  icon: ComponentType<{ className?: string }>;
+  iconClassName: string;
+  className?: string;
+}) {
+  return (
+    <Card className={`p-5 ${className}`}>
+      <div className="flex items-center gap-3 mb-3">
+        <div
+          className={`w-11 h-11 rounded-2xl flex items-center justify-center ${iconClassName}`}
+        >
+          <Icon className="w-5 h-5" />
+        </div>
+
+        <div>
+          <p className="text-sm text-slate-500">{title}</p>
+          <p className="text-2xl font-bold text-slate-900 leading-tight">
+            {value}
+          </p>
+        </div>
+      </div>
+
+      <p className="text-sm text-slate-500">{subtitle}</p>
+    </Card>
+  );
+}
+
+function TrainingContentCard({
+  content,
+  profile,
+  rank,
+  weeklyHours,
+}: {
+  content: VetStrategicContent;
+  profile: VetProfile;
+  rank: number;
+  weeklyHours: number;
+}) {
+  const meta = getBlockMeta(content.block);
+  const Icon = meta.icon;
+
+  return (
+    <div className={`rounded-3xl border p-5 ${meta.cardClassName}`}>
+      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+        <div>
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <span className="inline-flex rounded-full bg-slate-900 text-white px-3 py-1 text-xs font-bold">
+              #{rank}
+            </span>
+
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${meta.iconClassName}`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {meta.label}
+            </span>
+
+            <span className="inline-flex rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-bold text-slate-600">
+              score {Math.round(content.priorityScore)}
+            </span>
+          </div>
+
+          <h3 className="text-xl font-bold text-slate-900">
+            {prettifyVetText(content.conteudo)}
+          </h3>
+
+          <p className="text-sm text-slate-500">
+            {prettifyVetText(content.subject)}
+          </p>
+        </div>
+
+        <div className="text-right">
+          <p className="text-2xl font-bold text-slate-900">{content.weight}</p>
+          <p className="text-xs text-slate-500">peso</p>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-5 gap-3 mb-4">
+        <div className="rounded-2xl bg-white/80 border border-white p-3">
+          <p className="text-xs text-slate-500 mb-1">Seu acerto</p>
+          <p className="font-bold text-slate-900">
+            {content.personal.hasData
+              ? formatVetPercent(content.personal.accuracy)
+              : "sem dados"}
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-white/80 border border-white p-3">
+          <p className="text-xs text-slate-500 mb-1">Erros</p>
+          <p className="font-bold text-slate-900">{content.personal.wrong}</p>
+        </div>
+
+        <div className="rounded-2xl bg-white/80 border border-white p-3">
+          <p className="text-xs text-slate-500 mb-1">Média geral</p>
+          <p className="font-bold text-slate-900">
+            {content.collective
+              ? formatVetPercent(content.collective.collective_accuracy)
+              : "—"}
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-white/80 border border-white p-3">
+          <p className="text-xs text-slate-500 mb-1">Histórico</p>
+          <p className="font-bold text-slate-900">
+            {content.historical
+              ? `${content.historical.totalQuestions} questões`
+              : "—"}
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-white/80 border border-white p-3">
+          <p className="text-xs text-slate-500 mb-1">Tendência</p>
+          <p className="font-bold text-slate-900">
+            {getTrendLabel(content.historical?.trendScore)}
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-white bg-white/80 p-4 mb-4">
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">
+          Como treinar
+        </p>
+
+        <div className="grid md:grid-cols-3 gap-3">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <p className="text-xs text-slate-500 mb-1">Frequência</p>
+            <p className="text-sm font-bold text-slate-900">
+              {getContentTimeGuidance(content.block, weeklyHours)}
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <p className="text-xs text-slate-500 mb-1">Tipo</p>
+            <p className="text-sm font-bold text-slate-900">
+              {content.block === "ataque"
+                ? "questões médias/difíceis"
+                : content.block === "consolidacao"
+                  ? "questões fáceis/médias"
+                  : "revisão rápida"}
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <p className="text-xs text-slate-500 mb-1">Tempo médio</p>
+            <p className="text-sm font-bold text-slate-900">
+              {formatVetTime(content.personal.avgTimeSeconds)}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-white bg-white/80 p-4 mb-4">
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">
+          Por que está aqui?
+        </p>
+
+        <ul className="space-y-2">
+          {content.explanation.slice(0, 3).map((line, index) => (
+            <li key={index} className="flex items-start gap-2 text-sm text-slate-700">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+              <span>{line}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <Link href={buildBankUrl(profile, content)}>
+        <Button className={`w-full rounded-2xl ${meta.buttonClassName}`}>
+          Treinar no banco
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
+      </Link>
+    </div>
+  );
+}
+
+function BlockSection({
+  title,
+  block,
+  items,
+  profile,
+  weeklyHours,
+  emptyText,
+}: {
+  title: string;
+  block: VetTrainingBlock;
+  items: VetStrategicContent[];
+  profile: VetProfile;
+  weeklyHours: number;
+  emptyText: string;
+}) {
+  const meta = getBlockMeta(block);
+  const Icon = meta.icon;
+
+  return (
+    <Card className={`p-6 bg-white rounded-3xl ${meta.borderClassName}`}>
+      <div className="flex items-start gap-3 mb-5">
+        <div
+          className={`w-11 h-11 rounded-2xl flex items-center justify-center ${meta.iconClassName}`}
+        >
+          <Icon className="w-5 h-5" />
+        </div>
+
+        <div>
+          <h2 className="text-xl font-bold text-slate-900">{title}</h2>
+          <p className="text-sm text-slate-500">{meta.description}</p>
+        </div>
+      </div>
+
+      {items.length > 0 ? (
+        <div className="space-y-4">
+          {items.map((content, index) => (
+            <TrainingContentCard
+              key={`${content.subject}-${content.conteudo}`}
+              content={content}
+              profile={profile}
+              rank={index + 1}
+              weeklyHours={weeklyHours}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="text-slate-500">{emptyText}</p>
+      )}
+    </Card>
+  );
+}
+
 export default function VetTrainingPage() {
   const { user, loading: authLoading } = useSupabaseAuth();
 
@@ -177,11 +437,10 @@ export default function VetTrainingPage() {
   const [error, setError] = useState("");
 
   const [profile, setProfile] = useState<VetProfileRow | null>(null);
-  const [attempts, setAttempts] = useState<AttemptRow[]>([]);
-  const [weights, setWeights] = useState<WeightRow[]>([]);
+  const [engine, setEngine] = useState<VetEngineResult | null>(null);
 
   useEffect(() => {
-    async function loadData() {
+    async function loadTraining() {
       if (!user?.id) {
         setLoading(false);
         return;
@@ -190,170 +449,120 @@ export default function VetTrainingPage() {
       setLoading(true);
       setError("");
 
-      const { data: profileData, error: profileError } = await supabase
-        .from("user_vet_profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      try {
+        const { data: profileData, error: profileError } = await supabase
+          .from("user_vet_profiles")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
-      if (profileError) {
-        console.error(profileError);
-        setError("Não foi possível carregar o objetivo do VET.");
+        if (profileError) {
+          console.error(profileError);
+          setError("Não foi possível carregar o objetivo do VET.");
+          setLoading(false);
+          return;
+        }
+
+        const currentProfile = (profileData as VetProfileRow | null) ?? null;
+        setProfile(currentProfile);
+
+        if (!currentProfile) {
+          setEngine(null);
+          setLoading(false);
+          return;
+        }
+
+        const [
+          attemptsResponse,
+          weightsResponse,
+          collectiveResponse,
+          loadedQuestions,
+        ] = await Promise.all([
+          supabase
+            .from("user_question_attempts")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("answered_at", { ascending: false }),
+
+          supabase
+            .from("vet_exam_content_weights")
+            .select("*")
+            .eq("exam", currentProfile.target_exam),
+
+          supabase
+            .from("vet_content_collective_stats")
+            .select("*")
+            .eq("exam", currentProfile.target_exam),
+
+          getQuestions(),
+        ]);
+
+        if (attemptsResponse.error) {
+          console.error(attemptsResponse.error);
+          setError("Não foi possível carregar suas tentativas.");
+          setLoading(false);
+          return;
+        }
+
+        if (weightsResponse.error) {
+          console.error(weightsResponse.error);
+          setError("Não foi possível carregar os pesos da prova.");
+          setLoading(false);
+          return;
+        }
+
+        if (collectiveResponse.error) {
+          console.error(collectiveResponse.error);
+          setError("Não foi possível carregar a média coletiva dos alunos.");
+          setLoading(false);
+          return;
+        }
+
+        const loadedAttempts = (attemptsResponse.data as VetAttempt[]) ?? [];
+        const loadedWeights = (weightsResponse.data as VetWeight[]) ?? [];
+
+        const loadedCollective =
+          ((collectiveResponse.data as VetCollectiveContentStat[]) ?? []).map(
+            (item) => ({
+              ...item,
+              total_attempts: Number(item.total_attempts ?? 0),
+              correct_attempts: Number(item.correct_attempts ?? 0),
+              wrong_attempts: Number(item.wrong_attempts ?? 0),
+              collective_accuracy: Number(item.collective_accuracy ?? 0),
+              avg_time_seconds:
+                item.avg_time_seconds === null ||
+                item.avg_time_seconds === undefined
+                  ? null
+                  : Number(item.avg_time_seconds),
+            })
+          );
+
+        const result = buildVetEngineResult({
+          profile: currentProfile,
+          attempts: loadedAttempts,
+          questions: loadedQuestions,
+          weights: loadedWeights,
+          collectiveStats: loadedCollective,
+          yearsBack: 5,
+        });
+
+        setEngine(result);
+      } catch (err) {
+        console.error(err);
+        setError("Ocorreu um erro inesperado ao carregar o treino recomendado.");
+      } finally {
         setLoading(false);
-        return;
       }
-
-      const currentProfile = (profileData as VetProfileRow | null) ?? null;
-      setProfile(currentProfile);
-
-      if (!currentProfile) {
-        setLoading(false);
-        return;
-      }
-
-      const { data: attemptsData, error: attemptsError } = await supabase
-        .from("user_question_attempts")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("answered_at", { ascending: false });
-
-      if (attemptsError) {
-        console.error(attemptsError);
-        setError("Não foi possível carregar suas tentativas.");
-        setLoading(false);
-        return;
-      }
-
-      const { data: weightsData, error: weightsError } = await supabase
-        .from("vet_exam_content_weights")
-        .select("*")
-        .eq("exam", currentProfile.target_exam);
-
-      if (weightsError) {
-        console.error(weightsError);
-        setError("Não foi possível carregar os pesos da prova.");
-        setLoading(false);
-        return;
-      }
-
-      setAttempts((attemptsData as AttemptRow[]) ?? []);
-      setWeights((weightsData as WeightRow[]) ?? []);
-      setLoading(false);
     }
 
     if (!authLoading) {
-      loadData();
+      loadTraining();
     }
   }, [user?.id, authLoading]);
 
-  const filteredAttempts = useMemo(() => {
-    if (!profile) return [];
-
-    let result = [...attempts];
-
-    if (profile.focus_subject !== "todas") {
-      result = result.filter(
-        (attempt) => normalizeText(attempt.subject) === normalizeText(profile.focus_subject)
-      );
-    }
-
-    return result;
-  }, [attempts, profile]);
-
-  const trainingItems = useMemo(() => {
-    if (!profile) return [];
-
-    const contentMap = new Map<
-      string,
-      { total: number; correct: number; wrong: number }
-    >();
-
-    for (const attempt of filteredAttempts) {
-      const conteudo = normalizeText(attempt.conteudo);
-      if (!conteudo) continue;
-
-      const current = contentMap.get(conteudo) ?? { total: 0, correct: 0, wrong: 0 };
-      current.total += 1;
-      if (attempt.is_correct) current.correct += 1;
-      else current.wrong += 1;
-      contentMap.set(conteudo, current);
-    }
-
-    const filteredWeights = weights.filter((row) => {
-      if (profile.focus_subject === "todas") return true;
-      return normalizeText(row.subject) === normalizeText(profile.focus_subject);
-    });
-
-    const allContents = new Set<string>();
-
-    filteredWeights.forEach((row) => {
-      allContents.add(normalizeText(row.conteudo));
-    });
-
-    contentMap.forEach((_, conteudo) => {
-      allContents.add(conteudo);
-    });
-
-    const urgencyTimeScore = getUrgencyTimeScore(profile.months_until_exam);
-
-    return Array.from(allContents)
-      .filter(Boolean)
-      .map((conteudo) => {
-        const stats = contentMap.get(conteudo) ?? {
-          total: 0,
-          correct: 0,
-          wrong: 0,
-        };
-
-        const accuracy = stats.total ? (stats.correct / stats.total) * 100 : 0;
-
-        const matchedWeight = filteredWeights.find(
-          (row) => normalizeText(row.conteudo) === conteudo
-        );
-
-        const weight = matchedWeight?.weight ?? 3;
-        const weaknessScore = getWeaknessScore(accuracy, stats.total);
-        const wrongVolumeScore = getWrongVolumeScore(stats.wrong);
-        const noAttemptPenalty = getNoAttemptPenalty(stats.total, weight);
-        const priorityScore =
-          weight + weaknessScore + urgencyTimeScore + wrongVolumeScore + noAttemptPenalty;
-        const block = getTrainingBlock(priorityScore);
-
-        return {
-          conteudo,
-          total: stats.total,
-          correct: stats.correct,
-          wrong: stats.wrong,
-          accuracy,
-          weight,
-          weaknessScore,
-          urgencyTimeScore,
-          wrongVolumeScore,
-          noAttemptPenalty,
-          priorityScore,
-          block,
-          reason: buildReason({
-            block,
-            weight,
-            accuracy,
-            wrong: stats.wrong,
-            total: stats.total,
-          }),
-          hasAttempts: stats.total > 0,
-        } as TrainingItem;
-      })
-      .sort(
-        (a, b) =>
-          b.priorityScore - a.priorityScore ||
-          Number(a.hasAttempts) - Number(b.hasAttempts) ||
-          a.accuracy - b.accuracy ||
-          b.total - a.total
-      );
-  }, [filteredAttempts, profile, weights]);
-
-  const ataque = trainingItems.filter((item) => item.block === "ataque");
-  const consolidacao = trainingItems.filter((item) => item.block === "consolidacao");
-  const manutencao = trainingItems.filter((item) => item.block === "manutencao");
+  const studyDaysLabels = useMemo(() => {
+    return (profile?.study_weekdays ?? []).map(weekdayLabel);
+  }, [profile]);
 
   const weeklyLoad = useMemo(() => {
     if (!profile) {
@@ -364,7 +573,8 @@ export default function VetTrainingPage() {
       };
     }
 
-    const studyDays = profile.study_days_per_week ?? 0;
+    const daysFromList = profile.study_weekdays?.length ?? 0;
+    const studyDays = profile.study_days_per_week ?? daysFromList ?? 0;
     const hoursPerDay = Number(profile.hours_per_day ?? 0);
     const totalWeeklyHours = studyDays * hoursPerDay;
 
@@ -381,23 +591,12 @@ export default function VetTrainingPage() {
         attackPercent: 60,
         consolidationPercent: 30,
         maintenancePercent: 10,
+        reading: "Configure seu objetivo para liberar a estratégia semanal.",
       };
     }
 
-    if (profile.months_until_exam <= 2) {
-      return { attackPercent: 70, consolidationPercent: 20, maintenancePercent: 10 };
-    }
-
-    if (profile.months_until_exam <= 4) {
-      return { attackPercent: 60, consolidationPercent: 30, maintenancePercent: 10 };
-    }
-
-    if (profile.months_until_exam <= 6) {
-      return { attackPercent: 50, consolidationPercent: 35, maintenancePercent: 15 };
-    }
-
-    return { attackPercent: 40, consolidationPercent: 40, maintenancePercent: 20 };
-  }, [profile]);
+    return getWeeklyStrategy(profile, engine);
+  }, [profile, engine]);
 
   const weeklyHoursSplit = useMemo(() => {
     const total = weeklyLoad.totalWeeklyHours;
@@ -409,109 +608,28 @@ export default function VetTrainingPage() {
     };
   }, [weeklyLoad.totalWeeklyHours, weeklyStrategy]);
 
-  const studyDaysLabels = useMemo(() => {
-    return (profile?.study_weekdays ?? []).map(weekdayLabel);
-  }, [profile]);
+  const attackItems = useMemo(() => {
+    return (engine?.attack ?? []).slice(0, 5);
+  }, [engine]);
 
-  const trainingReading = useMemo(() => {
-    if (!profile) {
-      return "Configure seu objetivo para gerar uma leitura estratégica do treino.";
-    }
+  const consolidationItems = useMemo(() => {
+    return (engine?.consolidation ?? []).slice(0, 5);
+  }, [engine]);
 
-    const total = weeklyLoad.totalWeeklyHours;
-    const hasUntrainedHighPriority = ataque.some((item) => !item.hasAttempts);
+  const maintenanceItems = useMemo(() => {
+    return (engine?.maintenance ?? []).slice(0, 5);
+  }, [engine]);
 
-    if (total <= 6) {
-      return hasUntrainedHighPriority
-        ? "Sua carga semanal está mais enxuta, então o treino precisa ser cirúrgico. Como existem conteúdos importantes ainda não treinados, o ideal é encaixá-los primeiro no bloco de ataque."
-        : "Sua carga semanal está mais enxuta, então o treino precisa ser cirúrgico. Priorize fortemente os conteúdos de ataque e evite dispersar energia em muitos tópicos ao mesmo tempo.";
-    }
+  const topPriority = engine?.topPriority ?? null;
 
-    if (total <= 12) {
-      return hasUntrainedHighPriority
-        ? "Sua carga semanal permite um treino equilibrado. O melhor caminho é dividir o esforço entre conteúdos críticos já identificados e conteúdos importantes da prova que ainda não foram treinados."
-        : "Sua carga semanal permite um treino equilibrado, mas ainda exige foco. O ideal é concentrar a maior parte do esforço nos conteúdos críticos e usar o restante para consolidação.";
-    }
-
-    return hasUntrainedHighPriority
-      ? "Sua carga semanal é boa o bastante para distribuir melhor o treino. Dá para atacar os conteúdos mais urgentes e também cobrir lacunas importantes de conteúdos ainda não treinados."
-      : "Sua carga semanal é boa o bastante para distribuir melhor o treino. Dá para atacar os conteúdos mais urgentes sem abandonar consolidação e manutenção.";
-  }, [profile, weeklyLoad.totalWeeklyHours, ataque]);
-
-  function BlockCard({
-    title,
-    icon: Icon,
-    items,
-    emptyText,
-    tone,
-  }: {
-    title: string;
-    icon: any;
-    items: TrainingItem[];
-    emptyText: string;
-    tone: "red" | "yellow" | "green";
-  }) {
-    const accent =
-      tone === "red"
-        ? "text-red-500"
-        : tone === "yellow"
-        ? "text-yellow-500"
-        : "text-green-500";
-
-    const bg =
-      tone === "red"
-        ? "border-red-200 bg-red-50"
-        : tone === "yellow"
-        ? "border-yellow-200 bg-yellow-50"
-        : "border-green-200 bg-green-50";
-
-    return (
-      <Card className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Icon className={`w-5 h-5 ${accent}`} />
-          <h2 className="text-xl font-bold text-slate-900">{title}</h2>
-        </div>
-
-        {items.length > 0 ? (
-          <div className="space-y-4">
-            {items.map((item, index) => (
-              <div key={`${title}-${item.conteudo}`} className={`rounded-2xl border p-4 ${bg}`}>
-                <div className="flex items-start justify-between gap-4 mb-2">
-                  <div>
-                    <p className="font-bold text-slate-900">
-                      #{index + 1} {prettify(item.conteudo)}
-                    </p>
-                    <p className="text-sm text-slate-600 mt-1">
-                      {item.hasAttempts
-                        ? `${item.correct} acertos • ${item.wrong} erros • ${item.total} tentativas`
-                        : "Ainda não treinado"}
-                    </p>
-                  </div>
-
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-slate-900">Score {item.priorityScore}</p>
-                    <p className="text-xs text-slate-500">
-                      {item.hasAttempts
-                        ? `${item.accuracy.toFixed(0)}% de acerto`
-                        : "Sem histórico ainda"}
-                    </p>
-                  </div>
-                </div>
-
-                <p className="text-sm text-slate-700">{item.reason}</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-slate-500">{emptyText}</p>
-        )}
-      </Card>
-    );
-  }
+  const selectedDaysText =
+    studyDaysLabels.length > 0
+      ? studyDaysLabels.join(", ")
+      : "Nenhum dia específico marcado.";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-50">
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
+      <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-slate-200/50">
         <div className="container py-4 flex items-center gap-4">
           <Link href="/vet">
             <Button variant="ghost" size="sm">
@@ -521,234 +639,415 @@ export default function VetTrainingPage() {
           </Link>
 
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Treino recomendado</h1>
-            <p className="text-sm text-slate-500">Transformando diagnóstico em ação</p>
+            <h1 className="text-2xl font-bold text-slate-900">
+              Treino recomendado
+            </h1>
+            <p className="text-sm text-slate-500">
+              Transformando o diagnóstico em rotina prática
+            </p>
           </div>
         </div>
       </header>
 
       <main className="container py-8 space-y-6">
         {authLoading || loading ? (
-          <Card className="p-8">
-            <p className="text-slate-600">Carregando treino recomendado...</p>
+          <Card className="p-8 bg-white">
+            <div className="flex items-center gap-3 text-slate-600">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Carregando treino recomendado...
+            </div>
           </Card>
         ) : error ? (
           <Card className="p-8 border-red-200 bg-red-50">
             <p className="text-red-700">{error}</p>
           </Card>
         ) : !user ? (
-          <Card className="p-8">
-            <p className="text-slate-700">Você precisa estar logado para usar o VET.</p>
+          <Card className="p-8 bg-white">
+            <p className="text-slate-700">
+              Você precisa estar logado para usar o VET.
+            </p>
           </Card>
         ) : !profile ? (
-          <Card className="p-8">
-            <p className="text-slate-700 mb-4">
-              Antes de usar o treino recomendado, você precisa configurar seu objetivo do VET.
-            </p>
-            <Link href="/vet/objetivo">
-              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                Configurar objetivo
-              </Button>
-            </Link>
+          <Card className="p-8 bg-white border-emerald-200">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center">
+                <Target className="w-6 h-6 text-emerald-700" />
+              </div>
+
+              <div>
+                <h2 className="text-xl font-bold text-slate-900 mb-2">
+                  Configure seu objetivo primeiro
+                </h2>
+
+                <p className="text-slate-600 mb-5">
+                  Antes de gerar treino recomendado, o VET precisa saber prova,
+                  tempo restante, foco e carga. Sem isso, ele vira um personal
+                  trainer de conteúdo sem saber se você vai correr 100m ou uma
+                  maratona.
+                </p>
+
+                <Link href="/vet/objetivo">
+                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl">
+                    Configurar objetivo
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </Card>
         ) : (
           <>
-            <Card className="p-6 md:p-8 border-emerald-200 bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
-              <p className="text-sm uppercase tracking-wide text-emerald-100 mb-2">
-                Direção prática
-              </p>
-              <h2 className="text-3xl font-bold mb-3">
-                Treino recomendado para {profile.target_exam}
-              </h2>
-              <p className="text-emerald-50 leading-relaxed">
-                Agora o VET considera também conteúdos importantes da prova que ainda não foram treinados.
-              </p>
-            </Card>
+            <Card className="p-6 md:p-8 border-emerald-200 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white overflow-hidden relative rounded-3xl shadow-lg">
+              <div className="absolute top-0 right-0 h-52 w-52 rounded-full bg-white/10 blur-2xl -mr-20 -mt-20" />
+              <div className="absolute bottom-0 left-0 h-52 w-52 rounded-full bg-white/10 blur-2xl -ml-24 -mb-24" />
 
-            <div className="grid md:grid-cols-3 gap-4">
-              <Card className="p-5">
-                <p className="text-sm text-slate-500 mb-1">Ataque imediato</p>
-                <p className="text-3xl font-bold text-red-600">{ataque.length}</p>
-              </Card>
+              <div className="relative grid lg:grid-cols-[1.3fr_0.7fr] gap-6 items-center">
+                <div>
+                  <div className="inline-flex items-center gap-2 rounded-full bg-white/15 border border-white/20 px-3 py-1 text-xs font-bold text-emerald-50 mb-4">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Rotina estratégica
+                  </div>
 
-              <Card className="p-5">
-                <p className="text-sm text-slate-500 mb-1">Consolidação</p>
-                <p className="text-3xl font-bold text-yellow-600">{consolidacao.length}</p>
-              </Card>
+                  <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+                    Treino recomendado para {profile.target_exam}
+                  </h2>
 
-              <Card className="p-5">
-                <p className="text-sm text-slate-500 mb-1">Manutenção</p>
-                <p className="text-3xl font-bold text-green-600">{manutencao.length}</p>
-              </Card>
-            </div>
+                  <p className="text-emerald-50 leading-relaxed max-w-3xl">
+                    Esta página transforma o score do VET em distribuição de
+                    tempo, blocos semanais e conteúdos de execução. Agora ela usa
+                    histórico da prova, seu desempenho, média coletiva e urgência
+                    temporal. Sim, finalmente parou de fingir que todo conteúdo
+                    tem a mesma importância.
+                  </p>
 
-            <div className="grid xl:grid-cols-2 gap-6">
-              <Card className="p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Clock3 className="w-5 h-5 text-emerald-600" />
-                  <h2 className="text-xl font-bold text-slate-900">Carga semanal estimada</h2>
+                  <div className="flex flex-wrap gap-3 mt-7">
+                    {topPriority ? (
+                      <Link href={buildBankUrl(profile, topPriority)}>
+                        <Button className="bg-white text-emerald-700 hover:bg-emerald-50 rounded-2xl px-6 py-5 font-bold">
+                          Começar por {prettifyVetText(topPriority.conteudo)}
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                      </Link>
+                    ) : null}
+
+                    <Link href="/vet/plano">
+                      <Button
+                        variant="outline"
+                        className="rounded-2xl px-6 py-5 font-bold border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+                      >
+                        Ver Plano VET
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-4">
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm text-slate-500 mb-2">Dias/semana</p>
-                    <p className="text-3xl font-bold text-slate-900">{weeklyLoad.studyDays}</p>
+                <div className="rounded-3xl bg-white/12 border border-white/20 p-5 backdrop-blur-sm">
+                  <p className="text-sm uppercase tracking-wide text-emerald-100 font-bold mb-4">
+                    Carga atual
+                  </p>
+
+                  <div className="space-y-3">
+                    <div className="rounded-2xl bg-white/12 border border-white/15 p-4">
+                      <p className="text-xs text-emerald-100 mb-1">
+                        Horas por dia
+                      </p>
+                      <p className="font-bold">{weeklyLoad.hoursPerDay}h</p>
+                    </div>
+
+                    <div className="rounded-2xl bg-white/12 border border-white/15 p-4">
+                      <p className="text-xs text-emerald-100 mb-1">
+                        Dias por semana
+                      </p>
+                      <p className="font-bold">{weeklyLoad.studyDays}</p>
+                    </div>
+
+                    <div className="rounded-2xl bg-white/12 border border-white/15 p-4">
+                      <p className="text-xs text-emerald-100 mb-1">
+                        Carga semanal
+                      </p>
+                      <p className="font-bold">
+                        {weeklyLoad.totalWeeklyHours.toFixed(1)}h
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            <section className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+              <StrategyStatCard
+                title="Ataque"
+                value={`${weeklyStrategy.attackPercent}%`}
+                subtitle={`${weeklyHoursSplit.attackHours.toFixed(
+                  1
+                )}h por semana`}
+                icon={Flame}
+                className="border-red-200 bg-white"
+                iconClassName="bg-red-100 text-red-700"
+              />
+
+              <StrategyStatCard
+                title="Consolidação"
+                value={`${weeklyStrategy.consolidationPercent}%`}
+                subtitle={`${weeklyHoursSplit.consolidationHours.toFixed(
+                  1
+                )}h por semana`}
+                icon={Layers3}
+                className="border-amber-200 bg-white"
+                iconClassName="bg-amber-100 text-amber-700"
+              />
+
+              <StrategyStatCard
+                title="Manutenção"
+                value={`${weeklyStrategy.maintenancePercent}%`}
+                subtitle={`${weeklyHoursSplit.maintenanceHours.toFixed(
+                  1
+                )}h por semana`}
+                icon={ShieldCheck}
+                className="border-emerald-200 bg-white"
+                iconClassName="bg-emerald-100 text-emerald-700"
+              />
+
+              <StrategyStatCard
+                title="Aproveitamento"
+                value={engine ? formatVetPercent(engine.generalAccuracy) : "0%"}
+                subtitle={`${engine?.totalAttempts ?? 0} tentativa(s) analisadas`}
+                icon={BarChart3}
+                className="border-slate-200 bg-white"
+                iconClassName="bg-slate-100 text-slate-700"
+              />
+            </section>
+
+            <section className="grid xl:grid-cols-[1.2fr_0.8fr] gap-6">
+              <Card className="p-6 bg-white border-slate-200 rounded-3xl">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-11 h-11 rounded-2xl bg-emerald-100 flex items-center justify-center">
+                    <BrainCircuit className="w-5 h-5 text-emerald-700" />
                   </div>
 
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm text-slate-500 mb-2">Horas/dia</p>
-                    <p className="text-3xl font-bold text-slate-900">{weeklyLoad.hoursPerDay}</p>
-                  </div>
-
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm text-slate-500 mb-2">Horas/semana</p>
-                    <p className="text-3xl font-bold text-emerald-600">
-                      {weeklyLoad.totalWeeklyHours.toFixed(1)}
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">
+                      Leitura do treino
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                      Como distribuir seu esforço sem estudar igual barata tonta.
                     </p>
                   </div>
                 </div>
+
+                <p className="text-slate-700 leading-relaxed mb-5">
+                  {weeklyStrategy.reading}
+                </p>
+
+                {topPriority ? (
+                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+                    <p className="text-sm font-bold text-emerald-700 mb-2">
+                      Primeira ação
+                    </p>
+
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                      {prettifyVetText(topPriority.conteudo)}
+                    </h3>
+
+                    <p className="text-sm text-slate-700 mb-4">
+                      Comece por esse conteúdo porque ele lidera o score do VET,
+                      com prioridade {Math.round(topPriority.priorityScore)}.
+                    </p>
+
+                    <Link href={buildBankUrl(profile, topPriority)}>
+                      <Button className="rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white">
+                        Treinar agora
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
+                  </div>
+                ) : null}
               </Card>
 
-              <Card className="p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <CalendarDays className="w-5 h-5 text-emerald-600" />
-                  <h2 className="text-xl font-bold text-slate-900">Dias disponíveis</h2>
+              <Card className="p-6 bg-white border-slate-200 rounded-3xl">
+                <div className="flex items-center gap-2 mb-5">
+                  <CalendarDays className="w-5 h-5 text-slate-700" />
+                  <h2 className="text-xl font-bold text-slate-900">
+                    Dias disponíveis
+                  </h2>
                 </div>
 
-                {studyDaysLabels.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {studyDaysLabels.map((day) => (
+                <p className="text-sm text-slate-500 mb-4">
+                  {selectedDaysText}
+                </p>
+
+                <div className="flex flex-wrap gap-2">
+                  {studyDaysLabels.length > 0 ? (
+                    studyDaysLabels.map((day) => (
                       <span
                         key={day}
                         className="px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-semibold text-sm"
                       >
                         {day}
                       </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-slate-500">
-                    Nenhum dia específico foi marcado ainda.
-                  </p>
-                )}
-              </Card>
-            </div>
+                    ))
+                  ) : (
+                    <span className="px-4 py-2 rounded-full bg-slate-50 border border-slate-200 text-slate-600 font-semibold text-sm">
+                      Não configurado
+                    </span>
+                  )}
+                </div>
 
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Clock3 className="w-5 h-5 text-emerald-600" />
-                <h2 className="text-xl font-bold text-slate-900">Estratégia semanal sugerida</h2>
+                <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm text-slate-500 mb-1">
+                    Carga semanal estimada
+                  </p>
+                  <p className="text-3xl font-bold text-slate-900">
+                    {weeklyLoad.totalWeeklyHours.toFixed(1)}h
+                  </p>
+                </div>
+              </Card>
+            </section>
+
+            <Card className="p-6 bg-white border-slate-200 rounded-3xl">
+              <div className="flex items-center gap-2 mb-5">
+                <Clock3 className="w-5 h-5 text-slate-700" />
+                <h2 className="text-xl font-bold text-slate-900">
+                  Divisão semanal sugerida
+                </h2>
               </div>
 
               <div className="grid md:grid-cols-3 gap-4">
-                <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
-                  <p className="text-sm text-red-700 font-semibold mb-2">Ataque</p>
-                  <p className="text-3xl font-bold text-red-600">
-                    {weeklyStrategy.attackPercent}%
-                  </p>
-                  <p className="text-sm text-slate-600 mt-2">
+                <div className="rounded-2xl border border-red-200 bg-red-50 p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="font-bold text-red-700">Ataque</p>
+                    <p className="text-2xl font-bold text-red-700">
+                      {weeklyStrategy.attackPercent}%
+                    </p>
+                  </div>
+
+                  <div className="h-2 rounded-full bg-red-100 overflow-hidden mb-3">
+                    <div
+                      className="h-full rounded-full bg-red-500"
+                      style={{ width: `${weeklyStrategy.attackPercent}%` }}
+                    />
+                  </div>
+
+                  <p className="text-sm text-slate-700">
                     {weeklyHoursSplit.attackHours.toFixed(1)}h por semana
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-yellow-200 bg-yellow-50 p-4">
-                  <p className="text-sm text-yellow-700 font-semibold mb-2">Consolidação</p>
-                  <p className="text-3xl font-bold text-yellow-600">
-                    {weeklyStrategy.consolidationPercent}%
-                  </p>
-                  <p className="text-sm text-slate-600 mt-2">
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="font-bold text-amber-700">Consolidação</p>
+                    <p className="text-2xl font-bold text-amber-700">
+                      {weeklyStrategy.consolidationPercent}%
+                    </p>
+                  </div>
+
+                  <div className="h-2 rounded-full bg-amber-100 overflow-hidden mb-3">
+                    <div
+                      className="h-full rounded-full bg-amber-500"
+                      style={{ width: `${weeklyStrategy.consolidationPercent}%` }}
+                    />
+                  </div>
+
+                  <p className="text-sm text-slate-700">
                     {weeklyHoursSplit.consolidationHours.toFixed(1)}h por semana
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-green-200 bg-green-50 p-4">
-                  <p className="text-sm text-green-700 font-semibold mb-2">Manutenção</p>
-                  <p className="text-3xl font-bold text-green-600">
-                    {weeklyStrategy.maintenancePercent}%
-                  </p>
-                  <p className="text-sm text-slate-600 mt-2">
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="font-bold text-emerald-700">Manutenção</p>
+                    <p className="text-2xl font-bold text-emerald-700">
+                      {weeklyStrategy.maintenancePercent}%
+                    </p>
+                  </div>
+
+                  <div className="h-2 rounded-full bg-emerald-100 overflow-hidden mb-3">
+                    <div
+                      className="h-full rounded-full bg-emerald-500"
+                      style={{ width: `${weeklyStrategy.maintenancePercent}%` }}
+                    />
+                  </div>
+
+                  <p className="text-sm text-slate-700">
                     {weeklyHoursSplit.maintenanceHours.toFixed(1)}h por semana
                   </p>
                 </div>
               </div>
             </Card>
 
-            <BlockCard
-              title="Ataque imediato"
-              icon={Flame}
-              items={ataque}
-              emptyText="Nenhum conteúdo entrou em ataque imediato ainda."
-              tone="red"
-            />
+            <section className="grid xl:grid-cols-3 gap-5">
+              <BlockSection
+                title="Ataque imediato"
+                block="ataque"
+                items={attackItems}
+                profile={profile}
+                weeklyHours={weeklyLoad.totalWeeklyHours}
+                emptyText="Nenhum conteúdo entrou em ataque imediato agora."
+              />
 
-            <BlockCard
-              title="Consolidação"
-              icon={Layers3}
-              items={consolidacao}
-              emptyText="Nenhum conteúdo entrou em consolidação ainda."
-              tone="yellow"
-            />
+              <BlockSection
+                title="Consolidação"
+                block="consolidacao"
+                items={consolidationItems}
+                profile={profile}
+                weeklyHours={weeklyLoad.totalWeeklyHours}
+                emptyText="Nenhum conteúdo entrou em consolidação agora."
+              />
 
-            <BlockCard
-              title="Manutenção"
-              icon={Shield}
-              items={manutencao}
-              emptyText="Nenhum conteúdo entrou em manutenção ainda."
-              tone="green"
-            />
+              <BlockSection
+                title="Manutenção"
+                block="manutencao"
+                items={maintenanceItems}
+                profile={profile}
+                weeklyHours={weeklyLoad.totalWeeklyHours}
+                emptyText="Nenhum conteúdo entrou em manutenção agora."
+              />
+            </section>
 
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <BrainCircuit className="w-5 h-5 text-emerald-600" />
-                <h2 className="text-xl font-bold text-slate-900">Leitura do treino</h2>
-              </div>
+            <section className="grid xl:grid-cols-3 gap-5">
+              <Card className="p-6 bg-white border-slate-200 rounded-3xl">
+                <div className="flex items-center gap-2 mb-4">
+                  <History className="w-5 h-5 text-slate-700" />
+                  <h2 className="text-lg font-bold text-slate-900">
+                    Histórico da prova
+                  </h2>
+                </div>
 
-              <div className="space-y-3 text-slate-700">
-                <p>{trainingReading}</p>
-                <p>
-                  <span className="font-semibold">Ataque imediato:</span> é o bloco que mais deve
-                  receber seu tempo agora.
+                <p className="text-sm text-slate-600">
+                  Conteúdos recorrentes e recentes ganham prioridade na rotina,
+                  porque prova antiga também deixa rastro. Às vezes o examinador
+                  é previsível, só faz pose de gênio.
                 </p>
-                <p>
-                  <span className="font-semibold">Consolidação:</span> vem logo depois, para aumentar
-                  consistência sem tirar foco do que é urgente.
-                </p>
-                <p>
-                  <span className="font-semibold">Manutenção:</span> serve para não deixar conteúdos
-                  menos urgentes sumirem totalmente do seu radar.
-                </p>
-                <p>
-                  <span className="font-semibold">Próximo passo natural:</span> depois disso, o VET
-                  pode evoluir para montar listas reais de questões por bloco.
-                </p>
-              </div>
-            </Card>
+              </Card>
 
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Target className="w-5 h-5 text-emerald-600" />
-                <h2 className="text-xl font-bold text-slate-900">Resumo do plano</h2>
-              </div>
+              <Card className="p-6 bg-white border-slate-200 rounded-3xl">
+                <div className="flex items-center gap-2 mb-4">
+                  <Users className="w-5 h-5 text-slate-700" />
+                  <h2 className="text-lg font-bold text-slate-900">
+                    Média coletiva
+                  </h2>
+                </div>
 
-              <div className="space-y-2 text-slate-700">
-                <p>
-                  Prova-alvo: <span className="font-semibold">{profile.target_exam}</span>
+                <p className="text-sm text-slate-600">
+                  Quando você está abaixo da média dos alunos em um conteúdo,
+                  o VET aumenta a urgência. O algoritmo não julga, só expõe.
                 </p>
-                <p>
-                  Tempo até a prova:{" "}
-                  <span className="font-semibold">{profile.months_until_exam} mês(es)</span>
+              </Card>
+
+              <Card className="p-6 bg-white border-slate-200 rounded-3xl">
+                <div className="flex items-center gap-2 mb-4">
+                  <TrendingUp className="w-5 h-5 text-slate-700" />
+                  <h2 className="text-lg font-bold text-slate-900">
+                    Execução prática
+                  </h2>
+                </div>
+
+                <p className="text-sm text-slate-600">
+                  O treino recomendado não é só lista de conteúdo: ele sugere
+                  peso semanal, tipo de questão e ordem de ataque.
                 </p>
-                <p>
-                  Disciplina foco: <span className="font-semibold">{profile.focus_subject}</span>
-                </p>
-                <p>
-                  Carga semanal estimada:{" "}
-                  <span className="font-semibold">
-                    {weeklyLoad.totalWeeklyHours.toFixed(1)} hora(s)
-                  </span>
-                </p>
-              </div>
-            </Card>
+              </Card>
+            </section>
           </>
         )}
       </main>
