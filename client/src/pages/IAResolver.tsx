@@ -1,8 +1,28 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "wouter";
 import { BookOpen, Upload, Send, Loader2, Image as ImageIcon, ArrowLeft, Sparkles, Brain, Target, Calculator, CheckCircle2 } from "lucide-react";
+import {
+  BookOpen,
+  Upload,
+  Send,
+  Loader2,
+  Image as ImageIcon,
+  ArrowLeft,
+  Sparkles,
+  Brain,
+  Target,
+  Calculator,
+  CheckCircle2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
@@ -10,6 +30,18 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import { trpc } from "@/lib/trpc";
+
+type AiImageMimeType = "image/png" | "image/jpeg" | "image/webp";
+
+const SUPPORTED_IMAGE_MIME_TYPES = new Set<string>([
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+]);
+
+function isSupportedImageMimeType(value: string): value is AiImageMimeType {
+  return SUPPORTED_IMAGE_MIME_TYPES.has(value);
+}
 
 export default function IAResolver() {
   const [text, setText] = useState("");
@@ -29,12 +61,22 @@ export default function IAResolver() {
       label: "Somente as Contas", 
       icon: "🧮", 
       description: "Apenas cálculos e resultados" 
+    {
+      value: "calculations" as const,
+      label: "Somente as Contas",
+      icon: "🧮",
+      description: "Apenas cálculos e resultados",
     },
     { 
       value: "detailed" as const, 
       label: "Com Explicação", 
       icon: "📚", 
       description: "Resolução completa e didática" 
+    {
+      value: "detailed" as const,
+      label: "Com Explicação",
+      icon: "📚",
+      description: "Resolução completa e didática",
     },
   ];
 
@@ -62,11 +104,15 @@ export default function IAResolver() {
     let currentText = "";
     const words = fullText.split(" ");
     
+
     for (let i = 0; i < words.length; i++) {
       currentText += words[i] + " ";
       setResult(currentText);
       // Velocidade variável para parecer mais natural
       await new Promise(resolve => setTimeout(resolve, 15 + Math.random() * 25));
+      await new Promise(resolve =>
+        setTimeout(resolve, 15 + Math.random() * 25)
+      );
     }
   };
 
@@ -82,10 +128,18 @@ export default function IAResolver() {
     try {
       let imageBase64: string | undefined;
       let imageMimeType: string | undefined;
+      let imageMimeType: AiImageMimeType | undefined;
 
       if (image) {
+        if (!isSupportedImageMimeType(image.type)) {
+          toast.error("Envie uma imagem PNG, JPG ou WebP.");
+          setStatus(null);
+          return;
+        }
+
         const reader = new FileReader();
         const base64Promise = new Promise<string>((resolve) => {
+        const base64Promise = new Promise<string>(resolve => {
           reader.onloadend = () => {
             const base64String = reader.result as string;
             // Remove o prefixo "data:image/...;base64,"
@@ -107,15 +161,19 @@ export default function IAResolver() {
         imageBase64,
         imageMimeType,
         systemPrompt,
+        mode,
       });
 
       setStatus("Organizando raciocínio...");
       await new Promise(resolve => setTimeout(resolve, 800));
       
+
       await simulateTyping(data.result);
     } catch (error) {
       console.error(error);
       const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro desconhecido";
       toast.error(`Erro: ${errorMessage}`);
       setStatus(null);
     }
@@ -139,6 +197,12 @@ export default function IAResolver() {
             <div>
               <h1 className="text-xl font-bold text-slate-900">IA Resolutora</h1>
               <p className="text-xs text-slate-600">Resolva questões de Física com IA</p>
+              <h1 className="text-xl font-bold text-slate-900">
+                IA Resolutora
+              </h1>
+              <p className="text-xs text-slate-600">
+                Resolva questões de Física com IA
+              </p>
             </div>
           </div>
           <div className="w-10" />
@@ -166,6 +230,7 @@ export default function IAResolver() {
                   </label>
                   <div className="grid grid-cols-2 gap-3">
                     {modeOptions.map((option) => (
+                    {modeOptions.map(option => (
                       <button
                         key={option.value}
                         onClick={() => setMode(option.value)}
@@ -178,6 +243,12 @@ export default function IAResolver() {
                         <div className="text-2xl mb-2">{option.icon}</div>
                         <div className="font-semibold text-slate-900 text-sm">{option.label}</div>
                         <div className="text-xs text-slate-600 mt-1">{option.description}</div>
+                        <div className="font-semibold text-slate-900 text-sm">
+                          {option.label}
+                        </div>
+                        <div className="text-xs text-slate-600 mt-1">
+                          {option.description}
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -193,6 +264,7 @@ export default function IAResolver() {
                     placeholder="Digite aqui o enunciado completo da questão de Física..."
                     value={text}
                     onChange={(e) => setText(e.target.value)}
+                    onChange={e => setText(e.target.value)}
                     className="min-h-32 resize-none border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"
                   />
                 </div>
@@ -207,6 +279,7 @@ export default function IAResolver() {
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
+                    accept="image/png,image/jpeg,image/webp"
                     onChange={handleImageChange}
                     className="hidden"
                   />
@@ -216,6 +289,9 @@ export default function IAResolver() {
                   >
                     <Upload className="w-6 h-6 mx-auto text-slate-400 mb-2" />
                     <p className="text-sm text-slate-600">Clique para enviar imagem</p>
+                    <p className="text-sm text-slate-600">
+                      Clique para enviar imagem
+                    </p>
                   </button>
                 </div>
 
@@ -224,6 +300,14 @@ export default function IAResolver() {
                   <div className="space-y-2">
                     <p className="text-sm font-semibold text-slate-700">Imagem Selecionada:</p>
                     <img src={preview} alt="Preview" className="w-full rounded-lg border border-slate-300" />
+                    <p className="text-sm font-semibold text-slate-700">
+                      Imagem Selecionada:
+                    </p>
+                    <img
+                      src={preview}
+                      alt="Preview"
+                      className="w-full rounded-lg border border-slate-300"
+                    />
                     <button
                       onClick={() => {
                         setImage(null);
@@ -249,7 +333,7 @@ export default function IAResolver() {
                     </>
                   ) : (
                     <>
-                      <Send className="w-4 h-4" />
+@@ -253,73 +304,123 @@ export default function IAResolver() {
                       Resolver Questão
                     </>
                   )}
@@ -276,6 +360,9 @@ export default function IAResolver() {
                   </CardTitle>
                   <CardDescription className="text-indigo-100 mt-2">
                     {mode === "calculations" ? "Cálculos e Resultados" : "Explicação Completa"}
+                    {mode === "calculations"
+                      ? "Cálculos e Resultados"
+                      : "Explicação Completa"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-10 bg-white">
@@ -294,6 +381,63 @@ export default function IAResolver() {
                         blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-indigo-500 pl-6 italic text-slate-700 my-4 bg-indigo-50 py-4 rounded-r-lg" {...props} />,
                         strong: ({node, ...props}) => <strong className="font-bold text-slate-900" {...props} />,
                         em: ({node, ...props}) => <em className="italic text-slate-700" {...props} />,
+                        h1: ({ node, ...props }) => (
+                          <h1
+                            className="text-4xl font-bold text-slate-900 mt-10 mb-6 border-b-3 border-indigo-400 pb-3"
+                            {...props}
+                          />
+                        ),
+                        h2: ({ node, ...props }) => (
+                          <h2
+                            className="text-3xl font-bold text-slate-900 mt-8 mb-4"
+                            {...props}
+                          />
+                        ),
+                        h3: ({ node, ...props }) => (
+                          <h3
+                            className="text-2xl font-bold text-slate-900 mt-6 mb-3"
+                            {...props}
+                          />
+                        ),
+                        p: ({ node, ...props }) => (
+                          <p
+                            className="text-slate-800 leading-relaxed my-4 text-base"
+                            {...props}
+                          />
+                        ),
+                        ul: ({ node, ...props }) => (
+                          <ul
+                            className="list-disc list-outside space-y-3 my-4 ml-6 text-slate-800"
+                            {...props}
+                          />
+                        ),
+                        ol: ({ node, ...props }) => (
+                          <ol
+                            className="list-decimal list-outside space-y-3 my-4 ml-6 text-slate-800"
+                            {...props}
+                          />
+                        ),
+                        li: ({ node, ...props }) => (
+                          <li
+                            className="text-slate-800 leading-relaxed"
+                            {...props}
+                          />
+                        ),
+                        blockquote: ({ node, ...props }) => (
+                          <blockquote
+                            className="border-l-4 border-indigo-500 pl-6 italic text-slate-700 my-4 bg-indigo-50 py-4 rounded-r-lg"
+                            {...props}
+                          />
+                        ),
+                        strong: ({ node, ...props }) => (
+                          <strong
+                            className="font-bold text-slate-900"
+                            {...props}
+                          />
+                        ),
+                        em: ({ node, ...props }) => (
+                          <em className="italic text-slate-700" {...props} />
+                        ),
                       }}
                     >
                       {result}
@@ -313,6 +457,8 @@ export default function IAResolver() {
                   </p>
                   <p className="text-slate-500 text-sm mt-2">
                     Escolha o tipo de resolução e envie o enunciado ou uma foto da questão
+                    Escolha o tipo de resolução e envie o enunciado ou uma foto
+                    da questão
                   </p>
                 </CardContent>
               </Card>
