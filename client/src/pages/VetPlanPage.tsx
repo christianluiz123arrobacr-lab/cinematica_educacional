@@ -2,317 +2,357 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import {
   ArrowLeft,
+  ArrowRight,
+  BarChart3,
   BrainCircuit,
-  Flame,
-  Layers3,
-  Shield,
-  Target,
-  BookOpen,
-  Clock3,
-  ExternalLink,
-  Sparkles,
   CheckCircle2,
-  AlertTriangle,
+  Clock3,
+  Flame,
+  Gauge,
+  History,
+  Layers3,
+  ListChecks,
+  Loader2,
+  ShieldCheck,
+  Sparkles,
+  Target,
+  TrendingUp,
+  Users,
 } from "lucide-react";
+import type { ComponentType } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { InteractiveQuiz } from "@/components/InteractiveQuiz";
 import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { getQuestions } from "@/services/questions.service";
 import type { Question } from "@/types/question";
+import {
+  buildVetEngineResult,
+  formatVetPercent,
+  prettifyVetText,
+  getQuestionTopicsForVet,
+  type VetAttempt,
+  type VetCollectiveContentStat,
+  type VetEngineResult,
+  type VetProfile,
+  type VetStrategicContent,
+  type VetTrainingBlock,
+  type VetWeight,
+} from "@/lib/vetEngine";
 
-type VetProfileRow = {
+type VetProfileRow = VetProfile & {
   id: string;
   user_id: string;
-  target_exam: string;
-  months_until_exam: number;
-  hours_per_day: number;
-  focus_subject: string;
-  study_days_per_week: number | null;
-  study_weekdays: string[] | null;
 };
 
-type AttemptRow = {
-  id: string;
-  user_id: string;
-  question_id: string;
-  selected_option: string | null;
-  is_correct: boolean;
-  time_spent_seconds: number | null;
-  answered_at: string;
-  attempt_number: number;
-  subject: string | null;
-  conteudo: string | null;
-  assunto: string | null;
-  banca: string | null;
-  ano: number | null;
-  difficulty: string | null;
-};
-
-type WeightRow = {
-  id: string;
-  exam: string;
-  subject: string;
-  conteudo: string;
-  weight: number;
-};
-
-type TrainingBlock = "ataque" | "consolidacao" | "manutencao";
-
-type RecommendedContent = {
-  conteudo: string;
-  score: number;
-  block: TrainingBlock;
-  hasAttempts: boolean;
-  total: number;
-  correct: number;
-  wrong: number;
-  accuracy: number;
-  weight: number;
-};
-
-function normalizeText(value?: string | null) {
-  return (value || "")
+function normalizeText(value?: string | number | null) {
+  return String(value ?? "")
     .trim()
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-function formatSubject(subject?: string | null) {
-  const normalized = normalizeText(subject);
-
-  if (normalized === "fisica") return "Física";
-  if (normalized === "matematica") return "Matemática";
-  if (normalized === "quimica") return "Química";
-  if (normalized === "todas") return "Todas";
-
-  return subject || "Todas";
+function matchesTargetExam(question: Question, targetExam: string) {
+  const target = normalizeText(targetExam);
+  return (
+    normalizeText(question.institution) === target ||
+    normalizeText(question.exam) === target
+  );
 }
 
-function getWeaknessScore(accuracy: number, total: number) {
-  if (total === 0) return 6;
-  if (accuracy < 40) return 10;
-  if (accuracy < 55) return 7;
-  if (accuracy < 70) return 4;
-  return 1;
+function matchesContent(question: Question, content: string) {
+  const topics = getQuestionTopicsForVet(question).map(normalizeText);
+  return topics.includes(normalizeText(content));
 }
 
-function getUrgencyTimeScore(monthsUntilExam: number) {
-  if (monthsUntilExam <= 2) return 5;
-  if (monthsUntilExam <= 4) return 4;
-  if (monthsUntilExam <= 6) return 3;
-  if (monthsUntilExam <= 9) return 2;
-  return 1;
-}
-
-function getWrongVolumeScore(wrong: number) {
-  if (wrong >= 6) return 4;
-  if (wrong >= 4) return 3;
-  if (wrong >= 2) return 2;
-  if (wrong >= 1) return 1;
-  return 0;
-}
-
-function getNoAttemptPenalty(total: number, weight: number) {
-  if (total > 0) return 0;
-  if (weight >= 8) return 6;
-  if (weight >= 6) return 4;
-  if (weight >= 4) return 2;
-  return 1;
-}
-
-function getTrainingBlock(score: number): TrainingBlock {
-  if (score >= 15) return "ataque";
-  if (score >= 9) return "consolidacao";
-  return "manutencao";
-}
-
-function getBlockLabel(block: TrainingBlock) {
-  if (block === "ataque") return "Ataque";
-  if (block === "consolidacao") return "Consolidação";
-  return "Manutenção";
-}
-
-function getBlockDescription(block: TrainingBlock) {
-  if (block === "ataque") {
-    return "Conteúdos que precisam de ação imediata, seja por erro, peso alto ou falta de treino.";
-  }
-
-  if (block === "consolidacao") {
-    return "Conteúdos intermediários, que já aparecem no seu histórico, mas ainda precisam firmar.";
-  }
-
-  return "Conteúdos que devem continuar aparecendo para revisão e manutenção.";
-}
-
-function getBlockIcon(block: TrainingBlock) {
-  if (block === "ataque") return Flame;
-  if (block === "consolidacao") return Layers3;
-  return Shield;
-}
-
-function getBlockColor(block: TrainingBlock) {
-  if (block === "ataque") {
-    return {
-      card: "border-red-200 bg-red-50",
-      icon: "bg-red-100 text-red-700",
-      badge: "bg-red-600 text-white",
-      button: "bg-red-600 hover:bg-red-700 text-white",
-      text: "text-red-700",
-    };
-  }
-
-  if (block === "consolidacao") {
-    return {
-      card: "border-yellow-200 bg-yellow-50",
-      icon: "bg-yellow-100 text-yellow-700",
-      badge: "bg-yellow-500 text-white",
-      button: "bg-yellow-500 hover:bg-yellow-600 text-white",
-      text: "text-yellow-700",
-    };
-  }
-
-  return {
-    card: "border-emerald-200 bg-emerald-50",
-    icon: "bg-emerald-100 text-emerald-700",
-    badge: "bg-emerald-600 text-white",
-    button: "bg-emerald-600 hover:bg-emerald-700 text-white",
-    text: "text-emerald-700",
-  };
-}
-
-function getBlockLimit(block: TrainingBlock) {
-  if (block === "ataque") return 12;
-  if (block === "consolidacao") return 8;
-  return 5;
-}
-
-function getDailyQuestionTarget(block: TrainingBlock) {
-  if (block === "ataque") return 8;
-  if (block === "consolidacao") return 6;
-  return 4;
-}
-
-function getQuestionTopics(question: Question) {
-  if (Array.isArray(question.topics) && question.topics.length > 0) {
-    return question.topics.filter(Boolean);
-  }
-
-  return question.topic ? [question.topic] : [];
-}
-
-function matchesExamInstitution(question: Question, targetExam: string) {
-  return normalizeText(question.institution) === normalizeText(targetExam);
-}
-
-function getQuestionDifficultyScore(question: Question, block: TrainingBlock) {
-  const difficulty = normalizeText(question.difficulty);
-
-  if (block === "ataque") {
-    if (difficulty === "medio") return 3;
-    if (difficulty === "dificil") return 2;
-    if (difficulty === "facil") return 1;
-    return 0;
-  }
-
-  if (block === "consolidacao") {
-    if (difficulty === "medio") return 3;
-    if (difficulty === "facil") return 2;
-    if (difficulty === "dificil") return 1;
-    return 0;
-  }
-
-  if (difficulty === "facil") return 3;
-  if (difficulty === "medio") return 2;
-  if (difficulty === "dificil") return 1;
-  return 0;
-}
-
-function getQuestionPriorityScore(
-  question: Question,
-  block: TrainingBlock,
-  contents: string[],
-  targetExam: string,
-  attemptedQuestionIds: Set<string>
-) {
-  let score = 0;
-
-  const contentIndex = getQuestionTopics(question)
-    .map((topic) => normalizeText(topic))
-    .map((topic) => contents.indexOf(topic))
-    .filter((index) => index !== -1)
-    .sort((a, b) => a - b)[0];
-
-  if (contentIndex !== undefined) {
-    score += Math.max(20 - contentIndex * 3, 5);
-  }
-
-  if (matchesExamInstitution(question, targetExam)) {
-    score += 30;
-  }
-
-  if (!attemptedQuestionIds.has(question.id)) {
-    score += 40;
-  } else {
-    score -= 10;
-  }
-
-  score += getQuestionDifficultyScore(question, block);
-
-  const year = Number(question.year);
-
-  if (!Number.isNaN(year)) {
-    score += Math.min(Math.max(year - 2015, 0), 10);
-  }
-
-  return score;
-}
-
-function buildBankUrl(
-  subject: string,
-  institution: string,
-  block: string,
-  topics: string[]
-) {
+function buildBankUrl(profile: VetProfile, content: VetStrategicContent) {
   const params = new URLSearchParams();
 
-  if (subject && subject !== "todas") {
-    params.set("subject", subject);
-  }
-
-  if (institution) {
-    params.set("institution", institution);
-  }
-
-  if (block) {
-    params.set("block", block);
-  }
-
-  if (topics.length > 0) {
-    params.set("topics", topics.join(","));
-  }
+  params.set("institution", profile.target_exam);
+  params.set("subject", content.subject);
+  params.set("topics", encodeURIComponent(content.conteudo));
+  params.set("block", content.block);
 
   return `/banco-de-questoes?${params.toString()}`;
 }
 
-function estimateMinutes(questionCount: number, block: TrainingBlock) {
-  const minutesPerQuestion =
-    block === "ataque" ? 7 : block === "consolidacao" ? 6 : 5;
+function getBlockMeta(block: VetTrainingBlock) {
+  if (block === "ataque") {
+    return {
+      label: "Ataque",
+      description:
+        "Conteúdos que exigem prioridade máxima: peso alto, baixo desempenho, recorrência ou urgência.",
+      icon: Flame,
+      className: "border-red-200 bg-red-50",
+      iconClassName: "bg-red-100 text-red-700",
+      textClassName: "text-red-700",
+      buttonClassName: "bg-red-600 hover:bg-red-700 text-white",
+    };
+  }
 
-  return questionCount * minutesPerQuestion;
+  if (block === "consolidacao") {
+    return {
+      label: "Consolidação",
+      description:
+        "Conteúdos que você já começou, mas ainda precisam de repetição e estabilidade.",
+      icon: Layers3,
+      className: "border-amber-200 bg-amber-50",
+      iconClassName: "bg-amber-100 text-amber-700",
+      textClassName: "text-amber-700",
+      buttonClassName: "bg-amber-600 hover:bg-amber-700 text-white",
+    };
+  }
+
+  return {
+    label: "Manutenção",
+    description:
+      "Conteúdos controlados, mas que devem aparecer na rotina para não enferrujar.",
+    icon: ShieldCheck,
+    className: "border-emerald-200 bg-emerald-50",
+    iconClassName: "bg-emerald-100 text-emerald-700",
+    textClassName: "text-emerald-700",
+    buttonClassName: "bg-emerald-600 hover:bg-emerald-700 text-white",
+  };
 }
 
-function formatMinutes(minutes: number) {
-  if (minutes < 60) return `${minutes} min`;
+function getTrendLabel(score?: number) {
+  if (!score && score !== 0) return "sem dados";
+  if (score >= 8) return "subindo";
+  if (score >= 5) return "estável";
+  return "caindo";
+}
 
-  const hours = Math.floor(minutes / 60);
-  const rest = minutes % 60;
+function getCollectiveText(content: VetStrategicContent) {
+  if (!content.collective || !content.personal.hasData) {
+    return "Sem média coletiva suficiente.";
+  }
 
-  if (rest === 0) return `${hours}h`;
+  const gap = content.collective.collective_accuracy - content.personal.accuracy;
 
-  return `${hours}h ${rest}min`;
+  if (gap > 8) {
+    return `${Math.round(gap)} p.p. abaixo da média dos alunos.`;
+  }
+
+  if (gap < -8) {
+    return `${Math.abs(Math.round(gap))} p.p. acima da média dos alunos.`;
+  }
+
+  return "Próximo da média dos alunos.";
+}
+
+function PlanStatCard({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  className = "border-slate-200 bg-white",
+  iconClassName = "bg-slate-100 text-slate-700",
+}: {
+  title: string;
+  value: string;
+  subtitle: string;
+  icon: ComponentType<{ className?: string }>;
+  className?: string;
+  iconClassName?: string;
+}) {
+  return (
+    <Card className={`p-5 ${className}`}>
+      <div className="flex items-center gap-3 mb-3">
+        <div
+          className={`w-11 h-11 rounded-2xl flex items-center justify-center ${iconClassName}`}
+        >
+          <Icon className="w-5 h-5" />
+        </div>
+
+        <div>
+          <p className="text-sm text-slate-500">{title}</p>
+          <p className="text-2xl font-bold text-slate-900 leading-tight">
+            {value}
+          </p>
+        </div>
+      </div>
+
+      <p className="text-sm text-slate-500">{subtitle}</p>
+    </Card>
+  );
+}
+
+function ContentPlanCard({
+  content,
+  profile,
+  rank,
+}: {
+  content: VetStrategicContent;
+  profile: VetProfile;
+  rank: number;
+}) {
+  const meta = getBlockMeta(content.block);
+  const Icon = meta.icon;
+
+  return (
+    <Card className={`p-5 rounded-3xl border shadow-sm ${meta.className}`}>
+      <div className="flex items-start justify-between gap-4 mb-4">
+        <div>
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <span className="inline-flex rounded-full bg-slate-900 text-white px-3 py-1 text-xs font-bold">
+              #{rank}
+            </span>
+
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold ${meta.iconClassName}`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {meta.label}
+            </span>
+
+            <span className="inline-flex rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-bold text-slate-600">
+              score {Math.round(content.priorityScore)}
+            </span>
+          </div>
+
+          <h3 className="text-xl font-bold text-slate-900">
+            {prettifyVetText(content.conteudo)}
+          </h3>
+
+          <p className="text-sm text-slate-500">
+            {prettifyVetText(content.subject)}
+          </p>
+        </div>
+
+        <div className="text-right">
+          <p className="text-2xl font-bold text-slate-900">{content.weight}</p>
+          <p className="text-xs text-slate-500">peso</p>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-4 gap-3 mb-4">
+        <div className="rounded-2xl bg-white/80 border border-white p-3">
+          <p className="text-xs text-slate-500 mb-1">Seu acerto</p>
+          <p className="font-bold text-slate-900">
+            {content.personal.hasData
+              ? formatVetPercent(content.personal.accuracy)
+              : "sem dados"}
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-white/80 border border-white p-3">
+          <p className="text-xs text-slate-500 mb-1">Média geral</p>
+          <p className="font-bold text-slate-900">
+            {content.collective
+              ? formatVetPercent(content.collective.collective_accuracy)
+              : "—"}
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-white/80 border border-white p-3">
+          <p className="text-xs text-slate-500 mb-1">Histórico</p>
+          <p className="font-bold text-slate-900">
+            {content.historical
+              ? `${content.historical.totalQuestions} questões`
+              : "—"}
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-white/80 border border-white p-3">
+          <p className="text-xs text-slate-500 mb-1">Tendência</p>
+          <p className="font-bold text-slate-900">
+            {getTrendLabel(content.historical?.trendScore)}
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-white bg-white/80 p-4 mb-4">
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">
+          Por que entrou no plano?
+        </p>
+
+        <ul className="space-y-2">
+          {content.explanation.slice(0, 3).map((line, index) => (
+            <li key={index} className="flex items-start gap-2 text-sm text-slate-700">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+              <span>{line}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="rounded-2xl border border-white bg-white/80 p-4 mb-4">
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">
+          Comparação coletiva
+        </p>
+        <p className="text-sm text-slate-700">{getCollectiveText(content)}</p>
+      </div>
+
+      <Link href={buildBankUrl(profile, content)}>
+        <Button className={`w-full rounded-2xl ${meta.buttonClassName}`}>
+          Treinar esse conteúdo
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
+      </Link>
+    </Card>
+  );
+}
+
+function RecommendedQuestionCard({
+  question,
+  matchedContent,
+}: {
+  question: Question;
+  matchedContent: VetStrategicContent;
+}) {
+  const topics = getQuestionTopicsForVet(question);
+
+  return (
+    <Card className="p-5 bg-white border-slate-200 rounded-3xl shadow-sm">
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <span className="inline-flex rounded-full bg-slate-900 text-white px-3 py-1 text-xs font-bold">
+          {question.institution || question.exam}
+        </span>
+
+        <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-600">
+          {question.year}
+        </span>
+
+        <span className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
+          {prettifyVetText(question.subject)}
+        </span>
+
+        <span className="inline-flex rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">
+          {question.difficulty}
+        </span>
+      </div>
+
+      <h3 className="text-base font-bold text-slate-900 mb-2">
+        {question.codigo || `Questão ${question.id}`}
+      </h3>
+
+      <p className="text-sm text-slate-600 line-clamp-3 mb-4">
+        {question.statement}
+      </p>
+
+      <div className="flex flex-wrap gap-2 mb-4">
+        {topics.slice(0, 3).map((topic) => (
+          <span
+            key={topic}
+            className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600"
+          >
+            {topic}
+          </span>
+        ))}
+      </div>
+
+      <div className="rounded-2xl border border-violet-200 bg-violet-50 p-3">
+        <p className="text-xs font-bold text-violet-700 mb-1">
+          Motivo da recomendação
+        </p>
+        <p className="text-sm text-violet-800">
+          Relacionada a {prettifyVetText(matchedContent.conteudo)}, que está no
+          bloco {getBlockMeta(matchedContent.block).label}.
+        </p>
+      </div>
+    </Card>
+  );
 }
 
 export default function VetPlanPage() {
@@ -322,13 +362,11 @@ export default function VetPlanPage() {
   const [error, setError] = useState("");
 
   const [profile, setProfile] = useState<VetProfileRow | null>(null);
-  const [attempts, setAttempts] = useState<AttemptRow[]>([]);
-  const [weights, setWeights] = useState<WeightRow[]>([]);
+  const [engine, setEngine] = useState<VetEngineResult | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [selectedBlock, setSelectedBlock] = useState<TrainingBlock>("ataque");
 
   useEffect(() => {
-    async function loadData() {
+    async function loadPlan() {
       if (!user?.id) {
         setLoading(false);
         return;
@@ -337,312 +375,176 @@ export default function VetPlanPage() {
       setLoading(true);
       setError("");
 
-      const { data: profileData, error: profileError } = await supabase
-        .from("user_vet_profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      try {
+        const { data: profileData, error: profileError } = await supabase
+          .from("user_vet_profiles")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
-      if (profileError) {
-        console.error(profileError);
-        setError("Não foi possível carregar o objetivo do VET.");
+        if (profileError) {
+          console.error(profileError);
+          setError("Não foi possível carregar seu objetivo do VET.");
+          setLoading(false);
+          return;
+        }
+
+        const currentProfile = (profileData as VetProfileRow | null) ?? null;
+        setProfile(currentProfile);
+
+        if (!currentProfile) {
+          setEngine(null);
+          setLoading(false);
+          return;
+        }
+
+        const [
+          attemptsResponse,
+          weightsResponse,
+          collectiveResponse,
+          loadedQuestions,
+        ] = await Promise.all([
+          supabase
+            .from("user_question_attempts")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("answered_at", { ascending: false }),
+
+          supabase
+            .from("vet_exam_content_weights")
+            .select("*")
+            .eq("exam", currentProfile.target_exam),
+
+          supabase
+            .from("vet_content_collective_stats")
+            .select("*")
+            .eq("exam", currentProfile.target_exam),
+
+          getQuestions(),
+        ]);
+
+        if (attemptsResponse.error) {
+          console.error(attemptsResponse.error);
+          setError("Não foi possível carregar suas tentativas.");
+          setLoading(false);
+          return;
+        }
+
+        if (weightsResponse.error) {
+          console.error(weightsResponse.error);
+          setError("Não foi possível carregar os pesos da prova.");
+          setLoading(false);
+          return;
+        }
+
+        if (collectiveResponse.error) {
+          console.error(collectiveResponse.error);
+          setError("Não foi possível carregar a média coletiva dos alunos.");
+          setLoading(false);
+          return;
+        }
+
+        const loadedAttempts = (attemptsResponse.data as VetAttempt[]) ?? [];
+        const loadedWeights = (weightsResponse.data as VetWeight[]) ?? [];
+
+        const loadedCollective =
+          ((collectiveResponse.data as VetCollectiveContentStat[]) ?? []).map(
+            (item) => ({
+              ...item,
+              total_attempts: Number(item.total_attempts ?? 0),
+              correct_attempts: Number(item.correct_attempts ?? 0),
+              wrong_attempts: Number(item.wrong_attempts ?? 0),
+              collective_accuracy: Number(item.collective_accuracy ?? 0),
+              avg_time_seconds:
+                item.avg_time_seconds === null ||
+                item.avg_time_seconds === undefined
+                  ? null
+                  : Number(item.avg_time_seconds),
+            })
+          );
+
+        const result = buildVetEngineResult({
+          profile: currentProfile,
+          attempts: loadedAttempts,
+          questions: loadedQuestions,
+          weights: loadedWeights,
+          collectiveStats: loadedCollective,
+          yearsBack: 5,
+        });
+
+        setQuestions(loadedQuestions);
+        setEngine(result);
+      } catch (err) {
+        console.error(err);
+        setError("Ocorreu um erro inesperado ao carregar o Plano VET.");
+      } finally {
         setLoading(false);
-        return;
       }
-
-      const currentProfile = (profileData as VetProfileRow | null) ?? null;
-      setProfile(currentProfile);
-
-      if (!currentProfile) {
-        setLoading(false);
-        return;
-      }
-
-      const { data: attemptsData, error: attemptsError } = await supabase
-        .from("user_question_attempts")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("answered_at", { ascending: false });
-
-      if (attemptsError) {
-        console.error(attemptsError);
-        setError("Não foi possível carregar suas tentativas.");
-        setLoading(false);
-        return;
-      }
-
-      const { data: weightsData, error: weightsError } = await supabase
-        .from("vet_exam_content_weights")
-        .select("*")
-        .eq("exam", currentProfile.target_exam);
-
-      if (weightsError) {
-        console.error(weightsError);
-        setError("Não foi possível carregar os pesos da prova.");
-        setLoading(false);
-        return;
-      }
-
-      const loadedQuestions = await getQuestions();
-
-      setAttempts((attemptsData as AttemptRow[]) ?? []);
-      setWeights((weightsData as WeightRow[]) ?? []);
-      setQuestions(loadedQuestions ?? []);
-      setLoading(false);
     }
 
     if (!authLoading) {
-      loadData();
+      loadPlan();
     }
   }, [user?.id, authLoading]);
 
-  const attemptedQuestionIds = useMemo(() => {
-    return new Set(attempts.map((attempt) => attempt.question_id));
-  }, [attempts]);
+  const topPriority = engine?.topPriority ?? null;
 
-  const filteredAttempts = useMemo(() => {
-    if (!profile) return [];
+  const attackItems = useMemo(() => {
+    return (engine?.attack ?? []).slice(0, 4);
+  }, [engine]);
 
-    let result = [...attempts];
+  const consolidationItems = useMemo(() => {
+    return (engine?.consolidation ?? []).slice(0, 4);
+  }, [engine]);
 
-    if (profile.focus_subject !== "todas") {
-      result = result.filter(
-        (attempt) =>
-          normalizeText(attempt.subject) === normalizeText(profile.focus_subject)
+  const maintenanceItems = useMemo(() => {
+    return (engine?.maintenance ?? []).slice(0, 4);
+  }, [engine]);
+
+  const recommendedQuestions = useMemo(() => {
+    if (!engine || !profile) return [];
+
+    const strategic = engine.strategicContents.slice(0, 8);
+
+    const result: Array<{
+      question: Question;
+      matchedContent: VetStrategicContent;
+      score: number;
+    }> = [];
+
+    for (const question of questions) {
+      if (!matchesTargetExam(question, profile.target_exam)) continue;
+
+      const matchedContent = strategic.find((content) =>
+        matchesContent(question, content.conteudo)
       );
+
+      if (!matchedContent) continue;
+
+      const recencyBonus = question.year ? Math.min(10, Math.max(0, question.year - 2015)) : 0;
+
+      const difficultyBonus =
+        normalizeText(question.difficulty) === "dificil"
+          ? 8
+          : normalizeText(question.difficulty) === "medio"
+            ? 5
+            : 2;
+
+      result.push({
+        question,
+        matchedContent,
+        score: matchedContent.priorityScore + recencyBonus + difficultyBonus,
+      });
     }
 
-    return result;
-  }, [attempts, profile]);
-
-  const recommendedContents = useMemo(() => {
-    if (!profile) return [];
-
-    const contentMap = new Map<
-      string,
-      { total: number; correct: number; wrong: number }
-    >();
-
-    for (const attempt of filteredAttempts) {
-      const conteudo = normalizeText(attempt.conteudo);
-
-      if (!conteudo) continue;
-
-      const current = contentMap.get(conteudo) ?? {
-        total: 0,
-        correct: 0,
-        wrong: 0,
-      };
-
-      current.total += 1;
-
-      if (attempt.is_correct) {
-        current.correct += 1;
-      } else {
-        current.wrong += 1;
-      }
-
-      contentMap.set(conteudo, current);
-    }
-
-    const filteredWeights = weights.filter((row) => {
-      if (profile.focus_subject === "todas") return true;
-
-      return normalizeText(row.subject) === normalizeText(profile.focus_subject);
-    });
-
-    const allContents = new Set<string>();
-
-    filteredWeights.forEach((row) => {
-      allContents.add(normalizeText(row.conteudo));
-    });
-
-    contentMap.forEach((_, conteudo) => {
-      allContents.add(conteudo);
-    });
-
-    const urgencyTimeScore = getUrgencyTimeScore(profile.months_until_exam);
-
-    return Array.from(allContents)
-      .filter(Boolean)
-      .map((conteudo) => {
-        const stats = contentMap.get(conteudo) ?? {
-          total: 0,
-          correct: 0,
-          wrong: 0,
-        };
-
-        const accuracy = stats.total ? (stats.correct / stats.total) * 100 : 0;
-
-        const matchedWeight = filteredWeights.find(
-          (row) => normalizeText(row.conteudo) === conteudo
-        );
-
-        const weight = matchedWeight?.weight ?? 3;
-        const weaknessScore = getWeaknessScore(accuracy, stats.total);
-        const wrongVolumeScore = getWrongVolumeScore(stats.wrong);
-        const noAttemptPenalty = getNoAttemptPenalty(stats.total, weight);
-
-        const score =
-          weight +
-          weaknessScore +
-          urgencyTimeScore +
-          wrongVolumeScore +
-          noAttemptPenalty;
-
-        return {
-          conteudo,
-          score,
-          block: getTrainingBlock(score),
-          hasAttempts: stats.total > 0,
-          total: stats.total,
-          correct: stats.correct,
-          wrong: stats.wrong,
-          accuracy,
-          weight,
-        } as RecommendedContent;
-      })
-      .sort(
-        (a, b) =>
-          b.score - a.score || Number(a.hasAttempts) - Number(b.hasAttempts)
-      );
-  }, [filteredAttempts, profile, weights]);
-
-  const attackContents = useMemo(
-    () =>
-      recommendedContents
-        .filter((item) => item.block === "ataque")
-        .map((item) => item.conteudo),
-    [recommendedContents]
-  );
-
-  const consolidationContents = useMemo(
-    () =>
-      recommendedContents
-        .filter((item) => item.block === "consolidacao")
-        .map((item) => item.conteudo),
-    [recommendedContents]
-  );
-
-  const maintenanceContents = useMemo(
-    () =>
-      recommendedContents
-        .filter((item) => item.block === "manutencao")
-        .map((item) => item.conteudo),
-    [recommendedContents]
-  );
-
-  function buildRecommendedQuestions(block: TrainingBlock) {
-    if (!profile) return [];
-
-    const contents =
-      block === "ataque"
-        ? attackContents
-        : block === "consolidacao"
-          ? consolidationContents
-          : maintenanceContents;
-
-    if (!contents.length) return [];
-
-    let base = [...questions];
-
-    if (profile.focus_subject !== "todas") {
-      base = base.filter(
-        (question) =>
-          normalizeText(question.subject) === normalizeText(profile.focus_subject)
-      );
-    }
-
-    base = base.filter((question) =>
-      getQuestionTopics(question).some((topic) =>
-        contents.includes(normalizeText(topic))
-      )
-    );
-
-    const sorted = [...base].sort((a, b) => {
-      const scoreA = getQuestionPriorityScore(
-        a,
-        block,
-        contents,
-        profile.target_exam,
-        attemptedQuestionIds
-      );
-
-      const scoreB = getQuestionPriorityScore(
-        b,
-        block,
-        contents,
-        profile.target_exam,
-        attemptedQuestionIds
-      );
-
-      return scoreB - scoreA;
-    });
-
-    const limit = getBlockLimit(block);
-
-    const unseen = sorted.filter(
-      (question) => !attemptedQuestionIds.has(question.id)
-    );
-
-    const seen = sorted.filter((question) =>
-      attemptedQuestionIds.has(question.id)
-    );
-
-    return [...unseen, ...seen].slice(0, limit);
-  }
-
-  const attackQuestions = useMemo(
-    () => buildRecommendedQuestions("ataque"),
-    [questions, profile, attackContents, attemptedQuestionIds]
-  );
-
-  const consolidationQuestions = useMemo(
-    () => buildRecommendedQuestions("consolidacao"),
-    [questions, profile, consolidationContents, attemptedQuestionIds]
-  );
-
-  const maintenanceQuestions = useMemo(
-    () => buildRecommendedQuestions("manutencao"),
-    [questions, profile, maintenanceContents, attemptedQuestionIds]
-  );
-
-  const questionsByBlock = {
-    ataque: attackQuestions,
-    consolidacao: consolidationQuestions,
-    manutencao: maintenanceQuestions,
-  };
-
-  const contentsByBlock = {
-    ataque: attackContents,
-    consolidacao: consolidationContents,
-    manutencao: maintenanceContents,
-  };
-
-  const visibleQuestions = questionsByBlock[selectedBlock];
-  const visibleContents = contentsByBlock[selectedBlock];
-
-  const visibleBankUrl = buildBankUrl(
-    profile?.focus_subject ?? "todas",
-    profile?.target_exam ?? "",
-    selectedBlock,
-    visibleContents
-  );
-
-  const mainPriority = recommendedContents[0] ?? null;
-  const totalAttempts = filteredAttempts.length;
-  const totalCorrect = filteredAttempts.filter((attempt) => attempt.is_correct).length;
-  const generalAccuracy = totalAttempts > 0 ? (totalCorrect / totalAttempts) * 100 : 0;
-
-  const selectedColor = getBlockColor(selectedBlock);
-  const SelectedIcon = getBlockIcon(selectedBlock);
-
-  const todayTarget = getDailyQuestionTarget(selectedBlock);
-  const estimatedTime = estimateMinutes(todayTarget, selectedBlock);
+    return result
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 6);
+  }, [engine, profile, questions]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-50">
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
+      <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-slate-200/50">
         <div className="container py-4 flex items-center gap-4">
           <Link href="/vet">
             <Button variant="ghost" size="sm">
@@ -654,7 +556,7 @@ export default function VetPlanPage() {
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Plano VET</h1>
             <p className="text-sm text-slate-500">
-              Prioridades, treino recomendado e questões em um só lugar
+              Prioridades, blocos de treino e questões recomendadas
             </p>
           </div>
         </div>
@@ -662,410 +564,418 @@ export default function VetPlanPage() {
 
       <main className="container py-8 space-y-6">
         {authLoading || loading ? (
-          <Card className="p-8">
-            <p className="text-slate-600">Carregando Plano VET...</p>
-          </Card>
-        ) : error ? (
-          <Card className="p-8 border-red-200 bg-red-50">
-            <div className="flex gap-3 items-start">
-              <AlertTriangle className="w-5 h-5 text-red-600 mt-1" />
-              <p className="text-red-700">{error}</p>
+          <Card className="p-8 bg-white">
+            <div className="flex items-center gap-3 text-slate-600">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Carregando Plano VET...
             </div>
           </Card>
+        ) : error ? (
+          <Card className="p-8 bg-red-50 border-red-200">
+            <p className="text-red-700">{error}</p>
+          </Card>
         ) : !user ? (
-          <Card className="p-8">
-            <p className="text-slate-700">Você precisa estar logado para usar o VET.</p>
+          <Card className="p-8 bg-white">
+            <p className="text-slate-700">
+              Você precisa estar logado para usar o VET.
+            </p>
           </Card>
         ) : !profile ? (
-          <Card className="p-8">
-            <p className="text-slate-700 mb-4">
-              Antes de montar seu Plano VET, você precisa configurar seu objetivo.
-            </p>
+          <Card className="p-8 bg-white border-emerald-200">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center">
+                <Target className="w-6 h-6 text-emerald-700" />
+              </div>
 
-            <Link href="/vet/objetivo">
-              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                Configurar objetivo
-              </Button>
-            </Link>
+              <div>
+                <h2 className="text-xl font-bold text-slate-900 mb-2">
+                  Configure seu objetivo primeiro
+                </h2>
+
+                <p className="text-slate-600 mb-5">
+                  O Plano VET precisa saber sua prova-alvo, tempo restante e
+                  disciplina foco. Sem isso, ele só vira uma lista bonita com
+                  zero cérebro, o que já tem demais por aí.
+                </p>
+
+                <Link href="/vet/objetivo">
+                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl">
+                    Configurar objetivo
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </Card>
         ) : (
           <>
-            <Card className="p-6 md:p-8 border-emerald-200 bg-gradient-to-r from-emerald-600 to-teal-600 text-white overflow-hidden relative">
-              <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full -mr-40 -mt-40"></div>
+            <Card className="p-6 md:p-8 border-emerald-200 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white overflow-hidden relative rounded-3xl shadow-lg">
+              <div className="absolute top-0 right-0 h-52 w-52 rounded-full bg-white/10 blur-2xl -mr-20 -mt-20" />
+              <div className="absolute bottom-0 left-0 h-52 w-52 rounded-full bg-white/10 blur-2xl -ml-24 -mb-24" />
 
-              <div className="relative z-10">
-                <p className="text-sm uppercase tracking-wide text-emerald-100 mb-2">
-                  Central estratégica
-                </p>
-
-                <h2 className="text-3xl font-bold mb-3">Seu Plano VET</h2>
-
-                <p className="text-emerald-50 leading-relaxed max-w-3xl">
-                  O VET analisou sua prova-alvo, seus erros, conteúdos sem treino e pesos da prova
-                  para montar uma sequência prática: prioridade, treino e questões.
-                </p>
-
-                <div className="grid md:grid-cols-4 gap-4 mt-8">
-                  <div className="rounded-2xl bg-white/15 border border-white/20 p-4">
-                    <p className="text-sm text-emerald-100 mb-1">Prova-alvo</p>
-                    <p className="text-xl font-bold">{profile.target_exam}</p>
+              <div className="relative grid lg:grid-cols-[1.3fr_0.7fr] gap-6 items-center">
+                <div>
+                  <div className="inline-flex items-center gap-2 rounded-full bg-white/15 border border-white/20 px-3 py-1 text-xs font-bold text-emerald-50 mb-4">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Plano estratégico
                   </div>
 
-                  <div className="rounded-2xl bg-white/15 border border-white/20 p-4">
-                    <p className="text-sm text-emerald-100 mb-1">Foco</p>
-                    <p className="text-xl font-bold">
-                      {formatSubject(profile.focus_subject)}
-                    </p>
-                  </div>
+                  <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+                    Plano VET para {profile.target_exam}
+                  </h2>
 
-                  <div className="rounded-2xl bg-white/15 border border-white/20 p-4">
-                    <p className="text-sm text-emerald-100 mb-1">Tempo até a prova</p>
-                    <p className="text-xl font-bold">
-                      {profile.months_until_exam} meses
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl bg-white/15 border border-white/20 p-4">
-                    <p className="text-sm text-emerald-100 mb-1">Taxa geral</p>
-                    <p className="text-xl font-bold">
-                      {totalAttempts > 0 ? `${generalAccuracy.toFixed(0)}%` : "Sem dados"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            <div className="grid xl:grid-cols-3 gap-4">
-              {(["ataque", "consolidacao", "manutencao"] as TrainingBlock[]).map(
-                (block) => {
-                  const Icon = getBlockIcon(block);
-                  const color = getBlockColor(block);
-                  const contents = recommendedContents.filter(
-                    (item) => item.block === block
-                  );
-                  const topContents = contents.slice(0, 4);
-
-                  return (
-                    <Card
-                      key={block}
-                      className={`p-5 border ${color.card}`}
-                    >
-                      <div className="flex items-start justify-between gap-4 mb-5">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`w-11 h-11 rounded-2xl flex items-center justify-center ${color.icon}`}
-                          >
-                            <Icon className="w-5 h-5" />
-                          </div>
-
-                          <div>
-                            <h3 className="text-xl font-bold text-slate-900">
-                              {getBlockLabel(block)}
-                            </h3>
-                            <p className="text-sm text-slate-600">
-                              {contents.length} conteúdo(s)
-                            </p>
-                          </div>
-                        </div>
-
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-bold ${color.badge}`}
-                        >
-                          {questionsByBlock[block].length} questões
-                        </span>
-                      </div>
-
-                      <p className="text-sm text-slate-600 mb-4">
-                        {getBlockDescription(block)}
-                      </p>
-
-                      {topContents.length > 0 ? (
-                        <div className="space-y-2 mb-5">
-                          {topContents.map((item) => (
-                            <div
-                              key={item.conteudo}
-                              className="rounded-xl bg-white border border-white/80 p-3"
-                            >
-                              <div className="flex justify-between gap-3 mb-1">
-                                <p className="font-bold text-slate-900">
-                                  {item.conteudo}
-                                </p>
-                                <p className={`text-sm font-bold ${color.text}`}>
-                                  {item.score} pts
-                                </p>
-                              </div>
-
-                              <p className="text-xs text-slate-500">
-                                {item.total > 0
-                                  ? `${item.accuracy.toFixed(0)}% de acerto • ${item.wrong} erro(s)`
-                                  : "Ainda sem tentativas"}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-slate-500 mb-5">
-                          Nenhum conteúdo classificado neste bloco por enquanto.
-                        </p>
-                      )}
-
-                      <Button
-                        onClick={() => setSelectedBlock(block)}
-                        className={`w-full rounded-2xl ${color.button}`}
-                      >
-                        Ver treino de {getBlockLabel(block).toLowerCase()}
-                      </Button>
-                    </Card>
-                  );
-                }
-              )}
-            </div>
-
-            <div className="grid lg:grid-cols-3 gap-4">
-              <Card className="p-6 bg-white border-slate-200 lg:col-span-2">
-                <div className="flex items-start justify-between gap-4 flex-wrap mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center">
-                      <Target className="w-5 h-5" />
-                    </div>
-
-                    <div>
-                      <h3 className="text-xl font-bold text-slate-900">
-                        Prioridade principal
-                      </h3>
-                      <p className="text-sm text-slate-500">
-                        O conteúdo mais urgente do seu Plano VET
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {mainPriority ? (
-                  <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-                      <div>
-                        <p className="text-sm text-slate-500 mb-1">Conteúdo</p>
-                        <h4 className="text-3xl font-bold text-slate-900">
-                          {mainPriority.conteudo}
-                        </h4>
-                      </div>
-
-                      <span className="rounded-full bg-slate-900 text-white px-4 py-2 text-sm font-bold self-start">
-                        {getBlockLabel(mainPriority.block)}
-                      </span>
-                    </div>
-
-                    <div className="grid md:grid-cols-4 gap-3">
-                      <div className="rounded-2xl bg-white border border-slate-200 p-4">
-                        <p className="text-sm text-slate-500 mb-1">Score VET</p>
-                        <p className="text-2xl font-bold text-slate-900">
-                          {mainPriority.score}
-                        </p>
-                      </div>
-
-                      <div className="rounded-2xl bg-white border border-slate-200 p-4">
-                        <p className="text-sm text-slate-500 mb-1">Peso na prova</p>
-                        <p className="text-2xl font-bold text-slate-900">
-                          {mainPriority.weight}
-                        </p>
-                      </div>
-
-                      <div className="rounded-2xl bg-white border border-slate-200 p-4">
-                        <p className="text-sm text-slate-500 mb-1">Taxa</p>
-                        <p className="text-2xl font-bold text-slate-900">
-                          {mainPriority.total > 0
-                            ? `${mainPriority.accuracy.toFixed(0)}%`
-                            : "—"}
-                        </p>
-                      </div>
-
-                      <div className="rounded-2xl bg-white border border-slate-200 p-4">
-                        <p className="text-sm text-slate-500 mb-1">Tentativas</p>
-                        <p className="text-2xl font-bold text-slate-900">
-                          {mainPriority.total}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-slate-500">
-                    Ainda não há dados suficientes para montar uma prioridade.
+                  <p className="text-emerald-50 leading-relaxed max-w-3xl">
+                    Este plano usa o novo motor do VET: histórico dos últimos
+                    anos da prova, seu desempenho, peso dos conteúdos e média
+                    coletiva dos alunos para montar uma ordem de execução.
                   </p>
-                )}
-              </Card>
 
-              <Card className="p-6 bg-white border-slate-200">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-11 h-11 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center">
-                    <Clock3 className="w-5 h-5" />
-                  </div>
+                  <div className="flex flex-wrap gap-3 mt-7">
+                    {topPriority ? (
+                      <Link href={buildBankUrl(profile, topPriority)}>
+                        <Button className="bg-white text-emerald-700 hover:bg-emerald-50 rounded-2xl px-6 py-5 font-bold">
+                          Começar por {prettifyVetText(topPriority.conteudo)}
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                      </Link>
+                    ) : null}
 
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-900">
-                      Treino de hoje
-                    </h3>
-                    <p className="text-sm text-slate-500">
-                      Recomendação prática
-                    </p>
+                    <Link href="/vet/diagnostico">
+                      <Button
+                        variant="outline"
+                        className="rounded-2xl px-6 py-5 font-bold border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+                      >
+                        Ver diagnóstico
+                      </Button>
+                    </Link>
                   </div>
                 </div>
 
-                <div className={`rounded-3xl border p-5 ${selectedColor.card}`}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div
-                      className={`w-10 h-10 rounded-2xl flex items-center justify-center ${selectedColor.icon}`}
-                    >
-                      <SelectedIcon className="w-5 h-5" />
-                    </div>
-
-                    <div>
-                      <p className="text-sm text-slate-500">Bloco selecionado</p>
-                      <p className="font-bold text-slate-900">
-                        {getBlockLabel(selectedBlock)}
-                      </p>
-                    </div>
-                  </div>
+                <div className="rounded-3xl bg-white/12 border border-white/20 p-5 backdrop-blur-sm">
+                  <p className="text-sm uppercase tracking-wide text-emerald-100 font-bold mb-4">
+                    Configuração
+                  </p>
 
                   <div className="space-y-3">
-                    <div className="rounded-2xl bg-white border border-white/80 p-4">
-                      <p className="text-sm text-slate-500 mb-1">Meta</p>
-                      <p className="text-2xl font-bold text-slate-900">
-                        {todayTarget} questões
+                    <div className="rounded-2xl bg-white/12 border border-white/15 p-4">
+                      <p className="text-xs text-emerald-100 mb-1">
+                        Prova-alvo
+                      </p>
+                      <p className="font-bold">{profile.target_exam}</p>
+                    </div>
+
+                    <div className="rounded-2xl bg-white/12 border border-white/15 p-4">
+                      <p className="text-xs text-emerald-100 mb-1">
+                        Tempo restante
+                      </p>
+                      <p className="font-bold">
+                        {profile.months_until_exam} mês(es)
                       </p>
                     </div>
 
-                    <div className="rounded-2xl bg-white border border-white/80 p-4">
-                      <p className="text-sm text-slate-500 mb-1">Tempo estimado</p>
-                      <p className="text-2xl font-bold text-slate-900">
-                        {formatMinutes(estimatedTime)}
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl bg-white border border-white/80 p-4">
-                      <p className="text-sm text-slate-500 mb-1">Questões disponíveis</p>
-                      <p className="text-2xl font-bold text-slate-900">
-                        {visibleQuestions.length}
+                    <div className="rounded-2xl bg-white/12 border border-white/15 p-4">
+                      <p className="text-xs text-emerald-100 mb-1">Foco</p>
+                      <p className="font-bold">
+                        {prettifyVetText(profile.focus_subject)}
                       </p>
                     </div>
                   </div>
                 </div>
-              </Card>
-            </div>
+              </div>
+            </Card>
 
-            <Card className="p-6 bg-white border-slate-200">
-              <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5 mb-6">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-11 h-11 rounded-2xl flex items-center justify-center ${selectedColor.icon}`}
-                  >
-                    <SelectedIcon className="w-5 h-5" />
+            <section className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+              <PlanStatCard
+                title="Aproveitamento"
+                value={engine ? formatVetPercent(engine.generalAccuracy) : "0%"}
+                subtitle={`${engine?.totalCorrect ?? 0} acertos em ${
+                  engine?.totalAttempts ?? 0
+                } tentativa(s)`}
+                icon={BarChart3}
+              />
+
+              <PlanStatCard
+                title="Em ataque"
+                value={`${engine?.attack.length ?? 0}`}
+                subtitle="Conteúdos de maior urgência"
+                icon={Flame}
+                className="border-red-200 bg-white"
+                iconClassName="bg-red-100 text-red-700"
+              />
+
+              <PlanStatCard
+                title="Em consolidação"
+                value={`${engine?.consolidation.length ?? 0}`}
+                subtitle="Conteúdos instáveis"
+                icon={Layers3}
+                className="border-amber-200 bg-white"
+                iconClassName="bg-amber-100 text-amber-700"
+              />
+
+              <PlanStatCard
+                title="Em manutenção"
+                value={`${engine?.maintenance.length ?? 0}`}
+                subtitle="Conteúdos mais controlados"
+                icon={ShieldCheck}
+                className="border-emerald-200 bg-white"
+                iconClassName="bg-emerald-100 text-emerald-700"
+              />
+            </section>
+
+            {topPriority ? (
+              <Card className="p-6 bg-white border-emerald-200 rounded-3xl">
+                <div className="grid lg:grid-cols-[1fr_0.8fr] gap-6 items-start">
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-11 h-11 rounded-2xl bg-emerald-100 flex items-center justify-center">
+                        <BrainCircuit className="w-5 h-5 text-emerald-700" />
+                      </div>
+
+                      <div>
+                        <h2 className="text-xl font-bold text-slate-900">
+                          Próxima ação recomendada
+                        </h2>
+                        <p className="text-sm text-slate-500">
+                          O primeiro conteúdo do plano não foi escolhido por
+                          simpatia, infelizmente.
+                        </p>
+                      </div>
+                    </div>
+
+                    <h3 className="text-3xl font-bold text-slate-900 mb-3">
+                      {prettifyVetText(topPriority.conteudo)}
+                    </h3>
+
+                    <p className="text-slate-600 leading-relaxed mb-5">
+                      Esse conteúdo lidera o Plano VET porque combina score{" "}
+                      {Math.round(topPriority.priorityScore)}, peso{" "}
+                      {topPriority.weight}, histórico da prova, seu desempenho e
+                      comparação com a média coletiva.
+                    </p>
+
+                    <div className="flex flex-wrap gap-3">
+                      <Link href={buildBankUrl(profile, topPriority)}>
+                        <Button className="rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white">
+                          Treinar agora
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                      </Link>
+
+                      <Link href="/vet/diagnostico">
+                        <Button variant="outline" className="rounded-2xl">
+                          Ver explicação completa
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                    <p className="text-sm font-bold text-slate-900 mb-4">
+                      Resumo do motivo
+                    </p>
+
+                    <ul className="space-y-3">
+                      {topPriority.explanation.slice(0, 4).map((line, index) => (
+                        <li
+                          key={index}
+                          className="flex items-start gap-2 text-sm text-slate-700"
+                        >
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                          <span>{line}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            ) : null}
+
+            <section className="grid xl:grid-cols-3 gap-5">
+              <Card className="p-5 bg-white border-red-200 rounded-3xl">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-11 h-11 rounded-2xl bg-red-100 text-red-700 flex items-center justify-center">
+                    <Flame className="w-5 h-5" />
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900">
-                      Questões recomendadas de {getBlockLabel(selectedBlock).toLowerCase()}
-                    </h3>
+                    <h2 className="text-xl font-bold text-slate-900">Ataque</h2>
                     <p className="text-sm text-slate-500">
-                      O VET escolheu questões reais com base nas prioridades do bloco.
+                      Prioridade máxima
                     </p>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-3">
-                  <Link href={visibleBankUrl}>
-                    <Button variant="outline" className="rounded-2xl">
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Abrir no banco
-                    </Button>
-                  </Link>
-
-                  <Link href="/vet/simulado">
-                    <Button className="rounded-2xl bg-slate-900 hover:bg-slate-800 text-white">
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Ir para simulado
-                    </Button>
-                  </Link>
+                <div className="space-y-4">
+                  {attackItems.length > 0 ? (
+                    attackItems.map((content, index) => (
+                      <ContentPlanCard
+                        key={`${content.subject}-${content.conteudo}`}
+                        content={content}
+                        profile={profile}
+                        rank={index + 1}
+                      />
+                    ))
+                  ) : (
+                    <p className="text-sm text-slate-500">
+                      Nenhum conteúdo em ataque agora.
+                    </p>
+                  )}
                 </div>
-              </div>
+              </Card>
 
-              {visibleContents.length > 0 ? (
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {visibleContents.slice(0, 10).map((content) => (
-                    <span
-                      key={content}
-                      className="rounded-full bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1 text-sm font-semibold"
-                    >
-                      {content}
-                    </span>
-                  ))}
-                </div>
-              ) : null}
+              <Card className="p-5 bg-white border-amber-200 rounded-3xl">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-11 h-11 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                    <Layers3 className="w-5 h-5" />
+                  </div>
 
-              {visibleQuestions.length > 0 ? (
-                <InteractiveQuiz
-                  key={`${selectedBlock}-${visibleQuestions
-                    .map((question) => question.id)
-                    .join("-")}`}
-                  questions={visibleQuestions}
-                />
-              ) : (
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-8 text-center">
-                  <BookOpen className="w-8 h-8 text-slate-400 mx-auto mb-3" />
-                  <h4 className="text-lg font-bold text-slate-900 mb-2">
-                    Sem questões suficientes neste bloco
-                  </h4>
-                  <p className="text-slate-500">
-                    Cadastre mais questões ou ajuste os pesos dos conteúdos no ADM do VET.
-                  </p>
-                </div>
-              )}
-            </Card>
-
-            <Card className="p-6 bg-white border-slate-200">
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-11 h-11 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                  <CheckCircle2 className="w-5 h-5" />
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">
+                      Consolidação
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                      Estabilizar desempenho
+                    </p>
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900">
-                    Como usar este plano
-                  </h3>
-                  <p className="text-sm text-slate-500">
-                    A ordem ideal para estudar sem ficar rodando em círculo.
-                  </p>
+                <div className="space-y-4">
+                  {consolidationItems.length > 0 ? (
+                    consolidationItems.map((content, index) => (
+                      <ContentPlanCard
+                        key={`${content.subject}-${content.conteudo}`}
+                        content={content}
+                        profile={profile}
+                        rank={index + 1}
+                      />
+                    ))
+                  ) : (
+                    <p className="text-sm text-slate-500">
+                      Nenhum conteúdo em consolidação agora.
+                    </p>
+                  )}
                 </div>
-              </div>
+              </Card>
 
-              <div className="grid md:grid-cols-3 gap-4">
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="font-bold text-slate-900 mb-1">
-                    1. Veja as prioridades
-                  </p>
-                  <p className="text-sm text-slate-600">
-                    Comece olhando os conteúdos em ataque, consolidação e manutenção.
-                  </p>
+              <Card className="p-5 bg-white border-emerald-200 rounded-3xl">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-11 h-11 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">
+                      Manutenção
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                      Não deixar enferrujar
+                    </p>
+                  </div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="font-bold text-slate-900 mb-1">
-                    2. Faça o treino do bloco
-                  </p>
-                  <p className="text-sm text-slate-600">
-                    Escolha o bloco mais importante e resolva as questões recomendadas.
-                  </p>
+                <div className="space-y-4">
+                  {maintenanceItems.length > 0 ? (
+                    maintenanceItems.map((content, index) => (
+                      <ContentPlanCard
+                        key={`${content.subject}-${content.conteudo}`}
+                        content={content}
+                        profile={profile}
+                        rank={index + 1}
+                      />
+                    ))
+                  ) : (
+                    <p className="text-sm text-slate-500">
+                      Nenhum conteúdo em manutenção agora.
+                    </p>
+                  )}
+                </div>
+              </Card>
+            </section>
+
+            <section className="grid xl:grid-cols-[1.1fr_0.9fr] gap-6">
+              <Card className="p-6 bg-white border-slate-200 rounded-3xl">
+                <div className="flex items-center gap-2 mb-5">
+                  <ListChecks className="w-5 h-5 text-slate-700" />
+                  <h2 className="text-xl font-bold text-slate-900">
+                    Questões recomendadas
+                  </h2>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="font-bold text-slate-900 mb-1">
-                    3. Use o simulado
-                  </p>
-                  <p className="text-sm text-slate-600">
-                    Depois do treino, faça um simulado para medir se a fraqueza diminuiu.
-                  </p>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {recommendedQuestions.length > 0 ? (
+                    recommendedQuestions.map((item) => (
+                      <RecommendedQuestionCard
+                        key={item.question.id}
+                        question={item.question}
+                        matchedContent={item.matchedContent}
+                      />
+                    ))
+                  ) : (
+                    <p className="text-slate-500">
+                      Nenhuma questão recomendada encontrada para esse recorte.
+                    </p>
+                  )}
                 </div>
-              </div>
-            </Card>
+              </Card>
+
+              <Card className="p-6 bg-white border-slate-200 rounded-3xl">
+                <div className="flex items-center gap-2 mb-5">
+                  <History className="w-5 h-5 text-slate-700" />
+                  <h2 className="text-xl font-bold text-slate-900">
+                    Como o plano foi montado
+                  </h2>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="font-semibold text-slate-900">
+                      Histórico da prova
+                    </p>
+                    <p className="text-sm text-slate-600 mt-1">
+                      Conteúdos recorrentes, recentes ou em tendência de alta
+                      ganham peso no plano.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="font-semibold text-slate-900">
+                      Seu desempenho
+                    </p>
+                    <p className="text-sm text-slate-600 mt-1">
+                      Acertos, erros, volume de tentativas e ausência de treino
+                      entram no score.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="font-semibold text-slate-900">
+                      Média coletiva
+                    </p>
+                    <p className="text-sm text-slate-600 mt-1">
+                      O VET compara seu aproveitamento com a média agregada dos
+                      outros alunos.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="font-semibold text-slate-900">
+                      Urgência temporal
+                    </p>
+                    <p className="text-sm text-slate-600 mt-1">
+                      Quanto menos tempo até a prova, mais o plano reduz a
+                      tolerância para estudo aleatório. Cruel? Sim. Útil? Também.
+                    </p>
+                  </div>
+                </div>
+
+                <Link href="/vet/simulado">
+                  <Button className="w-full mt-5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white">
+                    Gerar simulado VET
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+              </Card>
+            </section>
           </>
         )}
       </main>
