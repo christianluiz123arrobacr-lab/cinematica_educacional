@@ -16,7 +16,6 @@ import RankingPage from "./pages/RankingPage";
 import VetPage from "./pages/VetPage";
 import VetPlanPage from "./pages/VetPlanPage";
 import VetObjectivePage from "./pages/VetObjectivePage";
-import VetPrioritiesPage from "./pages/VetPrioritiesPage";
 import VetLevelPage from "./pages/VetLevelPage";
 import VetMockPage from "./pages/VetMockPage";
 import VetMockResultPage from "./pages/VetMockResultPage";
@@ -217,14 +216,14 @@ function PrivateRouter() {
 
         <Route path="/vet" component={VetPage} />
         <Route path="/vet/objetivo" component={VetObjectivePage} />
-        <Route path="/vet/prioridades" component={VetPrioritiesPage} />
+        <Route path="/vet/diagnostico" component={VetDiagnosisPage} />
+        <Route path="/vet/nivelamento" component={VetLevelPage} />
         <Route path="/vet/plano" component={VetPlanPage} />
+        <Route path="/vet/prioridades" component={VetPlanPage} />
         <Route path="/vet/treino" component={VetTrainingPage} />
         <Route path="/vet/questoes" component={VetQuestionsPage} />
-        <Route path="/vet/nivelamento" component={VetLevelPage} />
         <Route path="/vet/simulado" component={VetMockPage} />
         <Route path="/vet/simulado/resultado" component={VetMockResultPage} />
-        <Route path="/vet/diagnostico" component={VetDiagnosisPage} />
 
         <Route path="/ondulatoria" component={OndulatóriaHome} />
         <Route path="/ondulatoria/topic/conceitos" component={OndulatóriaTopicConceitos} />
