@@ -8,6 +8,7 @@ import {
   BrainCircuit,
   ScrollText,
   ShieldCheck,
+  MessageSquareWarning,
 } from "lucide-react";
 
 const adminItems = [
@@ -15,6 +16,7 @@ const adminItems = [
   { href: "/admin/usuarios", label: "Usuários", icon: Users },
   { href: "/admin/questoes", label: "Questões", icon: FileText },
   { href: "/admin/resolucoes", label: "Resoluções", icon: Blocks },
+  { href: "/admin/reports", label: "Erros reportados", icon: MessageSquareWarning },
   { href: "/admin/uploads", label: "Uploads", icon: Image },
   { href: "/admin/vet", label: "VET", icon: BrainCircuit },
   { href: "/admin/logs", label: "Logs", icon: ScrollText },
@@ -30,6 +32,7 @@ export default function AdminSidebar() {
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-700 text-white flex items-center justify-center">
             <ShieldCheck className="w-5 h-5" />
           </div>
+
           <div>
             <h2 className="text-lg font-bold text-slate-900">Painel ADM</h2>
             <p className="text-xs text-slate-500">Controle administrativo</p>
