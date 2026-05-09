@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import { Button } from "@/components/ui/button";
 import "katex/dist/katex.min.css";
 import { MathFormula } from "./MathFormula";
+import { Button } from "@/components/ui/button";
 import {
   CheckCircle,
   XCircle,
@@ -16,6 +16,9 @@ import {
   BookOpen,
   Eye,
   Trophy,
+  MessageSquareWarning,
+  Send,
+  Loader2,
 } from "lucide-react";
 import type { Question } from "@/types/question";
 import { supabase } from "@/lib/supabase";
@@ -41,6 +44,16 @@ type ResolutionMetaRow = {
   questao_id: string;
   autor_nome?: string | null;
 };
+
+const REPORT_TYPES = [
+  { value: "enunciado", label: "Enunciado com erro" },
+  { value: "alternativa", label: "Alternativa com erro" },
+  { value: "gabarito", label: "Gabarito incorreto" },
+  { value: "resolucao", label: "Resolução confusa" },
+  { value: "imagem", label: "Imagem quebrada" },
+  { value: "latex", label: "Formatação/LaTeX bugado" },
+  { value: "outro", label: "Outro" },
+];
 
 function getQuestionTopics(question?: Question | null) {
   if (!question) return [];
@@ -169,11 +182,19 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answersByQuestion, setAnswersByQuestion] = useState<Record<number, string>>({});
-  const [showExplanationByQuestion, setShowExplanationByQuestion] = useState<Record<number, boolean>>({});
+  const [showExplanationByQuestion, setShowExplanationByQuestion] =
+    useState<Record<number, boolean>>({});
   const [questionStartedAt, setQuestionStartedAt] = useState<number>(Date.now());
   const [hasSentCompletion, setHasSentCompletion] = useState(false);
   const [resolutionAuthorsByQuestionId, setResolutionAuthorsByQuestionId] =
     useState<Record<string, string>>({});
+
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportType, setReportType] = useState("enunciado");
+  const [reportComment, setReportComment] = useState("");
+  const [reportSending, setReportSending] = useState(false);
+  const [reportSuccess, setReportSuccess] = useState("");
+  const [reportError, setReportError] = useState("");
 
   const question = questions[currentQuestion] ?? null;
 
@@ -267,6 +288,13 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
 
   useEffect(() => {
     setQuestionStartedAt(Date.now());
+
+    setReportOpen(false);
+    setReportType("enunciado");
+    setReportComment("");
+    setReportSuccess("");
+    setReportError("");
+    setReportSending(false);
   }, [currentQuestion, questions]);
 
   useEffect(() => {
@@ -383,6 +411,56 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
     await saveAttempt(optionId);
   };
 
+  const handleSubmitReport = async () => {
+    if (!question) return;
+
+    setReportError("");
+    setReportSuccess("");
+
+    if (!user?.id) {
+      setReportError("Você precisa estar logado para reportar um erro.");
+      return;
+    }
+
+    if (!reportType.trim()) {
+      setReportError("Selecione o tipo do problema.");
+      return;
+    }
+
+    try {
+      setReportSending(true);
+
+      const { error } = await supabase.from("question_reports").insert({
+        question_id: question.id,
+        user_id: user.id,
+        report_type: reportType,
+        comment: reportComment.trim() || null,
+        status: "pendente",
+      });
+
+      if (error) {
+        console.error("Erro ao enviar report:", error);
+
+        setReportError(
+          error.message
+            ? `Não foi possível enviar o report: ${error.message}`
+            : "Não foi possível enviar o report."
+        );
+
+        return;
+      }
+
+      setReportSuccess("Erro reportado com sucesso. Obrigado pelo aviso.");
+      setReportComment("");
+      setReportType("enunciado");
+    } catch (error) {
+      console.error("Erro inesperado ao enviar report:", error);
+      setReportError("Ocorreu um erro inesperado ao enviar o report.");
+    } finally {
+      setReportSending(false);
+    }
+  };
+
   const handleNext = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
@@ -401,6 +479,11 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
     setShowExplanationByQuestion({});
     setQuestionStartedAt(Date.now());
     setHasSentCompletion(false);
+    setReportOpen(false);
+    setReportType("enunciado");
+    setReportComment("");
+    setReportSuccess("");
+    setReportError("");
   };
 
   if (!questions.length) {
@@ -706,14 +789,134 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
           </div>
         ) : null}
 
+        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 mb-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center shrink-0">
+                <MessageSquareWarning className="w-5 h-5 text-amber-700" />
+              </div>
+
+              <div>
+                <p className="font-bold text-slate-900">Encontrou algum erro?</p>
+                <p className="text-sm text-slate-500">
+                  Avise o ADM sobre problema no enunciado, gabarito, alternativa, imagem ou resolução.
+                </p>
+              </div>
+            </div>
+
+            <Button
+              variant="outline"
+              onClick={() => {
+                setReportOpen((prev) => !prev);
+                setReportSuccess("");
+                setReportError("");
+              }}
+              className="rounded-2xl"
+            >
+              <MessageSquareWarning className="w-4 h-4 mr-2" />
+              Reportar erro
+            </Button>
+          </div>
+
+          {reportOpen ? (
+            <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4">
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Tipo do problema
+                  </label>
+
+                  <select
+                    value={reportType}
+                    onChange={(event) => setReportType(event.target.value)}
+                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  >
+                    {REPORT_TYPES.map((type) => (
+                      <option key={type.value} value={type.value}>
+                        {type.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Questão
+                  </label>
+
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
+                    {question.codigo || question.id}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Comentário
+                </label>
+
+                <textarea
+                  value={reportComment}
+                  onChange={(event) => setReportComment(event.target.value)}
+                  placeholder="Explique o que está errado. Ex.: gabarito deveria ser B, imagem não aparece, resolução pulou uma etapa..."
+                  rows={4}
+                  className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                />
+              </div>
+
+              {reportError ? (
+                <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                  {reportError}
+                </div>
+              ) : null}
+
+              {reportSuccess ? (
+                <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+                  {reportSuccess}
+                </div>
+              ) : null}
+
+              <div className="flex flex-col sm:flex-row gap-3 justify-end">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setReportOpen(false);
+                    setReportError("");
+                    setReportSuccess("");
+                  }}
+                  className="rounded-2xl"
+                >
+                  Cancelar
+                </Button>
+
+                <Button
+                  onClick={handleSubmitReport}
+                  disabled={reportSending}
+                  className="rounded-2xl bg-amber-600 hover:bg-amber-700 text-white"
+                >
+                  {reportSending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2" />
+                      Enviar report
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          ) : null}
+        </div>
+
         {isQuizComplete ? (
           <div className="rounded-3xl border border-violet-200 bg-violet-50 p-5 mb-6">
             <div className="flex items-center gap-3">
               <Trophy className="w-6 h-6 text-violet-600" />
               <div>
-                <p className="font-bold text-slate-900">
-                  Treino concluído
-                </p>
+                <p className="font-bold text-slate-900">Treino concluído</p>
                 <p className="text-sm text-slate-600">
                   Você acertou {score} de {questions.length} questões.
                 </p>
