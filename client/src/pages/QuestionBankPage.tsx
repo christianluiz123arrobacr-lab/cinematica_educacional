@@ -277,7 +277,7 @@ function MultiSelectDropdown({
 
   return (
     <div ref={wrapperRef} className="relative">
-      <label className="block text-sm font-semibold text-slate-700 mb-2">
+      <label className="block text-xs font-semibold text-slate-600 mb-1.5">
         <span className="inline-flex items-center gap-2">
           {Icon ? <Icon className="w-4 h-4 text-slate-500" /> : null}
           {index ? `${index}. ${title}` : title}
@@ -287,7 +287,7 @@ function MultiSelectDropdown({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-left text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 flex items-center justify-between"
+        className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-left text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 flex items-center justify-between"
       >
         <span className="truncate">
           {getMultiSelectLabel(selected, placeholder, formatter)}
@@ -532,32 +532,37 @@ export default function QuestionBankPage() {
   }, [questionsForDifficulties]);
 
   useEffect(() => {
+    if (!questions.length) return;
     setSelectedYears((prev) => keepOnlyAvailableSelected(prev, availableYears));
-  }, [availableYears]);
+  }, [availableYears, questions.length]);
 
   useEffect(() => {
+    if (!questions.length) return;
     setSelectedSubjects((prev) =>
       keepOnlyAvailableSelected(prev, availableSubjects)
     );
-  }, [availableSubjects]);
+  }, [availableSubjects, questions.length]);
 
   useEffect(() => {
+    if (!questions.length) return;
     setSelectedTopics((prev) =>
       keepOnlyAvailableSelected(prev, availableTopics)
     );
-  }, [availableTopics]);
+  }, [availableTopics, questions.length]);
 
   useEffect(() => {
+    if (!questions.length) return;
     setSelectedSubtopics((prev) =>
       keepOnlyAvailableSelected(prev, availableSubtopics)
     );
-  }, [availableSubtopics]);
+  }, [availableSubtopics, questions.length]);
 
   useEffect(() => {
+    if (!questions.length) return;
     setSelectedDifficulties((prev) =>
       keepOnlyAvailableSelected(prev, availableDifficulties)
     );
-  }, [availableDifficulties]);
+  }, [availableDifficulties, questions.length]);
 
   const totalSubjects = useMemo(
     () => new Set(questions.map((q) => q.subject).filter(Boolean)).size,
@@ -1064,6 +1069,155 @@ export default function QuestionBankPage() {
                 </div>
               </Card>
             </div>
+
+            <Card className="p-4 bg-white border-slate-200 shadow-sm">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center">
+                    <Filter className="w-4 h-4 text-violet-600" />
+                  </div>
+
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900">
+                      Filtros
+                    </h3>
+
+                    <p className="text-xs text-slate-500">
+                      Busque por código, palavra-chave ou refine pela ordem estratégica.
+                    </p>
+                  </div>
+                </div>
+
+                <Button
+                  variant="outline"
+                  onClick={clearAllFilters}
+                  className="rounded-xl h-9 px-4 text-sm"
+                >
+                  Limpar filtros
+                </Button>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                  Buscar questão
+                </label>
+
+                <div className="relative">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+
+                  <input
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    placeholder="Código, enunciado, banca, conteúdo ou assunto..."
+                    className="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3 py-2.5 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
+                <MultiSelectDropdown
+                  title="Instituição"
+                  index={1}
+                  items={availableInstitutions}
+                  selected={selectedInstitutions}
+                  onToggle={(value) =>
+                    setSelectedInstitutions((prev) => toggleValue(prev, value))
+                  }
+                  placeholder="Todas"
+                  emptyMessage="Nenhuma instituição disponível."
+                  icon={Building2}
+                />
+
+                <MultiSelectDropdown
+                  title="Ano"
+                  index={2}
+                  items={availableYears}
+                  selected={selectedYears}
+                  onToggle={(value) =>
+                    setSelectedYears((prev) => toggleValue(prev, value))
+                  }
+                  placeholder="Todos"
+                  emptyMessage="Nenhum ano disponível."
+                  icon={CalendarDays}
+                />
+
+                <MultiSelectDropdown
+                  title="Disciplina"
+                  index={3}
+                  items={availableSubjects}
+                  selected={selectedSubjects}
+                  onToggle={(value) =>
+                    setSelectedSubjects((prev) => toggleValue(prev, value))
+                  }
+                  placeholder="Todas"
+                  emptyMessage="Nenhuma disciplina disponível."
+                  formatter={formatSubjectLabel}
+                  icon={GraduationCap}
+                />
+
+                <MultiSelectDropdown
+                  title="Conteúdo"
+                  index={4}
+                  items={availableTopics}
+                  selected={selectedTopics}
+                  onToggle={(value) =>
+                    setSelectedTopics((prev) => toggleValue(prev, value))
+                  }
+                  placeholder="Todos"
+                  emptyMessage="Nenhum conteúdo disponível."
+                  icon={FolderOpen}
+                />
+
+                <MultiSelectDropdown
+                  title="Assunto"
+                  index={5}
+                  items={availableSubtopics}
+                  selected={selectedSubtopics}
+                  onToggle={(value) =>
+                    setSelectedSubtopics((prev) => toggleValue(prev, value))
+                  }
+                  placeholder="Todos"
+                  emptyMessage="Nenhum assunto disponível."
+                  icon={Tags}
+                />
+
+                <MultiSelectDropdown
+                  title="Dificuldade"
+                  index={6}
+                  items={availableDifficulties}
+                  selected={selectedDifficulties}
+                  onToggle={(value) =>
+                    setSelectedDifficulties((prev) => toggleValue(prev, value))
+                  }
+                  placeholder="Todas"
+                  emptyMessage="Nenhuma dificuldade disponível."
+                  formatter={formatDifficultyLabel}
+                  icon={Gauge}
+                />
+              </div>
+
+              {activeFilterChips.length > 0 ? (
+                <div className="mt-4 border-t border-slate-100 pt-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <ListFilter className="w-4 h-4 text-slate-500" />
+
+                    <p className="text-xs font-semibold text-slate-700">
+                      Filtros ativos
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {activeFilterChips.map((chip) => (
+                      <ActiveFilterChip
+                        key={chip.key}
+                        label={chip.label}
+                        onRemove={chip.onRemove}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </Card>
           </div>
 
           <Card className="p-5 bg-white border-slate-200 shadow-sm xl:sticky xl:top-24">
@@ -1198,157 +1352,6 @@ export default function QuestionBankPage() {
                 })}
               </div>
             </div>
-          </Card>
-        </section>
-
-        <section>
-          <Card className="p-6 bg-white border-slate-200 shadow-sm">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-violet-100 flex items-center justify-center">
-                  <Filter className="w-5 h-5 text-violet-600" />
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900">
-                    Filtros
-                  </h3>
-
-                  <p className="text-sm text-slate-500">
-                    Busque por código, palavra-chave ou use a ordem estratégica.
-                  </p>
-                </div>
-              </div>
-
-              <Button
-                variant="outline"
-                onClick={clearAllFilters}
-                className="rounded-xl"
-              >
-                Limpar filtros
-              </Button>
-            </div>
-
-            <div className="mb-5">
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Buscar questão
-              </label>
-
-              <div className="relative">
-                <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-
-                <input
-                  value={searchTerm}
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder="Buscar por código, enunciado, banca, conteúdo ou assunto..."
-                  className="w-full rounded-xl border border-slate-300 bg-white pl-11 pr-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                />
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-              <MultiSelectDropdown
-                title="Instituição"
-                index={1}
-                items={availableInstitutions}
-                selected={selectedInstitutions}
-                onToggle={(value) =>
-                  setSelectedInstitutions((prev) => toggleValue(prev, value))
-                }
-                placeholder="Todas"
-                emptyMessage="Nenhuma instituição disponível."
-                icon={Building2}
-              />
-
-              <MultiSelectDropdown
-                title="Ano"
-                index={2}
-                items={availableYears}
-                selected={selectedYears}
-                onToggle={(value) =>
-                  setSelectedYears((prev) => toggleValue(prev, value))
-                }
-                placeholder="Todos"
-                emptyMessage="Nenhum ano disponível."
-                icon={CalendarDays}
-              />
-
-              <MultiSelectDropdown
-                title="Disciplina"
-                index={3}
-                items={availableSubjects}
-                selected={selectedSubjects}
-                onToggle={(value) =>
-                  setSelectedSubjects((prev) => toggleValue(prev, value))
-                }
-                placeholder="Todas"
-                emptyMessage="Nenhuma disciplina disponível."
-                formatter={formatSubjectLabel}
-                icon={GraduationCap}
-              />
-
-              <MultiSelectDropdown
-                title="Conteúdo"
-                index={4}
-                items={availableTopics}
-                selected={selectedTopics}
-                onToggle={(value) =>
-                  setSelectedTopics((prev) => toggleValue(prev, value))
-                }
-                placeholder="Todos"
-                emptyMessage="Nenhum conteúdo disponível."
-                icon={FolderOpen}
-              />
-
-              <MultiSelectDropdown
-                title="Assunto"
-                index={5}
-                items={availableSubtopics}
-                selected={selectedSubtopics}
-                onToggle={(value) =>
-                  setSelectedSubtopics((prev) => toggleValue(prev, value))
-                }
-                placeholder="Todos"
-                emptyMessage="Nenhum assunto disponível."
-                icon={Tags}
-              />
-
-              <MultiSelectDropdown
-                title="Dificuldade"
-                index={6}
-                items={availableDifficulties}
-                selected={selectedDifficulties}
-                onToggle={(value) =>
-                  setSelectedDifficulties((prev) => toggleValue(prev, value))
-                }
-                placeholder="Todas"
-                emptyMessage="Nenhuma dificuldade disponível."
-                formatter={formatDifficultyLabel}
-                icon={Gauge}
-              />
-            </div>
-
-            {activeFilterChips.length > 0 ? (
-              <div className="mt-6 border-t border-slate-100 pt-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <ListFilter className="w-4 h-4 text-slate-500" />
-
-                  <p className="text-sm font-semibold text-slate-700">
-                    Filtros ativos
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {activeFilterChips.map((chip) => (
-                    <ActiveFilterChip
-                      key={chip.key}
-                      label={chip.label}
-                      onRemove={chip.onRemove}
-                    />
-                  ))}
-                </div>
-              </div>
-            ) : null}
           </Card>
         </section>
 
