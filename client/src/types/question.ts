@@ -18,6 +18,12 @@ export type QuestionSubtopicsByTopic = {
   subtopics: string[];
 };
 
+export type QuestionDifficulty =
+  | "facil"
+  | "medio"
+  | "dificil"
+  | "muito_dificil";
+
 export type Question = {
   id: string;
   codigo?: string;
@@ -45,7 +51,7 @@ export type Question = {
   explanation?: string;
   explanationBlocks?: ExplanationBlock[];
 
-  difficulty: "facil" | "medio" | "dificil" | string;
+  difficulty: QuestionDifficulty | string;
 
   tags?: string[];
   source?: string;
