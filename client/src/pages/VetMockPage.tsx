@@ -1,13 +1,26 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
+import type { ComponentType } from "react";
 import {
   ArrowLeft,
+  ArrowRight,
+  BarChart3,
   BrainCircuit,
-  Flame,
-  Layers3,
-  Shield,
-  Shuffle,
+  CheckCircle2,
+  Clock3,
+  ExternalLink,
   FileCheck,
+  Flame,
+  History,
+  Layers3,
+  Loader2,
+  Shield,
+  ShieldCheck,
+  Shuffle,
+  Sparkles,
+  Target,
+  Trophy,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -19,184 +32,354 @@ import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { getQuestions } from "@/services/questions.service";
 import type { Question } from "@/types/question";
+import {
+  buildVetEngineResult,
+  formatVetPercent,
+  getQuestionTopicsForVet,
+  prettifyVetText,
+  type VetAttempt,
+  type VetCollectiveContentStat,
+  type VetEngineResult,
+  type VetProfile,
+  type VetStrategicContent,
+  type VetTrainingBlock,
+  type VetWeight,
+} from "@/lib/vetEngine";
 
-type VetProfileRow = {
+type VetProfileRow = VetProfile & {
   id: string;
   user_id: string;
-  target_exam: string;
-  months_until_exam: number;
-  hours_per_day: number;
-  focus_subject: string;
-  study_days_per_week: number | null;
-  study_weekdays: string[] | null;
+  study_days_per_week?: number | null;
+  study_weekdays?: string[] | null;
 };
 
-type AttemptRow = {
-  id: string;
-  user_id: string;
-  question_id: string;
-  selected_option: string | null;
-  is_correct: boolean;
-  time_spent_seconds: number | null;
-  answered_at: string;
-  attempt_number: number;
-  subject: string | null;
-  conteudo: string | null;
-  assunto: string | null;
-  banca: string | null;
-  ano: number | null;
-  difficulty: string | null;
-};
+type SimuladoMode = VetTrainingBlock | "misto";
 
-type WeightRow = {
-  id: string;
-  exam: string;
-  subject: string;
-  conteudo: string;
-  weight: number;
-};
-
-type RecommendedContent = {
-  conteudo: string;
+type MockQuestionItem = {
+  question: Question;
+  matchedContent: VetStrategicContent;
   score: number;
-  block: "ataque" | "consolidacao" | "manutencao";
-  hasAttempts: boolean;
+  alreadyAttempted: boolean;
 };
 
-type SimuladoMode = "ataque" | "consolidacao" | "manutencao" | "misto";
-
-function normalizeText(value?: string | null) {
-  return (value || "")
+function normalizeText(value?: string | number | null) {
+  return String(value ?? "")
     .trim()
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-function getWeaknessScore(accuracy: number, total: number) {
-  if (total === 0) return 6;
-  if (accuracy < 40) return 10;
-  if (accuracy < 55) return 7;
-  if (accuracy < 70) return 4;
-  return 1;
-}
-
-function getUrgencyTimeScore(monthsUntilExam: number) {
-  if (monthsUntilExam <= 2) return 5;
-  if (monthsUntilExam <= 4) return 4;
-  if (monthsUntilExam <= 6) return 3;
-  if (monthsUntilExam <= 9) return 2;
-  return 1;
-}
-
-function getWrongVolumeScore(wrong: number) {
-  if (wrong >= 6) return 4;
-  if (wrong >= 4) return 3;
-  if (wrong >= 2) return 2;
-  if (wrong >= 1) return 1;
-  return 0;
-}
-
-function getNoAttemptPenalty(total: number, weight: number) {
-  if (total > 0) return 0;
-  if (weight >= 8) return 6;
-  if (weight >= 6) return 4;
-  if (weight >= 4) return 2;
-  return 1;
-}
-
-function getTrainingBlock(score: number): "ataque" | "consolidacao" | "manutencao" {
-  if (score >= 15) return "ataque";
-  if (score >= 9) return "consolidacao";
-  return "manutencao";
-}
-
-function matchesExamInstitution(question: Question, targetExam: string) {
-  return normalizeText(question.institution) === normalizeText(targetExam);
-}
-
-function getQuestionDifficultyScore(
-  question: Question,
-  block: "ataque" | "consolidacao" | "manutencao"
-) {
-  const difficulty = normalizeText(question.difficulty);
-
-  if (block === "ataque") {
-    if (difficulty === "medio") return 3;
-    if (difficulty === "dificil") return 2;
-    if (difficulty === "facil") return 1;
-    return 0;
-  }
-
-  if (block === "consolidacao") {
-    if (difficulty === "medio") return 3;
-    if (difficulty === "facil") return 2;
-    if (difficulty === "dificil") return 1;
-    return 0;
-  }
-
-  if (difficulty === "facil") return 3;
-  if (difficulty === "medio") return 2;
-  if (difficulty === "dificil") return 1;
-  return 0;
-}
-
-function getQuestionTopics(question: Question) {
-  if (Array.isArray(question.topics) && question.topics.length > 0) {
-    return question.topics.filter(Boolean);
-  }
-
-  return question.topic ? [question.topic] : [];
-}
-
-function getQuestionPriorityScore(
-  question: Question,
-  block: "ataque" | "consolidacao" | "manutencao",
-  contents: string[],
-  targetExam: string,
-  attemptedQuestionIds: Set<string>
-) {
-  let score = 0;
-
-  const contentIndex = getQuestionTopics(question)
-    .map((topic) => normalizeText(topic))
-    .map((topic) => contents.indexOf(topic))
-    .filter((index) => index !== -1)
-    .sort((a, b) => a - b)[0];
-
-  if (contentIndex !== undefined) {
-    score += Math.max(20 - contentIndex * 3, 5);
-  }
-
-  if (matchesExamInstitution(question, targetExam)) {
-    score += 30;
-  }
-
-  if (!attemptedQuestionIds.has(question.id)) {
-    score += 40;
-  } else {
-    score -= 10;
-  }
-
-  score += getQuestionDifficultyScore(question, block);
-
-  const year = Number(question.year);
-  if (!Number.isNaN(year)) {
-    score += Math.min(Math.max(year - 2015, 0), 10);
-  }
-
-  return score;
-}
-
-function uniqueById(items: Question[]) {
+function uniqueByQuestionId(items: MockQuestionItem[]) {
   const seen = new Set<string>();
 
   return items.filter((item) => {
-    if (seen.has(item.id)) return false;
+    if (seen.has(item.question.id)) return false;
 
-    seen.add(item.id);
+    seen.add(item.question.id);
     return true;
   });
+}
+
+function matchesTargetExam(question: Question, targetExam: string) {
+  const target = normalizeText(targetExam);
+
+  return (
+    normalizeText(question.institution) === target ||
+    normalizeText(question.exam) === target
+  );
+}
+
+function matchesFocusSubject(question: Question, focusSubject: string) {
+  if (normalizeText(focusSubject) === "todas") return true;
+
+  return normalizeText(question.subject) === normalizeText(focusSubject);
+}
+
+function matchesContent(question: Question, content: string) {
+  const topics = getQuestionTopicsForVet(question).map(normalizeText);
+  return topics.includes(normalizeText(content));
+}
+
+function getDifficultyScore(question: Question, block: VetTrainingBlock) {
+  const difficulty = normalizeText(question.difficulty);
+
+  if (block === "ataque") {
+    if (difficulty === "dificil") return 12;
+    if (difficulty === "medio") return 10;
+    if (difficulty === "facil") return 4;
+    return 5;
+  }
+
+  if (block === "consolidacao") {
+    if (difficulty === "medio") return 12;
+    if (difficulty === "facil") return 8;
+    if (difficulty === "dificil") return 5;
+    return 6;
+  }
+
+  if (difficulty === "facil") return 12;
+  if (difficulty === "medio") return 8;
+  if (difficulty === "dificil") return 3;
+
+  return 5;
+}
+
+function getQuestionRecencyScore(question: Question) {
+  const year = Number(question.year);
+
+  if (Number.isNaN(year)) return 0;
+
+  return Math.min(Math.max(year - 2015, 0), 10);
+}
+
+function getBlockMeta(block: SimuladoMode) {
+  if (block === "ataque") {
+    return {
+      label: "Ataque",
+      description:
+        "Simulado para enfrentar conteúdos urgentes, recorrentes ou com baixo desempenho.",
+      icon: Flame,
+      cardClassName: "border-red-200 bg-red-50",
+      iconClassName: "bg-red-100 text-red-700",
+      textClassName: "text-red-700",
+      activeClassName: "bg-red-600 border-red-600 text-white",
+      buttonClassName: "bg-red-600 hover:bg-red-700 text-white",
+    };
+  }
+
+  if (block === "consolidacao") {
+    return {
+      label: "Consolidação",
+      description:
+        "Simulado para estabilizar conteúdos que ainda oscilam no desempenho.",
+      icon: Layers3,
+      cardClassName: "border-amber-200 bg-amber-50",
+      iconClassName: "bg-amber-100 text-amber-700",
+      textClassName: "text-amber-700",
+      activeClassName: "bg-amber-500 border-amber-500 text-white",
+      buttonClassName: "bg-amber-600 hover:bg-amber-700 text-white",
+    };
+  }
+
+  if (block === "manutencao") {
+    return {
+      label: "Manutenção",
+      description:
+        "Simulado para revisar conteúdos controlados e manter ritmo de prova.",
+      icon: Shield,
+      cardClassName: "border-emerald-200 bg-emerald-50",
+      iconClassName: "bg-emerald-100 text-emerald-700",
+      textClassName: "text-emerald-700",
+      activeClassName: "bg-emerald-600 border-emerald-600 text-white",
+      buttonClassName: "bg-emerald-600 hover:bg-emerald-700 text-white",
+    };
+  }
+
+  return {
+    label: "Misto VET",
+    description:
+      "Simulado equilibrado misturando ataque, consolidação e manutenção.",
+    icon: Shuffle,
+    cardClassName: "border-slate-200 bg-slate-50",
+    iconClassName: "bg-slate-900 text-white",
+    textClassName: "text-slate-900",
+    activeClassName: "bg-slate-900 border-slate-900 text-white",
+    buttonClassName: "bg-slate-900 hover:bg-slate-800 text-white",
+  };
+}
+
+function buildBankUrl(
+  profile: VetProfile,
+  mode: SimuladoMode,
+  contents: VetStrategicContent[]
+) {
+  const params = new URLSearchParams();
+
+  if (profile.target_exam) {
+    params.set("institution", profile.target_exam);
+  }
+
+  if (profile.focus_subject && profile.focus_subject !== "todas") {
+    params.set("subject", profile.focus_subject);
+  }
+
+  params.set("block", mode);
+
+  const topics = contents.map((content) => content.conteudo).filter(Boolean);
+
+  if (topics.length > 0) {
+    params.set("topics", topics.join(","));
+  }
+
+  return `/banco-de-questoes?${params.toString()}`;
+}
+
+function buildMockQuestions(params: {
+  questions: Question[];
+  profile: VetProfile;
+  contents: VetStrategicContent[];
+  block: VetTrainingBlock;
+  attemptedQuestionIds: Set<string>;
+  limit: number;
+}) {
+  const { questions, profile, contents, block, attemptedQuestionIds, limit } =
+    params;
+
+  if (contents.length === 0) return [];
+
+  const result: MockQuestionItem[] = [];
+
+  for (const question of questions) {
+    if (!matchesFocusSubject(question, profile.focus_subject)) continue;
+
+    const matchedContent = contents.find((content) =>
+      matchesContent(question, content.conteudo)
+    );
+
+    if (!matchedContent) continue;
+
+    const sameExam = matchesTargetExam(question, profile.target_exam);
+    const alreadyAttempted = attemptedQuestionIds.has(question.id);
+
+    let score = matchedContent.priorityScore;
+
+    score += sameExam ? 35 : 6;
+    score += alreadyAttempted ? -18 : 30;
+    score += getDifficultyScore(question, block);
+    score += getQuestionRecencyScore(question);
+
+    if (matchedContent.historical?.lastYearAppeared === question.year) {
+      score += 8;
+    }
+
+    if (matchedContent.collective && matchedContent.personal.hasData) {
+      const gap =
+        matchedContent.collective.collective_accuracy -
+        matchedContent.personal.accuracy;
+
+      if (gap > 10) score += 8;
+      if (gap > 20) score += 12;
+    }
+
+    result.push({
+      question,
+      matchedContent,
+      score,
+      alreadyAttempted,
+    });
+  }
+
+  return result.sort((a, b) => b.score - a.score).slice(0, limit);
+}
+
+function MockStatCard({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  className = "border-slate-200 bg-white",
+  iconClassName = "bg-slate-100 text-slate-700",
+}: {
+  title: string;
+  value: string;
+  subtitle: string;
+  icon: ComponentType<{ className?: string }>;
+  className?: string;
+  iconClassName?: string;
+}) {
+  return (
+    <Card className={`p-5 ${className}`}>
+      <div className="flex items-center gap-3 mb-3">
+        <div
+          className={`w-11 h-11 rounded-2xl flex items-center justify-center ${iconClassName}`}
+        >
+          <Icon className="w-5 h-5" />
+        </div>
+
+        <div>
+          <p className="text-sm text-slate-500">{title}</p>
+          <p className="text-2xl font-bold text-slate-900 leading-tight">
+            {value}
+          </p>
+        </div>
+      </div>
+
+      <p className="text-sm text-slate-500">{subtitle}</p>
+    </Card>
+  );
+}
+
+function MockQuestionPreviewCard({ item }: { item: MockQuestionItem }) {
+  const { question, matchedContent, alreadyAttempted } = item;
+  const meta = getBlockMeta(matchedContent.block);
+  const Icon = meta.icon;
+  const topics = getQuestionTopicsForVet(question);
+
+  return (
+    <Card className="p-5 rounded-3xl border-slate-200 bg-white shadow-sm">
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <span className="inline-flex rounded-full bg-slate-900 text-white px-3 py-1 text-xs font-bold">
+          {question.institution || question.exam}
+        </span>
+
+        <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-600">
+          {question.year}
+        </span>
+
+        <span className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
+          {prettifyVetText(question.subject)}
+        </span>
+
+        <span className="inline-flex rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">
+          {question.difficulty}
+        </span>
+
+        {alreadyAttempted ? (
+          <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-500">
+            já respondida
+          </span>
+        ) : (
+          <span className="inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
+            inédita
+          </span>
+        )}
+      </div>
+
+      <h3 className="text-base font-bold text-slate-900 mb-2">
+        {question.codigo || `Questão ${question.id}`}
+      </h3>
+
+      <p className="text-sm text-slate-600 line-clamp-3 mb-4">
+        {question.statement}
+      </p>
+
+      <div className="flex flex-wrap gap-2 mb-4">
+        {topics.slice(0, 3).map((topic) => (
+          <span
+            key={topic}
+            className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600"
+          >
+            {topic}
+          </span>
+        ))}
+      </div>
+
+      <div className="rounded-2xl border border-violet-200 bg-violet-50 p-3">
+        <div className="flex items-center gap-2 mb-1">
+          <Icon className="w-4 h-4 text-violet-700" />
+          <p className="text-xs font-bold text-violet-700">
+            Motivo da escolha
+          </p>
+        </div>
+
+        <p className="text-sm text-violet-800">
+          Ligada a {prettifyVetText(matchedContent.conteudo)}, no bloco{" "}
+          {meta.label}, com score {Math.round(matchedContent.priorityScore)}.
+        </p>
+      </div>
+    </Card>
+  );
 }
 
 export default function VetMockPage() {
@@ -205,14 +388,15 @@ export default function VetMockPage() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const [profile, setProfile] = useState<VetProfileRow | null>(null);
-  const [attempts, setAttempts] = useState<AttemptRow[]>([]);
-  const [weights, setWeights] = useState<WeightRow[]>([]);
+  const [engine, setEngine] = useState<VetEngineResult | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [attempts, setAttempts] = useState<VetAttempt[]>([]);
   const [mode, setMode] = useState<SimuladoMode>("misto");
 
   useEffect(() => {
-    async function loadData() {
+    async function loadMock() {
       if (!user?.id) {
         setLoading(false);
         return;
@@ -221,62 +405,116 @@ export default function VetMockPage() {
       setLoading(true);
       setError("");
 
-      const { data: profileData, error: profileError } = await supabase
-        .from("user_vet_profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      try {
+        const { data: profileData, error: profileError } = await supabase
+          .from("user_vet_profiles")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
-      if (profileError) {
-        console.error(profileError);
-        setError("Não foi possível carregar o objetivo do VET.");
+        if (profileError) {
+          console.error(profileError);
+          setError("Não foi possível carregar seu objetivo do VET.");
+          setLoading(false);
+          return;
+        }
+
+        const currentProfile = (profileData as VetProfileRow | null) ?? null;
+        setProfile(currentProfile);
+
+        if (!currentProfile) {
+          setEngine(null);
+          setLoading(false);
+          return;
+        }
+
+        const [
+          attemptsResponse,
+          weightsResponse,
+          collectiveResponse,
+          loadedQuestions,
+        ] = await Promise.all([
+          supabase
+            .from("user_question_attempts")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("answered_at", { ascending: false }),
+
+          supabase
+            .from("vet_exam_content_weights")
+            .select("*")
+            .eq("exam", currentProfile.target_exam),
+
+          supabase
+            .from("vet_content_collective_stats")
+            .select("*")
+            .eq("exam", currentProfile.target_exam),
+
+          getQuestions(),
+        ]);
+
+        if (attemptsResponse.error) {
+          console.error(attemptsResponse.error);
+          setError("Não foi possível carregar suas tentativas.");
+          setLoading(false);
+          return;
+        }
+
+        if (weightsResponse.error) {
+          console.error(weightsResponse.error);
+          setError("Não foi possível carregar os pesos da prova.");
+          setLoading(false);
+          return;
+        }
+
+        if (collectiveResponse.error) {
+          console.error(collectiveResponse.error);
+          setError("Não foi possível carregar a média coletiva dos alunos.");
+          setLoading(false);
+          return;
+        }
+
+        const loadedAttempts = (attemptsResponse.data as VetAttempt[]) ?? [];
+        const loadedWeights = (weightsResponse.data as VetWeight[]) ?? [];
+
+        const loadedCollective =
+          ((collectiveResponse.data as VetCollectiveContentStat[]) ?? []).map(
+            (item) => ({
+              ...item,
+              total_attempts: Number(item.total_attempts ?? 0),
+              correct_attempts: Number(item.correct_attempts ?? 0),
+              wrong_attempts: Number(item.wrong_attempts ?? 0),
+              collective_accuracy: Number(item.collective_accuracy ?? 0),
+              avg_time_seconds:
+                item.avg_time_seconds === null ||
+                item.avg_time_seconds === undefined
+                  ? null
+                  : Number(item.avg_time_seconds),
+            })
+          );
+
+        const result = buildVetEngineResult({
+          profile: currentProfile,
+          attempts: loadedAttempts,
+          questions: loadedQuestions,
+          weights: loadedWeights,
+          collectiveStats: loadedCollective,
+          yearsBack: 5,
+        });
+
+        setAttempts(loadedAttempts);
+        setQuestions(loadedQuestions);
+        setEngine(result);
+      } catch (err) {
+        console.error(err);
+        setError("Ocorreu um erro inesperado ao carregar o Simulado VET.");
+      } finally {
         setLoading(false);
-        return;
       }
-
-      const currentProfile = (profileData as VetProfileRow | null) ?? null;
-      setProfile(currentProfile);
-
-      if (!currentProfile) {
-        setLoading(false);
-        return;
-      }
-
-      const { data: attemptsData, error: attemptsError } = await supabase
-        .from("user_question_attempts")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("answered_at", { ascending: false });
-
-      if (attemptsError) {
-        console.error(attemptsError);
-        setError("Não foi possível carregar suas tentativas.");
-        setLoading(false);
-        return;
-      }
-
-      const { data: weightsData, error: weightsError } = await supabase
-        .from("vet_exam_content_weights")
-        .select("*")
-        .eq("exam", currentProfile.target_exam);
-
-      if (weightsError) {
-        console.error(weightsError);
-        setError("Não foi possível carregar os pesos da prova.");
-        setLoading(false);
-        return;
-      }
-
-      const loadedQuestions = await getQuestions();
-
-      setAttempts((attemptsData as AttemptRow[]) ?? []);
-      setWeights((weightsData as WeightRow[]) ?? []);
-      setQuestions(loadedQuestions ?? []);
-      setLoading(false);
     }
 
     if (!authLoading) {
-      loadData();
+      loadMock();
     }
   }, [user?.id, authLoading]);
 
@@ -284,236 +522,100 @@ export default function VetMockPage() {
     return new Set(attempts.map((attempt) => attempt.question_id));
   }, [attempts]);
 
-  const filteredAttempts = useMemo(() => {
+  const attackContents = useMemo(() => {
+    return (engine?.attack ?? []).slice(0, 6);
+  }, [engine]);
+
+  const consolidationContents = useMemo(() => {
+    return (engine?.consolidation ?? []).slice(0, 6);
+  }, [engine]);
+
+  const maintenanceContents = useMemo(() => {
+    return (engine?.maintenance ?? []).slice(0, 6);
+  }, [engine]);
+
+  const attackQuestions = useMemo(() => {
     if (!profile) return [];
 
-    let result = [...attempts];
+    return buildMockQuestions({
+      questions,
+      profile,
+      contents: attackContents,
+      block: "ataque",
+      attemptedQuestionIds,
+      limit: 10,
+    });
+  }, [questions, profile, attackContents, attemptedQuestionIds]);
 
-    if (profile.focus_subject !== "todas") {
-      result = result.filter(
-        (attempt) =>
-          normalizeText(attempt.subject) === normalizeText(profile.focus_subject)
-      );
-    }
-
-    return result;
-  }, [attempts, profile]);
-
-  const recommendedContents = useMemo(() => {
+  const consolidationQuestions = useMemo(() => {
     if (!profile) return [];
 
-    const contentMap = new Map<
-      string,
-      { total: number; correct: number; wrong: number }
-    >();
-
-    for (const attempt of filteredAttempts) {
-      const conteudo = normalizeText(attempt.conteudo);
-
-      if (!conteudo) continue;
-
-      const current = contentMap.get(conteudo) ?? {
-        total: 0,
-        correct: 0,
-        wrong: 0,
-      };
-
-      current.total += 1;
-
-      if (attempt.is_correct) {
-        current.correct += 1;
-      } else {
-        current.wrong += 1;
-      }
-
-      contentMap.set(conteudo, current);
-    }
-
-    const filteredWeights = weights.filter((row) => {
-      if (profile.focus_subject === "todas") return true;
-
-      return normalizeText(row.subject) === normalizeText(profile.focus_subject);
+    return buildMockQuestions({
+      questions,
+      profile,
+      contents: consolidationContents,
+      block: "consolidacao",
+      attemptedQuestionIds,
+      limit: 10,
     });
+  }, [questions, profile, consolidationContents, attemptedQuestionIds]);
 
-    const allContents = new Set<string>();
-
-    filteredWeights.forEach((row) => {
-      allContents.add(normalizeText(row.conteudo));
-    });
-
-    contentMap.forEach((_, conteudo) => {
-      allContents.add(conteudo);
-    });
-
-    const urgencyTimeScore = getUrgencyTimeScore(profile.months_until_exam);
-
-    return Array.from(allContents)
-      .filter(Boolean)
-      .map((conteudo) => {
-        const stats = contentMap.get(conteudo) ?? {
-          total: 0,
-          correct: 0,
-          wrong: 0,
-        };
-
-        const accuracy = stats.total ? (stats.correct / stats.total) * 100 : 0;
-
-        const matchedWeight = filteredWeights.find(
-          (row) => normalizeText(row.conteudo) === conteudo
-        );
-
-        const weight = matchedWeight?.weight ?? 3;
-        const weaknessScore = getWeaknessScore(accuracy, stats.total);
-        const wrongVolumeScore = getWrongVolumeScore(stats.wrong);
-        const noAttemptPenalty = getNoAttemptPenalty(stats.total, weight);
-
-        const score =
-          weight +
-          weaknessScore +
-          urgencyTimeScore +
-          wrongVolumeScore +
-          noAttemptPenalty;
-
-        return {
-          conteudo,
-          score,
-          block: getTrainingBlock(score),
-          hasAttempts: stats.total > 0,
-        } as RecommendedContent;
-      })
-      .sort(
-        (a, b) =>
-          b.score - a.score || Number(a.hasAttempts) - Number(b.hasAttempts)
-      );
-  }, [filteredAttempts, profile, weights]);
-
-  const attackContents = useMemo(
-    () =>
-      recommendedContents
-        .filter((item) => item.block === "ataque")
-        .map((item) => item.conteudo),
-    [recommendedContents]
-  );
-
-  const consolidationContents = useMemo(
-    () =>
-      recommendedContents
-        .filter((item) => item.block === "consolidacao")
-        .map((item) => item.conteudo),
-    [recommendedContents]
-  );
-
-  const maintenanceContents = useMemo(
-    () =>
-      recommendedContents
-        .filter((item) => item.block === "manutencao")
-        .map((item) => item.conteudo),
-    [recommendedContents]
-  );
-
-  function buildQuestionsForBlock(
-    block: "ataque" | "consolidacao" | "manutencao",
-    limit: number
-  ) {
+  const maintenanceQuestions = useMemo(() => {
     if (!profile) return [];
 
-    const contents =
-      block === "ataque"
-        ? attackContents
-        : block === "consolidacao"
-          ? consolidationContents
-          : maintenanceContents;
-
-    if (!contents.length) return [];
-
-    let base = [...questions];
-
-    if (profile.focus_subject !== "todas") {
-      base = base.filter(
-        (question) =>
-          normalizeText(question.subject) === normalizeText(profile.focus_subject)
-      );
-    }
-
-    base = base.filter((question) =>
-      getQuestionTopics(question).some((topic) =>
-        contents.includes(normalizeText(topic))
-      )
-    );
-
-    const sorted = [...base].sort((a, b) => {
-      const scoreA = getQuestionPriorityScore(
-        a,
-        block,
-        contents,
-        profile.target_exam,
-        attemptedQuestionIds
-      );
-
-      const scoreB = getQuestionPriorityScore(
-        b,
-        block,
-        contents,
-        profile.target_exam,
-        attemptedQuestionIds
-      );
-
-      return scoreB - scoreA;
+    return buildMockQuestions({
+      questions,
+      profile,
+      contents: maintenanceContents,
+      block: "manutencao",
+      attemptedQuestionIds,
+      limit: 10,
     });
+  }, [questions, profile, maintenanceContents, attemptedQuestionIds]);
 
-    const unseen = sorted.filter(
-      (question) => !attemptedQuestionIds.has(question.id)
-    );
-
-    const seen = sorted.filter((question) =>
-      attemptedQuestionIds.has(question.id)
-    );
-
-    return [...unseen, ...seen].slice(0, limit);
-  }
-
-  const ataqueQuestions = useMemo(
-    () => buildQuestionsForBlock("ataque", 10),
-    [questions, profile, attackContents, attemptedQuestionIds]
-  );
-
-  const consolidacaoQuestions = useMemo(
-    () => buildQuestionsForBlock("consolidacao", 10),
-    [questions, profile, consolidationContents, attemptedQuestionIds]
-  );
-
-  const manutencaoQuestions = useMemo(
-    () => buildQuestionsForBlock("manutencao", 10),
-    [questions, profile, maintenanceContents, attemptedQuestionIds]
-  );
-
-  const mistoQuestions = useMemo(() => {
-    const mixed = uniqueById([
-      ...buildQuestionsForBlock("ataque", 5),
-      ...buildQuestionsForBlock("consolidacao", 4),
-      ...buildQuestionsForBlock("manutencao", 3),
+  const mixedQuestions = useMemo(() => {
+    const mixed = uniqueByQuestionId([
+      ...attackQuestions.slice(0, 5),
+      ...consolidationQuestions.slice(0, 4),
+      ...maintenanceQuestions.slice(0, 3),
     ]);
 
     return mixed.slice(0, 12);
-  }, [
-    questions,
-    profile,
-    attackContents,
-    consolidationContents,
-    maintenanceContents,
-    attemptedQuestionIds,
-  ]);
+  }, [attackQuestions, consolidationQuestions, maintenanceQuestions]);
 
-  const currentQuestions =
+  const currentItems =
     mode === "ataque"
-      ? ataqueQuestions
+      ? attackQuestions
       : mode === "consolidacao"
-        ? consolidacaoQuestions
+        ? consolidationQuestions
         : mode === "manutencao"
-          ? manutencaoQuestions
-          : mistoQuestions;
+          ? maintenanceQuestions
+          : mixedQuestions;
 
-  const modeLabel =
+  const currentQuestions = currentItems.map((item) => item.question);
+
+  const currentMeta = getBlockMeta(mode);
+  const CurrentIcon = currentMeta.icon;
+
+  const currentContents =
+    mode === "ataque"
+      ? attackContents
+      : mode === "consolidacao"
+        ? consolidationContents
+        : mode === "manutencao"
+          ? maintenanceContents
+          : [
+              ...attackContents.slice(0, 3),
+              ...consolidationContents.slice(0, 3),
+              ...maintenanceContents.slice(0, 2),
+            ];
+
+  const bankUrl =
+    profile && currentContents.length > 0
+      ? buildBankUrl(profile, mode, currentContents)
+      : "/banco-de-questoes";
+
+  const modeTitle =
     mode === "ataque"
       ? "Simulado de ataque"
       : mode === "consolidacao"
@@ -535,6 +637,15 @@ export default function VetMockPage() {
       accuracy: data.accuracy,
       wrongTopics: data.wrongTopics,
       wrongDifficulties: data.wrongDifficulties,
+
+      engineSummary: {
+        totalAttempts: engine?.totalAttempts ?? 0,
+        generalAccuracy: engine?.generalAccuracy ?? 0,
+        topPriority: engine?.topPriority?.conteudo ?? null,
+        attackCount: engine?.attack.length ?? 0,
+        consolidationCount: engine?.consolidation.length ?? 0,
+        maintenanceCount: engine?.maintenance.length ?? 0,
+      },
     };
 
     window.sessionStorage.setItem("vet_mock_result", JSON.stringify(payload));
@@ -543,7 +654,7 @@ export default function VetMockPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-50">
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
+      <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-slate-200/50">
         <div className="container py-4 flex items-center gap-4">
           <Link href="/vet">
             <Button variant="ghost" size="sm">
@@ -555,7 +666,7 @@ export default function VetMockPage() {
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Simulado VET</h1>
             <p className="text-sm text-slate-500">
-              Treino estratégico em formato de simulado
+              Simulados montados pelo mesmo motor do Diagnóstico e do Plano VET
             </p>
           </div>
         </div>
@@ -563,160 +674,344 @@ export default function VetMockPage() {
 
       <main className="container py-8 space-y-6">
         {authLoading || loading ? (
-          <Card className="p-8">
-            <p className="text-slate-600">Carregando simulado...</p>
+          <Card className="p-8 bg-white">
+            <div className="flex items-center gap-3 text-slate-600">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Carregando Simulado VET...
+            </div>
           </Card>
         ) : error ? (
           <Card className="p-8 border-red-200 bg-red-50">
             <p className="text-red-700">{error}</p>
           </Card>
         ) : !user ? (
-          <Card className="p-8">
+          <Card className="p-8 bg-white">
             <p className="text-slate-700">
               Você precisa estar logado para usar o VET.
             </p>
           </Card>
         ) : !profile ? (
-          <Card className="p-8">
-            <p className="text-slate-700 mb-4">
-              Antes de usar o simulado, você precisa configurar seu objetivo do VET.
-            </p>
-            <Link href="/vet/objetivo">
-              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                Configurar objetivo
-              </Button>
-            </Link>
+          <Card className="p-8 bg-white border-emerald-200">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center">
+                <Target className="w-6 h-6 text-emerald-700" />
+              </div>
+
+              <div>
+                <h2 className="text-xl font-bold text-slate-900 mb-2">
+                  Configure seu objetivo primeiro
+                </h2>
+
+                <p className="text-slate-600 mb-5">
+                  O Simulado VET precisa saber sua prova-alvo, tempo restante e
+                  foco. Sem isso, ele só escolhe questão com a precisão de um
+                  pombo jogando dardo.
+                </p>
+
+                <Link href="/vet/objetivo">
+                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl">
+                    Configurar objetivo
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </Card>
         ) : (
           <>
-            <Card className="p-6 md:p-8 border-emerald-200 bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
-              <p className="text-sm uppercase tracking-wide text-emerald-100 mb-2">
-                Execução estratégica
-              </p>
-              <h2 className="text-3xl font-bold mb-3">
-                Simulado para {profile.target_exam}
-              </h2>
-              <p className="text-emerald-50 leading-relaxed">
-                O VET monta um treino em formato de simulado com base nas suas prioridades,
-                prova-alvo e conteúdos ainda não treinados.
-              </p>
+            <Card className="p-6 md:p-8 border-emerald-200 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white overflow-hidden relative rounded-3xl shadow-lg">
+              <div className="absolute top-0 right-0 h-52 w-52 rounded-full bg-white/10 blur-2xl -mr-20 -mt-20" />
+              <div className="absolute bottom-0 left-0 h-52 w-52 rounded-full bg-white/10 blur-2xl -ml-24 -mb-24" />
+
+              <div className="relative grid lg:grid-cols-[1.3fr_0.7fr] gap-6 items-center">
+                <div>
+                  <div className="inline-flex items-center gap-2 rounded-full bg-white/15 border border-white/20 px-3 py-1 text-xs font-bold text-emerald-50 mb-4">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Execução estratégica
+                  </div>
+
+                  <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+                    Simulado para {profile.target_exam}
+                  </h2>
+
+                  <p className="text-emerald-50 leading-relaxed max-w-3xl">
+                    O VET monta simulados com base no score estratégico dos
+                    conteúdos, histórico dos últimos anos da prova, média dos
+                    alunos, dificuldade e questões que você ainda não respondeu.
+                  </p>
+
+                  <div className="flex flex-wrap gap-3 mt-7">
+                    <Link href={bankUrl}>
+                      <Button className="bg-white text-emerald-700 hover:bg-emerald-50 rounded-2xl px-6 py-5 font-bold">
+                        Abrir recorte no banco
+                        <ExternalLink className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
+
+                    <Link href="/vet/plano">
+                      <Button
+                        variant="outline"
+                        className="rounded-2xl px-6 py-5 font-bold border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+                      >
+                        Ver Plano VET
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="rounded-3xl bg-white/12 border border-white/20 p-5 backdrop-blur-sm">
+                  <p className="text-sm uppercase tracking-wide text-emerald-100 font-bold mb-4">
+                    Resumo atual
+                  </p>
+
+                  <div className="space-y-3">
+                    <div className="rounded-2xl bg-white/12 border border-white/15 p-4">
+                      <p className="text-xs text-emerald-100 mb-1">
+                        Prova-alvo
+                      </p>
+                      <p className="font-bold">{profile.target_exam}</p>
+                    </div>
+
+                    <div className="rounded-2xl bg-white/12 border border-white/15 p-4">
+                      <p className="text-xs text-emerald-100 mb-1">Foco</p>
+                      <p className="font-bold">
+                        {prettifyVetText(profile.focus_subject)}
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl bg-white/12 border border-white/15 p-4">
+                      <p className="text-xs text-emerald-100 mb-1">
+                        Aproveitamento
+                      </p>
+                      <p className="font-bold">
+                        {engine ? formatVetPercent(engine.generalAccuracy) : "0%"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </Card>
 
-            <Card className="p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                  <BrainCircuit className="w-5 h-5 text-emerald-700" />
+            <section className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+              <MockStatCard
+                title="Ataque"
+                value={`${attackQuestions.length}`}
+                subtitle={`${attackContents.length} conteúdo(s) prioritário(s)`}
+                icon={Flame}
+                className="border-red-200 bg-white"
+                iconClassName="bg-red-100 text-red-700"
+              />
+
+              <MockStatCard
+                title="Consolidação"
+                value={`${consolidationQuestions.length}`}
+                subtitle={`${consolidationContents.length} conteúdo(s) em ajuste`}
+                icon={Layers3}
+                className="border-amber-200 bg-white"
+                iconClassName="bg-amber-100 text-amber-700"
+              />
+
+              <MockStatCard
+                title="Manutenção"
+                value={`${maintenanceQuestions.length}`}
+                subtitle={`${maintenanceContents.length} conteúdo(s) controlado(s)`}
+                icon={ShieldCheck}
+                className="border-emerald-200 bg-white"
+                iconClassName="bg-emerald-100 text-emerald-700"
+              />
+
+              <MockStatCard
+                title="Misto VET"
+                value={`${mixedQuestions.length}`}
+                subtitle="Combinação dos três blocos"
+                icon={Shuffle}
+                className="border-slate-200 bg-white"
+                iconClassName="bg-slate-900 text-white"
+              />
+            </section>
+
+            <Card className="p-6 bg-white border-slate-200 rounded-3xl">
+              <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-6">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-11 h-11 rounded-2xl flex items-center justify-center ${currentMeta.iconClassName}`}
+                  >
+                    <CurrentIcon className="w-5 h-5" />
+                  </div>
+
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">
+                      Escolha o modo do simulado
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                      Cada modo muda o peso das questões escolhidas.
+                    </p>
+                  </div>
                 </div>
 
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900">
-                    Escolha o modo
-                  </h2>
-                  <p className="text-sm text-slate-500">
-                    Cada modo monta um simulado com foco diferente.
-                  </p>
-                </div>
+                <Link href={bankUrl}>
+                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl">
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    Abrir este recorte no banco
+                  </Button>
+                </Link>
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={() => setMode("ataque")}
-                  className={`px-4 py-2.5 rounded-full border text-sm font-semibold transition-all ${
-                    mode === "ataque"
-                      ? "bg-red-500 border-red-500 text-white"
-                      : "bg-white border-slate-300 text-slate-700"
-                  }`}
-                >
-                  <Flame className="w-4 h-4 inline mr-2" />
-                  Ataque
-                </button>
+                {(["ataque", "consolidacao", "manutencao", "misto"] as SimuladoMode[]).map(
+                  (item) => {
+                    const meta = getBlockMeta(item);
+                    const Icon = meta.icon;
+                    const active = mode === item;
 
-                <button
-                  onClick={() => setMode("consolidacao")}
-                  className={`px-4 py-2.5 rounded-full border text-sm font-semibold transition-all ${
-                    mode === "consolidacao"
-                      ? "bg-yellow-500 border-yellow-500 text-white"
-                      : "bg-white border-slate-300 text-slate-700"
-                  }`}
-                >
-                  <Layers3 className="w-4 h-4 inline mr-2" />
-                  Consolidação
-                </button>
-
-                <button
-                  onClick={() => setMode("manutencao")}
-                  className={`px-4 py-2.5 rounded-full border text-sm font-semibold transition-all ${
-                    mode === "manutencao"
-                      ? "bg-green-600 border-green-600 text-white"
-                      : "bg-white border-slate-300 text-slate-700"
-                  }`}
-                >
-                  <Shield className="w-4 h-4 inline mr-2" />
-                  Manutenção
-                </button>
-
-                <button
-                  onClick={() => setMode("misto")}
-                  className={`px-4 py-2.5 rounded-full border text-sm font-semibold transition-all ${
-                    mode === "misto"
-                      ? "bg-slate-900 border-slate-900 text-white"
-                      : "bg-white border-slate-300 text-slate-700"
-                  }`}
-                >
-                  <Shuffle className="w-4 h-4 inline mr-2" />
-                  Misto VET
-                </button>
+                    return (
+                      <button
+                        key={item}
+                        onClick={() => setMode(item)}
+                        className={`px-4 py-2.5 rounded-full border text-sm font-semibold transition-all ${
+                          active
+                            ? meta.activeClassName
+                            : "bg-white border-slate-300 text-slate-700 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Icon className="w-4 h-4 inline mr-2" />
+                        {meta.label}
+                      </button>
+                    );
+                  }
+                )}
               </div>
             </Card>
 
-            <div className="grid md:grid-cols-4 gap-4">
-              <Card className="p-5">
-                <p className="text-sm text-slate-500 mb-1">Ataque</p>
-                <p className="text-3xl font-bold text-red-600">
-                  {ataqueQuestions.length}
+            <section className="grid xl:grid-cols-[0.9fr_1.1fr] gap-6 items-start">
+              <Card className={`p-6 rounded-3xl border ${currentMeta.cardClassName}`}>
+                <div className="flex items-center gap-3 mb-5">
+                  <div
+                    className={`w-11 h-11 rounded-2xl flex items-center justify-center ${currentMeta.iconClassName}`}
+                  >
+                    <CurrentIcon className="w-5 h-5" />
+                  </div>
+
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">
+                      {modeTitle}
+                    </h2>
+                    <p className="text-sm text-slate-600">
+                      {currentMeta.description}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-white bg-white/80 p-4 mb-5">
+                  <p className="text-sm text-slate-500 mb-1">
+                    Questões neste modo
+                  </p>
+                  <p className="text-4xl font-bold text-slate-900">
+                    {currentQuestions.length}
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {currentItems.length > 0 ? (
+                    currentItems.slice(0, 6).map((item) => (
+                      <MockQuestionPreviewCard
+                        key={item.question.id}
+                        item={item}
+                      />
+                    ))
+                  ) : (
+                    <p className="text-slate-600">
+                      Ainda não há questões suficientes para este modo com os
+                      critérios atuais.
+                    </p>
+                  )}
+                </div>
+              </Card>
+
+              <Card className="p-6 bg-white border-slate-200 rounded-3xl">
+                <div className="flex items-center gap-2 mb-5">
+                  <FileCheck className="w-5 h-5 text-emerald-600" />
+                  <h2 className="text-xl font-bold text-slate-900">
+                    Resolver simulado
+                  </h2>
+                </div>
+
+                {currentQuestions.length > 0 ? (
+                  <InteractiveQuiz
+                    key={`${mode}-${currentQuestions
+                      .map((question) => question.id)
+                      .join("-")}`}
+                    questions={currentQuestions}
+                    onComplete={handleSimuladoComplete}
+                  />
+                ) : (
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                    <p className="text-slate-600">
+                      Não há questões suficientes para montar este simulado agora.
+                    </p>
+                  </div>
+                )}
+              </Card>
+            </section>
+
+            <section className="grid xl:grid-cols-4 gap-5">
+              <Card className="p-6 bg-white border-slate-200 rounded-3xl">
+                <div className="flex items-center gap-2 mb-4">
+                  <History className="w-5 h-5 text-slate-700" />
+                  <h2 className="text-lg font-bold text-slate-900">
+                    Histórico da prova
+                  </h2>
+                </div>
+
+                <p className="text-sm text-slate-600">
+                  Questões ligadas a conteúdos recorrentes e recentes ganham
+                  prioridade. Porque prova também tem padrão, mesmo quando a banca
+                  finge ser entidade mística.
                 </p>
               </Card>
 
-              <Card className="p-5">
-                <p className="text-sm text-slate-500 mb-1">Consolidação</p>
-                <p className="text-3xl font-bold text-yellow-600">
-                  {consolidacaoQuestions.length}
+              <Card className="p-6 bg-white border-slate-200 rounded-3xl">
+                <div className="flex items-center gap-2 mb-4">
+                  <Users className="w-5 h-5 text-slate-700" />
+                  <h2 className="text-lg font-bold text-slate-900">
+                    Média coletiva
+                  </h2>
+                </div>
+
+                <p className="text-sm text-slate-600">
+                  Se você está abaixo da média dos alunos em um conteúdo, o VET
+                  aumenta a chance de ele entrar no simulado.
                 </p>
               </Card>
 
-              <Card className="p-5">
-                <p className="text-sm text-slate-500 mb-1">Manutenção</p>
-                <p className="text-3xl font-bold text-green-600">
-                  {manutencaoQuestions.length}
+              <Card className="p-6 bg-white border-slate-200 rounded-3xl">
+                <div className="flex items-center gap-2 mb-4">
+                  <Trophy className="w-5 h-5 text-slate-700" />
+                  <h2 className="text-lg font-bold text-slate-900">
+                    Questões inéditas
+                  </h2>
+                </div>
+
+                <p className="text-sm text-slate-600">
+                  O VET favorece questões que você ainda não respondeu, para
+                  evitar treino decorado fingindo que é evolução.
                 </p>
               </Card>
 
-              <Card className="p-5">
-                <p className="text-sm text-slate-500 mb-1">Misto</p>
-                <p className="text-3xl font-bold text-slate-900">
-                  {mistoQuestions.length}
+              <Card className="p-6 bg-white border-slate-200 rounded-3xl">
+                <div className="flex items-center gap-2 mb-4">
+                  <Clock3 className="w-5 h-5 text-slate-700" />
+                  <h2 className="text-lg font-bold text-slate-900">
+                    Dificuldade ideal
+                  </h2>
+                </div>
+
+                <p className="text-sm text-slate-600">
+                  Ataque puxa questões mais fortes, consolidação busca equilíbrio
+                  e manutenção favorece revisão eficiente.
                 </p>
               </Card>
-            </div>
-
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <FileCheck className="w-5 h-5 text-emerald-600" />
-                <h2 className="text-xl font-bold text-slate-900">{modeLabel}</h2>
-              </div>
-
-              {currentQuestions.length > 0 ? (
-                <InteractiveQuiz
-                  key={`${mode}-${currentQuestions.map((q) => q.id).join("-")}`}
-                  questions={currentQuestions}
-                  onComplete={handleSimuladoComplete}
-                />
-              ) : (
-                <p className="text-slate-500">
-                  Ainda não há questões suficientes para esse modo de simulado com os critérios atuais.
-                </p>
-              )}
-            </Card>
+            </section>
           </>
         )}
       </main>
