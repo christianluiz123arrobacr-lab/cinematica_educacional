@@ -20,6 +20,7 @@ import VetPrioritiesPage from "./pages/VetPrioritiesPage";
 import VetLevelPage from "./pages/VetLevelPage";
 import VetMockPage from "./pages/VetMockPage";
 import VetMockResultPage from "./pages/VetMockResultPage";
+import VetDiagnosisPage from "./pages/VetDiagnosisPage";
 import AdminQuestionCreatePage from "./pages/AdminQuestionCreatePage";
 import AdminResolutionEditorPage from "./pages/AdminResolutionEditorPage";
 
@@ -223,6 +224,7 @@ function PrivateRouter() {
         <Route path="/vet/nivelamento" component={VetLevelPage} />
         <Route path="/vet/simulado" component={VetMockPage} />
         <Route path="/vet/simulado/resultado" component={VetMockResultPage} />
+        <Route path="/vet/diagnostico" component={VetDiagnosisPage} />
 
         <Route path="/ondulatoria" component={OndulatóriaHome} />
         <Route path="/ondulatoria/topic/conceitos" component={OndulatóriaTopicConceitos} />
