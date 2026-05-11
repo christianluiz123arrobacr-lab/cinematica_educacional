@@ -15,13 +15,13 @@ import {
 const adminItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/usuarios", label: "Usuários", icon: Users },
+  { href: "/admin/assinaturas", label: "Assinaturas", icon: CreditCard },
   { href: "/admin/questoes", label: "Questões", icon: FileText },
   { href: "/admin/resolucoes", label: "Resoluções", icon: Blocks },
   { href: "/admin/reports", label: "Erros reportados", icon: MessageSquareWarning },
   { href: "/admin/uploads", label: "Uploads", icon: Image },
   { href: "/admin/vet", label: "VET", icon: BrainCircuit },
   { href: "/admin/logs", label: "Logs", icon: ScrollText },
-  { href: "/admin/assinaturas", label: "Assinaturas", icon: CreditCard },
 ];
 
 export default function AdminSidebar() {
