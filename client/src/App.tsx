@@ -14,6 +14,7 @@ import PublicProfilePage from "./pages/PublicProfilePage";
 import RankingPage from "./pages/RankingPage";
 import PricingPage from "@/pages/PricingPage";
 import SubscriptionGuard from "./components/SubscriptionGuard";
+import MinhaAssinaturaPage from "./pages/MinhaAssinaturaPage";
 
 import VetPage from "./pages/VetPage";
 import VetPlanPage from "./pages/VetPlanPage";
@@ -346,7 +347,10 @@ function PrivateRouter() {
         <Route
           path="/eletricidade/topic/circuitos-ac"
           component={EletricidadeTopicCircuitosAC}
-        /><Route path="/eletricidade/topic/ondas-eletromagneticas"component={EletricidadeTopicOndasEletromagneticas}
+        />
+        <Route
+          path="/eletricidade/topic/ondas-eletromagneticas"
+          component={EletricidadeTopicOndasEletromagneticas}
         />
 
         <Route path="/eletromagnetismo" component={EletromagnetismoHome} />
@@ -404,6 +408,7 @@ function PrivateRouter() {
         />
 
         <Route path="/progress" component={Progress} />
+        <Route path="/minha-assinatura" component={MinhaAssinaturaPage} />
         <Route path="/perfil/:userId" component={PublicProfilePage} />
         <Route path="/perfil" component={ProfilePage} />
         <Route path="/ranking" component={RankingPage} />
