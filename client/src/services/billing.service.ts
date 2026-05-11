@@ -1,4 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
+
 import type {
   BillingPlanInvite,
   BillingPlanWithStats,
@@ -140,7 +141,10 @@ export async function canUserChoosePlan(plan: BillingPlanWithStats): Promise<{
     allowed: true,
   };
 }
-export async function requestManualSubscription(planSlug: string): Promise<BillingSubscription> {
+
+export async function requestManualSubscription(
+  planSlug: string
+): Promise<BillingSubscription> {
   const { data, error } = await supabase.rpc("request_manual_subscription", {
     target_plan_slug: planSlug,
   });
