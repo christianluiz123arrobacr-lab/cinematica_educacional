@@ -12,6 +12,7 @@ import Landing from "./pages/Landing";
 import ProfilePage from "./pages/ProfilePage";
 import PublicProfilePage from "./pages/PublicProfilePage";
 import RankingPage from "./pages/RankingPage";
+import PricingPage from "@/pages/PricingPage";
 
 import VetPage from "./pages/VetPage";
 import VetPlanPage from "./pages/VetPlanPage";
@@ -141,6 +142,7 @@ function PrivateRouter() {
       <Switch>
         <Route path="/" component={LandingPage} />
         <Route path="/landing" component={Landing} />
+        <Route path="/planos" component={PricingPage} />
         <Route path="/fisica" component={FisicaSelector} />
 
         <Route path="/admin" component={AdminDashboardPage} />
