@@ -13,6 +13,7 @@ import ProfilePage from "./pages/ProfilePage";
 import PublicProfilePage from "./pages/PublicProfilePage";
 import RankingPage from "./pages/RankingPage";
 import PricingPage from "@/pages/PricingPage";
+import SubscriptionGuard from "./components/SubscriptionGuard";
 
 import VetPage from "./pages/VetPage";
 import VetPlanPage from "./pages/VetPlanPage";
@@ -147,6 +148,7 @@ function PrivateRouter() {
 
         <Route path="/admin" component={AdminDashboardPage} />
         <Route path="/admin/usuarios" component={AdminUsersPage} />
+        <Route path="/admin/assinaturas" component={AdminBillingPage} />
         <Route path="/admin/questoes/nova" component={AdminQuestionCreatePage} />
         <Route path="/admin/questoes/:id" component={AdminQuestionEditPage} />
         <Route path="/admin/questoes" component={AdminQuestionsPage} />
@@ -159,7 +161,6 @@ function PrivateRouter() {
         <Route path="/admin/vet" component={AdminVetPage} />
         <Route path="/admin/logs" component={AdminLogsPage} />
         <Route path="/admin/reports" component={AdminQuestionReportsPage} />
-        <Route path="/admin/assinaturas" component={AdminBillingPage} />
 
         <Route path="/fisica-i" component={FisicaIHome} />
         <Route path="/fisica-ii" component={FisicaIIHome} />
@@ -192,8 +193,18 @@ function PrivateRouter() {
 
         <Route path="/caderno-de-erros" component={ErrorNotebook} />
 
-        <Route path="/banco-questoes" component={QuestionBank} />
-        <Route path="/banco-de-questoes" component={QuestionBankPage} />
+        <Route path="/banco-questoes">
+          <SubscriptionGuard>
+            <QuestionBank />
+          </SubscriptionGuard>
+        </Route>
+
+        <Route path="/banco-de-questoes">
+          <SubscriptionGuard>
+            <QuestionBankPage />
+          </SubscriptionGuard>
+        </Route>
+
         <Route path="/disciplinas" component={LandingPage} />
 
         <Route path="/dinamica" component={DinamicaHome} />
@@ -335,10 +346,7 @@ function PrivateRouter() {
         <Route
           path="/eletricidade/topic/circuitos-ac"
           component={EletricidadeTopicCircuitosAC}
-        />
-        <Route
-          path="/eletricidade/topic/ondas-eletromagneticas"
-          component={EletricidadeTopicOndasEletromagneticas}
+        /><Route path="/eletricidade/topic/ondas-eletromagneticas"component={EletricidadeTopicOndasEletromagneticas}
         />
 
         <Route path="/eletromagnetismo" component={EletromagnetismoHome} />
@@ -399,7 +407,13 @@ function PrivateRouter() {
         <Route path="/perfil/:userId" component={PublicProfilePage} />
         <Route path="/perfil" component={ProfilePage} />
         <Route path="/ranking" component={RankingPage} />
-        <Route path="/ia-resolver" component={IAResolver} />
+
+        <Route path="/ia-resolver">
+          <SubscriptionGuard>
+            <IAResolver />
+          </SubscriptionGuard>
+        </Route>
+
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>
