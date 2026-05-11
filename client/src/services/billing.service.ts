@@ -140,3 +140,15 @@ export async function canUserChoosePlan(plan: BillingPlanWithStats): Promise<{
     allowed: true,
   };
 }
+export async function requestManualSubscription(planSlug: string): Promise<BillingSubscription> {
+  const { data, error } = await supabase.rpc("request_manual_subscription", {
+    target_plan_slug: planSlug,
+  });
+
+  if (error) {
+    console.error("Erro ao solicitar assinatura:", error);
+    throw new Error(error.message || "Não foi possível solicitar a assinatura.");
+  }
+
+  return data as BillingSubscription;
+}
