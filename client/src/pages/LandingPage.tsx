@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { Button } from "@/components/ui/button";
@@ -15,23 +16,37 @@ import {
   BrainCircuit,
   UserCircle2,
   CreditCard,
+  BadgeCheck,
+  ChevronDown,
 } from "lucide-react";
 
 export default function LandingPage() {
   const { isAuthenticated, loading } = useSupabaseAuth();
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target as Node)
+      ) {
+        setProfileMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
       {/* Top Bar */}
       <div className="w-full px-6 pt-6">
-        <div className="max-w-6xl mx-auto flex justify-end gap-3">
-          <Link href="/planos">
-            <Button className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-6 py-2 rounded-full flex items-center gap-2">
-              <CreditCard className="w-4 h-4" />
-              Ver planos
-            </Button>
-          </Link>
-
+        <div className="max-w-6xl mx-auto flex justify-end">
           {loading ? (
             <Button
               disabled
@@ -40,12 +55,75 @@ export default function LandingPage() {
               Carregando...
             </Button>
           ) : isAuthenticated ? (
-            <Link href="/perfil">
-              <Button className="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-2 rounded-full flex items-center gap-2">
-                <UserCircle2 className="w-4 h-4" />
-                Perfil
-              </Button>
-            </Link>
+            <div className="relative" ref={profileMenuRef}>
+              <button
+                type="button"
+                onClick={() => setProfileMenuOpen((current) => !current)}
+                className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 shadow-sm hover:bg-slate-50 transition-all"
+              >
+                <div className="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center">
+                  <UserCircle2 className="w-5 h-5" />
+                </div>
+
+                <span className="hidden sm:inline text-sm font-semibold text-slate-800">
+                  Conta
+                </span>
+
+                <ChevronDown
+                  className={`w-4 h-4 text-slate-500 transition-transform ${
+                    profileMenuOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {profileMenuOpen && (
+                <div className="absolute right-0 mt-3 w-64 rounded-3xl border border-slate-200 bg-white p-3 shadow-2xl z-50">
+                  <div className="px-3 py-3 border-b border-slate-100">
+                    <p className="text-sm font-bold text-slate-900">
+                      Minha conta
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      Gerencie seu perfil e assinatura
+                    </p>
+                  </div>
+
+                  <div className="py-2 space-y-1">
+                    <Link href="/perfil">
+                      <button
+                        type="button"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="w-full flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all"
+                      >
+                        <UserCircle2 className="w-4 h-4 text-slate-500" />
+                        Ver perfil
+                      </button>
+                    </Link>
+
+                    <Link href="/minha-assinatura">
+                      <button
+                        type="button"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="w-full flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all"
+                      >
+                        <BadgeCheck className="w-4 h-4 text-emerald-600" />
+                        Minha assinatura
+                      </button>
+                    </Link>
+
+                    <Link href="/planos">
+                      <button
+                        type="button"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="w-full flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all"
+                      >
+                        <CreditCard className="w-4 h-4 text-cyan-600" />
+                        Ver planos
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
           ) : (
             <Link href="/login">
               <Button className="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-2 rounded-full flex items-center gap-2">
@@ -73,12 +151,6 @@ export default function LandingPage() {
         </p>
 
         <div className="flex gap-4 justify-center flex-wrap mb-16">
-          <Link href="/planos">
-            <Button className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-8 rounded-full text-lg">
-              Ver planos <CreditCard className="w-5 h-5 ml-2" />
-            </Button>
-          </Link>
-
           <Link href="/fisica">
             <Button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full text-lg">
               Explorar disciplinas <ArrowRight className="w-5 h-5 ml-2" />
@@ -242,19 +314,11 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-3">
-                  <Link href="/banco-de-questoes">
-                    <Button className="bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold py-3 px-8 rounded-full flex items-center gap-2 text-lg">
-                      Começar Agora <ArrowRight className="w-5 h-5" />
-                    </Button>
-                  </Link>
-
-                  <Link href="/planos">
-                    <Button className="bg-white/15 hover:bg-white/25 text-white border border-white/20 font-bold py-3 px-8 rounded-full flex items-center gap-2 text-lg">
-                      Ver planos <CreditCard className="w-5 h-5" />
-                    </Button>
-                  </Link>
-                </div>
+                <Link href="/banco-de-questoes">
+                  <Button className="bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold py-3 px-8 rounded-full flex items-center gap-2 text-lg">
+                    Começar Agora <ArrowRight className="w-5 h-5" />
+                  </Button>
+                </Link>
               </div>
 
               <div className="hidden md:flex items-center justify-center relative h-80">
