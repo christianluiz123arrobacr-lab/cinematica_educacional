@@ -14,6 +14,7 @@ import {
   Trophy,
   BrainCircuit,
   UserCircle2,
+  CreditCard,
 } from "lucide-react";
 
 export default function LandingPage() {
