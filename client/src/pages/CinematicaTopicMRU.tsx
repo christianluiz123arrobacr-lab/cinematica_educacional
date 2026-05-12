@@ -548,6 +548,196 @@ export default function CinematicaTopicMRU() {
                 </div>
               </div>
             </section>
+
+            {/* ===== SEÇÃO 6: GRÁFICOS E INTERPRETAÇÃO GRÁFICA ===== */}
+            <section className="bg-white rounded-xl shadow-md p-8 border-l-4 border-blue-600">
+              <h2 className="text-3xl font-bold text-slate-900 mb-6">
+                6. Gráficos e Interpretação Gráfica no MRU
+              </h2>
+              <div className="space-y-8">
+                <p className="text-slate-700 leading-relaxed">
+                  A análise gráfica é uma das ferramentas mais poderosas da física. No MRU, trabalhamos com três tipos principais de gráficos que descrevem o comportamento do móvel ao longo do tempo.
+                </p>
+
+                {/* Gráfico s x t */}
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">A</span>
+                    Gráfico Posição x Tempo (s × t)
+                  </h3>
+                  <p className="text-slate-700 mb-4">
+                    Como a equação horária <MathFormula formula="s = s_0 + vt" /> é uma função do 1º grau em relação ao tempo, o gráfico é sempre uma <strong>reta inclinada</strong>.
+                  </p>
+                  <div className="grid md:grid-cols-2 gap-6 mb-6">
+                    <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                      <p className="font-semibold text-blue-900 mb-2">Movimento Progressivo (v &gt; 0)</p>
+                      <p className="text-sm text-slate-600 mb-3">A reta é <strong>ascendente</strong> (sobe para a direita).</p>
+                      <div className="h-32 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300">
+                        <span className="text-slate-400 text-xs italic">[Representação Visual: Reta subindo]</span>
+                      </div>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                      <p className="font-semibold text-red-900 mb-2">Movimento Retrógrado (v &lt; 0)</p>
+                      <p className="text-sm text-slate-600 mb-3">A reta é <strong>descendente</strong> (desce para a direita).</p>
+                      <div className="h-32 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300">
+                        <span className="text-slate-400 text-xs italic">[Representação Visual: Reta descendo]</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <p className="font-bold text-blue-900 mb-2">Propriedade Importante:</p>
+                    <p className="text-blue-800 text-sm leading-relaxed">
+                      A <strong>inclinação</strong> da reta (coeficiente angular) representa a <strong>velocidade escalar</strong> do móvel. Quanto mais inclinada a reta, maior o módulo da velocidade.
+                    </p>
+                    <div className="mt-3">
+                      <MathFormula formula="\tan(\theta) = \frac{\Delta s}{\Delta t} = v" display={true} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Gráfico v x t */}
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">B</span>
+                    Gráfico Velocidade x Tempo (v × t)
+                  </h3>
+                  <p className="text-slate-700 mb-4">
+                    No MRU, a velocidade é constante. Por isso, o gráfico é sempre uma <strong>reta horizontal</strong> (paralela ao eixo do tempo).
+                  </p>
+                  <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm mb-6">
+                    <div className="h-40 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300 relative">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                         <div className="w-3/4 h-0.5 bg-blue-600 relative">
+                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-blue-600 font-bold text-xs">v = constante</div>
+                         </div>
+                      </div>
+                      <span className="text-slate-400 text-xs italic mt-20">[Representação Visual: Reta Horizontal]</span>
+                    </div>
+                  </div>
+                  <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                    <p className="font-bold text-green-900 mb-2">Propriedade da Área (NÉPER):</p>
+                    <p className="text-green-800 text-sm leading-relaxed">
+                      A <strong>área</strong> sob a reta no gráfico <MathFormula formula="v \times t" /> é numericamente igual ao <strong>deslocamento escalar</strong> (<MathFormula formula="\Delta s" />) do móvel no intervalo de tempo considerado.
+                    </p>
+                    <div className="mt-3">
+                      <MathFormula formula="\text{Área} \stackrel{N}{=} \Delta s = v \cdot \Delta t" display={true} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Gráfico a x t */}
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">C</span>
+                    Gráfico Aceleração x Tempo (a × t)
+                  </h3>
+                  <p className="text-slate-700 mb-4">
+                    Como a velocidade não varia no MRU, a aceleração escalar é <strong>nula</strong> em todos os instantes.
+                  </p>
+                  <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                    <p className="text-sm text-slate-600 mb-2">O gráfico é uma reta coincidente com o eixo horizontal (eixo do tempo).</p>
+                    <div className="h-20 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300">
+                      <MathFormula formula="a = 0" display={true} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* ===== SEÇÃO 6: GRÁFICOS E INTERPRETAÇÃO GRÁFICA ===== */}
+            <section className="bg-white rounded-xl shadow-md p-8 border-l-4 border-blue-600">
+              <h2 className="text-3xl font-bold text-slate-900 mb-6">
+                6. Gráficos e Interpretação Gráfica no MRU
+              </h2>
+              <div className="space-y-8">
+                <p className="text-slate-700 leading-relaxed">
+                  A análise gráfica é uma das ferramentas mais poderosas da física. No MRU, trabalhamos com três tipos principais de gráficos que descrevem o comportamento do móvel ao longo do tempo.
+                </p>
+
+                {/* Gráfico s x t */}
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">A</span>
+                    Gráfico Posição x Tempo (s × t)
+                  </h3>
+                  <p className="text-slate-700 mb-4">
+                    Como a equação horária <MathFormula formula="s = s_0 + vt" /> é uma função do 1º grau em relação ao tempo, o gráfico é sempre uma <strong>reta inclinada</strong>.
+                  </p>
+                  <div className="grid md:grid-cols-2 gap-6 mb-6">
+                    <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                      <p className="font-semibold text-blue-900 mb-2">Movimento Progressivo (v &gt; 0)</p>
+                      <p className="text-sm text-slate-600 mb-3">A reta é <strong>ascendente</strong> (sobe para a direita).</p>
+                      <div className="h-32 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300">
+                        <span className="text-slate-400 text-xs italic">[Representação Visual: Reta subindo]</span>
+                      </div>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                      <p className="font-semibold text-red-900 mb-2">Movimento Retrógrado (v &lt; 0)</p>
+                      <p className="text-sm text-slate-600 mb-3">A reta é <strong>descendente</strong> (desce para a direita).</p>
+                      <div className="h-32 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300">
+                        <span className="text-slate-400 text-xs italic">[Representação Visual: Reta descendo]</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <p className="font-bold text-blue-900 mb-2">Propriedade Importante:</p>
+                    <p className="text-blue-800 text-sm leading-relaxed">
+                      A <strong>inclinação</strong> da reta (coeficiente angular) representa a <strong>velocidade escalar</strong> do móvel. Quanto mais inclinada a reta, maior o módulo da velocidade.
+                    </p>
+                    <div className="mt-3">
+                      <MathFormula formula="\tan(\theta) = \frac{\Delta s}{\Delta t} = v" display={true} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Gráfico v x t */}
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">B</span>
+                    Gráfico Velocidade x Tempo (v × t)
+                  </h3>
+                  <p className="text-slate-700 mb-4">
+                    No MRU, a velocidade é constante. Por isso, o gráfico é sempre uma <strong>reta horizontal</strong> (paralela ao eixo do tempo).
+                  </p>
+                  <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm mb-6">
+                    <div className="h-40 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300 relative">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                         <div className="w-3/4 h-0.5 bg-blue-600 relative">
+                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-blue-600 font-bold text-xs">v = constante</div>
+                         </div>
+                      </div>
+                      <span className="text-slate-400 text-xs italic mt-20">[Representação Visual: Reta Horizontal]</span>
+                    </div>
+                  </div>
+                  <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                    <p className="font-bold text-green-900 mb-2">Propriedade da Área (NÉPER):</p>
+                    <p className="text-green-800 text-sm leading-relaxed">
+                      A <strong>área</strong> sob a reta no gráfico <MathFormula formula="v \times t" /> é numericamente igual ao <strong>deslocamento escalar</strong> (<MathFormula formula="\Delta s" />) do móvel no intervalo de tempo considerado.
+                    </p>
+                    <div className="mt-3">
+                      <MathFormula formula="\text{Área} \stackrel{N}{=} \Delta s = v \cdot \Delta t" display={true} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Gráfico a x t */}
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">C</span>
+                    Gráfico Aceleração x Tempo (a × t)
+                  </h3>
+                  <p className="text-slate-700 mb-4">
+                    Como a velocidade não varia no MRU, a aceleração escalar é <strong>nula</strong> em todos os instantes.
+                  </p>
+                  <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                    <p className="text-sm text-slate-600 mb-2">O gráfico é uma reta coincidente com o eixo horizontal (eixo do tempo).</p>
+                    <div className="h-20 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300">
+                      <MathFormula formula="a = 0" display={true} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
         )}
 
