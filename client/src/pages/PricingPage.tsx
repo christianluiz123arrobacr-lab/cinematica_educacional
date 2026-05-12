@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   CheckCircle2,
+  Copy,
   Crown,
+  ExternalLink,
   Lock,
   Loader2,
   Sparkles,
@@ -27,6 +29,8 @@ import {
   formatSubscriptionStatus,
 } from "@/types/billing";
 
+import { manualPaymentConfig } from "@/config/payment";
+
 function getPlanIcon(slug: string) {
   if (slug === "selecionados_5") return Crown;
   if (slug === "fundador_8") return Zap;
@@ -39,7 +43,9 @@ function getPlanBadge(plan: BillingPlanWithStats) {
   }
 
   if (plan.slug === "fundador_8") {
-    return `Limitado: ${plan.active_subscriptions_count}/${plan.max_active_subscriptions ?? 15}`;
+    return `Limitado: ${plan.active_subscriptions_count}/${
+      plan.max_active_subscriptions ?? 15
+    }`;
   }
 
   return "Plano padrão";
@@ -108,7 +114,7 @@ export default function PricingPage() {
       setSubscription(createdSubscription);
 
       setSuccessMessage(
-        "Sua solicitação foi registrada. Agora falta confirmar o pagamento para liberar o acesso."
+        "Sua solicitação foi registrada. Agora falta confirmar o pagamento para liberar seu acesso."
       );
     } catch (error) {
       console.error(error);
@@ -120,6 +126,18 @@ export default function PricingPage() {
       }
     } finally {
       setLoadingPlanSlug(null);
+    }
+  }
+
+  async function handleCopyPixKey() {
+    if (!manualPaymentConfig.pixKey) return;
+
+    try {
+      await navigator.clipboard.writeText(manualPaymentConfig.pixKey);
+      setSuccessMessage("Chave Pix copiada.");
+    } catch (error) {
+      console.error("Erro ao copiar chave Pix:", error);
+      setErrorMessage("Não foi possível copiar a chave Pix.");
     }
   }
 
@@ -162,12 +180,81 @@ export default function PricingPage() {
         )}
 
         {successMessage && (
-          <div className="mx-auto mt-8 max-w-3xl rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-5 py-4 text-sm text-emerald-100">
-            {successMessage}
+          <div className="mx-auto mt-8 max-w-3xl rounded-3xl border border-emerald-400/30 bg-emerald-500/10 p-6 text-emerald-100">
+            <div className="flex items-start gap-3">
+              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
+
+              <div>
+                <h2 className="text-lg font-black text-white">
+                  Solicitação registrada
+                </h2>
+
+                <p className="mt-2 text-sm leading-6 text-emerald-100">
+                  {successMessage}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <h3 className="text-sm font-bold text-white">Próximos passos</h3>
+
+              <ol className="mt-3 space-y-2 text-sm leading-6 text-emerald-50">
+                {manualPaymentConfig.instructions.map((instruction, index) => (
+                  <li key={instruction} className="flex gap-2">
+                    <span className="font-bold text-white">{index + 1}.</span>
+                    <span>{instruction}</span>
+                  </li>
+                ))}
+              </ol>
+
+              {manualPaymentConfig.pixKey && (
+                <div className="mt-5 rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200">
+                    Chave Pix
+                  </p>
+
+                  <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <code className="break-all rounded-xl bg-black/30 px-3 py-2 text-sm text-white">
+                      {manualPaymentConfig.pixKey}
+                    </code>
+
+                    <button
+                      type="button"
+                      onClick={handleCopyPixKey}
+                      className="flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-bold text-slate-950 transition hover:bg-slate-100"
+                    >
+                      <Copy className="h-4 w-4" />
+                      Copiar
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                {manualPaymentConfig.supportUrl && (
+                  <a
+                    href={manualPaymentConfig.supportUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-200"
+                  >
+                    {manualPaymentConfig.supportLabel}
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                )}
+
+                <a
+                  href="/minha-assinatura"
+                  className="flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10"
+                >
+                  Acompanhar assinatura
+                </a>
+              </div>
+            </div>
           </div>
         )}
 
-        {subscription && (
+        {subscription && !successMessage && (
           <div className="mx-auto mt-8 max-w-3xl rounded-2xl border border-yellow-400/30 bg-yellow-500/10 px-5 py-4 text-sm text-yellow-100">
             Você já possui uma assinatura em andamento. Status:{" "}
             <strong>{formatSubscriptionStatus(subscription.status)}</strong>.
@@ -189,7 +276,9 @@ export default function PricingPage() {
                   highlighted
                     ? "border-cyan-300/60 bg-cyan-400/10"
                     : "border-white/10 bg-white/[0.04]",
-                  unavailable ? "opacity-70" : "hover:-translate-y-1 hover:bg-white/[0.07]",
+                  unavailable
+                    ? "opacity-70"
+                    : "hover:-translate-y-1 hover:bg-white/[0.07]",
                 ].join(" ")}
               >
                 {highlighted && (
