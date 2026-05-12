@@ -4,8 +4,11 @@ import {
   AlertTriangle,
   CheckCircle2,
   Clock3,
+  Copy,
   CreditCard,
+  ExternalLink,
   Loader2,
+  RefreshCw,
   Sparkles,
   XCircle,
 } from "lucide-react";
@@ -13,9 +16,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
+import { manualPaymentConfig } from "@/config/payment";
 import {
   formatPriceFromCents,
   formatSubscriptionStatus,
+  type BillingSubscriptionStatus,
 } from "@/types/billing";
 
 type MySubscriptionRow = {
@@ -67,7 +72,7 @@ function getStatusInfo(status: string) {
         icon: Clock3,
         title: "Aguardando confirmação",
         description:
-          "Sua solicitação foi registrada. O acesso será liberado após a confirmação do pagamento.",
+          "Sua solicitação foi registrada. Faça o Pix e envie o comprovante para liberar o acesso.",
         className: "border-yellow-200 bg-yellow-50 text-yellow-800",
       };
 
@@ -110,12 +115,23 @@ export default function MinhaAssinaturaPage() {
     null
   );
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [copyMessage, setCopyMessage] = useState("");
 
-  async function loadSubscription() {
+  const shouldShowManualPayment =
+    subscription?.status === "manual_review" || subscription?.status === "pending";
+
+  async function loadSubscription(showRefreshing = false) {
     try {
-      setLoading(true);
+      if (showRefreshing) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+
       setErrorMessage("");
+      setCopyMessage("");
 
       const {
         data: { user },
@@ -189,6 +205,19 @@ export default function MinhaAssinaturaPage() {
       setErrorMessage("Ocorreu um erro inesperado ao carregar sua assinatura.");
     } finally {
       setLoading(false);
+      setRefreshing(false);
+    }
+  }
+
+  async function handleCopyPixKey() {
+    if (!manualPaymentConfig.pixKey) return;
+
+    try {
+      await navigator.clipboard.writeText(manualPaymentConfig.pixKey);
+      setCopyMessage("Chave Pix copiada.");
+    } catch (error) {
+      console.error("Erro ao copiar chave Pix:", error);
+      setCopyMessage("Não foi possível copiar a chave Pix.");
     }
   }
 
@@ -217,12 +246,14 @@ export default function MinhaAssinaturaPage() {
         <section className="mx-auto flex min-h-screen max-w-4xl items-center justify-center px-4">
           <Card className="w-full max-w-xl border-red-200 bg-red-50 p-8 text-center">
             <AlertTriangle className="mx-auto h-10 w-10 text-red-600" />
+
             <h1 className="mt-4 text-2xl font-black text-red-900">
               Não foi possível carregar
             </h1>
+
             <p className="mt-2 text-sm text-red-700">{errorMessage}</p>
 
-            <div className="mt-6 flex justify-center gap-3">
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Link href="/login">
                 <Button>Fazer login</Button>
               </Link>
@@ -255,10 +286,19 @@ export default function MinhaAssinaturaPage() {
               recursos premium da plataforma.
             </p>
 
-            <div className="mt-8">
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link href="/planos">
                 <Button className="rounded-2xl bg-cyan-300 px-6 py-3 text-sm font-bold text-slate-950 hover:bg-cyan-200">
                   Ver planos
+                </Button>
+              </Link>
+
+              <Link href="/">
+                <Button
+                  variant="outline"
+                  className="rounded-2xl border-white/10 bg-white/5 px-6 py-3 text-sm font-bold text-white hover:bg-white/10"
+                >
+                  Voltar ao início
                 </Button>
               </Link>
             </div>
@@ -291,11 +331,10 @@ export default function MinhaAssinaturaPage() {
 
         <div className="mx-auto mt-10 grid max-w-4xl gap-6 lg:grid-cols-[1.2fr_0.8fr]">
           <Card className="border-white/10 bg-white/[0.04] p-6 text-white">
-            <div
-              className={`rounded-2xl border p-4 ${statusInfo.className}`}
-            >
+            <div className={`rounded-2xl border p-4 ${statusInfo.className}`}>
               <div className="flex items-start gap-3">
                 <StatusIcon className="mt-0.5 h-5 w-5" />
+
                 <div>
                   <h2 className="font-black">{statusInfo.title}</h2>
                   <p className="mt-1 text-sm leading-6">
@@ -336,7 +375,9 @@ export default function MinhaAssinaturaPage() {
               <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-3">
                 <span className="text-slate-400">Status</span>
                 <strong className="text-white">
-                  {formatSubscriptionStatus(subscription.status as never)}
+                  {formatSubscriptionStatus(
+                    subscription.status as BillingSubscriptionStatus
+                  )}
                 </strong>
               </div>
 
@@ -384,14 +425,109 @@ export default function MinhaAssinaturaPage() {
 
               <Button
                 variant="outline"
-                onClick={loadSubscription}
+                onClick={() => loadSubscription(true)}
+                disabled={refreshing}
                 className="w-full rounded-2xl border-white/10 bg-white/5 text-white hover:bg-white/10"
               >
-                Atualizar status
+                {refreshing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Atualizando...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    Atualizar status
+                  </>
+                )}
               </Button>
             </div>
           </Card>
         </div>
+
+        {shouldShowManualPayment && (
+          <Card className="mx-auto mt-6 max-w-4xl border-emerald-400/30 bg-emerald-500/10 p-6 text-emerald-50">
+            <div className="flex items-start gap-3">
+              <Clock3 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-200" />
+
+              <div>
+                <h2 className="text-lg font-black text-white">
+                  Falta confirmar o pagamento
+                </h2>
+
+                <p className="mt-2 text-sm leading-6 text-emerald-100">
+                  Para liberar seu acesso, faça o Pix e envie o comprovante pelo
+                  WhatsApp. Depois disso, sua assinatura será aprovada no painel.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <h3 className="text-sm font-bold text-white">Próximos passos</h3>
+
+              <ol className="mt-3 space-y-2 text-sm leading-6 text-emerald-50">
+                {manualPaymentConfig.instructions.map((instruction, index) => (
+                  <li key={instruction} className="flex gap-2">
+                    <span className="font-bold text-white">{index + 1}.</span>
+                    <span>{instruction}</span>
+                  </li>
+                ))}
+              </ol>
+
+              {manualPaymentConfig.pixKey && (
+                <div className="mt-5 rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200">
+                    Chave Pix
+                  </p>
+
+                  <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <code className="break-all rounded-xl bg-black/30 px-3 py-2 text-sm text-white">
+                      {manualPaymentConfig.pixKey}
+                    </code>
+
+                    <button
+                      type="button"
+                      onClick={handleCopyPixKey}
+                      className="flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-bold text-slate-950 transition hover:bg-slate-100"
+                    >
+                      <Copy className="h-4 w-4" />
+                      Copiar
+                    </button>
+                  </div>
+
+                  {copyMessage && (
+                    <p className="mt-2 text-xs font-semibold text-emerald-100">
+                      {copyMessage}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                {manualPaymentConfig.supportUrl && (
+                  <a
+                    href={manualPaymentConfig.supportUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-200"
+                  >
+                    {manualPaymentConfig.supportLabel}
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                )}
+
+                <Link href="/planos">
+                  <Button
+                    variant="outline"
+                    className="w-full rounded-2xl border-white/10 bg-white/5 px-5 py-3 text-sm font-bold text-white hover:bg-white/10 sm:w-auto"
+                  >
+                    Ver planos
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </Card>
+        )}
       </section>
     </main>
   );
