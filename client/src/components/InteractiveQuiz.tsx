@@ -4,7 +4,22 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import { MathFormula } from "./MathFormula";
-import { CheckCircle, XCircle, AlertCircle, UserSquare2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  UserSquare2,
+  ArrowLeft,
+  ArrowRight,
+  RotateCcw,
+  BookOpen,
+  Eye,
+  Trophy,
+  MessageSquareWarning,
+  Send,
+  Loader2,
+} from "lucide-react";
 import type { Question } from "@/types/question";
 import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
@@ -30,6 +45,16 @@ type ResolutionMetaRow = {
   autor_nome?: string | null;
 };
 
+const REPORT_TYPES = [
+  { value: "enunciado", label: "Enunciado com erro" },
+  { value: "alternativa", label: "Alternativa com erro" },
+  { value: "gabarito", label: "Gabarito incorreto" },
+  { value: "resolucao", label: "Resolução confusa" },
+  { value: "imagem", label: "Imagem quebrada" },
+  { value: "latex", label: "Formatação/LaTeX bugado" },
+  { value: "outro", label: "Outro" },
+];
+
 function getQuestionTopics(question?: Question | null) {
   if (!question) return [];
 
@@ -50,15 +75,126 @@ function getQuestionSubtopics(question?: Question | null) {
   return question.subtopic ? [question.subtopic] : [];
 }
 
+function formatSubjectLabel(value?: string | null) {
+  const normalized = (value || "").trim().toLowerCase();
+
+  if (normalized === "fisica") return "Física";
+  if (normalized === "matematica") return "Matemática";
+  if (normalized === "quimica") return "Química";
+
+  return value || "Disciplina";
+}
+
+function formatDifficultyLabel(value?: string | null) {
+  const normalized = (value || "").trim().toLowerCase();
+
+  if (normalized === "facil") return "Fácil";
+  if (normalized === "medio") return "Médio";
+  if (normalized === "dificil") return "Difícil";
+
+  return value || "Dificuldade";
+}
+
+function getDifficultyClasses(value?: string | null) {
+  const normalized = (value || "").trim().toLowerCase();
+
+  if (normalized === "facil") {
+    return {
+      pill: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      result: "bg-emerald-50 border-emerald-200",
+    };
+  }
+
+  if (normalized === "medio") {
+    return {
+      pill: "bg-amber-50 text-amber-700 border-amber-200",
+      result: "bg-amber-50 border-amber-200",
+    };
+  }
+
+  if (normalized === "dificil") {
+    return {
+      pill: "bg-rose-50 text-rose-700 border-rose-200",
+      result: "bg-rose-50 border-rose-200",
+    };
+  }
+
+  return {
+    pill: "bg-slate-50 text-slate-700 border-slate-200",
+    result: "bg-slate-50 border-slate-200",
+  };
+}
+
+function MetaPill({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${className}`}
+    >
+      {children}
+    </span>
+  );
+}
+
+function MarkdownContent({
+  children,
+  large = false,
+}: {
+  children: string;
+  large?: boolean;
+}) {
+  return (
+    <div
+      className={`prose prose-slate max-w-none ${
+        large
+          ? "prose-p:my-3 text-base md:text-lg"
+          : "prose-p:my-2 text-sm md:text-base"
+      }`}
+    >
+      <ReactMarkdown
+        remarkPlugins={[remarkMath]}
+        rehypePlugins={[rehypeKatex]}
+        components={{
+          p: ({ children }) => <p className="mb-3 leading-relaxed">{children}</p>,
+          strong: ({ children }) => (
+            <strong className="font-bold">{children}</strong>
+          ),
+          ul: ({ children }) => <ul className="list-disc pl-5 mb-3">{children}</ul>,
+          ol: ({ children }) => (
+            <ol className="list-decimal pl-5 mb-3">{children}</ol>
+          ),
+          li: ({ children }) => <li className="mb-1">{children}</li>,
+        }}
+      >
+        {children}
+      </ReactMarkdown>
+    </div>
+  );
+}
+
 export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps) {
   const { user } = useSupabaseAuth();
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answersByQuestion, setAnswersByQuestion] = useState<Record<number, string>>({});
-  const [showExplanationByQuestion, setShowExplanationByQuestion] = useState<Record<number, boolean>>({});
+  const [showExplanationByQuestion, setShowExplanationByQuestion] =
+    useState<Record<number, boolean>>({});
   const [questionStartedAt, setQuestionStartedAt] = useState<number>(Date.now());
   const [hasSentCompletion, setHasSentCompletion] = useState(false);
-  const [resolutionAuthorsByQuestionId, setResolutionAuthorsByQuestionId] = useState<Record<string, string>>({});
+  const [resolutionAuthorsByQuestionId, setResolutionAuthorsByQuestionId] =
+    useState<Record<string, string>>({});
+
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportType, setReportType] = useState("enunciado");
+  const [reportComment, setReportComment] = useState("");
+  const [reportSending, setReportSending] = useState(false);
+  const [reportSuccess, setReportSuccess] = useState("");
+  const [reportError, setReportError] = useState("");
 
   const question = questions[currentQuestion] ?? null;
 
@@ -66,7 +202,9 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
   const answered = selectedAnswer !== null;
   const showExplanation = showExplanationByQuestion[currentQuestion] ?? false;
   const isCorrect = question ? selectedAnswer === question.correctOptionId : false;
-  const resolutionAuthor = question ? resolutionAuthorsByQuestionId[question.id] ?? "" : "";
+  const resolutionAuthor = question
+    ? resolutionAuthorsByQuestionId[question.id] ?? ""
+    : "";
 
   const questionTopics = getQuestionTopics(question);
   const questionSubtopics = getQuestionSubtopics(question);
@@ -81,7 +219,11 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
     return Object.keys(answersByQuestion).length;
   }, [answersByQuestion]);
 
-  const isQuizComplete = questions.length > 0 && totalAnswered === questions.length;
+  const isQuizComplete =
+    questions.length > 0 && totalAnswered === questions.length;
+
+  const progressPercentage =
+    questions.length > 0 ? ((currentQuestion + 1) / questions.length) * 100 : 0;
 
   const completionData = useMemo<QuizCompletionData | null>(() => {
     if (!isQuizComplete) return null;
@@ -109,16 +251,12 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
         wrongTopicMap.set(topic, (wrongTopicMap.get(topic) ?? 0) + 1);
       }
 
-      const difficulty =
-        q.difficulty === "facil"
-          ? "Fácil"
-          : q.difficulty === "medio"
-            ? "Médio"
-            : q.difficulty === "dificil"
-              ? "Difícil"
-              : "Não informado";
+      const difficulty = formatDifficultyLabel(q.difficulty);
 
-      wrongDifficultyMap.set(difficulty, (wrongDifficultyMap.get(difficulty) ?? 0) + 1);
+      wrongDifficultyMap.set(
+        difficulty,
+        (wrongDifficultyMap.get(difficulty) ?? 0) + 1
+      );
     });
 
     return {
@@ -150,6 +288,13 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
 
   useEffect(() => {
     setQuestionStartedAt(Date.now());
+
+    setReportOpen(false);
+    setReportType("enunciado");
+    setReportComment("");
+    setReportSuccess("");
+    setReportError("");
+    setReportSending(false);
   }, [currentQuestion, questions]);
 
   useEffect(() => {
@@ -266,6 +411,56 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
     await saveAttempt(optionId);
   };
 
+  const handleSubmitReport = async () => {
+    if (!question) return;
+
+    setReportError("");
+    setReportSuccess("");
+
+    if (!user?.id) {
+      setReportError("Você precisa estar logado para reportar um erro.");
+      return;
+    }
+
+    if (!reportType.trim()) {
+      setReportError("Selecione o tipo do problema.");
+      return;
+    }
+
+    try {
+      setReportSending(true);
+
+      const { error } = await supabase.from("question_reports").insert({
+        question_id: question.id,
+        user_id: user.id,
+        report_type: reportType,
+        comment: reportComment.trim() || null,
+        status: "pendente",
+      });
+
+      if (error) {
+        console.error("Erro ao enviar report:", error);
+
+        setReportError(
+          error.message
+            ? `Não foi possível enviar o report: ${error.message}`
+            : "Não foi possível enviar o report."
+        );
+
+        return;
+      }
+
+      setReportSuccess("Erro reportado com sucesso. Obrigado pelo aviso.");
+      setReportComment("");
+      setReportType("enunciado");
+    } catch (error) {
+      console.error("Erro inesperado ao enviar report:", error);
+      setReportError("Ocorreu um erro inesperado ao enviar o report.");
+    } finally {
+      setReportSending(false);
+    }
+  };
+
   const handleNext = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
@@ -284,13 +479,18 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
     setShowExplanationByQuestion({});
     setQuestionStartedAt(Date.now());
     setHasSentCompletion(false);
+    setReportOpen(false);
+    setReportType("enunciado");
+    setReportComment("");
+    setReportSuccess("");
+    setReportError("");
   };
 
   if (!questions.length) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-        <h3 className="text-2xl font-bold text-slate-900 mb-6">
-          📝 Exercícios Interativos
+      <div className="bg-white rounded-3xl shadow-sm p-8 border border-slate-200">
+        <h3 className="text-xl font-bold text-slate-900 mb-3">
+          Questões filtradas
         </h3>
         <p className="text-slate-600">Nenhuma questão encontrada.</p>
       </div>
@@ -299,389 +499,461 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
 
   if (!question) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-        <h3 className="text-2xl font-bold text-slate-900 mb-6">
-          📝 Exercícios Interativos
+      <div className="bg-white rounded-3xl shadow-sm p-8 border border-slate-200">
+        <h3 className="text-xl font-bold text-slate-900 mb-3">
+          Questões filtradas
         </h3>
         <p className="text-slate-600">Carregando questão...</p>
       </div>
     );
   }
 
-  const difficultyClass =
-    question.difficulty === "facil"
-      ? "bg-green-100 text-green-900"
-      : question.difficulty === "medio"
-        ? "bg-yellow-100 text-yellow-900"
-        : "bg-red-100 text-red-900";
-
-  const difficultyLabel =
-    question.difficulty === "facil"
-      ? "FÁCIL"
-      : question.difficulty === "medio"
-        ? "MÉDIO"
-        : "DIFÍCIL";
+  const difficultyClasses = getDifficultyClasses(question.difficulty);
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-      <h3 className="text-2xl font-bold text-slate-900 mb-6">
-        📝 Exercícios Interativos
-      </h3>
-
-      <div className="mb-4 flex flex-wrap gap-2">
-        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-900">
-          {question.exam}
-        </span>
-
-        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-900">
-          {question.year}
-        </span>
-
-        <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${difficultyClass}`}>
-          {difficultyLabel}
-        </span>
-
-        {questionTopics.map((topic) => (
-          <span
-            key={`topic-${topic}`}
-            className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-900"
-          >
-            {topic}
-          </span>
-        ))}
-
-        {questionSubtopics.map((subtopic) => (
-          <span
-            key={`subtopic-${subtopic}`}
-            className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-cyan-100 text-cyan-900"
-          >
-            {subtopic}
-          </span>
-        ))}
-      </div>
-
-      <div className="mb-8">
-        <div className="flex justify-between items-start mb-2">
-          <span className="text-sm font-bold text-slate-900">Progresso</span>
-
-          <div className="flex flex-col items-end">
-            {question.codigo ? (
-              <span className="text-xs font-bold text-slate-500 mb-1">
-                {question.codigo}
+    <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="border-b border-slate-200 bg-gradient-to-r from-slate-50 to-violet-50/60 px-5 md:px-7 py-5">
+        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="inline-flex items-center rounded-full bg-violet-600 text-white px-3 py-1 text-xs font-bold">
+                Questão {currentQuestion + 1} de {questions.length}
               </span>
-            ) : null}
 
-            <span className="text-sm font-bold text-slate-600">
-              {currentQuestion + 1} de {questions.length}
-            </span>
+              {question.codigo ? (
+                <span className="inline-flex items-center rounded-full bg-white border border-slate-200 px-3 py-1 text-xs font-bold text-slate-600">
+                  {question.codigo}
+                </span>
+              ) : null}
+            </div>
+
+            <h3 className="text-2xl font-bold text-slate-900">
+              Exercícios Interativos
+            </h3>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <MetaPill className="bg-blue-50 text-blue-700 border-blue-200">
+              {question.institution || question.exam}
+            </MetaPill>
+
+            <MetaPill className="bg-slate-50 text-slate-700 border-slate-200">
+              {question.year}
+            </MetaPill>
+
+            <MetaPill className="bg-indigo-50 text-indigo-700 border-indigo-200">
+              {formatSubjectLabel(question.subject)}
+            </MetaPill>
+
+            <MetaPill className={difficultyClasses.pill}>
+              {formatDifficultyLabel(question.difficulty)}
+            </MetaPill>
           </div>
         </div>
 
-        <div className="w-full bg-slate-200 rounded-full h-2">
-          <div
-            className="bg-gradient-to-r from-blue-500 to-blue-700 h-2 rounded-full transition-all duration-300"
-            style={{
-              width: `${((currentQuestion + 1) / questions.length) * 100}%`,
-            }}
-          />
-        </div>
-      </div>
+        <div className="mt-5">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs font-semibold text-slate-500">
+              Progresso do treino
+            </p>
 
-      <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-lg border border-blue-300 mb-8">
-        <div className="text-lg font-bold text-slate-900 mb-3 leading-relaxed">
-          <ReactMarkdown
-            remarkPlugins={[remarkMath]}
-            rehypePlugins={[rehypeKatex]}
-            components={{
-              p: ({ children }) => <p className="mb-3">{children}</p>,
-              strong: ({ children }) => (
-                <strong className="font-bold">{children}</strong>
-              ),
-            }}
-          >
-            {question.statement}
-          </ReactMarkdown>
-        </div>
+            <p className="text-xs font-bold text-slate-600">
+              {Math.round(progressPercentage)}%
+            </p>
+          </div>
 
-        {question.imageUrl ? (
-          <div className="mt-4">
-            <img
-              src={question.imageUrl}
-              alt="Imagem da questão"
-              className="max-w-full rounded-lg border border-slate-200"
+          <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+            <div
+              className="bg-gradient-to-r from-violet-500 to-indigo-500 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${progressPercentage}%` }}
             />
           </div>
-        ) : null}
-
-        {question.statementAfterImage ? (
-          <div className="mt-4 text-lg font-bold text-slate-900 leading-relaxed">
-            <ReactMarkdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-              components={{
-                p: ({ children }) => <p className="mb-3">{children}</p>,
-                strong: ({ children }) => (
-                  <strong className="font-bold">{children}</strong>
-                ),
-              }}
-            >
-              {question.statementAfterImage}
-            </ReactMarkdown>
-          </div>
-        ) : null}
-
-        {question.formula ? (
-          <div className="mt-4 p-4 bg-white rounded border border-blue-200">
-            <p className="text-xs text-slate-600 mb-2">Fórmula útil:</p>
-            <MathFormula
-              formula={question.formula.replace(/^\$\$?|\$\$?$/g, "").trim()}
-              display={true}
-            />
-          </div>
-        ) : null}
+        </div>
       </div>
 
-      <div className="space-y-3 mb-8">
-        {question.options.map((option) => {
-          const isSelected = selectedAnswer === option.id;
-          const isCorrectOption = option.id === question.correctOptionId;
-
-          return (
-            <button
-              key={option.id}
-              onClick={() => !answered && handleAnswer(option.id)}
-              disabled={answered}
-              className={`w-full p-4 rounded-lg border-2 text-left font-bold transition-all ${
-                !answered
-                  ? "border-slate-300 bg-white hover:border-blue-500 hover:bg-blue-50 cursor-pointer"
-                  : isSelected
-                    ? isCorrectOption
-                      ? "border-green-500 bg-green-50 text-green-900"
-                      : "border-red-500 bg-red-50 text-red-900"
-                    : isCorrectOption
-                      ? "border-green-500 bg-green-50 text-green-900"
-                      : "border-slate-300 bg-slate-50 text-slate-600"
-              }`}
+      <div className="p-5 md:p-7">
+        <div className="flex flex-wrap gap-2 mb-6">
+          {questionTopics.map((topic) => (
+            <MetaPill
+              key={`topic-${topic}`}
+              className="bg-purple-50 text-purple-700 border-purple-200"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkMath]}
-                    rehypePlugins={[rehypeKatex]}
-                    components={{
-                      p: ({ children }) => <p className="mb-0">{children}</p>,
-                      strong: ({ children }) => (
-                        <strong className="font-bold">{children}</strong>
-                      ),
-                    }}
-                  >
-                    {`${option.label}) ${option.text ?? ""}`}
-                  </ReactMarkdown>
+              {topic}
+            </MetaPill>
+          ))}
 
-                  {option.imageUrl ? (
-                    <img
-                      src={option.imageUrl}
-                      alt={`Alternativa ${option.label}`}
-                      className="mt-3 max-h-48 max-w-full object-contain rounded border border-slate-200 bg-white"
-                    />
-                  ) : null}
-                </div>
+          {questionSubtopics.map((subtopic) => (
+            <MetaPill
+              key={`subtopic-${subtopic}`}
+              className="bg-cyan-50 text-cyan-700 border-cyan-200"
+            >
+              {subtopic}
+            </MetaPill>
+          ))}
+        </div>
 
-                <div className="flex-shrink-0">
-                  {answered && isCorrectOption ? (
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                  ) : null}
+        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 md:p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <BookOpen className="w-5 h-5 text-violet-600" />
+            <p className="font-bold text-slate-900">Enunciado</p>
+          </div>
 
-                  {answered && isSelected && !isCorrectOption ? (
-                    <XCircle className="w-5 h-5 text-red-600" />
-                  ) : null}
-                </div>
-              </div>
-            </button>
-          );
-        })}
-      </div>
+          <MarkdownContent large>{question.statement}</MarkdownContent>
 
-      {showExplanation ? (
-        <div
-          className={`p-6 rounded-lg border-2 mb-8 ${
-            isCorrect
-              ? "bg-green-50 border-green-300"
-              : "bg-yellow-50 border-yellow-300"
-          }`}
-        >
-          <div className="flex gap-3 items-start">
-            {isCorrect ? (
-              <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-            ) : (
-              <AlertCircle className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
-            )}
+          {question.imageUrl ? (
+            <div className="mt-5">
+              <img
+                src={question.imageUrl}
+                alt="Imagem da questão"
+                className="max-w-full rounded-2xl border border-slate-200 bg-white"
+              />
+            </div>
+          ) : null}
 
-            <div className="w-full">
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
-                <p
-                  className={`font-bold ${
-                    isCorrect ? "text-green-900" : "text-yellow-900"
-                  }`}
-                >
-                  {isCorrect ? "✅ Correto!" : "❌ Incorreto"}
-                </p>
+          {question.statementAfterImage ? (
+            <div className="mt-5">
+              <MarkdownContent large>{question.statementAfterImage}</MarkdownContent>
+            </div>
+          ) : null}
 
-                {resolutionAuthor ? (
-                  <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-white/80 border border-slate-200 text-slate-700 text-xs font-semibold self-start">
-                    <UserSquare2 className="w-4 h-4" />
-                    Resolução por: {resolutionAuthor}
-                  </div>
-                ) : null}
-              </div>
+          {question.formula ? (
+            <div className="mt-5 p-4 bg-white rounded-2xl border border-slate-200">
+              <p className="text-xs font-semibold text-slate-500 mb-2">
+                Fórmula útil
+              </p>
+              <MathFormula
+                formula={question.formula.replace(/^\$\$?|\$\$?$/g, "").trim()}
+                display={true}
+              />
+            </div>
+          ) : null}
+        </div>
 
-              <div
-                className={`text-sm ${
-                  isCorrect ? "text-green-800" : "text-yellow-800"
-                }`}
+        <div className="space-y-3 mb-6">
+          {question.options.map((option) => {
+            const isSelected = selectedAnswer === option.id;
+            const isCorrectOption = option.id === question.correctOptionId;
+
+            const optionClass = !answered
+              ? "border-slate-200 bg-white hover:border-violet-300 hover:bg-violet-50 cursor-pointer"
+              : isSelected
+                ? isCorrectOption
+                  ? "border-emerald-300 bg-emerald-50 text-emerald-900"
+                  : "border-rose-300 bg-rose-50 text-rose-900"
+                : isCorrectOption
+                  ? "border-emerald-300 bg-emerald-50 text-emerald-900"
+                  : "border-slate-200 bg-slate-50 text-slate-600";
+
+            return (
+              <button
+                key={option.id}
+                onClick={() => !answered && handleAnswer(option.id)}
+                disabled={answered}
+                className={`w-full rounded-2xl border p-4 text-left transition-all ${optionClass}`}
               >
-                {question.explanationBlocks && question.explanationBlocks.length > 0 ? (
-                  <div className="space-y-4">
-                    {question.explanationBlocks
-                      .sort((a, b) => a.order - b.order)
-                      .map((block, index) => {
-                        if (block.type === "imagem" && block.imageUrl) {
-                          return (
-                            <div
-                              key={`${block.type}-${block.order}-${index}`}
-                              className="rounded-xl overflow-hidden border border-slate-200 bg-white p-3"
-                            >
-                              <img
-                                src={block.imageUrl}
-                                alt={`Imagem da resolução ${index + 1}`}
-                                className="max-w-full rounded-lg mx-auto"
-                              />
-                            </div>
-                          );
-                        }
-
-                        if (block.type === "latex" && block.content) {
-                          return (
-                            <div
-                              key={`${block.type}-${block.order}-${index}`}
-                              className="rounded-xl border border-slate-200 bg-white p-4"
-                            >
-                              <ReactMarkdown
-                                remarkPlugins={[remarkMath]}
-                                rehypePlugins={[rehypeKatex]}
-                                components={{
-                                  p: ({ children }) => (
-                                    <p className="mb-0">{children}</p>
-                                  ),
-                                  strong: ({ children }) => (
-                                    <strong className="font-bold">
-                                      {children}
-                                    </strong>
-                                  ),
-                                }}
-                              >
-                                {block.content}
-                              </ReactMarkdown>
-                            </div>
-                          );
-                        }
-
-                        if (block.content) {
-                          return (
-                            <ReactMarkdown
-                              key={`${block.type}-${block.order}-${index}`}
-                              remarkPlugins={[remarkMath]}
-                              rehypePlugins={[rehypeKatex]}
-                              components={{
-                                p: ({ children }) => (
-                                  <p className="mb-3 whitespace-pre-line">
-                                    {children}
-                                  </p>
-                                ),
-                                strong: ({ children }) => (
-                                  <strong className="font-bold">
-                                    {children}
-                                  </strong>
-                                ),
-                                ul: ({ children }) => (
-                                  <ul className="list-disc pl-5 mb-3">
-                                    {children}
-                                  </ul>
-                                ),
-                                ol: ({ children }) => (
-                                  <ol className="list-decimal pl-5 mb-3">
-                                    {children}
-                                  </ol>
-                                ),
-                                li: ({ children }) => (
-                                  <li className="mb-1">{children}</li>
-                                ),
-                              }}
-                            >
-                              {block.content}
-                            </ReactMarkdown>
-                          );
-                        }
-
-                        return null;
-                      })}
-                  </div>
-                ) : (
-                  <ReactMarkdown
-                    remarkPlugins={[remarkMath]}
-                    rehypePlugins={[rehypeKatex]}
-                    components={{
-                      p: ({ children }) => (
-                        <p className="mb-3 whitespace-pre-line">{children}</p>
-                      ),
-                      strong: ({ children }) => (
-                        <strong className="font-bold">{children}</strong>
-                      ),
-                      ul: ({ children }) => (
-                        <ul className="list-disc pl-5 mb-3">{children}</ul>
-                      ),
-                      ol: ({ children }) => (
-                        <ol className="list-decimal pl-5 mb-3">{children}</ol>
-                      ),
-                      li: ({ children }) => <li className="mb-1">{children}</li>,
-                    }}
+                <div className="flex items-start gap-4">
+                  <div
+                    className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
+                      answered && isCorrectOption
+                        ? "bg-emerald-600 text-white"
+                        : answered && isSelected && !isCorrectOption
+                          ? "bg-rose-600 text-white"
+                          : "bg-violet-50 text-violet-700 border border-violet-200"
+                    }`}
                   >
-                    {question.explanation || "Sem resolução cadastrada."}
-                  </ReactMarkdown>
+                    {option.label}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    {option.text ? (
+                      <MarkdownContent>{option.text}</MarkdownContent>
+                    ) : null}
+
+                    {option.imageUrl ? (
+                      <img
+                        src={option.imageUrl}
+                        alt={`Alternativa ${option.label}`}
+                        className="mt-3 max-h-48 max-w-full object-contain rounded-xl border border-slate-200 bg-white"
+                      />
+                    ) : null}
+                  </div>
+
+                  <div className="shrink-0 pt-1">
+                    {answered && isCorrectOption ? (
+                      <CheckCircle className="w-5 h-5 text-emerald-600" />
+                    ) : null}
+
+                    {answered && isSelected && !isCorrectOption ? (
+                      <XCircle className="w-5 h-5 text-rose-600" />
+                    ) : null}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {showExplanation ? (
+          <div
+            className={`rounded-3xl border p-5 md:p-6 mb-6 ${
+              isCorrect
+                ? "bg-emerald-50 border-emerald-200"
+                : "bg-amber-50 border-amber-200"
+            }`}
+          >
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+              <div className="flex items-start gap-3">
+                {isCorrect ? (
+                  <CheckCircle className="w-6 h-6 text-emerald-600 mt-1" />
+                ) : (
+                  <AlertCircle className="w-6 h-6 text-amber-600 mt-1" />
                 )}
+
+                <div>
+                  <p
+                    className={`text-lg font-bold ${
+                      isCorrect ? "text-emerald-900" : "text-amber-900"
+                    }`}
+                  >
+                    {isCorrect ? "Correto!" : "Incorreto"}
+                  </p>
+
+                  <p
+                    className={`text-sm ${
+                      isCorrect ? "text-emerald-700" : "text-amber-700"
+                    }`}
+                  >
+                    Confira a resolução comentada abaixo.
+                  </p>
+                </div>
+              </div>
+
+              {resolutionAuthor ? (
+                <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-white border border-slate-200 text-slate-700 text-xs font-semibold self-start">
+                  <UserSquare2 className="w-4 h-4" />
+                  Resolução por: {resolutionAuthor}
+                </div>
+              ) : null}
+            </div>
+
+            <div className="rounded-2xl bg-white/80 border border-white p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Eye className="w-5 h-5 text-violet-600" />
+                <p className="font-bold text-slate-900">Resolução</p>
+              </div>
+
+              {question.explanationBlocks && question.explanationBlocks.length > 0 ? (
+                <div className="space-y-4">
+                  {question.explanationBlocks
+                    .sort((a, b) => a.order - b.order)
+                    .map((block, index) => {
+                      if (block.type === "imagem" && block.imageUrl) {
+                        return (
+                          <div
+                            key={`${block.type}-${block.order}-${index}`}
+                            className="rounded-2xl overflow-hidden border border-slate-200 bg-white p-3"
+                          >
+                            <img
+                              src={block.imageUrl}
+                              alt={`Imagem da resolução ${index + 1}`}
+                              className="max-w-full rounded-xl mx-auto"
+                            />
+                          </div>
+                        );
+                      }
+
+                      if (block.content) {
+                        return (
+                          <div
+                            key={`${block.type}-${block.order}-${index}`}
+                            className={
+                              block.type === "latex"
+                                ? "rounded-2xl border border-slate-200 bg-white p-4"
+                                : ""
+                            }
+                          >
+                            <MarkdownContent>{block.content}</MarkdownContent>
+                          </div>
+                        );
+                      }
+
+                      return null;
+                    })}
+                </div>
+              ) : (
+                <MarkdownContent>
+                  {question.explanation || "Sem resolução cadastrada."}
+                </MarkdownContent>
+              )}
+            </div>
+          </div>
+        ) : null}
+
+        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 mb-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center shrink-0">
+                <MessageSquareWarning className="w-5 h-5 text-amber-700" />
+              </div>
+
+              <div>
+                <p className="font-bold text-slate-900">Encontrou algum erro?</p>
+                <p className="text-sm text-slate-500">
+                  Avise o ADM sobre problema no enunciado, gabarito, alternativa, imagem ou resolução.
+                </p>
+              </div>
+            </div>
+
+            <Button
+              variant="outline"
+              onClick={() => {
+                setReportOpen((prev) => !prev);
+                setReportSuccess("");
+                setReportError("");
+              }}
+              className="rounded-2xl"
+            >
+              <MessageSquareWarning className="w-4 h-4 mr-2" />
+              Reportar erro
+            </Button>
+          </div>
+
+          {reportOpen ? (
+            <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4">
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Tipo do problema
+                  </label>
+
+                  <select
+                    value={reportType}
+                    onChange={(event) => setReportType(event.target.value)}
+                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  >
+                    {REPORT_TYPES.map((type) => (
+                      <option key={type.value} value={type.value}>
+                        {type.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Questão
+                  </label>
+
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
+                    {question.codigo || question.id}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Comentário
+                </label>
+
+                <textarea
+                  value={reportComment}
+                  onChange={(event) => setReportComment(event.target.value)}
+                  placeholder="Explique o que está errado. Ex.: gabarito deveria ser B, imagem não aparece, resolução pulou uma etapa..."
+                  rows={4}
+                  className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                />
+              </div>
+
+              {reportError ? (
+                <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                  {reportError}
+                </div>
+              ) : null}
+
+              {reportSuccess ? (
+                <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+                  {reportSuccess}
+                </div>
+              ) : null}
+
+              <div className="flex flex-col sm:flex-row gap-3 justify-end">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setReportOpen(false);
+                    setReportError("");
+                    setReportSuccess("");
+                  }}
+                  className="rounded-2xl"
+                >
+                  Cancelar
+                </Button>
+
+                <Button
+                  onClick={handleSubmitReport}
+                  disabled={reportSending}
+                  className="rounded-2xl bg-amber-600 hover:bg-amber-700 text-white"
+                >
+                  {reportSending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2" />
+                      Enviar report
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        {isQuizComplete ? (
+          <div className="rounded-3xl border border-violet-200 bg-violet-50 p-5 mb-6">
+            <div className="flex items-center gap-3">
+              <Trophy className="w-6 h-6 text-violet-600" />
+              <div>
+                <p className="font-bold text-slate-900">Treino concluído</p>
+                <p className="text-sm text-slate-600">
+                  Você acertou {score} de {questions.length} questões.
+                </p>
               </div>
             </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
 
-      <div className="flex gap-4">
-        {currentQuestion > 0 ? (
-          <button
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Button
+            variant="outline"
             onClick={handlePrevious}
-            className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-lg transition-all"
+            disabled={currentQuestion === 0}
+            className="flex-1 rounded-2xl py-6"
           >
-            ← Questão Anterior
-          </button>
-        ) : null}
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Questão anterior
+          </Button>
 
-        {currentQuestion < questions.length - 1 ? (
-          <button
-            onClick={handleNext}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all"
-          >
-            Próxima Questão →
-          </button>
-        ) : null}
-
-        {currentQuestion === questions.length - 1 ? (
-          <button
-            onClick={handleRestart}
-            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition-all"
-          >
-            Reiniciar Quiz
-          </button>
-        ) : null}
+          {currentQuestion < questions.length - 1 ? (
+            <Button
+              onClick={handleNext}
+              className="flex-1 rounded-2xl py-6 bg-violet-600 hover:bg-violet-700 text-white"
+            >
+              Próxima questão
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleRestart}
+              className="flex-1 rounded-2xl py-6 bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Reiniciar treino
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

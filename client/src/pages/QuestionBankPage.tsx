@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { ComponentType } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,6 +14,15 @@ import {
   Filter,
   BrainCircuit,
   ChevronDown,
+  Building2,
+  CalendarDays,
+  GraduationCap,
+  FolderOpen,
+  Tags,
+  Gauge,
+  X,
+  ListFilter,
+  Search,
 } from "lucide-react";
 
 function normalizeText(value?: string | null) {
@@ -55,8 +65,10 @@ function parseVetFiltersFromUrl() {
 }
 
 function toggleValue(list: string[], value: string) {
-  return list.includes(value)
-    ? list.filter((item) => item !== value)
+  const normalized = normalizeText(value);
+
+  return list.some((item) => normalizeText(item) === normalized)
+    ? list.filter((item) => normalizeText(item) !== normalized)
     : [...list, value];
 }
 
@@ -69,6 +81,14 @@ function matchesMulti(
   const normalizedValue = normalizeText(String(value ?? ""));
 
   return selected.some((item) => normalizeText(item) === normalizedValue);
+}
+
+function matchesMultiList(values: string[], selected: string[]) {
+  if (selected.length === 0) return true;
+
+  const normalizedValues = values.map((value) => normalizeText(value));
+
+  return selected.some((item) => normalizedValues.includes(normalizeText(item)));
 }
 
 function getQuestionTopics(question: Question) {
@@ -113,37 +133,130 @@ function getQuestionSubtopicsForTopics(
   return Array.from(new Set(subtopics));
 }
 
-function matchesMultiList(values: string[], selected: string[]) {
-  if (selected.length === 0) return true;
+function formatSubjectLabel(value: string) {
+  const normalized = normalizeText(value);
 
-  const normalizedValues = values.map((value) => normalizeText(value));
+  if (normalized === "fisica") return "Física";
+  if (normalized === "matematica") return "Matemática";
+  if (normalized === "quimica") return "Química";
 
-  return selected.some((item) => normalizedValues.includes(normalizeText(item)));
+  return value;
 }
 
-function getMultiSelectLabel(selected: string[], placeholder: string) {
+function formatDifficultyLabel(value: string) {
+  const normalized = normalizeText(value);
+
+  if (normalized === "facil") return "Fácil";
+  if (normalized === "medio") return "Médio";
+  if (normalized === "dificil") return "Difícil";
+
+  return value;
+}
+
+function sortSubjects(values: string[]) {
+  const order: Record<string, number> = {
+    fisica: 1,
+    matematica: 2,
+    quimica: 3,
+  };
+
+  return [...values].sort(
+    (a, b) =>
+      (order[normalizeText(a)] ?? 99) - (order[normalizeText(b)] ?? 99) ||
+      a.localeCompare(b, "pt-BR")
+  );
+}
+
+function sortDifficulties(values: string[]) {
+  const order: Record<string, number> = {
+    facil: 1,
+    medio: 2,
+    dificil: 3,
+  };
+
+  return [...values].sort(
+    (a, b) =>
+      (order[normalizeText(a)] ?? 99) - (order[normalizeText(b)] ?? 99) ||
+      a.localeCompare(b, "pt-BR")
+  );
+}
+
+function areNormalizedListsEqual(a: string[], b: string[]) {
+  if (a.length !== b.length) return false;
+
+  return a.every((item, index) => normalizeText(item) === normalizeText(b[index]));
+}
+
+function keepOnlyAvailableSelected(selected: string[], available: string[]) {
+  const availableNormalized = available.map((item) => normalizeText(item));
+
+  const filtered = selected.filter((item) =>
+    availableNormalized.includes(normalizeText(item))
+  );
+
+  return areNormalizedListsEqual(selected, filtered) ? selected : filtered;
+}
+
+function getMultiSelectLabel(
+  selected: string[],
+  placeholder: string,
+  formatter?: (value: string) => string
+) {
   if (selected.length === 0) return placeholder;
-  if (selected.length === 1) return selected[0];
+
+  if (selected.length === 1) {
+    return formatter ? formatter(selected[0]) : selected[0];
+  }
 
   return `${selected.length} selecionados`;
 }
 
+function questionMatchesSearch(question: Question, searchTerm: string) {
+  const term = normalizeText(searchTerm);
+
+  if (!term) return true;
+
+  const searchableParts = [
+    question.codigo,
+    question.id,
+    question.statement,
+    question.statementAfterImage,
+    question.exam,
+    question.institution,
+    String(question.year ?? ""),
+    question.subject,
+    formatSubjectLabel(question.subject),
+    question.difficulty,
+    formatDifficultyLabel(String(question.difficulty ?? "")),
+    ...getQuestionTopics(question),
+    ...getQuestionSubtopics(question),
+  ];
+
+  return searchableParts.some((part) => normalizeText(part).includes(term));
+}
+
 type MultiSelectDropdownProps = {
   title: string;
+  index?: number;
   items: string[];
   selected: string[];
   onToggle: (value: string) => void;
   placeholder: string;
   emptyMessage: string;
+  formatter?: (value: string) => string;
+  icon?: ComponentType<{ className?: string }>;
 };
 
 function MultiSelectDropdown({
   title,
+  index,
   items,
   selected,
   onToggle,
   placeholder,
   emptyMessage,
+  formatter,
+  icon: Icon,
 }: MultiSelectDropdownProps) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -164,17 +277,20 @@ function MultiSelectDropdown({
 
   return (
     <div ref={wrapperRef} className="relative">
-      <label className="block text-sm font-semibold text-slate-700 mb-2">
-        {title}
+      <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+        <span className="inline-flex items-center gap-2">
+          {Icon ? <Icon className="w-4 h-4 text-slate-500" /> : null}
+          {index ? `${index}. ${title}` : title}
+        </span>
       </label>
 
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-left text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-between"
+        className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-left text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 flex items-center justify-between"
       >
         <span className="truncate">
-          {getMultiSelectLabel(selected, placeholder)}
+          {getMultiSelectLabel(selected, placeholder, formatter)}
         </span>
 
         <ChevronDown
@@ -184,7 +300,7 @@ function MultiSelectDropdown({
         />
       </button>
 
-      {open && (
+      {open ? (
         <div className="absolute z-30 mt-2 w-full rounded-2xl border border-slate-200 bg-white shadow-xl p-3 max-h-64 overflow-y-auto">
           {items.length > 0 ? (
             <div className="space-y-2">
@@ -205,7 +321,9 @@ function MultiSelectDropdown({
                       className="h-4 w-4 rounded border-slate-300"
                     />
 
-                    <span className="text-sm text-slate-700">{item}</span>
+                    <span className="text-sm text-slate-700">
+                      {formatter ? formatter(item) : item}
+                    </span>
                   </label>
                 );
               })}
@@ -214,8 +332,26 @@ function MultiSelectDropdown({
             <p className="text-sm text-slate-500 px-2 py-2">{emptyMessage}</p>
           )}
         </div>
-      )}
+      ) : null}
     </div>
+  );
+}
+
+type ActiveFilterChipProps = {
+  label: string;
+  onRemove: () => void;
+};
+
+function ActiveFilterChip({ label, onRemove }: ActiveFilterChipProps) {
+  return (
+    <button
+      type="button"
+      onClick={onRemove}
+      className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 text-violet-700 px-3 py-1.5 text-xs font-semibold hover:bg-violet-100 transition-colors"
+    >
+      <span>{label}</span>
+      <X className="w-3.5 h-3.5" />
+    </button>
   );
 }
 
@@ -225,7 +361,12 @@ export default function QuestionBankPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
 
-  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const [selectedInstitutions, setSelectedInstitutions] = useState<string[]>(
+    initialVetFilters.institution ? [initialVetFilters.institution] : []
+  );
+  const [selectedYears, setSelectedYears] = useState<string[]>([]);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>(
     initialVetFilters.subjects
   );
@@ -233,14 +374,9 @@ export default function QuestionBankPage() {
     initialVetFilters.topics
   );
   const [selectedSubtopics, setSelectedSubtopics] = useState<string[]>([]);
-  const [selectedYears, setSelectedYears] = useState<string[]>([]);
-  const [selectedInstitutions, setSelectedInstitutions] = useState<string[]>(
-    initialVetFilters.institution ? [initialVetFilters.institution] : []
-  );
+  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
 
-  const [vetTopics, setVetTopics] = useState<string[]>(
-    initialVetFilters.topics
-  );
+  const [vetTopics, setVetTopics] = useState<string[]>(initialVetFilters.topics);
   const [vetBlock, setVetBlock] = useState<string>(initialVetFilters.block);
 
   const hasVetFilter = vetTopics.length > 0;
@@ -248,9 +384,63 @@ export default function QuestionBankPage() {
   const effectiveTopics =
     selectedTopics.length > 0 ? selectedTopics : vetTopics;
 
+  const availableInstitutions = useMemo(() => {
+    return Array.from(
+      new Set(
+        questions
+          .map((q) => q.institution?.trim())
+          .filter(
+            (institution): institution is string =>
+              !!institution && institution !== ""
+          )
+      )
+    ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [questions]);
+
+  const questionsForYears = useMemo(() => {
+    return questions.filter((q) =>
+      matchesMulti(q.institution, selectedInstitutions)
+    );
+  }, [questions, selectedInstitutions]);
+
+  const availableYears = useMemo(() => {
+    return Array.from(
+      new Set(questionsForYears.map((q) => String(q.year)).filter(Boolean))
+    ).sort((a, b) => Number(b) - Number(a));
+  }, [questionsForYears]);
+
+  const questionsForSubjects = useMemo(() => {
+    return questions.filter((q) => {
+      const matchesInstitution = matchesMulti(
+        q.institution,
+        selectedInstitutions
+      );
+      const matchesYear = matchesMulti(String(q.year), selectedYears);
+
+      return matchesInstitution && matchesYear;
+    });
+  }, [questions, selectedInstitutions, selectedYears]);
+
+  const availableSubjects = useMemo(() => {
+    return sortSubjects(
+      Array.from(
+        new Set(questionsForSubjects.map((q) => q.subject).filter(Boolean))
+      )
+    );
+  }, [questionsForSubjects]);
+
   const questionsForTopics = useMemo(() => {
-    return questions.filter((q) => matchesMulti(q.subject, selectedSubjects));
-  }, [questions, selectedSubjects]);
+    return questions.filter((q) => {
+      const matchesInstitution = matchesMulti(
+        q.institution,
+        selectedInstitutions
+      );
+      const matchesYear = matchesMulti(String(q.year), selectedYears);
+      const matchesSubject = matchesMulti(q.subject, selectedSubjects);
+
+      return matchesInstitution && matchesYear && matchesSubject;
+    });
+  }, [questions, selectedInstitutions, selectedYears, selectedSubjects]);
 
   const availableTopics = useMemo(() => {
     return Array.from(
@@ -264,15 +454,26 @@ export default function QuestionBankPage() {
 
   const questionsForSubtopics = useMemo(() => {
     return questions.filter((q) => {
+      const matchesInstitution = matchesMulti(
+        q.institution,
+        selectedInstitutions
+      );
+      const matchesYear = matchesMulti(String(q.year), selectedYears);
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
       const matchesTopic = matchesMultiList(
         getQuestionTopics(q),
         effectiveTopics
       );
 
-      return matchesSubject && matchesTopic;
+      return matchesInstitution && matchesYear && matchesSubject && matchesTopic;
     });
-  }, [questions, selectedSubjects, effectiveTopics]);
+  }, [
+    questions,
+    selectedInstitutions,
+    selectedYears,
+    selectedSubjects,
+    effectiveTopics,
+  ]);
 
   const availableSubtopics = useMemo(() => {
     return Array.from(
@@ -284,12 +485,13 @@ export default function QuestionBankPage() {
     ).sort((a, b) => a.localeCompare(b, "pt-BR"));
   }, [questionsForSubtopics, effectiveTopics]);
 
-  const questionsForYears = useMemo(() => {
+  const questionsForDifficulties = useMemo(() => {
     return questions.filter((q) => {
-      const matchesDifficulty = matchesMulti(
-        q.difficulty,
-        selectedDifficulties
+      const matchesInstitution = matchesMulti(
+        q.institution,
+        selectedInstitutions
       );
+      const matchesYear = matchesMulti(String(q.year), selectedYears);
       const matchesSubject = matchesMulti(q.subject, selectedSubjects);
       const matchesTopic = matchesMultiList(
         getQuestionTopics(q),
@@ -301,7 +503,8 @@ export default function QuestionBankPage() {
       );
 
       return (
-        matchesDifficulty &&
+        matchesInstitution &&
+        matchesYear &&
         matchesSubject &&
         matchesTopic &&
         matchesSubtopic
@@ -309,64 +512,57 @@ export default function QuestionBankPage() {
     });
   }, [
     questions,
-    selectedDifficulties,
-    selectedSubjects,
-    effectiveTopics,
-    selectedSubtopics,
-  ]);
-
-  const availableYears = useMemo(() => {
-    return Array.from(
-      new Set(questionsForYears.map((q) => String(q.year)).filter(Boolean))
-    ).sort((a, b) => Number(b) - Number(a));
-  }, [questionsForYears]);
-
-  const questionsForInstitutions = useMemo(() => {
-    return questions.filter((q) => {
-      const matchesDifficulty = matchesMulti(
-        q.difficulty,
-        selectedDifficulties
-      );
-      const matchesSubject = matchesMulti(q.subject, selectedSubjects);
-      const matchesTopic = matchesMultiList(
-        getQuestionTopics(q),
-        effectiveTopics
-      );
-      const matchesSubtopic = matchesMultiList(
-        getQuestionSubtopicsForTopics(q, effectiveTopics),
-        selectedSubtopics
-      );
-      const matchesYear = matchesMulti(String(q.year), selectedYears);
-
-      return (
-        matchesDifficulty &&
-        matchesSubject &&
-        matchesTopic &&
-        matchesSubtopic &&
-        matchesYear
-      );
-    });
-  }, [
-    questions,
-    selectedDifficulties,
-    selectedSubjects,
-    effectiveTopics,
-    selectedSubtopics,
+    selectedInstitutions,
     selectedYears,
+    selectedSubjects,
+    effectiveTopics,
+    selectedSubtopics,
   ]);
 
-  const availableInstitutions = useMemo(() => {
-    return Array.from(
-      new Set(
-        questionsForInstitutions
-          .map((q) => q.institution?.trim())
-          .filter(
-            (institution): institution is string =>
-              !!institution && institution !== ""
-          )
+  const availableDifficulties = useMemo(() => {
+    return sortDifficulties(
+      Array.from(
+        new Set(
+          questionsForDifficulties
+            .map((q) => String(q.difficulty ?? ""))
+            .filter(Boolean)
+        )
       )
-    ).sort((a, b) => a.localeCompare(b, "pt-BR"));
-  }, [questionsForInstitutions]);
+    );
+  }, [questionsForDifficulties]);
+
+  useEffect(() => {
+    if (!questions.length) return;
+    setSelectedYears((prev) => keepOnlyAvailableSelected(prev, availableYears));
+  }, [availableYears, questions.length]);
+
+  useEffect(() => {
+    if (!questions.length) return;
+    setSelectedSubjects((prev) =>
+      keepOnlyAvailableSelected(prev, availableSubjects)
+    );
+  }, [availableSubjects, questions.length]);
+
+  useEffect(() => {
+    if (!questions.length) return;
+    setSelectedTopics((prev) =>
+      keepOnlyAvailableSelected(prev, availableTopics)
+    );
+  }, [availableTopics, questions.length]);
+
+  useEffect(() => {
+    if (!questions.length) return;
+    setSelectedSubtopics((prev) =>
+      keepOnlyAvailableSelected(prev, availableSubtopics)
+    );
+  }, [availableSubtopics, questions.length]);
+
+  useEffect(() => {
+    if (!questions.length) return;
+    setSelectedDifficulties((prev) =>
+      keepOnlyAvailableSelected(prev, availableDifficulties)
+    );
+  }, [availableDifficulties, questions.length]);
 
   const totalSubjects = useMemo(
     () => new Set(questions.map((q) => q.subject).filter(Boolean)).size,
@@ -387,9 +583,7 @@ export default function QuestionBankPage() {
 
     const counts = questions.reduce<Record<string, number>>((acc, q) => {
       if (!q.subject) return acc;
-
       acc[q.subject] = (acc[q.subject] || 0) + 1;
-
       return acc;
     }, {});
 
@@ -411,9 +605,7 @@ export default function QuestionBankPage() {
 
     const counts = questions.reduce<Record<string, number>>((acc, q) => {
       if (!q.difficulty) return acc;
-
       acc[q.difficulty] = (acc[q.difficulty] || 0) + 1;
-
       return acc;
     }, {});
 
@@ -432,10 +624,131 @@ export default function QuestionBankPage() {
       .sort((a, b) => (order[a.key] ?? 99) - (order[b.key] ?? 99));
   }, [questions]);
 
+  const filteredDifficultyStats = useMemo(() => {
+    const counts = filteredQuestions.reduce<Record<string, number>>((acc, q) => {
+      const difficulty = String(q.difficulty ?? "");
+      if (!difficulty) return acc;
+      acc[difficulty] = (acc[difficulty] || 0) + 1;
+      return acc;
+    }, {});
+
+    return [
+      {
+        key: "facil",
+        label: "Fácil",
+        count: counts.facil || 0,
+        colorClass: "bg-emerald-500",
+      },
+      {
+        key: "medio",
+        label: "Médio",
+        count: counts.medio || 0,
+        colorClass: "bg-amber-500",
+      },
+      {
+        key: "dificil",
+        label: "Difícil",
+        count: counts.dificil || 0,
+        colorClass: "bg-rose-500",
+      },
+    ];
+  }, [filteredQuestions]);
+
+  const activeFilterChips = useMemo(() => {
+    const chips: Array<{
+      key: string;
+      label: string;
+      onRemove: () => void;
+    }> = [];
+
+    if (searchTerm.trim()) {
+      chips.push({
+        key: "search",
+        label: `Busca: ${searchTerm.trim()}`,
+        onRemove: () => setSearchTerm(""),
+      });
+    }
+
+    selectedInstitutions.forEach((item) => {
+      chips.push({
+        key: `institution-${item}`,
+        label: item,
+        onRemove: () =>
+          setSelectedInstitutions((prev) =>
+            prev.filter((value) => normalizeText(value) !== normalizeText(item))
+          ),
+      });
+    });
+
+    selectedYears.forEach((item) => {
+      chips.push({
+        key: `year-${item}`,
+        label: item,
+        onRemove: () =>
+          setSelectedYears((prev) =>
+            prev.filter((value) => normalizeText(value) !== normalizeText(item))
+          ),
+      });
+    });
+
+    selectedSubjects.forEach((item) => {
+      chips.push({
+        key: `subject-${item}`,
+        label: formatSubjectLabel(item),
+        onRemove: () =>
+          setSelectedSubjects((prev) =>
+            prev.filter((value) => normalizeText(value) !== normalizeText(item))
+          ),
+      });
+    });
+
+    selectedTopics.forEach((item) => {
+      chips.push({
+        key: `topic-${item}`,
+        label: item,
+        onRemove: () =>
+          setSelectedTopics((prev) =>
+            prev.filter((value) => normalizeText(value) !== normalizeText(item))
+          ),
+      });
+    });
+
+    selectedSubtopics.forEach((item) => {
+      chips.push({
+        key: `subtopic-${item}`,
+        label: item,
+        onRemove: () =>
+          setSelectedSubtopics((prev) =>
+            prev.filter((value) => normalizeText(value) !== normalizeText(item))
+          ),
+      });
+    });
+
+    selectedDifficulties.forEach((item) => {
+      chips.push({
+        key: `difficulty-${item}`,
+        label: formatDifficultyLabel(item),
+        onRemove: () =>
+          setSelectedDifficulties((prev) =>
+            prev.filter((value) => normalizeText(value) !== normalizeText(item))
+          ),
+      });
+    });
+
+    return chips;
+  }, [
+    searchTerm,
+    selectedInstitutions,
+    selectedYears,
+    selectedSubjects,
+    selectedTopics,
+    selectedSubtopics,
+    selectedDifficulties,
+  ]);
+
   useEffect(() => {
     async function loadQuestions() {
       const data = await getQuestions();
-
       setQuestions(data);
       setFilteredQuestions(data);
     }
@@ -446,8 +759,14 @@ export default function QuestionBankPage() {
   useEffect(() => {
     let filtered = questions;
 
+    filtered = filtered.filter((q) => questionMatchesSearch(q, searchTerm));
+
     filtered = filtered.filter((q) =>
-      matchesMulti(q.difficulty, selectedDifficulties)
+      matchesMulti(q.institution, selectedInstitutions)
+    );
+
+    filtered = filtered.filter((q) =>
+      matchesMulti(String(q.year), selectedYears)
     );
 
     filtered = filtered.filter((q) =>
@@ -468,31 +787,29 @@ export default function QuestionBankPage() {
     );
 
     filtered = filtered.filter((q) =>
-      matchesMulti(String(q.year), selectedYears)
-    );
-
-    filtered = filtered.filter((q) =>
-      matchesMulti(q.institution, selectedInstitutions)
+      matchesMulti(q.difficulty, selectedDifficulties)
     );
 
     setFilteredQuestions(filtered);
   }, [
     questions,
-    selectedDifficulties,
+    searchTerm,
+    selectedInstitutions,
+    selectedYears,
     selectedSubjects,
     effectiveTopics,
     selectedSubtopics,
-    selectedYears,
-    selectedInstitutions,
+    selectedDifficulties,
   ]);
 
   function clearAllFilters() {
-    setSelectedDifficulties([]);
+    setSearchTerm("");
+    setSelectedInstitutions([]);
+    setSelectedYears([]);
     setSelectedSubjects([]);
     setSelectedTopics([]);
     setSelectedSubtopics([]);
-    setSelectedYears([]);
-    setSelectedInstitutions([]);
+    setSelectedDifficulties([]);
     setVetTopics([]);
     setVetBlock("");
   }
@@ -503,68 +820,82 @@ export default function QuestionBankPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
-        <div className="container py-4 flex items-center justify-between">
-          <Link href="/">
-            <a className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-              Voltar
-            </a>
-          </Link>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/30 to-slate-100">
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/70">
+        <div className="container py-2.5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link href="/">
+              <a className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
+                <ArrowLeft className="w-4 h-4" />
+                Voltar
+              </a>
+            </Link>
 
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 to-purple-400 flex items-center justify-center">
-              <Zap className="w-6 h-6 text-white" />
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-500 flex items-center justify-center shadow-md shrink-0">
+                <Zap className="w-5 h-5 text-white" />
+              </div>
+
+              <div className="min-w-0">
+                <h1 className="text-xl md:text-2xl font-bold text-slate-900 leading-tight truncate">
+                  Banco de Questões
+                </h1>
+
+                <p className="text-xs text-slate-500 truncate">
+                  Premium • Questões comentadas
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <Card className="hidden sm:flex items-center gap-3 px-4 py-2.5 border-violet-100 bg-white shadow-sm rounded-2xl">
+            <div className="w-9 h-9 rounded-xl bg-violet-600 flex items-center justify-center">
+              <BookMarked className="w-5 h-5 text-white" />
             </div>
 
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">
-                Banco de Questões
-              </h1>
+              <p className="text-xl font-bold text-slate-900 leading-none">
+                {filteredQuestions.length}
+              </p>
 
-              <p className="text-xs text-slate-500">
-                Premium - Questões Comentadas
+              <p className="text-xs font-semibold text-violet-700">
+                questões
               </p>
             </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-slate-600">
-              {filteredQuestions.length} questões
-            </span>
-          </div>
+          </Card>
         </div>
       </header>
 
-      <main className="container py-12">
-        {hasVetFilter && (
-          <section className="mb-8">
-            <Card className="p-6 border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50">
-              <div className="flex items-start justify-between gap-4 flex-wrap">
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
+      <main className="container py-8 space-y-7">
+        {hasVetFilter ? (
+          <section>
+            <Card className="p-4 md:p-5 border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50">
+              <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
                     <BrainCircuit className="w-5 h-5 text-emerald-700" />
-
-                    <h3 className="text-lg font-bold text-slate-900">
-                      Filtro vindo do VET
-                    </h3>
                   </div>
 
-                  <p className="text-sm text-slate-600 mb-3">
-                    Você abriu o banco com uma recomendação estratégica do VET
-                    {vetBlock ? ` para o bloco de ${vetBlock}` : ""}.
-                  </p>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 mb-1">
+                      Filtro vindo do VET
+                    </h3>
 
-                  <div className="flex flex-wrap gap-2">
-                    {vetTopics.map((topic) => (
-                      <span
-                        key={topic}
-                        className="px-3 py-1 rounded-full bg-white border border-emerald-200 text-emerald-700 text-sm font-semibold"
-                      >
-                        {topic}
-                      </span>
-                    ))}
+                    <p className="text-sm text-slate-600 mb-3">
+                      Você abriu o banco com uma recomendação estratégica
+                      {vetBlock ? ` para o bloco de ${vetBlock}` : ""}.
+                    </p>
+
+                    <div className="flex flex-wrap gap-2">
+                      {vetTopics.map((topic) => (
+                        <span
+                          key={topic}
+                          className="px-3 py-1 rounded-full border border-emerald-200 bg-white text-emerald-700 text-sm font-semibold"
+                        >
+                          {topic}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -578,241 +909,215 @@ export default function QuestionBankPage() {
               </div>
             </Card>
           </section>
-        )}
+        ) : null}
 
-        <section className="grid md:grid-cols-3 gap-6 mb-12">
-          <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                <BookMarked className="w-6 h-6 text-white" />
-              </div>
-
-              <div>
-                <p className="text-sm text-slate-600">Total de Questões</p>
-
-                <p className="text-3xl font-bold text-slate-900">
-                  {questions.length}
-                </p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-white" />
-              </div>
-
-              <div>
-                <p className="text-sm text-slate-600">Disciplinas</p>
-
-                <p className="text-3xl font-bold text-slate-900">
-                  {totalSubjects}
-                </p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center">
-                <Zap className="w-6 h-6 text-white" />
-              </div>
-
-              <div>
-                <p className="text-sm text-slate-600">Dificuldades</p>
-
-                <p className="text-3xl font-bold text-slate-900">
-                  {totalDifficulties}
-                </p>
-              </div>
-            </div>
-          </Card>
-        </section>
-
-        <section className="grid lg:grid-cols-2 gap-6 mb-12">
-          <Card className="p-6 bg-white border-slate-200">
-            <h3 className="text-lg font-bold text-slate-900 mb-4">
-              Questões por disciplina
-            </h3>
-
-            <div className="space-y-3">
-              {subjectStats.length > 0 ? (
-                subjectStats.map((item) => (
-                  <div
-                    key={item.key}
-                    className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3"
-                  >
-                    <span className="font-medium text-slate-700">
-                      {item.label}
-                    </span>
-
-                    <span className="text-sm font-bold text-slate-900">
-                      {item.count}
-                    </span>
+        <section className="grid xl:grid-cols-[minmax(0,1fr)_320px] gap-6 items-start">
+          <div className="space-y-5">
+            <div className="grid md:grid-cols-3 gap-4">
+              <Card className="p-4 border-violet-100 bg-white shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-2xl bg-violet-100 flex items-center justify-center">
+                    <BookMarked className="w-5 h-5 text-violet-600" />
                   </div>
-                ))
-              ) : (
-                <p className="text-sm text-slate-500">
-                  Nenhuma disciplina cadastrada ainda.
-                </p>
-              )}
-            </div>
-          </Card>
 
-          <Card className="p-6 bg-white border-slate-200">
-            <h3 className="text-lg font-bold text-slate-900 mb-4">
-              Questões por nível
-            </h3>
+                  <div>
+                    <p className="text-2xl font-bold text-slate-900 leading-tight">
+                      {questions.length}
+                    </p>
 
-            <div className="space-y-3">
-              {difficultyStats.length > 0 ? (
-                difficultyStats.map((item) => (
-                  <div
-                    key={item.key}
-                    className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3"
-                  >
-                    <span className="font-medium text-slate-700">
-                      {item.label}
-                    </span>
+                    <p className="text-sm font-semibold text-slate-800">
+                      Total de Questões
+                    </p>
 
-                    <span className="text-sm font-bold text-slate-900">
-                      {item.count}
-                    </span>
+                    <p className="text-xs text-slate-500">Disponíveis</p>
                   </div>
-                ))
-              ) : (
-                <p className="text-sm text-slate-500">
-                  Nenhuma dificuldade cadastrada ainda.
-                </p>
-              )}
-            </div>
-          </Card>
-        </section>
+                </div>
+              </Card>
 
-        <section className="mb-12">
-          <Card className="p-6 bg-white border-slate-200 shadow-sm">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
-                <Filter className="w-5 h-5 text-slate-600" />
+              <Card className="p-4 border-blue-100 bg-white shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-2xl bg-blue-100 flex items-center justify-center">
+                    <GraduationCap className="w-5 h-5 text-blue-600" />
+                  </div>
+
+                  <div>
+                    <p className="text-2xl font-bold text-slate-900 leading-tight">
+                      {totalSubjects}
+                    </p>
+
+                    <p className="text-sm font-semibold text-slate-800">
+                      Disciplinas
+                    </p>
+
+                    <p className="text-xs text-slate-500">Cobertas</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-4 border-orange-100 bg-white shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-2xl bg-orange-100 flex items-center justify-center">
+                    <BarChart3 className="w-5 h-5 text-orange-600" />
+                  </div>
+
+                  <div>
+                    <p className="text-2xl font-bold text-slate-900 leading-tight">
+                      {totalDifficulties}
+                    </p>
+
+                    <p className="text-sm font-semibold text-slate-800">
+                      Dificuldades
+                    </p>
+
+                    <p className="text-xs text-slate-500">
+                      Fácil, Média, Difícil
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-4">
+              <Card className="p-5 bg-white border-slate-200 shadow-sm">
+                <h3 className="text-base font-bold text-slate-900 mb-4">
+                  Questões por disciplina
+                </h3>
+
+                <div className="space-y-3">
+                  {subjectStats.length > 0 ? (
+                    subjectStats.map((item) => {
+                      const percentage =
+                        questions.length > 0
+                          ? Math.round((item.count / questions.length) * 100)
+                          : 0;
+
+                      return (
+                        <div key={item.key}>
+                          <div className="flex justify-between items-center mb-1.5">
+                            <span className="text-sm font-medium text-slate-700">
+                              {item.label}
+                            </span>
+
+                            <span className="text-xs text-slate-500">
+                              {item.count} ({percentage}%)
+                            </span>
+                          </div>
+
+                          <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-violet-500"
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p className="text-sm text-slate-500">
+                      Nenhuma disciplina cadastrada ainda.
+                    </p>
+                  )}
+                </div>
+              </Card>
+
+              <Card className="p-5 bg-white border-slate-200 shadow-sm">
+                <h3 className="text-base font-bold text-slate-900 mb-4">
+                  Questões por nível
+                </h3>
+
+                <div className="space-y-3">
+                  {difficultyStats.length > 0 ? (
+                    difficultyStats.map((item) => {
+                      const percentage =
+                        questions.length > 0
+                          ? Math.round((item.count / questions.length) * 100)
+                          : 0;
+
+                      const colorClass =
+                        item.key === "facil"
+                          ? "bg-emerald-500"
+                          : item.key === "medio"
+                            ? "bg-amber-500"
+                            : "bg-rose-500";
+
+                      return (
+                        <div key={item.key}>
+                          <div className="flex justify-between items-center mb-1.5">
+                            <span className="text-sm font-medium text-slate-700">
+                              {item.label}
+                            </span>
+
+                            <span className="text-xs text-slate-500">
+                              {item.count} ({percentage}%)
+                            </span>
+                          </div>
+
+                          <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${colorClass}`}
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p className="text-sm text-slate-500">
+                      Nenhuma dificuldade cadastrada ainda.
+                    </p>
+                  )}
+                </div>
+              </Card>
+            </div>
+
+            <Card className="p-4 bg-white border-slate-200 shadow-sm">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center">
+                    <Filter className="w-4 h-4 text-violet-600" />
+                  </div>
+
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900">
+                      Filtros
+                    </h3>
+
+                    <p className="text-xs text-slate-500">
+                      Busque por código, palavra-chave ou refine pela ordem estratégica.
+                    </p>
+                  </div>
+                </div>
+
+                <Button
+                  variant="outline"
+                  onClick={clearAllFilters}
+                  className="rounded-xl h-9 px-4 text-sm"
+                >
+                  Limpar filtros
+                </Button>
               </div>
 
-              <div>
-                <h3 className="text-lg font-bold text-slate-900">Filtros</h3>
-
-                <p className="text-sm text-slate-500">
-                  Você pode combinar várias opções ao mesmo tempo
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-8">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-3">
-                  Dificuldade
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                  Buscar questão
                 </label>
 
-                <div className="flex flex-wrap gap-3">
-                  {["facil", "medio", "dificil"].map((diff) => {
-                    const selected = selectedDifficulties.includes(diff);
+                <div className="relative">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
 
-                    return (
-                      <button
-                        key={diff}
-                        onClick={() =>
-                          setSelectedDifficulties((prev) =>
-                            toggleValue(prev, diff)
-                          )
-                        }
-                        className={`px-4 py-2.5 rounded-full border text-sm font-semibold transition-all ${
-                          selected
-                            ? diff === "facil"
-                              ? "bg-green-500 border-green-500 text-white shadow-sm"
-                              : diff === "medio"
-                                ? "bg-yellow-500 border-yellow-500 text-white shadow-sm"
-                                : "bg-red-500 border-red-500 text-white shadow-sm"
-                            : "bg-white border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-50"
-                        }`}
-                      >
-                        {diff === "facil"
-                          ? "Fácil"
-                          : diff === "medio"
-                            ? "Médio"
-                            : "Difícil"}
-                      </button>
-                    );
-                  })}
+                  <input
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    placeholder="Código, enunciado, banca, conteúdo ou assunto..."
+                    className="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3 py-2.5 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-3">
-                  Disciplina
-                </label>
-
-                <div className="flex flex-wrap gap-3">
-                  {["fisica", "matematica", "quimica"].map((subj) => {
-                    const selected = selectedSubjects.includes(subj);
-
-                    return (
-                      <button
-                        key={subj}
-                        onClick={() =>
-                          setSelectedSubjects((prev) => toggleValue(prev, subj))
-                        }
-                        className={`px-4 py-2.5 rounded-full border text-sm font-semibold transition-all ${
-                          selected
-                            ? "bg-blue-600 border-blue-600 text-white shadow-sm"
-                            : "bg-white border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-50"
-                        }`}
-                      >
-                        {subj === "fisica"
-                          ? "Física"
-                          : subj === "matematica"
-                            ? "Matemática"
-                            : "Química"}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
-                <MultiSelectDropdown
-                  title="Conteúdo"
-                  items={availableTopics}
-                  selected={selectedTopics}
-                  onToggle={(value) =>
-                    setSelectedTopics((prev) => toggleValue(prev, value))
-                  }
-                  placeholder="Todos"
-                  emptyMessage="Nenhum conteúdo disponível."
-                />
-
-                <MultiSelectDropdown
-                  title="Assunto"
-                  items={availableSubtopics}
-                  selected={selectedSubtopics}
-                  onToggle={(value) =>
-                    setSelectedSubtopics((prev) => toggleValue(prev, value))
-                  }
-                  placeholder="Todos"
-                  emptyMessage="Nenhum assunto disponível."
-                />
-
-                <MultiSelectDropdown
-                  title="Ano"
-                  items={availableYears}
-                  selected={selectedYears}
-                  onToggle={(value) =>
-                    setSelectedYears((prev) => toggleValue(prev, value))
-                  }
-                  placeholder="Todos"
-                  emptyMessage="Nenhum ano disponível."
-                />
-
+              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
                 <MultiSelectDropdown
                   title="Instituição"
+                  index={1}
                   items={availableInstitutions}
                   selected={selectedInstitutions}
                   onToggle={(value) =>
@@ -820,17 +1125,231 @@ export default function QuestionBankPage() {
                   }
                   placeholder="Todas"
                   emptyMessage="Nenhuma instituição disponível."
+                  icon={Building2}
+                />
+
+                <MultiSelectDropdown
+                  title="Ano"
+                  index={2}
+                  items={availableYears}
+                  selected={selectedYears}
+                  onToggle={(value) =>
+                    setSelectedYears((prev) => toggleValue(prev, value))
+                  }
+                  placeholder="Todos"
+                  emptyMessage="Nenhum ano disponível."
+                  icon={CalendarDays}
+                />
+
+                <MultiSelectDropdown
+                  title="Disciplina"
+                  index={3}
+                  items={availableSubjects}
+                  selected={selectedSubjects}
+                  onToggle={(value) =>
+                    setSelectedSubjects((prev) => toggleValue(prev, value))
+                  }
+                  placeholder="Todas"
+                  emptyMessage="Nenhuma disciplina disponível."
+                  formatter={formatSubjectLabel}
+                  icon={GraduationCap}
+                />
+
+                <MultiSelectDropdown
+                  title="Conteúdo"
+                  index={4}
+                  items={availableTopics}
+                  selected={selectedTopics}
+                  onToggle={(value) =>
+                    setSelectedTopics((prev) => toggleValue(prev, value))
+                  }
+                  placeholder="Todos"
+                  emptyMessage="Nenhum conteúdo disponível."
+                  icon={FolderOpen}
+                />
+
+                <MultiSelectDropdown
+                  title="Assunto"
+                  index={5}
+                  items={availableSubtopics}
+                  selected={selectedSubtopics}
+                  onToggle={(value) =>
+                    setSelectedSubtopics((prev) => toggleValue(prev, value))
+                  }
+                  placeholder="Todos"
+                  emptyMessage="Nenhum assunto disponível."
+                  icon={Tags}
+                />
+
+                <MultiSelectDropdown
+                  title="Dificuldade"
+                  index={6}
+                  items={availableDifficulties}
+                  selected={selectedDifficulties}
+                  onToggle={(value) =>
+                    setSelectedDifficulties((prev) => toggleValue(prev, value))
+                  }
+                  placeholder="Todas"
+                  emptyMessage="Nenhuma dificuldade disponível."
+                  formatter={formatDifficultyLabel}
+                  icon={Gauge}
                 />
               </div>
 
-              <div className="flex justify-end">
-                <Button
-                  variant="outline"
-                  onClick={clearAllFilters}
-                  className="rounded-xl"
-                >
-                  Limpar filtros
-                </Button>
+              {activeFilterChips.length > 0 ? (
+                <div className="mt-4 border-t border-slate-100 pt-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <ListFilter className="w-4 h-4 text-slate-500" />
+
+                    <p className="text-xs font-semibold text-slate-700">
+                      Filtros ativos
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {activeFilterChips.map((chip) => (
+                      <ActiveFilterChip
+                        key={chip.key}
+                        label={chip.label}
+                        onRemove={chip.onRemove}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </Card>
+          </div>
+
+          <Card className="p-5 bg-white border-slate-200 shadow-sm xl:sticky xl:top-24">
+            <div className="flex items-center gap-2 mb-5">
+              <BookMarked className="w-5 h-5 text-violet-600" />
+
+              <h3 className="text-lg font-bold text-slate-900">
+                Resumo do filtro
+              </h3>
+            </div>
+
+            <div className="space-y-3 text-sm text-slate-700 mb-5">
+              <div className="flex justify-between gap-4">
+                <span className="text-slate-500">Busca</span>
+
+                <span className="font-semibold text-right">
+                  {searchTerm.trim() ? searchTerm.trim() : "—"}
+                </span>
+              </div>
+
+              <div className="flex justify-between gap-4">
+                <span className="text-slate-500">Instituição</span>
+
+                <span className="font-semibold text-right">
+                  {selectedInstitutions.length > 0
+                    ? selectedInstitutions.join(", ")
+                    : "Todas"}
+                </span>
+              </div>
+
+              <div className="flex justify-between gap-4">
+                <span className="text-slate-500">Ano</span>
+
+                <span className="font-semibold text-right">
+                  {selectedYears.length > 0
+                    ? selectedYears.join(", ")
+                    : "Todos"}
+                </span>
+              </div>
+
+              <div className="flex justify-between gap-4">
+                <span className="text-slate-500">Disciplina</span>
+
+                <span className="font-semibold text-right">
+                  {selectedSubjects.length > 0
+                    ? selectedSubjects.map(formatSubjectLabel).join(", ")
+                    : "Todas"}
+                </span>
+              </div>
+
+              <div className="flex justify-between gap-4">
+                <span className="text-slate-500">Conteúdo</span>
+
+                <span className="font-semibold text-right">
+                  {effectiveTopics.length > 0
+                    ? effectiveTopics.join(", ")
+                    : "Todos"}
+                </span>
+              </div>
+
+              <div className="flex justify-between gap-4">
+                <span className="text-slate-500">Assunto</span>
+
+                <span className="font-semibold text-right">
+                  {selectedSubtopics.length > 0
+                    ? selectedSubtopics.join(", ")
+                    : "Todos"}
+                </span>
+              </div>
+
+              <div className="flex justify-between gap-4">
+                <span className="text-slate-500">Dificuldade</span>
+
+                <span className="font-semibold text-right">
+                  {selectedDifficulties.length > 0
+                    ? selectedDifficulties.map(formatDifficultyLabel).join(", ")
+                    : "Todas"}
+                </span>
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4 mb-5">
+              <p className="text-sm text-slate-500 mb-1">
+                Questões encontradas
+              </p>
+
+              <p className="text-3xl font-bold text-slate-900">
+                {filteredQuestions.length}
+              </p>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-bold text-slate-900 mb-4">
+                Questões por dificuldade
+              </h4>
+
+              <div className="space-y-4">
+                {filteredDifficultyStats.map((item) => {
+                  const percentage =
+                    filteredQuestions.length > 0
+                      ? Math.round(
+                          (item.count / filteredQuestions.length) * 100
+                        )
+                      : 0;
+
+                  return (
+                    <div key={item.key}>
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`w-2.5 h-2.5 rounded-full ${item.colorClass}`}
+                          />
+
+                          <span className="text-sm text-slate-700">
+                            {item.label}
+                          </span>
+                        </div>
+
+                        <span className="text-sm text-slate-500">
+                          {item.count} ({percentage}%)
+                        </span>
+                      </div>
+
+                      <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${item.colorClass}`}
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </Card>
@@ -840,20 +1359,25 @@ export default function QuestionBankPage() {
           {filteredQuestions.length > 0 ? (
             <InteractiveQuiz
               key={[
-                selectedDifficulties.join("|"),
+                searchTerm,
+                selectedInstitutions.join("|"),
+                selectedYears.join("|"),
                 selectedSubjects.join("|"),
                 selectedTopics.join("|"),
                 selectedSubtopics.join("|"),
-                selectedYears.join("|"),
-                selectedInstitutions.join("|"),
+                selectedDifficulties.join("|"),
                 vetTopics.join("|"),
               ].join("::")}
               questions={filteredQuestions}
             />
           ) : (
-            <Card className="p-12 text-center">
-              <p className="text-lg text-slate-600 mb-4">
+            <Card className="p-12 text-center bg-white border-slate-200">
+              <p className="text-lg font-semibold text-slate-800 mb-3">
                 Nenhuma questão encontrada com os filtros selecionados.
+              </p>
+
+              <p className="text-sm text-slate-500 mb-6">
+                Tente remover alguns filtros ou voltar ao conjunto completo.
               </p>
 
               <Button onClick={clearAllFilters}>Limpar Filtros</Button>

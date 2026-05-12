@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { Button } from "@/components/ui/button";
@@ -14,10 +15,32 @@ import {
   Trophy,
   BrainCircuit,
   UserCircle2,
+  CreditCard,
+  BadgeCheck,
+  ChevronDown,
 } from "lucide-react";
 
 export default function LandingPage() {
   const { isAuthenticated, loading } = useSupabaseAuth();
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target as Node)
+      ) {
+        setProfileMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -32,12 +55,75 @@ export default function LandingPage() {
               Carregando...
             </Button>
           ) : isAuthenticated ? (
-            <Link href="/perfil">
-              <Button className="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-2 rounded-full flex items-center gap-2">
-                <UserCircle2 className="w-4 h-4" />
-                Perfil
-              </Button>
-            </Link>
+            <div className="relative" ref={profileMenuRef}>
+              <button
+                type="button"
+                onClick={() => setProfileMenuOpen((current) => !current)}
+                className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 shadow-sm hover:bg-slate-50 transition-all"
+              >
+                <div className="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center">
+                  <UserCircle2 className="w-5 h-5" />
+                </div>
+
+                <span className="hidden sm:inline text-sm font-semibold text-slate-800">
+                  Conta
+                </span>
+
+                <ChevronDown
+                  className={`w-4 h-4 text-slate-500 transition-transform ${
+                    profileMenuOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {profileMenuOpen && (
+                <div className="absolute right-0 mt-3 w-64 rounded-3xl border border-slate-200 bg-white p-3 shadow-2xl z-50">
+                  <div className="px-3 py-3 border-b border-slate-100">
+                    <p className="text-sm font-bold text-slate-900">
+                      Minha conta
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      Gerencie seu perfil e assinatura
+                    </p>
+                  </div>
+
+                  <div className="py-2 space-y-1">
+                    <Link href="/perfil">
+                      <button
+                        type="button"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="w-full flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all"
+                      >
+                        <UserCircle2 className="w-4 h-4 text-slate-500" />
+                        Ver perfil
+                      </button>
+                    </Link>
+
+                    <Link href="/minha-assinatura">
+                      <button
+                        type="button"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="w-full flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all"
+                      >
+                        <BadgeCheck className="w-4 h-4 text-emerald-600" />
+                        Minha assinatura
+                      </button>
+                    </Link>
+
+                    <Link href="/planos">
+                      <button
+                        type="button"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="w-full flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all"
+                      >
+                        <CreditCard className="w-4 h-4 text-cyan-600" />
+                        Ver planos
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
           ) : (
             <Link href="/login">
               <Button className="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-2 rounded-full flex items-center gap-2">
@@ -53,7 +139,10 @@ export default function LandingPage() {
       <section className="py-10 px-6 text-center">
         <h1 className="text-5xl font-bold text-slate-900 mb-4">
           <span className="font-bold">Domine Exatas</span>
-          <span className="text-slate-600 font-normal"> para vestibulares e </span>
+          <span className="text-slate-600 font-normal">
+            {" "}
+            para vestibulares e{" "}
+          </span>
           <span className="font-bold">concursos militares</span>
         </h1>
 
@@ -104,10 +193,12 @@ export default function LandingPage() {
                 <Calculator className="w-12 h-12 mb-6" />
                 <h3 className="text-3xl font-bold mb-3">Matemática</h3>
                 <p className="text-blue-100 text-sm leading-relaxed">
-                  Álgebra, geometria, trigonometria, funções e cálculo estratégico
+                  Álgebra, geometria, trigonometria, funções e cálculo
+                  estratégico
                 </p>
               </div>
             </div>
+
             <div className="p-6">
               <button
                 disabled
@@ -125,10 +216,12 @@ export default function LandingPage() {
                 <BookOpen className="w-12 h-12 mb-6" />
                 <h3 className="text-3xl font-bold mb-3">Física</h3>
                 <p className="text-purple-100 text-sm leading-relaxed">
-                  Mecânica, termologia, ondulatória, óptica, eletricidade e moderna
+                  Mecânica, termologia, ondulatória, óptica, eletricidade e
+                  moderna
                 </p>
               </div>
             </div>
+
             <div className="p-6">
               <Link href="/fisica">
                 <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2">
@@ -149,6 +242,7 @@ export default function LandingPage() {
                 </p>
               </div>
             </div>
+
             <div className="p-6">
               <button
                 disabled
@@ -172,11 +266,14 @@ export default function LandingPage() {
               <div>
                 <div className="flex items-center gap-3 mb-6">
                   <div className="text-4xl">⭐</div>
-                  <h3 className="text-3xl font-bold">Banco de Questões Premium</h3>
+                  <h3 className="text-3xl font-bold">
+                    Banco de Questões Premium
+                  </h3>
                 </div>
 
                 <p className="text-lg text-purple-100 mb-8 leading-relaxed">
-                  Resolva questões de Matemática, Física e Química com filtros por prova, assunto, ano e dificuldade.
+                  Resolva questões de Matemática, Física e Química com filtros
+                  por prova, assunto, ano e dificuldade.
                 </p>
 
                 <div className="grid grid-cols-2 gap-6 mb-10">
@@ -184,28 +281,36 @@ export default function LandingPage() {
                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                       <List className="w-5 h-5" />
                     </div>
-                    <span className="font-semibold text-base">Questões comentadas</span>
+                    <span className="font-semibold text-base">
+                      Questões comentadas
+                    </span>
                   </div>
 
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                       <BarChart3 className="w-5 h-5" />
                     </div>
-                    <span className="font-semibold text-base">Análise de desempenho</span>
+                    <span className="font-semibold text-base">
+                      Análise de desempenho
+                    </span>
                   </div>
 
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                       <BookMarked className="w-5 h-5" />
                     </div>
-                    <span className="font-semibold text-base">Caderno de erros</span>
+                    <span className="font-semibold text-base">
+                      Caderno de erros
+                    </span>
                   </div>
 
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                       <Zap className="w-5 h-5" />
                     </div>
-                    <span className="font-semibold text-base">Simulados estratégicos</span>
+                    <span className="font-semibold text-base">
+                      Simulados estratégicos
+                    </span>
                   </div>
                 </div>
 
@@ -236,7 +341,8 @@ export default function LandingPage() {
 
                       <div className="mb-4">
                         <div className="font-bold text-slate-900 text-sm mb-3">
-                          Um móvel percorre 120 m em 6 s com velocidade constante. Qual é sua velocidade?
+                          Um móvel percorre 120 m em 6 s com velocidade
+                          constante. Qual é sua velocidade?
                         </div>
                       </div>
 
@@ -247,7 +353,10 @@ export default function LandingPage() {
                             id="opt1"
                             className="w-4 h-4 cursor-pointer"
                           />
-                          <label htmlFor="opt1" className="text-sm cursor-pointer">
+                          <label
+                            htmlFor="opt1"
+                            className="text-sm cursor-pointer"
+                          >
                             A: 10 m/s
                           </label>
                         </div>
@@ -273,7 +382,10 @@ export default function LandingPage() {
                             id="opt3"
                             className="w-4 h-4 cursor-pointer"
                           />
-                          <label htmlFor="opt3" className="text-sm cursor-pointer">
+                          <label
+                            htmlFor="opt3"
+                            className="text-sm cursor-pointer"
+                          >
                             C: 80 m/s
                           </label>
                         </div>
@@ -284,7 +396,10 @@ export default function LandingPage() {
                             id="opt4"
                             className="w-4 h-4 cursor-pointer"
                           />
-                          <label htmlFor="opt4" className="text-sm cursor-pointer">
+                          <label
+                            htmlFor="opt4"
+                            className="text-sm cursor-pointer"
+                          >
                             D: 40 m/s
                           </label>
                         </div>
@@ -307,7 +422,9 @@ export default function LandingPage() {
 
                         <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
                           <div className="text-3xl mb-3">📋</div>
-                          <div className="font-bold text-base mb-2">Questões</div>
+                          <div className="font-bold text-base mb-2">
+                            Questões
+                          </div>
                           <div className="text-xs opacity-75 leading-tight">
                             <div>Filtros</div>
                             <div>avançados</div>

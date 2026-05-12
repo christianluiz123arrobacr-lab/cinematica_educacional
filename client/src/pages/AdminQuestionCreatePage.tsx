@@ -1206,6 +1206,7 @@ export default function AdminQuestionCreatePage() {
                 <option value="facil">Fácil</option>
                 <option value="medio">Médio</option>
                 <option value="dificil">Difícil</option>
+                <option value="muito_dificil">Muito difícil</option>
               </Select>
             </div>
 
