@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminGuard from "@/components/admin/AdminGuard";
 import { supabase } from "@/lib/supabase";
+import { trpc } from "@/lib/trpc";
 import {
   Loader2,
   AlertTriangle,
@@ -76,6 +77,8 @@ function formatLastSeen(date?: string | null) {
 }
 
 export default function AdminUsersPage() {
+  const createStudentMutation = trpc.admin.createStudent.useMutation();
+
   const [users, setUsers] = useState<AdminUserWithProfile[]>([]);
   const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,6 +90,11 @@ export default function AdminUsersPage() {
   const [newEmail, setNewEmail] = useState("");
   const [newRole, setNewRole] = useState<"admin" | "editor">("editor");
   const [addingUser, setAddingUser] = useState(false);
+
+  const [studentName, setStudentName] = useState("");
+  const [studentEmail, setStudentEmail] = useState("");
+  const [studentPassword, setStudentPassword] = useState("");
+  const [creatingStudent, setCreatingStudent] = useState(false);
 
   const [searchAdmins, setSearchAdmins] = useState("");
   const [searchProfiles, setSearchProfiles] = useState("");
@@ -125,7 +133,9 @@ export default function AdminUsersPage() {
       const adminRows = (adminUsersResult.data as AdminUserRow[]) || [];
       const profileRows = (profilesResult.data as ProfileRow[]) || [];
 
-      const profileMap = new Map(profileRows.map((profile) => [profile.id, profile]));
+      const profileMap = new Map(
+        profileRows.map((profile) => [profile.id, profile])
+      );
 
       const merged: AdminUserWithProfile[] = adminRows.map((user) => ({
         ...user,
@@ -187,6 +197,63 @@ export default function AdminUsersPage() {
       );
     });
   }, [profiles, searchProfiles]);
+
+  async function handleCreateStudent(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const nome = studentName.trim();
+    const email = studentEmail.trim().toLowerCase();
+    const senha = studentPassword.trim();
+
+    if (!nome || nome.length < 2) {
+      setError("Digite um nome válido para o aluno.");
+      return;
+    }
+
+    if (!email || !email.includes("@")) {
+      setError("Digite um e-mail válido para o aluno.");
+      return;
+    }
+
+    if (!senha || senha.length < 6) {
+      setError("A senha precisa ter pelo menos 6 caracteres.");
+      return;
+    }
+
+    try {
+      setCreatingStudent(true);
+      setError("");
+      setSuccessMessage("");
+
+      await createStudentMutation.mutateAsync({
+        nome,
+        email,
+        senha,
+      });
+
+      setSuccessMessage(
+        `Aluno ${nome} criado com sucesso. Ele já pode fazer login com ${email}.`
+      );
+
+      setStudentName("");
+      setStudentEmail("");
+      setStudentPassword("");
+      setSearchProfiles(email);
+
+      await loadAll();
+    } catch (err) {
+      console.error("Erro ao criar aluno:", err);
+
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Não foi possível criar o aluno. Confira se o e-mail já existe ou se a chave SUPABASE_SERVICE_ROLE_KEY está configurada.";
+
+      setError(message);
+    } finally {
+      setCreatingStudent(false);
+    }
+  }
 
   async function handleAddAccess() {
     try {
@@ -330,7 +397,9 @@ export default function AdminUsersPage() {
         return;
       }
 
-      setSuccessMessage(`Perfil de ${profile.nome || profile.email} salvo com sucesso.`);
+      setSuccessMessage(
+        `Perfil de ${profile.nome || profile.email} salvo com sucesso.`
+      );
     } catch (err) {
       console.error("Erro inesperado ao salvar perfil:", err);
       setError("Ocorreu um erro inesperado ao salvar o perfil.");
@@ -340,7 +409,7 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <AdminGuard>
+    <AdminGuard allowedRoles={["admin"]}>
       <AdminLayout
         title="Usuários ADM"
         subtitle="Central de gerenciamento de usuários, acessos administrativos e último acesso."
@@ -610,170 +679,253 @@ export default function AdminUsersPage() {
             </Card>
           </>
         ) : (
-          <Card className="p-6 bg-white border-slate-200">
-            <h2 className="text-lg font-bold text-slate-900 mb-4">
-              Usuários do sistema
-            </h2>
+          <>
+            <Card className="p-6 bg-white border-slate-200">
+              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-5">
+                <div>
+                  <h2 className="text-lg font-bold text-slate-900">
+                    Criar novo aluno
+                  </h2>
 
-            <div className="relative w-full mb-5">
-              <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchProfiles}
-                onChange={(e) => setSearchProfiles(e.target.value)}
-                placeholder="Buscar por nome, email, role ou id..."
-                className="w-full rounded-2xl border border-slate-300 bg-white pl-11 pr-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-              />
-            </div>
-
-            {filteredProfiles.length === 0 ? (
-              <Card className="p-10 text-center border-slate-200">
-                <UserCircle2 className="w-8 h-8 text-slate-400 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-900 mb-2">
-                  Nenhum perfil encontrado
-                </h3>
-                <p className="text-slate-500">
-                  Tente outro termo de busca.
-                </p>
-              </Card>
-            ) : (
-              <div className="space-y-4">
-                {filteredProfiles.map((profile) => {
-                  const busy = busyProfileId === profile.id;
-
-                  return (
-                    <Card
-                      key={profile.id}
-                      className="p-6 bg-white border-slate-200 shadow-sm"
-                    >
-                      <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-6">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-2 mb-4">
-                            <span className="px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold">
-                              {profile.role || "sem role"}
-                            </span>
-
-                            {profile.ativo ? (
-                              <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-emerald-100 text-emerald-700 border-emerald-200">
-                                Ativo
-                              </span>
-                            ) : (
-                              <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-red-100 text-red-700 border-red-200">
-                                Inativo
-                              </span>
-                            )}
-                          </div>
-
-                          <div className="grid md:grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                Nome
-                              </label>
-                              <input
-                                type="text"
-                                value={profile.nome || ""}
-                                onChange={(e) =>
-                                  updateLocalProfile(profile.id, {
-                                    nome: e.target.value,
-                                  })
-                                }
-                                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-                              />
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                Email
-                              </label>
-                              <input
-                                type="text"
-                                value={profile.email || ""}
-                                disabled
-                                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500 shadow-sm"
-                              />
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                Role do perfil
-                              </label>
-                              <select
-                                value={profile.role || "student"}
-                                onChange={(e) =>
-                                  updateLocalProfile(profile.id, {
-                                    role: e.target.value,
-                                  })
-                                }
-                                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-                              >
-                                <option value="student">student</option>
-                                <option value="admin">admin</option>
-                                <option value="editor">editor</option>
-                              </select>
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                Status
-                              </label>
-                              <select
-                                value={profile.ativo ? "ativo" : "inativo"}
-                                onChange={(e) =>
-                                  updateLocalProfile(profile.id, {
-                                    ativo: e.target.value === "ativo",
-                                  })
-                                }
-                                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-                              >
-                                <option value="ativo">Ativo</option>
-                                <option value="inativo">Inativo</option>
-                              </select>
-                            </div>
-                          </div>
-
-                          <div className="mt-4 space-y-2 text-sm text-slate-600">
-                            <p className="flex items-center gap-2">
-                              <Clock3 className="w-4 h-4 text-slate-400" />
-                              <span className="font-semibold text-slate-800">Último acesso:</span>{" "}
-                              {formatLastSeen(profile.last_seen_at)}
-                            </p>
-                            <p>
-                              <span className="font-semibold text-slate-800">ID:</span>{" "}
-                              <span className="font-mono break-all">{profile.id}</span>
-                            </p>
-                            <p>
-                              <span className="font-semibold text-slate-800">Criado em:</span>{" "}
-                              {formatDate(profile.created_at)}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="shrink-0">
-                          <Button
-                            className="rounded-2xl min-w-[170px]"
-                            onClick={() => handleSaveProfile(profile)}
-                            disabled={busy}
-                          >
-                            {busy ? (
-                              <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Salvando...
-                              </>
-                            ) : (
-                              <>
-                                <Save className="w-4 h-4 mr-2" />
-                                Salvar perfil
-                              </>
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  );
-                })}
+                  <p className="mt-1 text-sm text-slate-500">
+                    Crie a conta do aluno no Supabase Auth e o perfil dele automaticamente.
+                  </p>
+                </div>
               </div>
-            )}
-          </Card>
+
+              <form
+                onSubmit={handleCreateStudent}
+                className="grid gap-4 lg:grid-cols-[1fr_1fr_1fr_auto] lg:items-end"
+              >
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Nome do aluno
+                  </label>
+
+                  <input
+                    type="text"
+                    value={studentName}
+                    onChange={(event) => setStudentName(event.target.value)}
+                    placeholder="Ex: João Silva"
+                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    E-mail
+                  </label>
+
+                  <input
+                    type="email"
+                    value={studentEmail}
+                    onChange={(event) => setStudentEmail(event.target.value)}
+                    placeholder="aluno@email.com"
+                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Senha inicial
+                  </label>
+
+                  <input
+                    type="text"
+                    value={studentPassword}
+                    onChange={(event) => setStudentPassword(event.target.value)}
+                    placeholder="Mínimo 6 caracteres"
+                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  />
+
+                  <p className="mt-2 text-xs text-slate-500">
+                    Depois você envia essa senha para o aluno. Manual, mas controlado.
+                  </p>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={creatingStudent}
+                  className="rounded-2xl min-h-[46px]"
+                >
+                  {creatingStudent ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Criando...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Criar aluno
+                    </>
+                  )}
+                </Button>
+              </form>
+            </Card>
+
+            <Card className="p-6 bg-white border-slate-200">
+              <h2 className="text-lg font-bold text-slate-900 mb-4">
+                Usuários do sistema
+              </h2>
+
+              <div className="relative w-full mb-5">
+                <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={searchProfiles}
+                  onChange={(e) => setSearchProfiles(e.target.value)}
+                  placeholder="Buscar por nome, email, role ou id..."
+                  className="w-full rounded-2xl border border-slate-300 bg-white pl-11 pr-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                />
+              </div>
+
+              {filteredProfiles.length === 0 ? (
+                <Card className="p-10 text-center border-slate-200">
+                  <UserCircle2 className="w-8 h-8 text-slate-400 mx-auto mb-3" />
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">
+                    Nenhum perfil encontrado
+                  </h3>
+                  <p className="text-slate-500">Tente outro termo de busca.</p>
+                </Card>
+              ) : (
+                <div className="space-y-4">
+                  {filteredProfiles.map((profile) => {
+                    const busy = busyProfileId === profile.id;
+
+                    return (
+                      <Card
+                        key={profile.id}
+                        className="p-6 bg-white border-slate-200 shadow-sm"
+                      >
+                        <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-6">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-4">
+                              <span className="px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold">
+                                {profile.role || "sem role"}
+                              </span>
+
+                              {profile.ativo ? (
+                                <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-emerald-100 text-emerald-700 border-emerald-200">
+                                  Ativo
+                                </span>
+                              ) : (
+                                <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-red-100 text-red-700 border-red-200">
+                                  Inativo
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                  Nome
+                                </label>
+                                <input
+                                  type="text"
+                                  value={profile.nome || ""}
+                                  onChange={(e) =>
+                                    updateLocalProfile(profile.id, {
+                                      nome: e.target.value,
+                                    })
+                                  }
+                                  className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                  Email
+                                </label>
+                                <input
+                                  type="text"
+                                  value={profile.email || ""}
+                                  disabled
+                                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500 shadow-sm"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                  Role do perfil
+                                </label>
+                                <select
+                                  value={profile.role || "student"}
+                                  onChange={(e) =>
+                                    updateLocalProfile(profile.id, {
+                                      role: e.target.value,
+                                    })
+                                  }
+                                  className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                                >
+                                  <option value="student">student</option>
+                                  <option value="admin">admin</option>
+                                  <option value="editor">editor</option>
+                                </select>
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                  Status
+                                </label>
+                                <select
+                                  value={profile.ativo ? "ativo" : "inativo"}
+                                  onChange={(e) =>
+                                    updateLocalProfile(profile.id, {
+                                      ativo: e.target.value === "ativo",
+                                    })
+                                  }
+                                  className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                                >
+                                  <option value="ativo">Ativo</option>
+                                  <option value="inativo">Inativo</option>
+                                </select>
+                              </div>
+                            </div>
+
+                            <div className="mt-4 space-y-2 text-sm text-slate-600">
+                              <p className="flex items-center gap-2">
+                                <Clock3 className="w-4 h-4 text-slate-400" />
+                                <span className="font-semibold text-slate-800">Último acesso:</span>{" "}
+                                {formatLastSeen(profile.last_seen_at)}
+                              </p>
+                              <p>
+                                <span className="font-semibold text-slate-800">ID:</span>{" "}
+                                <span className="font-mono break-all">{profile.id}</span>
+                              </p>
+                              <p>
+                                <span className="font-semibold text-slate-800">Criado em:</span>{" "}
+                                {formatDate(profile.created_at)}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="shrink-0">
+                            <Button
+                              className="rounded-2xl min-w-[170px]"
+                              onClick={() => handleSaveProfile(profile)}
+                              disabled={busy}
+                            >
+                              {busy ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                  Salvando...
+                                </>
+                              ) : (
+                                <>
+                                  <Save className="w-4 h-4 mr-2" />
+                                  Salvar perfil
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
+            </Card>
+          </>
         )}
       </AdminLayout>
     </AdminGuard>
