@@ -38,6 +38,7 @@ import AdminLogsPage from "./pages/AdminLogsPage";
 import AdminQuestionEditPage from "./pages/AdminQuestionEditPage";
 import AdminQuestionReportsPage from "./pages/AdminQuestionReportsPage";
 import AdminBillingPage from "./pages/AdminBillingPage";
+import AdminMolecularGeometryPrototypePage from "./pages/AdminMolecularGeometryPrototypePage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import DinamicaHome from "./pages/DinamicaHome";
@@ -153,10 +154,8 @@ function PrivateRouter() {
         <Route path="/admin/questoes/nova" component={AdminQuestionCreatePage} />
         <Route path="/admin/questoes/:id" component={AdminQuestionEditPage} />
         <Route path="/admin/questoes" component={AdminQuestionsPage} />
-        <Route
-          path="/admin/resolucoes/:questaoId"
-          component={AdminResolutionEditorPage}
-        />
+        <Route path="/admin/resolucoes/:questaoId" component={AdminResolutionEditorPage}/>
+        <Route path="/admin/quimica/geometria-molecular" component={AdminMolecularGeometryPrototypePage}/>
         <Route path="/admin/resolucoes" component={AdminResolutionsPage} />
         <Route path="/admin/uploads" component={AdminUploadsPage} />
         <Route path="/admin/vet" component={AdminVetPage} />
