@@ -510,6 +510,73 @@ function projectPoint(point: Vec3): ProjectedPoint {
   };
 }
 
+function normalizeAngleDifference(angle: number) {
+  let value = angle;
+
+  while (value > Math.PI) value -= Math.PI * 2;
+  while (value < -Math.PI) value += Math.PI * 2;
+
+  return value;
+}
+
+function buildAngleArcPath(
+  center: ProjectedPoint,
+  first: ProjectedPoint,
+  second: ProjectedPoint,
+  radius = 76
+) {
+  const vectorA = {
+    x: first.x - center.x,
+    y: first.y - center.y,
+  };
+
+  const vectorB = {
+    x: second.x - center.x,
+    y: second.y - center.y,
+  };
+
+  const lengthA = Math.hypot(vectorA.x, vectorA.y);
+  const lengthB = Math.hypot(vectorB.x, vectorB.y);
+
+  if (lengthA === 0 || lengthB === 0) {
+    return {
+      path: "",
+      labelX: center.x,
+      labelY: center.y,
+    };
+  }
+
+  const startAngle = Math.atan2(vectorA.y, vectorA.x);
+  const endAngle = Math.atan2(vectorB.y, vectorB.x);
+  const delta = normalizeAngleDifference(endAngle - startAngle);
+
+  const sweepFlag = delta >= 0 ? 1 : 0;
+  const largeArcFlag = Math.abs(delta) > Math.PI ? 1 : 0;
+
+  const start = {
+    x: center.x + Math.cos(startAngle) * radius,
+    y: center.y + Math.sin(startAngle) * radius,
+  };
+
+  const end = {
+    x: center.x + Math.cos(endAngle) * radius,
+    y: center.y + Math.sin(endAngle) * radius,
+  };
+
+  const midAngle = startAngle + delta / 2;
+
+  const label = {
+    x: center.x + Math.cos(midAngle) * (radius + 46),
+    y: center.y + Math.sin(midAngle) * (radius + 46),
+  };
+
+  return {
+    path: `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArcFlag} ${sweepFlag} ${end.x} ${end.y}`,
+    labelX: label.x,
+    labelY: label.y,
+  };
+}
+
 function getElementVisual(element: string) {
   switch (element) {
     case "H":
@@ -632,6 +699,42 @@ export default function AdminMolecularGeometryPrototypePage() {
     };
   });
 
+  const angleArc =
+    projectedAtoms.length >= 2
+      ? buildAngleArcPath(
+          centralPoint,
+          projectedAtoms[0].point,
+          projectedAtoms[1].point
+        )
+      : null;
+
+  const discoverySteps = [
+    {
+      title: "1. Escolher o átomo central",
+      description: `O átomo central considerado é ${molecule.centralAtom}. É ao redor dele que analisamos as regiões eletrônicas.`,
+    },
+    {
+      title: "2. Contar regiões eletrônicas",
+      description: `A molécula possui ${molecule.bondingPairs} região(ões) ligante(s) e ${molecule.lonePairs} par(es) livre(s) ao redor do átomo central.`,
+    },
+    {
+      title: "3. Montar o modelo VSEPR",
+      description: `Com esses dados, o modelo fica ${molecule.vsepr}. A letra A representa o átomo central, X representa átomos ligados e E representa pares livres.`,
+    },
+    {
+      title: "4. Determinar a geometria eletrônica",
+      description: `Considerando ligações e pares livres, a geometria eletrônica é ${molecule.electronGeometry.toLowerCase()}.`,
+    },
+    {
+      title: "5. Determinar a geometria molecular",
+      description: `Observando apenas os átomos ligados, a geometria molecular é ${molecule.molecularGeometry.toLowerCase()}.`,
+    },
+    {
+      title: "6. Entender o ângulo",
+      description: `O ângulo ideal seria ${molecule.idealAngle}, mas o ângulo observado/aproximado é ${molecule.realAngle}. A diferença aparece por causa da repulsão entre as regiões eletrônicas, especialmente quando há pares livres.`,
+    },
+  ];
+
   const renderObjects: RenderObject[] = [
     ...projectedAtoms.map((item): RenderObject => {
       return {
@@ -752,7 +855,13 @@ export default function AdminMolecularGeometryPrototypePage() {
                       <stop offset="100%" stopColor="#06b6d4" stopOpacity="0" />
                     </radialGradient>
 
-                    <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+                    <filter
+                      id="softShadow"
+                      x="-50%"
+                      y="-50%"
+                      width="200%"
+                      height="200%"
+                    >
                       <feDropShadow
                         dx="0"
                         dy="8"
@@ -784,6 +893,38 @@ export default function AdminMolecularGeometryPrototypePage() {
                       opacity="0.88"
                     />
                   ))}
+
+                  {angleArc?.path && (
+                    <g>
+                      <path
+                        d={angleArc.path}
+                        fill="none"
+                        stroke="#facc15"
+                        strokeWidth="5"
+                        strokeLinecap="round"
+                        opacity="0.95"
+                      />
+
+                      <circle
+                        cx={angleArc.labelX}
+                        cy={angleArc.labelY}
+                        r="34"
+                        fill="#facc15"
+                        opacity="0.95"
+                      />
+
+                      <text
+                        x={angleArc.labelX}
+                        y={angleArc.labelY + 5}
+                        textAnchor="middle"
+                        fontSize="13"
+                        fontWeight="900"
+                        fill="#1e293b"
+                      >
+                        {molecule.realAngle}
+                      </text>
+                    </g>
+                  )}
 
                   {showLonePairs &&
                     projectedLonePairs.map((item) => (
@@ -932,7 +1073,9 @@ export default function AdminMolecularGeometryPrototypePage() {
                       min="-80"
                       max="80"
                       value={rotationX}
-                      onChange={(event) => setRotationX(Number(event.target.value))}
+                      onChange={(event) =>
+                        setRotationX(Number(event.target.value))
+                      }
                       className="w-full"
                     />
                   </div>
@@ -948,7 +1091,9 @@ export default function AdminMolecularGeometryPrototypePage() {
                       min="-180"
                       max="180"
                       value={rotationY}
-                      onChange={(event) => setRotationY(Number(event.target.value))}
+                      onChange={(event) =>
+                        setRotationY(Number(event.target.value))
+                      }
                       className="w-full"
                     />
                   </div>
@@ -1019,15 +1164,51 @@ export default function AdminMolecularGeometryPrototypePage() {
                     </div>
                   </div>
 
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      Legenda visual
+                    </p>
+
+                    <div className="mt-3 space-y-3 text-xs text-slate-700">
+                      <div className="flex items-center gap-3">
+                        <span className="h-4 w-4 rounded-full bg-cyan-500 ring-2 ring-cyan-200" />
+                        <span>Átomo central</span>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span className="h-4 w-4 rounded-full bg-emerald-500 ring-2 ring-emerald-200" />
+                        <span>Átomo ligado</span>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span className="flex gap-1">
+                          <span className="h-3 w-3 rounded-full bg-purple-300 ring-1 ring-purple-100" />
+                          <span className="h-3 w-3 rounded-full bg-purple-300 ring-1 ring-purple-100" />
+                        </span>
+                        <span>Par livre de elétrons</span>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span className="h-[3px] w-8 rounded-full bg-cyan-300" />
+                        <span>Ligação química</span>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span className="h-[3px] w-8 rounded-full bg-yellow-400" />
+                        <span>Ângulo destacado</span>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="rounded-2xl border border-cyan-100 bg-cyan-50 p-4">
                     <p className="text-xs font-semibold uppercase tracking-wide text-cyan-700">
                       Protótipo interno
                     </p>
 
                     <p className="mt-2 text-xs leading-5 text-cyan-900">
-                      Esta visualização é didática. Agora átomos, ligações e
-                      pares livres ficam no mesmo SVG, então o alinhamento não
-                      quebra quando a tela muda de tamanho.
+                      Esta visualização é didática. Átomos, ligações, pares
+                      livres e ângulos ficam no mesmo SVG, então o alinhamento
+                      não quebra quando a tela muda de tamanho.
                     </p>
                   </div>
                 </div>
@@ -1036,6 +1217,34 @@ export default function AdminMolecularGeometryPrototypePage() {
           </Card>
 
           <div className="space-y-6">
+            <Card className="border-slate-200 p-6">
+              <div className="flex items-center gap-2 text-sm font-semibold text-cyan-700">
+                <Brain className="h-4 w-4" />
+                Como descobrir essa geometria?
+              </div>
+
+              <h2 className="mt-2 text-2xl font-black text-slate-900">
+                Raciocínio passo a passo
+              </h2>
+
+              <div className="mt-5 space-y-3">
+                {discoverySteps.map((step) => (
+                  <div
+                    key={step.title}
+                    className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                  >
+                    <p className="text-sm font-black text-slate-900">
+                      {step.title}
+                    </p>
+
+                    <p className="mt-2 text-sm leading-6 text-slate-700">
+                      {step.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
             <Card className="border-slate-200 p-6">
               <div className="flex items-center gap-2 text-sm font-semibold text-purple-700">
                 <BadgeInfo className="h-4 w-4" />
@@ -1067,6 +1276,7 @@ export default function AdminMolecularGeometryPrototypePage() {
                   <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     Ângulo ideal
                   </p>
+
                   <p className="mt-2 text-2xl font-black text-slate-900">
                     {molecule.idealAngle}
                   </p>
@@ -1076,6 +1286,7 @@ export default function AdminMolecularGeometryPrototypePage() {
                   <p className="text-xs font-semibold uppercase tracking-wide text-cyan-700">
                     Ângulo real/aproximado
                   </p>
+
                   <p className="mt-2 text-2xl font-black text-cyan-900">
                     {molecule.realAngle}
                   </p>
