@@ -82,6 +82,177 @@ type RenderObject =
       point: ProjectedPoint;
     };
 
+type ExplanationMode = "resumo" | "completa";
+
+type VseprModelDefinition = {
+  key: string;
+  bondingPairs: number;
+  lonePairs: number;
+  electronGeometry: string;
+  molecularGeometry: string;
+  typicalAngle: string;
+  explanation: string;
+};
+
+function toSubscriptNumber(value: number) {
+  const map: Record<string, string> = {
+    "0": "₀",
+    "1": "₁",
+    "2": "₂",
+    "3": "₃",
+    "4": "₄",
+    "5": "₅",
+    "6": "₆",
+    "7": "₇",
+    "8": "₈",
+    "9": "₉",
+  };
+
+  return String(value)
+    .split("")
+    .map((digit) => map[digit] ?? digit)
+    .join("");
+}
+
+function buildVseprLabel(bondingPairs: number, lonePairs: number) {
+  return `AX${toSubscriptNumber(bondingPairs)}${
+    lonePairs > 0 ? `E${lonePairs > 1 ? toSubscriptNumber(lonePairs) : ""}` : ""
+  }`;
+}
+
+const VSEPR_MODELS: VseprModelDefinition[] = [
+  {
+    key: "AX₂",
+    bondingPairs: 2,
+    lonePairs: 0,
+    electronGeometry: "Linear",
+    molecularGeometry: "Linear",
+    typicalAngle: "180°",
+    explanation:
+      "Duas regiões eletrônicas se afastam ao máximo ficando em lados opostos do átomo central.",
+  },
+  {
+    key: "AX₃",
+    bondingPairs: 3,
+    lonePairs: 0,
+    electronGeometry: "Trigonal plana",
+    molecularGeometry: "Trigonal plana",
+    typicalAngle: "120°",
+    explanation:
+      "Três regiões eletrônicas se distribuem no mesmo plano, formando ângulos de 120°.",
+  },
+  {
+    key: "AX₂E",
+    bondingPairs: 2,
+    lonePairs: 1,
+    electronGeometry: "Trigonal plana",
+    molecularGeometry: "Angular",
+    typicalAngle: "< 120°",
+    explanation:
+      "Há três regiões eletrônicas, mas uma delas é par livre. Como o par livre não aparece como átomo, a forma molecular fica angular.",
+  },
+  {
+    key: "AX₄",
+    bondingPairs: 4,
+    lonePairs: 0,
+    electronGeometry: "Tetraédrica",
+    molecularGeometry: "Tetraédrica",
+    typicalAngle: "109,5°",
+    explanation:
+      "Quatro regiões ligantes se afastam no espaço formando um tetraedro regular.",
+  },
+  {
+    key: "AX₃E",
+    bondingPairs: 3,
+    lonePairs: 1,
+    electronGeometry: "Tetraédrica",
+    molecularGeometry: "Piramidal trigonal",
+    typicalAngle: "≈ 107°",
+    explanation:
+      "A geometria eletrônica é tetraédrica, mas um par livre comprime as três ligações, formando uma pirâmide trigonal.",
+  },
+  {
+    key: "AX₂E₂",
+    bondingPairs: 2,
+    lonePairs: 2,
+    electronGeometry: "Tetraédrica",
+    molecularGeometry: "Angular",
+    typicalAngle: "≈ 104,5°",
+    explanation:
+      "Dois pares livres repelem mais fortemente os pares ligantes, comprimindo bastante o ângulo entre as ligações.",
+  },
+  {
+    key: "AX₅",
+    bondingPairs: 5,
+    lonePairs: 0,
+    electronGeometry: "Bipiramidal trigonal",
+    molecularGeometry: "Bipiramidal trigonal",
+    typicalAngle: "90°, 120° e 180°",
+    explanation:
+      "Cinco regiões eletrônicas formam duas posições axiais e três posições equatoriais.",
+  },
+  {
+    key: "AX₄E",
+    bondingPairs: 4,
+    lonePairs: 1,
+    electronGeometry: "Bipiramidal trigonal",
+    molecularGeometry: "Gangorra",
+    typicalAngle: "< 90° e < 120°",
+    explanation:
+      "O par livre ocupa uma posição equatorial, e os quatro ligantes restantes formam uma estrutura em gangorra.",
+  },
+  {
+    key: "AX₃E₂",
+    bondingPairs: 3,
+    lonePairs: 2,
+    electronGeometry: "Bipiramidal trigonal",
+    molecularGeometry: "Forma de T",
+    typicalAngle: "≈ 90° e 180°",
+    explanation:
+      "Dois pares livres ocupam posições que reduzem repulsões, deixando três ligantes em forma de T.",
+  },
+  {
+    key: "AX₂E₃",
+    bondingPairs: 2,
+    lonePairs: 3,
+    electronGeometry: "Bipiramidal trigonal",
+    molecularGeometry: "Linear",
+    typicalAngle: "180°",
+    explanation:
+      "Três pares livres ocupam posições equatoriais, e os dois ligantes ficam em posições axiais opostas.",
+  },
+  {
+    key: "AX₆",
+    bondingPairs: 6,
+    lonePairs: 0,
+    electronGeometry: "Octaédrica",
+    molecularGeometry: "Octaédrica",
+    typicalAngle: "90° e 180°",
+    explanation:
+      "Seis regiões ligantes se distribuem em três eixos perpendiculares.",
+  },
+  {
+    key: "AX₄E₂",
+    bondingPairs: 4,
+    lonePairs: 2,
+    electronGeometry: "Octaédrica",
+    molecularGeometry: "Quadrado planar",
+    typicalAngle: "90° e 180°",
+    explanation:
+      "Dois pares livres ficam em posições opostas, e os quatro ligantes permanecem no mesmo plano.",
+  },
+  {
+    key: "AX₆E",
+    bondingPairs: 6,
+    lonePairs: 1,
+    electronGeometry: "Sete regiões eletrônicas",
+    molecularGeometry: "Octaédrica distorcida",
+    typicalAngle: "Distorcido",
+    explanation:
+      "Seis ligantes e um par livre geram uma estrutura distorcida, típica de casos mais avançados.",
+  },
+];
+
 const MOLECULES: MoleculeGeometry[] = [
   {
     formula: "H₂O",
@@ -1286,6 +1457,10 @@ export default function AdminMolecularGeometryPrototypePage() {
   const [rotationY, setRotationY] = useState(-25);
   const [showLonePairs, setShowLonePairs] = useState(true);
   const [showAngleArc, setShowAngleArc] = useState(true);
+  const [explanationMode, setExplanationMode] =
+    useState<ExplanationMode>("resumo");
+  const [builderBondingPairs, setBuilderBondingPairs] = useState(2);
+  const [builderLonePairs, setBuilderLonePairs] = useState(2);
   const [autoRotate, setAutoRotate] = useState(false);
 
   const molecule = useMemo(() => {
@@ -1375,6 +1550,26 @@ export default function AdminMolecularGeometryPrototypePage() {
   const isInMainComparison = comparisonMolecules.some(
     (item) => item.formula === molecule.formula
   );
+
+  const builderVsepr = buildVseprLabel(builderBondingPairs, builderLonePairs);
+
+  const builderModel = VSEPR_MODELS.find(
+    (model) => model.key === builderVsepr
+  );
+
+  const builderExamples = MOLECULES.filter(
+    (item) => item.vsepr === builderVsepr
+  );
+
+  const shortGeometrySummary = `${molecule.formula} é uma espécie do tipo ${
+    molecule.vsepr
+  }. A geometria eletrônica é ${molecule.electronGeometry.toLowerCase()} e a geometria molecular é ${molecule.molecularGeometry.toLowerCase()}. O ângulo típico é ${
+    molecule.realAngle
+  }. ${
+    molecule.lonePairs > 0
+      ? `A presença de ${molecule.lonePairs} par(es) livre(s) aumenta a repulsão e pode comprimir os ângulos.`
+      : "Como não há pares livres no átomo central, a geometria molecular coincide com a organização das regiões ligantes."
+  }`;
 
   const renderObjects: RenderObject[] = [
     ...projectedAtoms.map((item): RenderObject => {
@@ -1869,6 +2064,168 @@ export default function AdminMolecularGeometryPrototypePage() {
                 </div>
               </div>
             </div>
+
+            <div className="border-t border-slate-100 bg-slate-50/80 p-5">
+              <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
+                <div>
+                  <div className="flex items-center gap-2 text-sm font-semibold text-slate-800">
+                    <Beaker className="h-4 w-4" />
+                    Montar geometria por VSEPR
+                  </div>
+
+                  <h3 className="mt-2 text-xl font-black text-slate-900">
+                    Escolha X e E
+                  </h3>
+
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    Monte o modelo geral da molécula usando a notação AXE. Aqui,
+                    X representa átomos ligados ao átomo central e E representa
+                    pares livres. Finalmente uma forma de estudar sem decorar
+                    molécula por molécula feito papagaio com jaleco.
+                  </p>
+
+                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-500">
+                        Átomos ligados ao central
+                      </label>
+
+                      <select
+                        value={builderBondingPairs}
+                        onChange={(event) =>
+                          setBuilderBondingPairs(Number(event.target.value))
+                        }
+                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-slate-900"
+                      >
+                        {[2, 3, 4, 5, 6].map((value) => (
+                          <option key={value} value={value}>
+                            {value} átomo(s) ligado(s)
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-500">
+                        Pares livres no central
+                      </label>
+
+                      <select
+                        value={builderLonePairs}
+                        onChange={(event) =>
+                          setBuilderLonePairs(Number(event.target.value))
+                        }
+                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-slate-900"
+                      >
+                        {[0, 1, 2, 3].map((value) => (
+                          <option key={value} value={value}>
+                            {value} par(es) livre(s)
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wide text-purple-700">
+                        Modelo montado
+                      </p>
+
+                      <p className="mt-1 text-4xl font-black text-slate-900">
+                        {builderVsepr}
+                      </p>
+                    </div>
+
+                    {builderModel ? (
+                      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-right">
+                        <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">
+                          Ângulo típico
+                        </p>
+
+                        <p className="mt-1 text-xl font-black text-emerald-900">
+                          {builderModel.typicalAngle}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-right">
+                        <p className="text-xs font-bold uppercase tracking-wide text-orange-700">
+                          Atenção
+                        </p>
+
+                        <p className="mt-1 text-sm font-black text-orange-900">
+                          Modelo não cadastrado
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {builderModel ? (
+                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-2xl bg-slate-50 p-4">
+                        <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
+                          Geometria eletrônica
+                        </p>
+
+                        <p className="mt-1 text-lg font-black text-slate-900">
+                          {builderModel.electronGeometry}
+                        </p>
+                      </div>
+
+                      <div className="rounded-2xl bg-slate-50 p-4">
+                        <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
+                          Geometria molecular
+                        </p>
+
+                        <p className="mt-1 text-lg font-black text-slate-900">
+                          {builderModel.molecularGeometry}
+                        </p>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {builderModel ? (
+                    <p className="mt-4 text-sm leading-7 text-slate-700">
+                      {builderModel.explanation}
+                    </p>
+                  ) : (
+                    <p className="mt-4 text-sm leading-7 text-slate-700">
+                      Essa combinação ainda não está cadastrada no protótipo.
+                      Isso não significa que seja impossível, só significa que
+                      ainda não vale a pena botar o simulador para fingir certeza
+                      onde ele não tem. Um raro momento de honestidade técnica.
+                    </p>
+                  )}
+
+                  <div className="mt-5">
+                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
+                      Exemplos cadastrados
+                    </p>
+
+                    {builderExamples.length > 0 ? (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {builderExamples.map((example) => (
+                          <button
+                            key={example.formula}
+                            type="button"
+                            onClick={() => setSelectedFormula(example.formula)}
+                            className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-purple-300 hover:bg-purple-50 hover:text-purple-900"
+                          >
+                            {example.formula} · {example.name}
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="mt-2 text-sm text-slate-500">
+                        Nenhuma molécula cadastrada com esse modelo ainda.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
           </Card>
 
           <div className="space-y-6">
@@ -2014,28 +2371,74 @@ export default function AdminMolecularGeometryPrototypePage() {
             </Card>
 
             <Card className="border-slate-200 p-6">
-              <div className="flex items-center gap-2 text-sm font-semibold text-purple-700">
-                <BadgeInfo className="h-4 w-4" />
-                Explicação da geometria
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <div className="flex items-center gap-2 text-sm font-semibold text-purple-700">
+                    <BadgeInfo className="h-4 w-4" />
+                    Explicação da geometria
+                  </div>
+
+                  <h2 className="mt-2 text-2xl font-black text-slate-900">
+                    Por que {molecule.formula} tem esse formato?
+                  </h2>
+                </div>
+
+                <div className="flex rounded-2xl border border-slate-200 bg-slate-50 p-1">
+                  <button
+                    type="button"
+                    onClick={() => setExplanationMode("resumo")}
+                    className={[
+                      "rounded-xl px-3 py-2 text-xs font-black transition",
+                      explanationMode === "resumo"
+                        ? "bg-slate-900 text-white shadow-sm"
+                        : "text-slate-500 hover:text-slate-900",
+                    ].join(" ")}
+                  >
+                    Resumo
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setExplanationMode("completa")}
+                    className={[
+                      "rounded-xl px-3 py-2 text-xs font-black transition",
+                      explanationMode === "completa"
+                        ? "bg-slate-900 text-white shadow-sm"
+                        : "text-slate-500 hover:text-slate-900",
+                    ].join(" ")}
+                  >
+                    Completa
+                  </button>
+                </div>
               </div>
 
-              <h2 className="mt-2 text-2xl font-black text-slate-900">
-                Por que {molecule.formula} tem esse formato?
-              </h2>
+              {explanationMode === "resumo" ? (
+                <div className="mt-5 rounded-2xl border border-purple-200 bg-purple-50 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-purple-700">
+                    Resumo de prova
+                  </p>
 
-              <p className="mt-4 text-sm leading-7 text-slate-700">
-                {molecule.shortExplanation}
-              </p>
+                  <p className="mt-2 text-sm leading-7 text-purple-950">
+                    {shortGeometrySummary}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <p className="mt-4 text-sm leading-7 text-slate-700">
+                    {molecule.shortExplanation}
+                  </p>
 
-              <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Relação entre pares eletrônicos e ângulo
-                </p>
+                  <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      Relação entre pares eletrônicos e ângulo
+                    </p>
 
-                <p className="mt-2 text-sm leading-7 text-slate-700">
-                  {molecule.angleExplanation}
-                </p>
-              </div>
+                    <p className="mt-2 text-sm leading-7 text-slate-700">
+                      {molecule.angleExplanation}
+                    </p>
+                  </div>
+                </>
+              )}
             </Card>
 
             <Card className="border-slate-200 p-6">
