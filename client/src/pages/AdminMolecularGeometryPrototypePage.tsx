@@ -735,6 +735,14 @@ export default function AdminMolecularGeometryPrototypePage() {
     },
   ];
 
+  const comparisonMolecules = ["CH₄", "NH₃", "H₂O"]
+    .map((formula) => MOLECULES.find((item) => item.formula === formula))
+    .filter(Boolean) as MoleculeGeometry[];
+
+  const isInMainComparison = comparisonMolecules.some(
+    (item) => item.formula === molecule.formula
+  );
+
   const renderObjects: RenderObject[] = [
     ...projectedAtoms.map((item): RenderObject => {
       return {
@@ -1217,6 +1225,119 @@ export default function AdminMolecularGeometryPrototypePage() {
           </Card>
 
           <div className="space-y-6">
+            <Card className="border-slate-200 p-6">
+              <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700">
+                <Atom className="h-4 w-4" />
+                Comparação clássica
+              </div>
+
+              <h2 className="mt-2 text-2xl font-black text-slate-900">
+                CH₄ × NH₃ × H₂O
+              </h2>
+
+              <p className="mt-3 text-sm leading-7 text-slate-600">
+                Essas três moléculas ajudam a enxergar uma regra essencial:
+                quando aumenta o número de pares livres no átomo central, a
+                repulsão eletrônica aumenta e o ângulo entre as ligações diminui.
+              </p>
+
+              <div className="mt-5 grid gap-3">
+                {comparisonMolecules.map((item, index) => {
+                  const active = item.formula === molecule.formula;
+
+                  return (
+                    <button
+                      key={item.formula}
+                      type="button"
+                      onClick={() => setSelectedFormula(item.formula)}
+                      className={[
+                        "rounded-2xl border p-4 text-left transition-all",
+                        active
+                          ? "border-emerald-400 bg-emerald-50 shadow-sm"
+                          : "border-slate-200 bg-slate-50 hover:border-emerald-200 hover:bg-emerald-50/50",
+                      ].join(" ")}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-lg font-black text-slate-900">
+                            {item.formula}
+                          </p>
+
+                          <p className="text-sm font-semibold text-slate-600">
+                            {item.molecularGeometry}
+                          </p>
+                        </div>
+
+                        <div className="text-right">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            Ângulo
+                          </p>
+
+                          <p className="text-lg font-black text-emerald-700">
+                            {item.realAngle}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
+                        <div className="rounded-xl bg-white px-2 py-2">
+                          <p className="font-semibold text-slate-500">
+                            Pares livres
+                          </p>
+
+                          <p className="mt-1 text-lg font-black text-slate-900">
+                            {item.lonePairs}
+                          </p>
+                        </div>
+
+                        <div className="rounded-xl bg-white px-2 py-2">
+                          <p className="font-semibold text-slate-500">
+                            Modelo
+                          </p>
+
+                          <p className="mt-1 text-sm font-black text-slate-900">
+                            {item.vsepr}
+                          </p>
+                        </div>
+
+                        <div className="rounded-xl bg-white px-2 py-2">
+                          <p className="font-semibold text-slate-500">Ordem</p>
+
+                          <p className="mt-1 text-lg font-black text-slate-900">
+                            {index + 1}
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                <p className="text-sm font-black text-emerald-950">
+                  Ideia principal
+                </p>
+
+                <p className="mt-2 text-sm leading-7 text-emerald-900">
+                  CH₄ não possui pares livres no carbono e mantém o ângulo
+                  tetraédrico de 109,5°. NH₃ tem um par livre no nitrogênio,
+                  então o ângulo cai para cerca de 107°. H₂O tem dois pares
+                  livres no oxigênio, então a compressão é maior e o ângulo cai
+                  para cerca de 104,5°.
+                </p>
+              </div>
+
+              {!isInMainComparison && (
+                <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm font-semibold text-slate-700">
+                    A molécula atual não faz parte dessa comparação clássica,
+                    mas a lógica dos pares livres continua valendo para entender
+                    distorções de ângulo.
+                  </p>
+                </div>
+              )}
+            </Card>
+
             <Card className="border-slate-200 p-6">
               <div className="flex items-center gap-2 text-sm font-semibold text-cyan-700">
                 <Brain className="h-4 w-4" />
