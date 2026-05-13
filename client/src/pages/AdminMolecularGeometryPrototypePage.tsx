@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AdminGuard from "@/components/admin/AdminGuard";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,10 @@ import {
   Brain,
   Eye,
   EyeOff,
+  PauseCircle,
+  PlayCircle,
   Rotate3D,
+  RotateCcw,
   Sparkles,
 } from "lucide-react";
 
@@ -18,6 +21,13 @@ type Vec3 = {
   x: number;
   y: number;
   z: number;
+};
+
+type ProjectedPoint = {
+  x: number;
+  y: number;
+  z: number;
+  perspective: number;
 };
 
 type AtomPoint = {
@@ -50,6 +60,28 @@ type MoleculeGeometry = {
   commonMistake: string;
 };
 
+type RenderObject =
+  | {
+      type: "central";
+      key: string;
+      z: number;
+      point: ProjectedPoint;
+    }
+  | {
+      type: "atom";
+      key: string;
+      z: number;
+      atom: AtomPoint;
+      point: ProjectedPoint;
+    }
+  | {
+      type: "lonePair";
+      key: string;
+      z: number;
+      pair: LonePairPoint;
+      point: ProjectedPoint;
+    };
+
 const MOLECULES: MoleculeGeometry[] = [
   {
     formula: "H₂O",
@@ -66,28 +98,28 @@ const MOLECULES: MoleculeGeometry[] = [
       {
         label: "H",
         element: "H",
-        position: { x: -1.1, y: -0.75, z: 0.65 },
+        position: { x: -1.08, y: -0.72, z: 0.62 },
       },
       {
         label: "H",
         element: "H",
-        position: { x: 1.1, y: -0.75, z: 0.65 },
+        position: { x: 1.08, y: -0.72, z: 0.62 },
       },
     ],
     lonePairPositions: [
       {
         label: "par livre",
-        position: { x: -0.95, y: 1.0, z: -0.55 },
+        position: { x: -0.92, y: 1.0, z: -0.55 },
       },
       {
         label: "par livre",
-        position: { x: 0.95, y: 1.0, z: -0.55 },
+        position: { x: 0.92, y: 1.0, z: -0.55 },
       },
     ],
     shortExplanation:
       "O oxigênio tem quatro regiões eletrônicas ao redor: duas ligações O-H e dois pares livres.",
     angleExplanation:
-      "A distribuição eletrônica ideal é tetraédrica, com ângulo de 109,5°. Porém, os pares livres ocupam mais espaço e repelem mais fortemente do que os pares ligantes. Essa repulsão maior comprime as ligações O-H, reduzindo o ângulo para aproximadamente 104,5°.",
+      "A distribuição eletrônica ideal é tetraédrica, com ângulo de 109,5°. Porém, os pares livres ocupam mais espaço e repelem mais fortemente do que os pares ligantes. Essa repulsão comprime as ligações O-H, reduzindo o ângulo para aproximadamente 104,5°.",
     vestibularNote:
       "Em prova, o ponto central é perceber que a geometria eletrônica é tetraédrica, mas a geometria molecular é angular, porque os pares livres não aparecem como átomos ligados.",
     commonMistake:
@@ -108,17 +140,17 @@ const MOLECULES: MoleculeGeometry[] = [
       {
         label: "H",
         element: "H",
-        position: { x: -1.2, y: -0.8, z: 0.45 },
+        position: { x: -1.15, y: -0.78, z: 0.46 },
       },
       {
         label: "H",
         element: "H",
-        position: { x: 1.2, y: -0.8, z: 0.45 },
+        position: { x: 1.15, y: -0.78, z: 0.46 },
       },
       {
         label: "H",
         element: "H",
-        position: { x: 0, y: -1.1, z: -1.1 },
+        position: { x: 0, y: -1.05, z: -1.05 },
       },
     ],
     lonePairPositions: [
@@ -194,12 +226,12 @@ const MOLECULES: MoleculeGeometry[] = [
       {
         label: "O",
         element: "O",
-        position: { x: -1.65, y: 0, z: 0 },
+        position: { x: -1.7, y: 0, z: 0 },
       },
       {
         label: "O",
         element: "O",
-        position: { x: 1.65, y: 0, z: 0 },
+        position: { x: 1.7, y: 0, z: 0 },
       },
     ],
     lonePairPositions: [],
@@ -232,12 +264,12 @@ const MOLECULES: MoleculeGeometry[] = [
       {
         label: "F",
         element: "F",
-        position: { x: -1.25, y: -0.75, z: 0 },
+        position: { x: -1.25, y: -0.72, z: 0 },
       },
       {
         label: "F",
         element: "F",
-        position: { x: 1.25, y: -0.75, z: 0 },
+        position: { x: 1.25, y: -0.72, z: 0 },
       },
     ],
     lonePairPositions: [],
@@ -452,56 +484,100 @@ function rotatePoint(point: Vec3, angleX: number, angleY: number): Vec3 {
   const cosY = Math.cos(yRad);
   const sinY = Math.sin(yRad);
 
-  const y1 = point.y * cosX - point.z * sinX;
-  const z1 = point.y * sinX + point.z * cosX;
+  const yAfterX = point.y * cosX - point.z * sinX;
+  const zAfterX = point.y * sinX + point.z * cosX;
 
-  const x2 = point.x * cosY + z1 * sinY;
-  const z2 = -point.x * sinY + z1 * cosY;
+  const xAfterY = point.x * cosY + zAfterX * sinY;
+  const zAfterY = -point.x * sinY + zAfterX * cosY;
 
   return {
-    x: x2,
-    y: y1,
-    z: z2,
+    x: xAfterY,
+    y: yAfterX,
+    z: zAfterY,
   };
 }
 
-function projectPoint(point: Vec3) {
-  const distance = 5;
-  const scale = 118;
+function projectPoint(point: Vec3): ProjectedPoint {
+  const distance = 6;
+  const scale = 110;
   const perspective = distance / (distance - point.z);
 
   return {
-    x: 280 + point.x * scale * perspective,
-    y: 245 - point.y * scale * perspective,
+    x: 380 + point.x * scale * perspective,
+    y: 280 - point.y * scale * perspective,
     z: point.z,
     perspective,
   };
 }
 
-function getAtomStyle(element: string) {
+function getElementVisual(element: string) {
   switch (element) {
     case "H":
-      return "bg-slate-100 text-slate-900 border-slate-300";
+      return {
+        fill: "#f8fafc",
+        stroke: "#cbd5e1",
+        text: "#0f172a",
+      };
     case "O":
-      return "bg-red-500 text-white border-red-300";
+      return {
+        fill: "#ef4444",
+        stroke: "#fecaca",
+        text: "#ffffff",
+      };
     case "N":
-      return "bg-blue-500 text-white border-blue-300";
+      return {
+        fill: "#3b82f6",
+        stroke: "#bfdbfe",
+        text: "#ffffff",
+      };
     case "C":
-      return "bg-slate-900 text-white border-slate-700";
+      return {
+        fill: "#0f172a",
+        stroke: "#64748b",
+        text: "#ffffff",
+      };
     case "F":
-      return "bg-emerald-500 text-white border-emerald-300";
+      return {
+        fill: "#10b981",
+        stroke: "#a7f3d0",
+        text: "#ffffff",
+      };
     case "Cl":
-      return "bg-green-600 text-white border-green-300";
+      return {
+        fill: "#16a34a",
+        stroke: "#bbf7d0",
+        text: "#ffffff",
+      };
     case "B":
-      return "bg-orange-500 text-white border-orange-300";
+      return {
+        fill: "#f97316",
+        stroke: "#fed7aa",
+        text: "#ffffff",
+      };
     case "P":
-      return "bg-violet-600 text-white border-violet-300";
+      return {
+        fill: "#7c3aed",
+        stroke: "#ddd6fe",
+        text: "#ffffff",
+      };
     case "S":
-      return "bg-yellow-500 text-slate-950 border-yellow-300";
+      return {
+        fill: "#eab308",
+        stroke: "#fef08a",
+        text: "#0f172a",
+      };
     case "Xe":
-      return "bg-purple-700 text-white border-purple-300";
+      return {
+        fill: "#6d28d9",
+        stroke: "#ddd6fe",
+        text: "#ffffff",
+      };
     default:
-      return "bg-cyan-500 text-white border-cyan-300";
+      return {
+        fill: "#06b6d4",
+        stroke: "#a5f3fc",
+        text: "#ffffff",
+      };
   }
 }
 
@@ -510,6 +586,7 @@ export default function AdminMolecularGeometryPrototypePage() {
   const [rotationX, setRotationX] = useState(20);
   const [rotationY, setRotationY] = useState(-25);
   const [showLonePairs, setShowLonePairs] = useState(true);
+  const [autoRotate, setAutoRotate] = useState(false);
 
   const molecule = useMemo(() => {
     return (
@@ -518,50 +595,77 @@ export default function AdminMolecularGeometryPrototypePage() {
     );
   }, [selectedFormula]);
 
-  const centralProjected = projectPoint(
+  useEffect(() => {
+    if (!autoRotate) return;
+
+    const intervalId = window.setInterval(() => {
+      setRotationY((current) => {
+        const next = current + 1.2;
+        return next > 180 ? -180 : next;
+      });
+    }, 60);
+
+    return () => window.clearInterval(intervalId);
+  }, [autoRotate]);
+
+  const centralPoint = projectPoint(
     rotatePoint({ x: 0, y: 0, z: 0 }, rotationX, rotationY)
   );
 
-  const projectedAtoms = molecule.atoms.map((atom) => {
+  const projectedAtoms = molecule.atoms.map((atom, index) => {
     const rotated = rotatePoint(atom.position, rotationX, rotationY);
+
     return {
-      ...atom,
-      projected: projectPoint(rotated),
+      atom,
+      point: projectPoint(rotated),
+      key: `${atom.element}-${atom.label}-${index}`,
     };
   });
 
-  const projectedLonePairs = molecule.lonePairPositions.map((pair) => {
+  const projectedLonePairs = molecule.lonePairPositions.map((pair, index) => {
     const rotated = rotatePoint(pair.position, rotationX, rotationY);
+
     return {
-      ...pair,
-      projected: projectPoint(rotated),
+      pair,
+      point: projectPoint(rotated),
+      key: `lone-pair-${index}`,
     };
   });
 
-  const sortedObjects = [
-    ...projectedAtoms.map((atom) => ({
-      type: "atom" as const,
-      key: `${atom.label}-${atom.projected.x}-${atom.projected.y}`,
-      z: atom.projected.z,
-      data: atom,
-    })),
+  const renderObjects: RenderObject[] = [
+    ...projectedAtoms.map((item): RenderObject => {
+      return {
+        type: "atom",
+        key: item.key,
+        z: item.point.z,
+        atom: item.atom,
+        point: item.point,
+      };
+    }),
     ...(showLonePairs
-      ? projectedLonePairs.map((pair) => ({
-          type: "lonePair" as const,
-          key: `${pair.label}-${pair.projected.x}-${pair.projected.y}`,
-          z: pair.projected.z,
-          data: pair,
-        }))
+      ? projectedLonePairs.map((item): RenderObject => {
+          return {
+            type: "lonePair",
+            key: item.key,
+            z: item.point.z,
+            pair: item.pair,
+            point: item.point,
+          };
+        })
       : []),
     {
-      type: "central" as const,
+      type: "central",
       key: "central",
-      z: centralProjected.z,
-      data: {
-        projected: centralProjected,
-      },
+      z: centralPoint.z,
+      point: centralPoint,
     },
   ].sort((a, b) => a.z - b.z);
+
+  function resetRotation() {
+    setRotationX(20);
+    setRotationY(-25);
+    setAutoRotate(false);
+  }
 
   return (
     <AdminGuard allowedRoles={["admin"]}>
@@ -576,7 +680,7 @@ export default function AdminMolecularGeometryPrototypePage() {
                 <div>
                   <div className="flex items-center gap-2 text-sm font-semibold text-purple-700">
                     <Atom className="h-4 w-4" />
-                    Visualização 3D simplificada
+                    Visualização 3D didática
                   </div>
 
                   <h2 className="mt-1 text-2xl font-black text-slate-900">
@@ -619,8 +723,8 @@ export default function AdminMolecularGeometryPrototypePage() {
               </div>
             </div>
 
-            <div className="grid gap-0 lg:grid-cols-[1fr_260px]">
-              <div className="relative min-h-[540px] overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950">
+            <div className="grid gap-0 lg:grid-cols-[1fr_280px]">
+              <div className="relative min-h-[560px] overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950">
                 <div className="absolute left-6 top-6 z-20 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-white backdrop-blur">
                   <p className="text-xs font-semibold uppercase tracking-wide text-purple-200">
                     Ângulo
@@ -639,125 +743,175 @@ export default function AdminMolecularGeometryPrototypePage() {
 
                 <svg
                   className="absolute inset-0 h-full w-full"
-                  viewBox="0 0 560 500"
+                  viewBox="0 0 760 560"
                   preserveAspectRatio="xMidYMid meet"
                 >
                   <defs>
-                    <linearGradient
-                      id="bondGradient"
-                      x1="0"
-                      y1="0"
-                      x2="1"
-                      y2="1"
-                    >
-                      <stop offset="0%" stopColor="#a5f3fc" stopOpacity="0.8" />
-                      <stop
-                        offset="100%"
-                        stopColor="#c4b5fd"
-                        stopOpacity="0.9"
+                    <radialGradient id="centralGlow" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="#67e8f9" stopOpacity="0.8" />
+                      <stop offset="100%" stopColor="#06b6d4" stopOpacity="0" />
+                    </radialGradient>
+
+                    <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+                      <feDropShadow
+                        dx="0"
+                        dy="8"
+                        stdDeviation="8"
+                        floodColor="#000000"
+                        floodOpacity="0.35"
                       />
-                    </linearGradient>
+                    </filter>
                   </defs>
 
-                  {projectedAtoms.map((atom) => (
+                  <rect width="760" height="560" fill="transparent" />
+
+                  <g opacity="0.18">
+                    <circle cx="120" cy="100" r="90" fill="#a855f7" />
+                    <circle cx="660" cy="460" r="120" fill="#06b6d4" />
+                    <circle cx="420" cy="80" r="60" fill="#22c55e" />
+                  </g>
+
+                  {projectedAtoms.map((item) => (
                     <line
-                      key={`bond-${atom.label}-${atom.projected.x}`}
-                      x1={centralProjected.x}
-                      y1={centralProjected.y}
-                      x2={atom.projected.x}
-                      y2={atom.projected.y}
-                      stroke="url(#bondGradient)"
-                      strokeWidth={Math.max(5, 7 + atom.projected.z)}
+                      key={`bond-${item.key}`}
+                      x1={centralPoint.x}
+                      y1={centralPoint.y}
+                      x2={item.point.x}
+                      y2={item.point.y}
+                      stroke="#a5f3fc"
+                      strokeWidth={Math.max(4, 7 * item.point.perspective)}
                       strokeLinecap="round"
-                      opacity={0.86}
+                      opacity="0.88"
                     />
                   ))}
 
                   {showLonePairs &&
-                    projectedLonePairs.map((pair) => (
+                    projectedLonePairs.map((item) => (
                       <line
-                        key={`lone-bond-${pair.projected.x}`}
-                        x1={centralProjected.x}
-                        y1={centralProjected.y}
-                        x2={pair.projected.x}
-                        y2={pair.projected.y}
+                        key={`lone-line-${item.key}`}
+                        x1={centralPoint.x}
+                        y1={centralPoint.y}
+                        x2={item.point.x}
+                        y2={item.point.y}
                         stroke="#e9d5ff"
                         strokeWidth="3"
-                        strokeDasharray="8 8"
+                        strokeDasharray="9 9"
                         strokeLinecap="round"
-                        opacity={0.55}
+                        opacity="0.58"
                       />
                     ))}
-                </svg>
 
-                <div className="absolute inset-0">
-                  {sortedObjects.map((object) => {
+                  {renderObjects.map((object) => {
                     if (object.type === "central") {
-                      const size = 76;
-                      const point = object.data.projected;
+                      const radius = 42;
 
                       return (
-                        <div
-                          key={object.key}
-                          className="absolute flex items-center justify-center rounded-full border-4 border-cyan-200 bg-cyan-500 text-xl font-black text-white shadow-2xl shadow-cyan-500/30"
-                          style={{
-                            width: size,
-                            height: size,
-                            left: point.x - size / 2,
-                            top: point.y - size / 2,
-                            zIndex: 40 + Math.round(point.z * 10),
-                          }}
-                        >
-                          {molecule.centralAtom}
-                        </div>
+                        <g key={object.key} filter="url(#softShadow)">
+                          <circle
+                            cx={object.point.x}
+                            cy={object.point.y}
+                            r={radius + 18}
+                            fill="url(#centralGlow)"
+                          />
+
+                          <circle
+                            cx={object.point.x}
+                            cy={object.point.y}
+                            r={radius}
+                            fill="#06b6d4"
+                            stroke="#a5f3fc"
+                            strokeWidth="5"
+                          />
+
+                          <text
+                            x={object.point.x}
+                            y={object.point.y + 8}
+                            textAnchor="middle"
+                            fontSize="24"
+                            fontWeight="900"
+                            fill="#ffffff"
+                          >
+                            {molecule.centralAtom}
+                          </text>
+                        </g>
                       );
                     }
 
                     if (object.type === "lonePair") {
-                      const point = object.data.projected;
-                      const size = 58 * point.perspective;
+                      const radius = 26 * object.point.perspective;
 
                       return (
-                        <div
-                          key={object.key}
-                          className="absolute flex items-center justify-center rounded-full border border-purple-200/70 bg-purple-300/30 text-[10px] font-bold uppercase leading-tight text-purple-50 shadow-xl backdrop-blur"
-                          style={{
-                            width: size,
-                            height: size,
-                            left: point.x - size / 2,
-                            top: point.y - size / 2,
-                            zIndex: 30 + Math.round(point.z * 10),
-                          }}
-                        >
-                          <span className="px-2 text-center">par livre</span>
-                        </div>
+                        <g key={object.key} filter="url(#softShadow)">
+                          <circle
+                            cx={object.point.x}
+                            cy={object.point.y}
+                            r={radius + 10}
+                            fill="#a855f7"
+                            opacity="0.18"
+                          />
+
+                          <circle
+                            cx={object.point.x - radius * 0.28}
+                            cy={object.point.y}
+                            r={radius * 0.32}
+                            fill="#e9d5ff"
+                            stroke="#ffffff"
+                            strokeWidth="2"
+                            opacity="0.9"
+                          />
+
+                          <circle
+                            cx={object.point.x + radius * 0.28}
+                            cy={object.point.y}
+                            r={radius * 0.32}
+                            fill="#e9d5ff"
+                            stroke="#ffffff"
+                            strokeWidth="2"
+                            opacity="0.9"
+                          />
+
+                          <text
+                            x={object.point.x}
+                            y={object.point.y + radius + 18}
+                            textAnchor="middle"
+                            fontSize="11"
+                            fontWeight="800"
+                            fill="#f5d0fe"
+                          >
+                            par livre
+                          </text>
+                        </g>
                       );
                     }
 
-                    const atom = object.data;
-                    const point = atom.projected;
-                    const size = 62 * point.perspective;
+                    const visual = getElementVisual(object.atom.element);
+                    const radius = Math.max(24, 32 * object.point.perspective);
 
                     return (
-                      <div
-                        key={object.key}
-                        className={[
-                          "absolute flex items-center justify-center rounded-full border-4 text-base font-black shadow-2xl",
-                          getAtomStyle(atom.element),
-                        ].join(" ")}
-                        style={{
-                          width: size,
-                          height: size,
-                          left: point.x - size / 2,
-                          top: point.y - size / 2,
-                          zIndex: 35 + Math.round(point.z * 10),
-                        }}
-                      >
-                        {atom.label}
-                      </div>
+                      <g key={object.key} filter="url(#softShadow)">
+                        <circle
+                          cx={object.point.x}
+                          cy={object.point.y}
+                          r={radius}
+                          fill={visual.fill}
+                          stroke={visual.stroke}
+                          strokeWidth="4"
+                        />
+
+                        <text
+                          x={object.point.x}
+                          y={object.point.y + 6}
+                          textAnchor="middle"
+                          fontSize={object.atom.element.length > 1 ? 17 : 20}
+                          fontWeight="900"
+                          fill={visual.text}
+                        >
+                          {object.atom.label}
+                        </text>
+                      </g>
                     );
                   })}
-                </div>
+                </svg>
               </div>
 
               <div className="border-l border-slate-100 bg-slate-50 p-5">
@@ -786,7 +940,7 @@ export default function AdminMolecularGeometryPrototypePage() {
                   <div>
                     <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-500">
                       <span>Rotação horizontal</span>
-                      <span>{rotationY}°</span>
+                      <span>{Math.round(rotationY)}°</span>
                     </div>
 
                     <input
@@ -797,6 +951,32 @@ export default function AdminMolecularGeometryPrototypePage() {
                       onChange={(event) => setRotationY(Number(event.target.value))}
                       className="w-full"
                     />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setAutoRotate((current) => !current)}
+                      className="gap-2 rounded-2xl"
+                    >
+                      {autoRotate ? (
+                        <PauseCircle className="h-4 w-4" />
+                      ) : (
+                        <PlayCircle className="h-4 w-4" />
+                      )}
+                      {autoRotate ? "Pausar" : "Girar"}
+                    </Button>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={resetRotation}
+                      className="gap-2 rounded-2xl"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      Resetar
+                    </Button>
                   </div>
 
                   <div className="rounded-2xl border border-purple-100 bg-white p-4">
@@ -845,9 +1025,9 @@ export default function AdminMolecularGeometryPrototypePage() {
                     </p>
 
                     <p className="mt-2 text-xs leading-5 text-cyan-900">
-                      Esta visualização é didática, não é um modelo químico
-                      computacional de alta precisão. A ideia é validar a
-                      experiência antes de virar uma ferramenta pública.
+                      Esta visualização é didática. Agora átomos, ligações e
+                      pares livres ficam no mesmo SVG, então o alinhamento não
+                      quebra quando a tela muda de tamanho.
                     </p>
                   </div>
                 </div>
