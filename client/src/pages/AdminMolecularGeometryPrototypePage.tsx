@@ -473,6 +473,638 @@ const MOLECULES: MoleculeGeometry[] = [
     commonMistake:
       "Achar que quatro ligantes sempre significam geometria tetraédrica. Em XeF₄ existem dois pares livres no átomo central, e o arranjo vem de uma geometria eletrônica octaédrica.",
   },
+  {
+    formula: "H₃O⁺",
+    name: "Íon hidrônio",
+    centralAtom: "O",
+    vsepr: "AX₃E",
+    electronGeometry: "Tetraédrica",
+    molecularGeometry: "Piramidal trigonal",
+    idealAngle: "109,5°",
+    realAngle: "≈ 113°",
+    bondingPairs: 3,
+    lonePairs: 1,
+    atoms: [
+      {
+        label: "H",
+        element: "H",
+        position: { x: -1.15, y: -0.78, z: 0.46 },
+      },
+      {
+        label: "H",
+        element: "H",
+        position: { x: 1.15, y: -0.78, z: 0.46 },
+      },
+      {
+        label: "H",
+        element: "H",
+        position: { x: 0, y: -1.05, z: -1.05 },
+      },
+    ],
+    lonePairPositions: [
+      {
+        label: "par livre",
+        position: { x: 0, y: 1.15, z: 0 },
+      },
+    ],
+    shortExplanation:
+      "No íon hidrônio, o oxigênio central possui três ligações O-H e um par livre.",
+    angleExplanation:
+      "A distribuição eletrônica é tetraédrica, mas como existe um par livre, a geometria molecular observada é piramidal trigonal. O ângulo H-O-H fica próximo de 113°, com influência da carga positiva e da organização eletrônica ao redor do oxigênio.",
+    vestibularNote:
+      "H₃O⁺ é útil para comparar com NH₃: ambos são AX₃E, mas o átomo central e a carga mudam detalhes do ângulo.",
+    commonMistake:
+      "Achar que a carga positiva elimina todos os pares livres. O H₃O⁺ ainda possui um par livre no oxigênio.",
+  },
+  {
+    formula: "NH₄⁺",
+    name: "Íon amônio",
+    centralAtom: "N",
+    vsepr: "AX₄",
+    electronGeometry: "Tetraédrica",
+    molecularGeometry: "Tetraédrica",
+    idealAngle: "109,5°",
+    realAngle: "109,5°",
+    bondingPairs: 4,
+    lonePairs: 0,
+    atoms: [
+      {
+        label: "H",
+        element: "H",
+        position: { x: 1, y: 1, z: 1 },
+      },
+      {
+        label: "H",
+        element: "H",
+        position: { x: -1, y: -1, z: 1 },
+      },
+      {
+        label: "H",
+        element: "H",
+        position: { x: -1, y: 1, z: -1 },
+      },
+      {
+        label: "H",
+        element: "H",
+        position: { x: 1, y: -1, z: -1 },
+      },
+    ],
+    lonePairPositions: [],
+    shortExplanation:
+      "No NH₄⁺, o nitrogênio possui quatro ligações N-H e nenhum par livre no átomo central.",
+    angleExplanation:
+      "Como existem quatro regiões ligantes e nenhum par livre, elas se afastam ao máximo formando uma geometria tetraédrica regular, com ângulos de 109,5°.",
+    vestibularNote:
+      "NH₄⁺ é um bom contraste com NH₃: o NH₃ é AX₃E e piramidal, enquanto o NH₄⁺ é AX₄ e tetraédrico.",
+    commonMistake:
+      "Pensar que NH₄⁺ teria a mesma geometria do NH₃. A protonação remove o par livre como região não ligante e gera quatro ligações.",
+  },
+  {
+    formula: "NO₃⁻",
+    name: "Íon nitrato",
+    centralAtom: "N",
+    vsepr: "AX₃",
+    electronGeometry: "Trigonal plana",
+    molecularGeometry: "Trigonal plana",
+    idealAngle: "120°",
+    realAngle: "120°",
+    bondingPairs: 3,
+    lonePairs: 0,
+    atoms: [
+      {
+        label: "O",
+        element: "O",
+        position: { x: 0, y: 1.45, z: 0 },
+      },
+      {
+        label: "O",
+        element: "O",
+        position: { x: -1.25, y: -0.72, z: 0 },
+      },
+      {
+        label: "O",
+        element: "O",
+        position: { x: 1.25, y: -0.72, z: 0 },
+      },
+    ],
+    lonePairPositions: [],
+    shortExplanation:
+      "No nitrato, o nitrogênio central possui três regiões eletrônicas ligantes ao redor.",
+    angleExplanation:
+      "Três regiões eletrônicas se afastam ao máximo em um plano, formando ângulos de 120°. A ressonância distribui a carga e torna as ligações N-O equivalentes em uma representação média.",
+    vestibularNote:
+      "NO₃⁻ é clássico para geometria trigonal plana e ressonância.",
+    commonMistake:
+      "Achar que uma ligação dupla localizada muda a geometria. Para VSEPR, cada ligação ao oxigênio conta como uma região eletrônica ao redor do nitrogênio.",
+  },
+  {
+    formula: "NO₂⁻",
+    name: "Íon nitrito",
+    centralAtom: "N",
+    vsepr: "AX₂E",
+    electronGeometry: "Trigonal plana",
+    molecularGeometry: "Angular",
+    idealAngle: "120°",
+    realAngle: "≈ 115°",
+    bondingPairs: 2,
+    lonePairs: 1,
+    atoms: [
+      {
+        label: "O",
+        element: "O",
+        position: { x: -1.25, y: -0.55, z: 0 },
+      },
+      {
+        label: "O",
+        element: "O",
+        position: { x: 1.25, y: -0.55, z: 0 },
+      },
+    ],
+    lonePairPositions: [
+      {
+        label: "par livre",
+        position: { x: 0, y: 1.25, z: 0 },
+      },
+    ],
+    shortExplanation:
+      "No nitrito, o nitrogênio central possui duas regiões ligantes e um par livre.",
+    angleExplanation:
+      "A geometria eletrônica é trigonal plana, mas como uma das regiões é um par livre, a geometria molecular fica angular. O par livre comprime o ângulo em relação ao valor ideal de 120°.",
+    vestibularNote:
+      "NO₂⁻ é um bom exemplo de AX₂E, parecido na lógica com SO₂ e O₃.",
+    commonMistake:
+      "Achar que NO₂⁻ é linear por ter dois oxigênios ligados ao nitrogênio. O par livre torna a molécula angular.",
+  },
+  {
+    formula: "CO₃²⁻",
+    name: "Íon carbonato",
+    centralAtom: "C",
+    vsepr: "AX₃",
+    electronGeometry: "Trigonal plana",
+    molecularGeometry: "Trigonal plana",
+    idealAngle: "120°",
+    realAngle: "120°",
+    bondingPairs: 3,
+    lonePairs: 0,
+    atoms: [
+      {
+        label: "O",
+        element: "O",
+        position: { x: 0, y: 1.45, z: 0 },
+      },
+      {
+        label: "O",
+        element: "O",
+        position: { x: -1.25, y: -0.72, z: 0 },
+      },
+      {
+        label: "O",
+        element: "O",
+        position: { x: 1.25, y: -0.72, z: 0 },
+      },
+    ],
+    lonePairPositions: [],
+    shortExplanation:
+      "No carbonato, o carbono central possui três regiões eletrônicas ligantes.",
+    angleExplanation:
+      "As três regiões se distribuem em um plano com ângulos de 120°. A ressonância torna as ligações C-O equivalentes na estrutura média.",
+    vestibularNote:
+      "CO₃²⁻ costuma aparecer em questões envolvendo ressonância, geometria trigonal plana e íons poliatômicos.",
+    commonMistake:
+      "Tratar uma ligação dupla como se criasse uma direção extra. Para geometria molecular, cada ligação C-O é uma região ao redor do carbono.",
+  },
+  {
+    formula: "SO₃",
+    name: "Trióxido de enxofre",
+    centralAtom: "S",
+    vsepr: "AX₃",
+    electronGeometry: "Trigonal plana",
+    molecularGeometry: "Trigonal plana",
+    idealAngle: "120°",
+    realAngle: "120°",
+    bondingPairs: 3,
+    lonePairs: 0,
+    atoms: [
+      {
+        label: "O",
+        element: "O",
+        position: { x: 0, y: 1.45, z: 0 },
+      },
+      {
+        label: "O",
+        element: "O",
+        position: { x: -1.25, y: -0.72, z: 0 },
+      },
+      {
+        label: "O",
+        element: "O",
+        position: { x: 1.25, y: -0.72, z: 0 },
+      },
+    ],
+    lonePairPositions: [],
+    shortExplanation:
+      "No SO₃, o enxofre central possui três regiões eletrônicas ligantes e nenhum par livre no átomo central.",
+    angleExplanation:
+      "Com três regiões eletrônicas ao redor do enxofre, a maior separação ocorre em um plano, formando uma geometria trigonal plana com ângulos de 120°.",
+    vestibularNote:
+      "SO₃ é útil para comparar com SO₂: SO₃ é trigonal plano, enquanto SO₂ é angular por ter par livre.",
+    commonMistake:
+      "Confundir SO₂ e SO₃. O SO₂ possui par livre no enxofre; o SO₃ não.",
+  },
+  {
+    formula: "SO₄²⁻",
+    name: "Íon sulfato",
+    centralAtom: "S",
+    vsepr: "AX₄",
+    electronGeometry: "Tetraédrica",
+    molecularGeometry: "Tetraédrica",
+    idealAngle: "109,5°",
+    realAngle: "≈ 109,5°",
+    bondingPairs: 4,
+    lonePairs: 0,
+    atoms: [
+      {
+        label: "O",
+        element: "O",
+        position: { x: 1, y: 1, z: 1 },
+      },
+      {
+        label: "O",
+        element: "O",
+        position: { x: -1, y: -1, z: 1 },
+      },
+      {
+        label: "O",
+        element: "O",
+        position: { x: -1, y: 1, z: -1 },
+      },
+      {
+        label: "O",
+        element: "O",
+        position: { x: 1, y: -1, z: -1 },
+      },
+    ],
+    lonePairPositions: [],
+    shortExplanation:
+      "No sulfato, o enxofre central apresenta quatro regiões eletrônicas ligantes.",
+    angleExplanation:
+      "Quatro regiões ligantes se afastam ao máximo em uma geometria tetraédrica, com ângulos próximos de 109,5°.",
+    vestibularNote:
+      "SO₄²⁻ é um exemplo importante de íon tetraédrico.",
+    commonMistake:
+      "Focar apenas nas cargas formais e esquecer que a geometria ao redor do enxofre é tetraédrica.",
+  },
+  {
+    formula: "PO₄³⁻",
+    name: "Íon fosfato",
+    centralAtom: "P",
+    vsepr: "AX₄",
+    electronGeometry: "Tetraédrica",
+    molecularGeometry: "Tetraédrica",
+    idealAngle: "109,5°",
+    realAngle: "≈ 109,5°",
+    bondingPairs: 4,
+    lonePairs: 0,
+    atoms: [
+      {
+        label: "O",
+        element: "O",
+        position: { x: 1, y: 1, z: 1 },
+      },
+      {
+        label: "O",
+        element: "O",
+        position: { x: -1, y: -1, z: 1 },
+      },
+      {
+        label: "O",
+        element: "O",
+        position: { x: -1, y: 1, z: -1 },
+      },
+      {
+        label: "O",
+        element: "O",
+        position: { x: 1, y: -1, z: -1 },
+      },
+    ],
+    lonePairPositions: [],
+    shortExplanation:
+      "No fosfato, o fósforo central possui quatro regiões eletrônicas ligantes.",
+    angleExplanation:
+      "As quatro regiões ligantes se organizam em um tetraedro, resultando em ângulos próximos de 109,5°.",
+    vestibularNote:
+      "PO₄³⁻ é comum em questões de íons poliatômicos e geometria tetraédrica.",
+    commonMistake:
+      "Achar que a carga do íon muda automaticamente a geometria. A geometria depende das regiões eletrônicas ao redor do átomo central.",
+  },
+  {
+    formula: "HCN",
+    name: "Ácido cianídrico",
+    centralAtom: "C",
+    vsepr: "AX₂",
+    electronGeometry: "Linear",
+    molecularGeometry: "Linear",
+    idealAngle: "180°",
+    realAngle: "180°",
+    bondingPairs: 2,
+    lonePairs: 0,
+    atoms: [
+      {
+        label: "H",
+        element: "H",
+        position: { x: -1.7, y: 0, z: 0 },
+      },
+      {
+        label: "N",
+        element: "N",
+        position: { x: 1.7, y: 0, z: 0 },
+      },
+    ],
+    lonePairPositions: [],
+    shortExplanation:
+      "No HCN, o carbono central possui duas regiões eletrônicas: uma ligação com H e uma ligação tripla com N.",
+    angleExplanation:
+      "A ligação tripla conta como uma única região eletrônica para VSEPR. Assim, o carbono possui duas regiões, que se afastam em 180°, formando uma molécula linear.",
+    vestibularNote:
+      "HCN é um exemplo bom para lembrar que ligação simples, dupla ou tripla conta como uma região ao redor do átomo central.",
+    commonMistake:
+      "Contar a ligação tripla como três direções. Para geometria, ela é uma região eletrônica.",
+  },
+  {
+    formula: "O₃",
+    name: "Ozônio",
+    centralAtom: "O",
+    vsepr: "AX₂E",
+    electronGeometry: "Trigonal plana",
+    molecularGeometry: "Angular",
+    idealAngle: "120°",
+    realAngle: "≈ 117°",
+    bondingPairs: 2,
+    lonePairs: 1,
+    atoms: [
+      {
+        label: "O",
+        element: "O",
+        position: { x: -1.25, y: -0.55, z: 0 },
+      },
+      {
+        label: "O",
+        element: "O",
+        position: { x: 1.25, y: -0.55, z: 0 },
+      },
+    ],
+    lonePairPositions: [
+      {
+        label: "par livre",
+        position: { x: 0, y: 1.25, z: 0 },
+      },
+    ],
+    shortExplanation:
+      "No ozônio, o oxigênio central possui duas regiões ligantes e um par livre.",
+    angleExplanation:
+      "A geometria eletrônica é trigonal plana, mas a presença de um par livre faz a geometria molecular ser angular, com ângulo menor que 120°.",
+    vestibularNote:
+      "O₃ é importante para comparar com SO₂ e NO₂⁻.",
+    commonMistake:
+      "Achar que O₃ é linear por possuir três átomos em sequência. O par livre no átomo central torna a molécula angular.",
+  },
+  {
+    formula: "XeF₂",
+    name: "Difluoreto de xenônio",
+    centralAtom: "Xe",
+    vsepr: "AX₂E₃",
+    electronGeometry: "Bipiramidal trigonal",
+    molecularGeometry: "Linear",
+    idealAngle: "180°",
+    realAngle: "180°",
+    bondingPairs: 2,
+    lonePairs: 3,
+    atoms: [
+      {
+        label: "F",
+        element: "F",
+        position: { x: -1.7, y: 0, z: 0 },
+      },
+      {
+        label: "F",
+        element: "F",
+        position: { x: 1.7, y: 0, z: 0 },
+      },
+    ],
+    lonePairPositions: [
+      {
+        label: "par livre",
+        position: { x: 0, y: 1.35, z: 0 },
+      },
+      {
+        label: "par livre",
+        position: { x: -1.15, y: -0.7, z: 0 },
+      },
+      {
+        label: "par livre",
+        position: { x: 1.15, y: -0.7, z: 0 },
+      },
+    ],
+    shortExplanation:
+      "No XeF₂, o xenônio central tem duas ligações Xe-F e três pares livres.",
+    angleExplanation:
+      "A geometria eletrônica é bipiramidal trigonal. Os três pares livres ocupam posições equatoriais, reduzindo repulsões. As duas ligações Xe-F ficam em posições axiais opostas, gerando geometria molecular linear.",
+    vestibularNote:
+      "XeF₂ é um exemplo clássico de molécula linear apesar de possuir pares livres.",
+    commonMistake:
+      "Achar que qualquer molécula com pares livres precisa ser angular. Em XeF₂, a disposição dos pares livres mantém as ligações opostas.",
+  },
+  {
+    formula: "ClF₃",
+    name: "Trifluoreto de cloro",
+    centralAtom: "Cl",
+    vsepr: "AX₃E₂",
+    electronGeometry: "Bipiramidal trigonal",
+    molecularGeometry: "Forma de T",
+    idealAngle: "90° e 180°",
+    realAngle: "≈ 87,5° e 180°",
+    bondingPairs: 3,
+    lonePairs: 2,
+    atoms: [
+      {
+        label: "F",
+        element: "F",
+        position: { x: 0, y: 1.55, z: 0 },
+      },
+      {
+        label: "F",
+        element: "F",
+        position: { x: 0, y: -1.55, z: 0 },
+      },
+      {
+        label: "F",
+        element: "F",
+        position: { x: 1.45, y: 0, z: 0 },
+      },
+    ],
+    lonePairPositions: [
+      {
+        label: "par livre",
+        position: { x: -0.95, y: 0, z: 1.05 },
+      },
+      {
+        label: "par livre",
+        position: { x: -0.95, y: 0, z: -1.05 },
+      },
+    ],
+    shortExplanation:
+      "No ClF₃, o cloro central possui três ligações Cl-F e dois pares livres.",
+    angleExplanation:
+      "A geometria eletrônica é bipiramidal trigonal. Os pares livres ocupam posições que reduzem repulsões, deixando os átomos ligados em uma disposição em forma de T.",
+    vestibularNote:
+      "ClF₃ é importante para visualizar que pares livres podem gerar geometrias menos intuitivas, como forma de T.",
+    commonMistake:
+      "Pensar que três ligantes sempre formam trigonal plana. Aqui existem dois pares livres no átomo central.",
+  },
+  {
+    formula: "SF₄",
+    name: "Tetrafluoreto de enxofre",
+    centralAtom: "S",
+    vsepr: "AX₄E",
+    electronGeometry: "Bipiramidal trigonal",
+    molecularGeometry: "Gangorra",
+    idealAngle: "90°, 120° e 180°",
+    realAngle: "< 90° e < 120°",
+    bondingPairs: 4,
+    lonePairs: 1,
+    atoms: [
+      {
+        label: "F",
+        element: "F",
+        position: { x: 0, y: 1.55, z: 0 },
+      },
+      {
+        label: "F",
+        element: "F",
+        position: { x: 0, y: -1.55, z: 0 },
+      },
+      {
+        label: "F",
+        element: "F",
+        position: { x: 1.35, y: 0, z: 0.95 },
+      },
+      {
+        label: "F",
+        element: "F",
+        position: { x: 1.35, y: 0, z: -0.95 },
+      },
+    ],
+    lonePairPositions: [
+      {
+        label: "par livre",
+        position: { x: -1.2, y: 0, z: 0 },
+      },
+    ],
+    shortExplanation:
+      "No SF₄, o enxofre central possui quatro ligações S-F e um par livre.",
+    angleExplanation:
+      "A geometria eletrônica é bipiramidal trigonal. O par livre ocupa uma posição equatorial, reduzindo repulsões, e a geometria molecular resultante é chamada de gangorra.",
+    vestibularNote:
+      "SF₄ é exemplo clássico de AX₄E, uma das geometrias mais fáceis de errar em prova.",
+    commonMistake:
+      "Achar que quatro ligantes sempre indicam tetraédrica. Em SF₄ há um par livre adicional, totalizando cinco regiões eletrônicas.",
+  },
+  {
+    formula: "XeF₆",
+    name: "Hexafluoreto de xenônio",
+    centralAtom: "Xe",
+    vsepr: "AX₆E",
+    electronGeometry: "Sete regiões eletrônicas",
+    molecularGeometry: "Octaédrica distorcida",
+    idealAngle: "≈ 90° e 180°",
+    realAngle: "distorcido",
+    bondingPairs: 6,
+    lonePairs: 1,
+    atoms: [
+      {
+        label: "F",
+        element: "F",
+        position: { x: 1.5, y: 0, z: 0 },
+      },
+      {
+        label: "F",
+        element: "F",
+        position: { x: -1.5, y: 0, z: 0 },
+      },
+      {
+        label: "F",
+        element: "F",
+        position: { x: 0, y: 1.5, z: 0 },
+      },
+      {
+        label: "F",
+        element: "F",
+        position: { x: 0, y: -1.5, z: 0 },
+      },
+      {
+        label: "F",
+        element: "F",
+        position: { x: 0, y: 0, z: 1.5 },
+      },
+      {
+        label: "F",
+        element: "F",
+        position: { x: 0, y: 0, z: -1.5 },
+      },
+    ],
+    lonePairPositions: [
+      {
+        label: "par livre",
+        position: { x: 1.05, y: 1.05, z: 1.05 },
+      },
+    ],
+    shortExplanation:
+      "No XeF₆, o xenônio possui seis ligações Xe-F e um par livre, gerando uma estrutura distorcida.",
+    angleExplanation:
+      "A presença de um par livre causa distorção na geometria esperada. Por isso, a molécula costuma ser descrita como octaédrica distorcida.",
+    vestibularNote:
+      "XeF₆ é mais avançada e serve para mostrar que nem todas as geometrias reais são perfeitamente ideais.",
+    commonMistake:
+      "Tratar XeF₆ como uma octaédrica perfeita sem considerar o par livre no xenônio.",
+  },
+  {
+    formula: "HNO₃",
+    name: "Ácido nítrico",
+    centralAtom: "N",
+    vsepr: "AX₃",
+    electronGeometry: "Trigonal plana",
+    molecularGeometry: "Trigonal plana",
+    idealAngle: "120°",
+    realAngle: "≈ 120°",
+    bondingPairs: 3,
+    lonePairs: 0,
+    atoms: [
+      {
+        label: "O",
+        element: "O",
+        position: { x: 0, y: 1.45, z: 0 },
+      },
+      {
+        label: "O",
+        element: "O",
+        position: { x: -1.25, y: -0.72, z: 0 },
+      },
+      {
+        label: "OH",
+        element: "O",
+        position: { x: 1.25, y: -0.72, z: 0 },
+      },
+    ],
+    lonePairPositions: [],
+    shortExplanation:
+      "No HNO₃, a geometria principal é analisada ao redor do nitrogênio, que se liga a três regiões contendo oxigênio.",
+    angleExplanation:
+      "Ao redor do nitrogênio há três regiões eletrônicas, que se organizam em uma geometria trigonal plana, com ângulos próximos de 120°. A estrutura real envolve ressonância entre ligações N-O.",
+    vestibularNote:
+      "Para vestibular, o mais importante é reconhecer o arranjo trigonal plano ao redor do nitrogênio.",
+    commonMistake:
+      "Tentar analisar a molécula inteira como se todos os átomos estivessem ao redor de um único centro sem distinguir o centro geométrico principal.",
+  },
 ];
 
 function rotatePoint(point: Vec3, angleX: number, angleY: number): Vec3 {
@@ -653,6 +1285,7 @@ export default function AdminMolecularGeometryPrototypePage() {
   const [rotationX, setRotationX] = useState(20);
   const [rotationY, setRotationY] = useState(-25);
   const [showLonePairs, setShowLonePairs] = useState(true);
+  const [showAngleArc, setShowAngleArc] = useState(true);
   const [autoRotate, setAutoRotate] = useState(false);
 
   const molecule = useMemo(() => {
@@ -830,6 +1463,20 @@ export default function AdminMolecularGeometryPrototypePage() {
                     )}
                     {showLonePairs ? "Ocultar pares" : "Mostrar pares"}
                   </Button>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowAngleArc((current) => !current)}
+                    className="gap-2 rounded-2xl"
+                  >
+                    {showAngleArc ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                    {showAngleArc ? "Ocultar arco" : "Mostrar arco"}
+                  </Button>
                 </div>
               </div>
             </div>
@@ -902,7 +1549,7 @@ export default function AdminMolecularGeometryPrototypePage() {
                     />
                   ))}
 
-                  {angleArc?.path && (
+                  {showAngleArc && angleArc?.path && (
                     <g>
                       <path
                         d={angleArc.path}
@@ -1051,7 +1698,7 @@ export default function AdminMolecularGeometryPrototypePage() {
                           x={object.point.x}
                           y={object.point.y + 6}
                           textAnchor="middle"
-                          fontSize={object.atom.element.length > 1 ? 17 : 20}
+                          fontSize={object.atom.label.length > 1 ? 15 : 20}
                           fontWeight="900"
                           fill={visual.text}
                         >
