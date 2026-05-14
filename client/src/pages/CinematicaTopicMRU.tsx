@@ -3,9 +3,141 @@ import { ChevronDown, ChevronUp, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import { MathFormula } from "@/components/MathFormula";
 
+type ActiveTab = "teoria" | "exercicios";
+
+function FormulaBox({
+  formula,
+  highlight = false,
+}: {
+  formula: string;
+  highlight?: boolean;
+}) {
+  return (
+    <div
+      className={
+        highlight
+          ? "bg-purple-100 p-6 rounded-xl border-2 border-purple-400 flex flex-col items-center shadow-inner"
+          : "bg-slate-50 p-4 rounded-lg border border-slate-200 flex justify-center"
+      }
+    >
+      <MathFormula formula={formula} display={true} />
+    </div>
+  );
+}
+
+function PositionTimeGraph({ type }: { type: "progressivo" | "retrogrado" }) {
+  const isProgressive = type === "progressivo";
+
+  return (
+    <svg viewBox="0 0 360 220" className="w-full h-52">
+      <rect x="0" y="0" width="360" height="220" rx="18" fill="#f8fafc" />
+
+      <line x1="54" y1="176" x2="318" y2="176" stroke="#334155" strokeWidth="2" />
+      <line x1="54" y1="176" x2="54" y2="32" stroke="#334155" strokeWidth="2" />
+
+      <text x="322" y="181" fontSize="13" fill="#334155" fontWeight="700">
+        t
+      </text>
+      <text x="42" y="28" fontSize="13" fill="#334155" fontWeight="700">
+        s
+      </text>
+
+      <line
+        x1="54"
+        y1={isProgressive ? "144" : "58"}
+        x2="300"
+        y2={isProgressive ? "54" : "150"}
+        stroke={isProgressive ? "#2563eb" : "#dc2626"}
+        strokeWidth="5"
+        strokeLinecap="round"
+      />
+
+      <circle
+        cx="54"
+        cy={isProgressive ? "144" : "58"}
+        r="5"
+        fill={isProgressive ? "#2563eb" : "#dc2626"}
+      />
+      <circle
+        cx="300"
+        cy={isProgressive ? "54" : "150"}
+        r="5"
+        fill={isProgressive ? "#2563eb" : "#dc2626"}
+      />
+
+      <text
+        x="178"
+        y={isProgressive ? "84" : "108"}
+        fontSize="13"
+        fill={isProgressive ? "#1d4ed8" : "#b91c1c"}
+        fontWeight="800"
+      >
+        {isProgressive ? "v > 0" : "v < 0"}
+      </text>
+
+      <text x="62" y="196" fontSize="12" fill="#64748b">
+        tempo aumenta
+      </text>
+    </svg>
+  );
+}
+
+function VelocityTimeGraph() {
+  return (
+    <svg viewBox="0 0 360 220" className="w-full h-52">
+      <rect x="0" y="0" width="360" height="220" rx="18" fill="#f8fafc" />
+
+      <line x1="54" y1="176" x2="318" y2="176" stroke="#334155" strokeWidth="2" />
+      <line x1="54" y1="176" x2="54" y2="32" stroke="#334155" strokeWidth="2" />
+
+      <text x="322" y="181" fontSize="13" fill="#334155" fontWeight="700">
+        t
+      </text>
+      <text x="42" y="28" fontSize="13" fill="#334155" fontWeight="700">
+        v
+      </text>
+
+      <rect x="78" y="82" width="210" height="94" fill="#bfdbfe" opacity="0.65" />
+      <line x1="78" y1="82" x2="288" y2="82" stroke="#2563eb" strokeWidth="5" strokeLinecap="round" />
+
+      <text x="146" y="70" fontSize="13" fill="#1d4ed8" fontWeight="800">
+        v constante
+      </text>
+
+      <text x="136" y="132" fontSize="14" fill="#1e3a8a" fontWeight="900">
+        Área = Δs
+      </text>
+    </svg>
+  );
+}
+
+function AccelerationTimeGraph() {
+  return (
+    <svg viewBox="0 0 360 180" className="w-full h-44">
+      <rect x="0" y="0" width="360" height="180" rx="18" fill="#f8fafc" />
+
+      <line x1="54" y1="92" x2="318" y2="92" stroke="#334155" strokeWidth="2" />
+      <line x1="54" y1="150" x2="54" y2="32" stroke="#334155" strokeWidth="2" />
+
+      <text x="322" y="98" fontSize="13" fill="#334155" fontWeight="700">
+        t
+      </text>
+      <text x="42" y="28" fontSize="13" fill="#334155" fontWeight="700">
+        a
+      </text>
+
+      <line x1="54" y1="92" x2="304" y2="92" stroke="#16a34a" strokeWidth="5" strokeLinecap="round" />
+
+      <text x="150" y="78" fontSize="14" fill="#15803d" fontWeight="900">
+        a = 0
+      </text>
+    </svg>
+  );
+}
+
 export default function CinematicaTopicMRU() {
   const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"teoria" | "exercicios">("teoria");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("teoria");
 
   const toggleExercise = (id: string) => {
     setExpandedExercise(expandedExercise === id ? null : id);
@@ -13,33 +145,40 @@ export default function CinematicaTopicMRU() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/cinematica">
               <a className="p-2 hover:bg-slate-100 rounded-full transition-colors">
                 <ArrowLeft className="w-5 h-5 text-slate-600" />
               </a>
             </Link>
-            <h1 className="text-xl font-bold text-slate-900">MRU - Equação Horária do Espaço</h1>
+
+            <h1 className="text-xl font-bold text-slate-900">
+              MRU - Equação Horária do Espaço
+            </h1>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-6 py-12">
-        {/* Introduction */}
+      <main className="max-w-5xl mx-auto px-6 py-12">
         <div className="mb-12">
-          <h1 className="text-4xl font-bold text-slate-900 mb-4">
+          <p className="text-sm font-bold uppercase tracking-wide text-purple-700 mb-3">
+            Cinemática escalar
+          </p>
+
+          <h1 className="text-4xl font-black text-slate-900 mb-4">
             Movimento Retilíneo Uniforme (MRU)
           </h1>
-          <p className="text-xl text-slate-600 leading-relaxed">
-            Estudo completo e detalhado da <strong>Equação Horária do Espaço</strong>, o fundamento da cinemática escalar.
+
+          <p className="text-xl text-slate-600 leading-relaxed max-w-3xl">
+            Estudo completo da <strong>Equação Horária do Espaço</strong>, uma das bases
+            mais importantes da cinemática. Sim, é aquela fórmula simples que consegue
+            derrubar aluno quando a unidade vem misturada. A natureza é elegante, a prova
+            nem sempre.
           </p>
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-4 mb-8 border-b border-slate-300">
           <button
             onClick={() => setActiveTab("teoria")}
@@ -51,6 +190,7 @@ export default function CinematicaTopicMRU() {
           >
             Teoria Completa
           </button>
+
           <button
             onClick={() => setActiveTab("exercicios")}
             className={`px-6 py-3 font-semibold transition-colors ${
@@ -63,10 +203,8 @@ export default function CinematicaTopicMRU() {
           </button>
         </div>
 
-        {/* TEORIA */}
         {activeTab === "teoria" && (
           <div className="space-y-10">
-            {/* ===== SEÇÃO 1: CONTEXTO E DEFINIÇÃO ===== */}
             <section className="bg-white rounded-xl shadow-md p-8 border-l-4 border-purple-600">
               <h2 className="text-3xl font-bold text-slate-900 mb-6">
                 1. O que é Movimento Retilíneo Uniforme?
@@ -74,666 +212,716 @@ export default function CinematicaTopicMRU() {
 
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-3">Definição Fundamental</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-3">
+                    Definição fundamental
+                  </h3>
+
                   <p className="text-slate-700 leading-relaxed mb-4">
-                    O <strong>Movimento Retilíneo Uniforme (MRU)</strong> é aquele em que um móvel se desloca ao longo de uma trajetória retilínea (linha reta) mantendo uma <strong>velocidade escalar constante</strong> ao longo do tempo. Isso significa que o móvel percorre <strong>distâncias iguais em intervalos de tempo iguais</strong>.
+                    O <strong>Movimento Retilíneo Uniforme (MRU)</strong> é aquele em
+                    que um móvel se desloca ao longo de uma trajetória retilínea mantendo
+                    velocidade escalar constante. Isso significa que o móvel percorre{" "}
+                    <strong>distâncias iguais em intervalos de tempo iguais</strong>.
                   </p>
+
                   <div className="bg-purple-50 border-l-4 border-purple-400 p-5 rounded">
                     <p className="text-slate-800 font-medium">
                       Se um automóvel trafega a 60 km/h em uma estrada retilínea, ele percorre:
                     </p>
+
                     <ul className="list-disc list-inside text-slate-700 mt-3 space-y-1 ml-2">
                       <li>60 km em 1 hora</li>
                       <li>120 km em 2 horas</li>
                       <li>180 km em 3 horas</li>
                     </ul>
+
                     <p className="text-slate-700 mt-3 text-sm">
-                      Observe que a distância é sempre proporcional ao tempo: a razão entre distância e tempo é constante.
+                      A distância é proporcional ao tempo: a razão entre distância e tempo é constante.
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-3">Características Essenciais do MRU</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-3">
+                    Características essenciais do MRU
+                  </h3>
+
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-                      <p className="font-semibold text-blue-900 mb-2">✓ Velocidade Constante</p>
+                      <p className="font-semibold text-blue-900 mb-2">
+                        Velocidade constante
+                      </p>
                       <p className="text-blue-800 text-sm">
-                        A velocidade escalar não varia com o tempo: <MathFormula formula="v = \text{constante} \neq 0" display={false} />
+                        A velocidade escalar não varia com o tempo:{" "}
+                        <MathFormula formula="v = \text{constante}" display={false} />
                       </p>
                     </div>
+
                     <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
-                      <p className="font-semibold text-green-900 mb-2">✓ Aceleração Nula</p>
+                      <p className="font-semibold text-green-900 mb-2">
+                        Aceleração nula
+                      </p>
                       <p className="text-green-800 text-sm">
-                        Como a velocidade não muda, a aceleração é zero: <MathFormula formula="a = 0" display={false} />
+                        Como a velocidade não muda, a aceleração é zero:{" "}
+                        <MathFormula formula="a = 0" display={false} />
                       </p>
                     </div>
+
                     <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
-                      <p className="font-semibold text-orange-900 mb-2">✓ Trajetória Retilínea</p>
+                      <p className="font-semibold text-orange-900 mb-2">
+                        Trajetória retilínea
+                      </p>
                       <p className="text-orange-800 text-sm">
-                        O móvel se move em linha reta, sem fazer curvas ou desvios.
+                        O móvel se desloca em linha reta, sem curvas.
                       </p>
                     </div>
+
                     <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
-                      <p className="font-semibold text-red-900 mb-2">✓ Velocidade Vetorial Constante</p>
+                      <p className="font-semibold text-red-900 mb-2">
+                        Velocidade vetorial constante
+                      </p>
                       <p className="text-red-800 text-sm">
-                        Módulo, direção e sentido são constantes simultaneamente.
+                        Módulo, direção e sentido permanecem constantes.
                       </p>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-3">Observação Histórica</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-3">
+                    Observação histórica
+                  </h3>
+
                   <p className="text-slate-700 leading-relaxed">
-                    A compreensão de que um corpo pode manter seu estado de movimento indefinidamente sem a ação de forças foi revolucionária na história da física. Isso é o cerne da <strong>Primeira Lei de Newton (Princípio da Inércia)</strong>, que estabelece que todo corpo em repouso ou em movimento uniforme tende a permanecer nesse estado, a menos que uma força externa atue sobre ele.
+                    A ideia de que um corpo pode manter seu estado de movimento sem a ação
+                    contínua de uma força foi revolucionária na história da física. Ela se
+                    conecta diretamente ao <strong>Princípio da Inércia</strong>, a Primeira
+                    Lei de Newton.
                   </p>
                 </div>
               </div>
             </section>
 
-            {/* ===== SEÇÃO 2: CONCEITOS PRELIMINARES ===== */}
             <section className="bg-white rounded-xl shadow-md p-8 border-l-4 border-purple-600">
               <h2 className="text-3xl font-bold text-slate-900 mb-6">
-                2. Conceitos Preliminares Essenciais
+                2. Conceitos preliminares essenciais
               </h2>
 
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-3">2.1 - Posição (s) e Espaço</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-3">
+                    2.1 Posição ou espaço escalar
+                  </h3>
+
                   <p className="text-slate-700 mb-4">
-                    A <strong>posição</strong> de um móvel é a localização dele em relação a um ponto de referência chamado <strong>origem</strong>. Representamos a posição pela letra <MathFormula formula="s" display={false} /> e medimos em metros (m) no Sistema Internacional de Unidades (SI).
+                    A <strong>posição</strong> de um móvel é sua localização em relação
+                    a uma origem escolhida. Representamos por{" "}
+                    <MathFormula formula="s" display={false} /> e, no SI, medimos em metros.
                   </p>
+
                   <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
                     <p className="text-slate-800 font-medium mb-2">Exemplo:</p>
                     <p className="text-slate-700 text-sm">
-                      Se um carro está a 50 metros de um semáforo (origem), dizemos que sua posição é <MathFormula formula="s = 50 \text{ m}" display={false} />. Se estiver 30 metros antes do semáforo, sua posição é <MathFormula formula="s = -30 \text{ m}" display={false} /> (negativa, pois está no sentido contrário).
+                      Se um carro está 50 m depois da origem, sua posição é{" "}
+                      <MathFormula formula="s = 50 \text{ m}" display={false} />. Se está
+                      30 m antes da origem, sua posição é{" "}
+                      <MathFormula formula="s = -30 \text{ m}" display={false} />.
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-3">2.2 - Deslocamento Escalar (Δs)</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-3">
+                    2.2 Deslocamento escalar
+                  </h3>
+
                   <p className="text-slate-700 mb-4">
-                    O <strong>deslocamento escalar</strong> é a variação de posição de um móvel. É calculado como a diferença entre a posição final e a posição inicial:
+                    O <strong>deslocamento escalar</strong> é a variação da posição:
                   </p>
-                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 flex justify-center">
-                    <MathFormula formula="\Delta s = s - s_0" display={true} />
-                  </div>
+
+                  <FormulaBox formula="\Delta s = s - s_0" />
+
                   <p className="text-slate-700 mt-4 text-sm">
-                    <strong>Importante:</strong> O deslocamento pode ser positivo (movimento no sentido positivo), negativo (movimento no sentido negativo) ou zero (se o móvel retornar ao ponto de partida).
+                    Ele pode ser positivo, negativo ou nulo. Isso depende do sentido do
+                    movimento e da escolha da orientação da trajetória.
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-3">2.3 - Intervalo de Tempo (Δt)</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-3">
+                    2.3 Intervalo de tempo
+                  </h3>
+
                   <p className="text-slate-700 mb-4">
-                    O <strong>intervalo de tempo</strong> é a duração entre dois instantes. Representamos por <MathFormula formula="\Delta t" display={false} /> e calculamos como:
+                    O intervalo de tempo é a duração entre dois instantes:
                   </p>
-                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 flex justify-center">
-                    <MathFormula formula="\Delta t = t - t_0" display={true} />
-                  </div>
+
+                  <FormulaBox formula="\Delta t = t - t_0" />
+
                   <p className="text-slate-700 mt-4 text-sm">
-                    <strong>Convenção:</strong> Geralmente adotamos o instante inicial como <MathFormula formula="t_0 = 0" display={false} />, simplificando para <MathFormula formula="\Delta t = t" display={false} />.
+                    Em muitas questões, adotamos{" "}
+                    <MathFormula formula="t_0 = 0" display={false} />, então{" "}
+                    <MathFormula formula="\Delta t = t" display={false} />.
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-3">2.4 - Velocidade Escalar Média</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-3">
+                    2.4 Velocidade escalar média
+                  </h3>
+
                   <p className="text-slate-700 mb-4">
-                    A <strong>velocidade escalar média</strong> é a razão entre o deslocamento escalar e o intervalo de tempo:
+                    A velocidade escalar média é a razão entre deslocamento escalar e
+                    intervalo de tempo:
                   </p>
-                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 flex justify-center">
-                    <MathFormula formula="v_m = \frac{\Delta s}{\Delta t} = \frac{s - s_0}{t - t_0}" display={true} />
-                  </div>
+
+                  <FormulaBox formula="v_m = \frac{\Delta s}{\Delta t} = \frac{s - s_0}{t - t_0}" />
+
                   <p className="text-slate-700 mt-4">
-                    <strong>Unidade no SI:</strong> metro por segundo (m/s)
+                    No SI, a unidade é metro por segundo:{" "}
+                    <MathFormula formula="\text{m/s}" display={false} />.
                   </p>
-                  <p className="text-slate-700 text-sm mt-2">
-                    <strong>Conversão útil:</strong> Para converter de km/h para m/s, dividimos por 3,6. Para converter de m/s para km/h, multiplicamos por 3,6.
-                  </p>
+
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mt-4">
+                    <p className="text-blue-900 font-medium mb-2">Conversão útil:</p>
+                    <p className="text-blue-800 text-sm">
+                      Para converter de km/h para m/s, divida por 3,6. Para converter
+                      de m/s para km/h, multiplique por 3,6.
+                    </p>
+                  </div>
                 </div>
               </div>
             </section>
 
-            {/* ===== SEÇÃO 3: DEDUÇÃO DA EQUAÇÃO HORÁRIA ===== */}
             <section className="bg-white rounded-xl shadow-md p-8 border-l-4 border-purple-600">
               <h2 className="text-3xl font-bold text-slate-900 mb-6">
-                3. Dedução Completa da Equação Horária do Espaço
+                3. Dedução da equação horária do espaço
               </h2>
 
               <div className="space-y-8">
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Passo 1: Definição de Velocidade Média</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-3">
+                    Passo 1: partir da velocidade média
+                  </h3>
+
                   <p className="text-slate-700 mb-4">
-                    Começamos com a definição de velocidade escalar média, que é a razão entre o deslocamento e o intervalo de tempo:
+                    Começamos pela definição:
                   </p>
-                  <div className="bg-blue-50 p-5 rounded-lg border border-blue-200">
-                    <MathFormula formula="v_m = \frac{\Delta s}{\Delta t}" display={true} />
-                  </div>
+
+                  <FormulaBox formula="v_m = \frac{\Delta s}{\Delta t}" />
+
                   <p className="text-slate-700 mt-4">
-                    Expandindo o deslocamento e o intervalo de tempo:
+                    Expandindo deslocamento e intervalo de tempo:
                   </p>
-                  <div className="bg-blue-50 p-5 rounded-lg border border-blue-200 mt-3">
-                    <MathFormula formula="v_m = \frac{s - s_0}{t - t_0}" display={true} />
+
+                  <div className="mt-4">
+                    <FormulaBox formula="v_m = \frac{s - s_0}{t - t_0}" />
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Passo 2: Aplicação ao MRU</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-3">
+                    Passo 2: usar a condição do MRU
+                  </h3>
+
                   <p className="text-slate-700 mb-4">
-                    No Movimento Retilíneo Uniforme, a velocidade é <strong>constante</strong>. Isso significa que a velocidade escalar instantânea (<MathFormula formula="v" display={false} />) é igual à velocidade escalar média (<MathFormula formula="v_m" display={false} />) em qualquer intervalo de tempo:
+                    No MRU, a velocidade é constante. Por isso, a velocidade instantânea
+                    é igual à velocidade média em qualquer intervalo:
                   </p>
-                  <div className="bg-green-50 p-5 rounded-lg border border-green-200">
-                    <MathFormula formula="v = v_m = \frac{s - s_0}{t - t_0}" display={true} />
-                  </div>
+
+                  <FormulaBox formula="v = v_m = \frac{s - s_0}{t - t_0}" />
+
                   <p className="text-slate-700 mt-4">
-                    <strong>Adotando a convenção:</strong> Geralmente escolhemos o instante inicial como <MathFormula formula="t_0 = 0" display={false} />, o que simplifica a expressão:
+                    Tomando <MathFormula formula="t_0 = 0" display={false} />:
                   </p>
-                  <div className="bg-green-50 p-5 rounded-lg border border-green-200 mt-3">
-                    <MathFormula formula="v = \frac{s - s_0}{t - 0} = \frac{s - s_0}{t}" display={true} />
+
+                  <div className="mt-4">
+                    <FormulaBox formula="v = \frac{s - s_0}{t}" />
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Passo 3: Isolamento da Posição Final</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-3">
+                    Passo 3: isolar a posição final
+                  </h3>
+
                   <p className="text-slate-700 mb-4">
-                    Multiplicamos ambos os lados da equação por <MathFormula formula="t" display={false} />:
+                    Multiplicamos ambos os lados por{" "}
+                    <MathFormula formula="t" display={false} />:
                   </p>
-                  <div className="bg-orange-50 p-5 rounded-lg border border-orange-200">
-                    <MathFormula formula="v \cdot t = s - s_0" display={true} />
-                  </div>
+
+                  <FormulaBox formula="v \cdot t = s - s_0" />
+
                   <p className="text-slate-700 mt-4">
-                    Adicionamos <MathFormula formula="s_0" display={false} /> em ambos os lados:
+                    Somando <MathFormula formula="s_0" display={false} /> nos dois lados:
                   </p>
-                  <div className="bg-orange-50 p-5 rounded-lg border border-orange-200 mt-3">
-                    <MathFormula formula="v \cdot t + s_0 = s" display={true} />
+
+                  <div className="mt-4">
+                    <FormulaBox formula="s = s_0 + v \cdot t" highlight />
                   </div>
-                  <p className="text-slate-700 mt-4">
-                    Reordenando, chegamos à famosa equação:
+
+                  <p className="text-purple-900 font-bold mt-4 text-lg text-center">
+                    Equação horária do espaço no MRU
                   </p>
-                  <div className="bg-purple-100 p-6 rounded-lg border-2 border-purple-400 mt-3 text-center">
-                    <MathFormula formula="s = s_0 + v \cdot t" display={true} />
-                    <p className="text-purple-900 font-semibold mt-3">Equação Horária do Espaço no MRU</p>
-                  </div>
                 </div>
 
-                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-5 rounded">
-                  <p className="text-slate-800 font-semibold mb-2">💡 Observação Importante:</p>
-                  <p className="text-slate-700">
-                    Esta equação é do <strong>primeiro grau</strong> em relação ao tempo (<MathFormula formula="t" display={false} />). Isso significa que o gráfico de <MathFormula formula="s" display={false} /> versus <MathFormula formula="t" display={false} /> é uma <strong>linha reta</strong>, o que é a marca registrada do MRU.
+                <div className="bg-amber-50 border-l-4 border-amber-400 p-5 rounded">
+                  <p className="text-amber-900 font-medium">Observação importante:</p>
+                  <p className="text-amber-800 mt-2">
+                    Essa equação é uma função do primeiro grau em relação ao tempo.
+                    Por isso, o gráfico de posição em função do tempo é uma reta.
                   </p>
                 </div>
               </div>
             </section>
 
-            {/* ===== SEÇÃO 4: ANÁLISE TERMO-A-TERMO ===== */}
             <section className="bg-white rounded-xl shadow-md p-8 border-l-4 border-purple-600">
               <h2 className="text-3xl font-bold text-slate-900 mb-6">
-                4. Análise Detalhada Termo-a-Termo
+                4. Análise termo a termo
               </h2>
 
-              <p className="text-slate-700 mb-6">
-                A equação <MathFormula formula="s = s_0 + v \cdot t" display={false} /> contém quatro grandezas fundamentais. Vamos detalhar cada uma:
-              </p>
-
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-purple-600 text-white">
-                      <th className="border border-slate-300 p-4 text-left font-semibold">Símbolo</th>
-                      <th className="border border-slate-300 p-4 text-left font-semibold">Nome</th>
-                      <th className="border border-slate-300 p-4 text-left font-semibold">Significado Físico</th>
-                      <th className="border border-slate-300 p-4 text-left font-semibold">Unidade (SI)</th>
-                      <th className="border border-slate-300 p-4 text-left font-semibold">Observações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="hover:bg-slate-50">
-                      <td className="border border-slate-300 p-4 font-bold text-lg">s</td>
-                      <td className="border border-slate-300 p-4 font-semibold">Posição Final</td>
-                      <td className="border border-slate-300 p-4">A localização do móvel no instante t</td>
-                      <td className="border border-slate-300 p-4">metro (m)</td>
-                      <td className="border border-slate-300 p-4 text-sm">Pode ser positiva ou negativa; é o que queremos encontrar</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50 bg-slate-50">
-                      <td className="border border-slate-300 p-4 font-bold text-lg">s₀</td>
-                      <td className="border border-slate-300 p-4 font-semibold">Posição Inicial</td>
-                      <td className="border border-slate-300 p-4">A localização do móvel no instante t = 0</td>
-                      <td className="border border-slate-300 p-4">metro (m)</td>
-                      <td className="border border-slate-300 p-4 text-sm">Frequentemente adotamos s₀ = 0 para simplificar</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="border border-slate-300 p-4 font-bold text-lg">v</td>
-                      <td className="border border-slate-300 p-4 font-semibold">Velocidade Escalar</td>
-                      <td className="border border-slate-300 p-4">A taxa de variação da posição com o tempo (constante no MRU)</td>
-                      <td className="border border-slate-300 p-4">m/s</td>
-                      <td className="border border-slate-300 p-4 text-sm">v &gt; 0: movimento progressivo; v &lt; 0: movimento retrógrado</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50 bg-slate-50">
-                      <td className="border border-slate-300 p-4 font-bold text-lg">t</td>
-                      <td className="border border-slate-300 p-4 font-semibold">Instante de Tempo</td>
-                      <td className="border border-slate-300 p-4">O momento em que queremos saber a posição do móvel</td>
-                      <td className="border border-slate-300 p-4">segundo (s)</td>
-                      <td className="border border-slate-300 p-4 text-sm">Sempre ≥ 0; representa o tempo decorrido desde t₀ = 0</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="mt-8 space-y-4">
-                <div className="bg-blue-50 border-l-4 border-blue-400 p-5 rounded">
-                  <p className="font-semibold text-blue-900 mb-2">📌 Significado de s₀:</p>
-                  <p className="text-blue-800">
-                    A posição inicial <MathFormula formula="s_0" display={false} /> é onde o móvel se encontra quando começamos a contar o tempo (t = 0). Se escolhermos a origem como ponto de referência, podemos ter <MathFormula formula="s_0 = 0" display={false} />, mas isso é apenas uma escolha de conveniência.
-                  </p>
-                </div>
-
-                <div className="bg-green-50 border-l-4 border-green-400 p-5 rounded">
-                  <p className="font-semibold text-green-900 mb-2">📌 Significado de v:</p>
-                  <p className="text-green-800">
-                    A velocidade <MathFormula formula="v" display={false} /> é <strong>constante</strong> no MRU. Ela representa quantos metros o móvel percorre a cada segundo. Se <MathFormula formula="v = 20 \text{ m/s}" display={false} />, o móvel avança 20 metros a cada segundo.
-                  </p>
-                </div>
-
-                <div className="bg-orange-50 border-l-4 border-orange-400 p-5 rounded">
-                  <p className="font-semibold text-orange-900 mb-2">📌 Sinal de v:</p>
-                  <p className="text-orange-800 mb-3">
-                    O sinal de <MathFormula formula="v" display={false} /> indica a direção do movimento:
-                  </p>
-                  <ul className="list-disc list-inside text-orange-800 space-y-1 ml-2">
-                    <li><strong>v &gt; 0:</strong> Movimento progressivo (no sentido positivo da trajetória)</li>
-                    <li><strong>v &lt; 0:</strong> Movimento retrógrado (no sentido negativo da trajetória)</li>
-                    <li><strong>v = 0:</strong> Móvel em repouso (não é MRU, pois não há movimento)</li>
-                  </ul>
-                </div>
-              </div>
-            </section>
-
-            {/* ===== SEÇÃO 5: EXEMPLO PRÁTICO DETALHADO ===== */}
-            <section className="bg-white rounded-xl shadow-md p-8 border-l-4 border-purple-600">
-              <h2 className="text-3xl font-bold text-slate-900 mb-6">
-                5. Exemplo Prático Completo
-              </h2>
-
-              <div className="bg-slate-50 p-6 rounded-lg border border-slate-300 mb-6">
-                <p className="text-slate-800 font-semibold mb-4">Problema:</p>
-                <p className="text-slate-700 mb-4">
-                  Um automóvel trafega em uma estrada retilínea com velocidade constante de 90 km/h. No instante t = 0, ele se encontra na posição s₀ = 20 m (20 metros após um semáforo tomado como origem). Determine:
+              <div className="space-y-6">
+                <p className="text-slate-700 leading-relaxed">
+                  A equação <MathFormula formula="s = s_0 + v \cdot t" display={false} />{" "}
+                  contém quatro grandezas fundamentais:
                 </p>
-                <ol className="list-decimal list-inside text-slate-700 space-y-2 ml-2">
-                  <li>A equação horária do espaço para este automóvel</li>
-                  <li>A posição do automóvel no instante t = 10 s</li>
-                  <li>O instante em que o automóvel passa pela posição s = 270 m</li>
-                  <li>O deslocamento do automóvel entre t = 5 s e t = 15 s</li>
-                </ol>
-              </div>
 
-              <div className="bg-white p-6 rounded-lg border-2 border-purple-200">
-                <p className="font-semibold text-slate-900 mb-4">Resolução Passo a Passo:</p>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-sm border border-slate-200">
+                    <thead className="bg-slate-100">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-slate-900 font-bold border-b border-slate-200">
+                          Símbolo
+                        </th>
+                        <th className="px-4 py-3 text-left text-slate-900 font-bold border-b border-slate-200">
+                          Nome
+                        </th>
+                        <th className="px-4 py-3 text-left text-slate-900 font-bold border-b border-slate-200">
+                          Significado físico
+                        </th>
+                        <th className="px-4 py-3 text-left text-slate-900 font-bold border-b border-slate-200">
+                          Unidade SI
+                        </th>
+                      </tr>
+                    </thead>
 
-                <div className="space-y-6">
-                  <div>
-                    <p className="font-semibold text-slate-900 mb-3">Passo 1: Conversão da Velocidade</p>
-                    <p className="text-slate-700 mb-3">
-                      A velocidade está em km/h, mas precisamos em m/s para usar com a equação horária. Dividimos por 3,6:
+                    <tbody className="divide-y divide-slate-200">
+                      <tr>
+                        <td className="px-4 py-3 font-mono text-purple-600 font-bold">s</td>
+                        <td className="px-4 py-3 text-slate-800">Posição final</td>
+                        <td className="px-4 py-3 text-slate-700">
+                          Localização do móvel no instante t
+                        </td>
+                        <td className="px-4 py-3 text-slate-700">m</td>
+                      </tr>
+
+                      <tr>
+                        <td className="px-4 py-3 font-mono text-purple-600 font-bold">s₀</td>
+                        <td className="px-4 py-3 text-slate-800">Posição inicial</td>
+                        <td className="px-4 py-3 text-slate-700">
+                          Localização do móvel quando começamos a contar o tempo
+                        </td>
+                        <td className="px-4 py-3 text-slate-700">m</td>
+                      </tr>
+
+                      <tr>
+                        <td className="px-4 py-3 font-mono text-purple-600 font-bold">v</td>
+                        <td className="px-4 py-3 text-slate-800">Velocidade escalar</td>
+                        <td className="px-4 py-3 text-slate-700">
+                          Taxa de variação da posição no tempo
+                        </td>
+                        <td className="px-4 py-3 text-slate-700">m/s</td>
+                      </tr>
+
+                      <tr>
+                        <td className="px-4 py-3 font-mono text-purple-600 font-bold">t</td>
+                        <td className="px-4 py-3 text-slate-800">Tempo</td>
+                        <td className="px-4 py-3 text-slate-700">
+                          Instante em que queremos saber a posição
+                        </td>
+                        <td className="px-4 py-3 text-slate-700">s</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-4 mt-6">
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <p className="font-bold text-slate-900 mb-2">Significado de s₀</p>
+                    <p className="text-slate-700 text-sm">
+                      É onde o móvel está quando começamos a contar o tempo. Pode ser zero,
+                      positivo ou negativo.
                     </p>
-                    <div className="bg-slate-50 p-4 rounded border border-slate-200">
-                      <MathFormula formula="v = 90 \text{ km/h} = \frac{90}{3,6} = 25 \text{ m/s}" display={true} />
-                    </div>
                   </div>
 
-                  <div>
-                    <p className="font-semibold text-slate-900 mb-3">Passo 2: Identificação dos Dados</p>
-                    <p className="text-slate-700 mb-3">
-                      Organizamos os dados fornecidos:
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <p className="font-bold text-slate-900 mb-2">Significado de v</p>
+                    <p className="text-slate-700 text-sm">
+                      Representa quantos metros a posição varia a cada segundo.
                     </p>
-                    <div className="bg-slate-50 p-4 rounded border border-slate-200">
-                      <ul className="list-disc list-inside text-slate-700 space-y-1 ml-2">
-                        <li>Posição inicial: <MathFormula formula="s_0 = 20 \text{ m}" display={false} /></li>
-                        <li>Velocidade: <MathFormula formula="v = 25 \text{ m/s}" display={false} /></li>
-                        <li>Instante inicial: <MathFormula formula="t_0 = 0" display={false} /></li>
+                  </div>
+
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <p className="font-bold text-slate-900 mb-2">Sinal da velocidade</p>
+
+                    <div className="text-slate-700 text-sm">
+                      <p>
+                        O sinal de <MathFormula formula="v" display={false} /> indica o
+                        sentido do movimento:
+                      </p>
+
+                      <ul className="list-disc list-inside mt-2 space-y-1">
+                        <li>
+                          <strong>v &gt; 0:</strong> movimento progressivo
+                        </li>
+                        <li>
+                          <strong>v &lt; 0:</strong> movimento retrógrado
+                        </li>
+                        <li>
+                          <strong>v = 0:</strong> repouso
+                        </li>
                       </ul>
                     </div>
                   </div>
+                </div>
+              </div>
+            </section>
 
+            <section className="bg-white rounded-xl shadow-md p-8 border-l-4 border-purple-600">
+              <h2 className="text-3xl font-bold text-slate-900 mb-6">
+                5. Classificação do movimento
+              </h2>
+
+              <div className="grid md:grid-cols-2 gap-5">
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
+                  <h3 className="text-xl font-bold text-blue-950 mb-3">
+                    Movimento progressivo
+                  </h3>
+
+                  <p className="text-blue-900 mb-4">
+                    Ocorre quando a posição aumenta com o tempo.
+                  </p>
+
+                  <FormulaBox formula="v > 0" />
+
+                  <p className="text-blue-900 mt-4 text-sm">
+                    No gráfico <MathFormula formula="s \times t" display={false} />, a reta
+                    é crescente.
+                  </p>
+                </div>
+
+                <div className="bg-red-50 border border-red-200 rounded-xl p-5">
+                  <h3 className="text-xl font-bold text-red-950 mb-3">
+                    Movimento retrógrado
+                  </h3>
+
+                  <p className="text-red-900 mb-4">
+                    Ocorre quando a posição diminui com o tempo.
+                  </p>
+
+                  <FormulaBox formula="v < 0" />
+
+                  <p className="text-red-900 mt-4 text-sm">
+                    No gráfico <MathFormula formula="s \times t" display={false} />, a reta
+                    é decrescente.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <section className="bg-white rounded-xl shadow-md p-8 border-l-4 border-purple-600">
+              <h2 className="text-3xl font-bold text-slate-900 mb-6">
+                6. Exemplo prático completo
+              </h2>
+
+              <div className="space-y-6">
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                  <p className="font-bold text-slate-900 mb-3">Problema:</p>
+
+                  <p className="text-slate-700 leading-relaxed">
+                    Um automóvel trafega em uma estrada retilínea com velocidade constante
+                    de 90 km/h. No instante <MathFormula formula="t = 0" display={false} />,
+                    ele se encontra na posição{" "}
+                    <MathFormula formula="s_0 = 20 \text{ m}" display={false} />. Determine:
+                  </p>
+
+                  <ol className="list-decimal list-inside text-slate-700 mt-4 space-y-2 ml-2">
+                    <li>A equação horária do espaço</li>
+                    <li>A posição no instante t = 10 s</li>
+                    <li>O instante em que passa pela posição s = 270 m</li>
+                    <li>O deslocamento entre t = 5 s e t = 15 s</li>
+                  </ol>
+                </div>
+
+                <div className="space-y-6">
                   <div>
-                    <p className="font-semibold text-slate-900 mb-3">Passo 3: Equação Horária (Item 1)</p>
-                    <p className="text-slate-700 mb-3">
-                      Substituindo os valores na equação <MathFormula formula="s = s_0 + vt" display={false} />:
+                    <p className="font-bold text-slate-900 mb-2">
+                      Passo 1: converter a velocidade
                     </p>
-                    <div className="bg-purple-100 p-4 rounded border-2 border-purple-400">
-                      <MathFormula formula="s = 20 + 25t" display={true} />
-                    </div>
-                    <p className="text-slate-700 mt-3 text-sm">
-                      <strong>Resposta do Item 1:</strong> A equação horária é <MathFormula formula="s = 20 + 25t" display={false} /> (com s em metros e t em segundos)
-                    </p>
+
+                    <FormulaBox formula="v = \frac{90}{3,6} = 25 \text{ m/s}" />
                   </div>
 
                   <div>
-                    <p className="font-semibold text-slate-900 mb-3">Passo 4: Posição em t = 10 s (Item 2)</p>
+                    <p className="font-bold text-slate-900 mb-2">
+                      Passo 2: montar a equação horária
+                    </p>
+
                     <p className="text-slate-700 mb-3">
-                      Substituímos t = 10 s na equação horária:
+                      Substituindo em{" "}
+                      <MathFormula formula="s = s_0 + vt" display={false} />:
                     </p>
-                    <div className="bg-slate-50 p-4 rounded border border-slate-200">
-                      <MathFormula formula="s = 20 + 25 \cdot 10" display={true} />
-                      <MathFormula formula="s = 20 + 250" display={true} />
-                      <MathFormula formula="s = 270 \text{ m}" display={true} />
-                    </div>
-                    <p className="text-slate-700 mt-3 text-sm">
-                      <strong>Resposta do Item 2:</strong> No instante t = 10 s, o automóvel está na posição s = 270 m
-                    </p>
+
+                    <FormulaBox formula="s = 20 + 25t" highlight />
                   </div>
 
                   <div>
-                    <p className="font-semibold text-slate-900 mb-3">Passo 5: Instante em que s = 270 m (Item 3)</p>
-                    <p className="text-slate-700 mb-3">
-                      Igualamos s = 270 m na equação horária e resolvemos para t:
+                    <p className="font-bold text-slate-900 mb-2">
+                      Passo 3: posição em t = 10 s
                     </p>
-                    <div className="bg-slate-50 p-4 rounded border border-slate-200">
-                      <MathFormula formula="270 = 20 + 25t" display={true} />
-                      <MathFormula formula="270 - 20 = 25t" display={true} />
-                      <MathFormula formula="250 = 25t" display={true} />
-                      <MathFormula formula="t = \frac{250}{25} = 10 \text{ s}" display={true} />
-                    </div>
-                    <p className="text-slate-700 mt-3 text-sm">
-                      <strong>Resposta do Item 3:</strong> O automóvel passa pela posição s = 270 m no instante t = 10 s
-                    </p>
+
+                    <FormulaBox formula="s = 20 + 25 \cdot 10 = 270 \text{ m}" />
                   </div>
 
                   <div>
-                    <p className="font-semibold text-slate-900 mb-3">Passo 6: Deslocamento entre t = 5 s e t = 15 s (Item 4)</p>
-                    <p className="text-slate-700 mb-3">
-                      Primeiro, calculamos a posição em t = 5 s:
+                    <p className="font-bold text-slate-900 mb-2">
+                      Passo 4: instante em que s = 270 m
                     </p>
-                    <div className="bg-slate-50 p-4 rounded border border-slate-200 mb-3">
-                      <MathFormula formula="s_1 = 20 + 25 \cdot 5 = 20 + 125 = 145 \text{ m}" display={true} />
-                    </div>
-                    <p className="text-slate-700 mb-3">
-                      Depois, calculamos a posição em t = 15 s:
+
+                    <FormulaBox formula="270 = 20 + 25t \Rightarrow 250 = 25t \Rightarrow t = 10 \text{ s}" />
+                  </div>
+
+                  <div>
+                    <p className="font-bold text-slate-900 mb-2">
+                      Passo 5: deslocamento entre t = 5 s e t = 15 s
                     </p>
-                    <div className="bg-slate-50 p-4 rounded border border-slate-200 mb-3">
-                      <MathFormula formula="s_2 = 20 + 25 \cdot 15 = 20 + 375 = 395 \text{ m}" display={true} />
+
+                    <div className="space-y-3">
+                      <FormulaBox formula="s_1 = 20 + 25 \cdot 5 = 145 \text{ m}" />
+                      <FormulaBox formula="s_2 = 20 + 25 \cdot 15 = 395 \text{ m}" />
+                      <FormulaBox formula="\Delta s = s_2 - s_1 = 395 - 145 = 250 \text{ m}" />
                     </div>
-                    <p className="text-slate-700 mb-3">
-                      O deslocamento é a diferença entre as posições finais e iniciais:
-                    </p>
-                    <div className="bg-slate-50 p-4 rounded border border-slate-200">
-                      <MathFormula formula="\Delta s = s_2 - s_1 = 395 - 145 = 250 \text{ m}" display={true} />
-                    </div>
-                    <p className="text-slate-700 mt-3 text-sm">
-                      <strong>Resposta do Item 4:</strong> O deslocamento entre t = 5 s e t = 15 s é Δs = 250 m
+                  </div>
+
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <p className="text-green-900 font-medium">Verificação:</p>
+                    <p className="text-green-800 text-sm mt-1">
+                      O deslocamento também é{" "}
+                      <MathFormula
+                        formula="\Delta s = v \cdot \Delta t = 25 \cdot 10 = 250 \text{ m}"
+                        display={false}
+                      />.
                     </p>
                   </div>
                 </div>
               </div>
+            </section>
 
-              <div className="mt-6 bg-green-50 border-l-4 border-green-400 p-5 rounded">
-                <p className="text-green-900 font-semibold mb-2">✓ Verificação:</p>
-                <p className="text-green-800 text-sm">
-                  Note que o deslocamento (250 m) é igual a <MathFormula formula="v \cdot \Delta t = 25 \cdot (15 - 5) = 25 \cdot 10 = 250 \text{ m}" display={false} />. Isso confirma que nossos cálculos estão corretos!
+            <section className="bg-white rounded-xl shadow-md p-8 border-l-4 border-blue-600">
+              <h2 className="text-3xl font-bold text-slate-900 mb-6">
+                7. Gráficos e interpretação gráfica
+              </h2>
+
+              <div className="space-y-8">
+                <p className="text-slate-700 leading-relaxed">
+                  A análise gráfica é uma das ferramentas mais importantes no MRU. Ela
+                  permite enxergar o movimento sem ficar preso apenas à fórmula.
                 </p>
+
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                  <h3 className="text-xl font-bold text-slate-800 mb-4">
+                    A) Gráfico posição × tempo
+                  </h3>
+
+                  <p className="text-slate-700 mb-4">
+                    Como <MathFormula formula="s = s_0 + vt" display={false} /> é função do
+                    primeiro grau, o gráfico é uma reta.
+                  </p>
+
+                  <div className="grid md:grid-cols-2 gap-6 mb-6">
+                    <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                      <p className="font-semibold text-blue-900 mb-2">
+                        Movimento progressivo
+                      </p>
+                      <p className="text-sm text-slate-600 mb-3">
+                        A reta é crescente, pois <MathFormula formula="v > 0" display={false} />.
+                      </p>
+                      <PositionTimeGraph type="progressivo" />
+                    </div>
+
+                    <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                      <p className="font-semibold text-red-900 mb-2">
+                        Movimento retrógrado
+                      </p>
+                      <p className="text-sm text-slate-600 mb-3">
+                        A reta é decrescente, pois <MathFormula formula="v < 0" display={false} />.
+                      </p>
+                      <PositionTimeGraph type="retrogrado" />
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <p className="font-bold text-blue-900 mb-2">
+                      Propriedade importante:
+                    </p>
+
+                    <p className="text-blue-800 text-sm leading-relaxed">
+                      A inclinação da reta representa a velocidade escalar.
+                    </p>
+
+                    <div className="mt-3">
+                      <MathFormula formula="\tan(\theta) = \frac{\Delta s}{\Delta t} = v" display={true} />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                  <h3 className="text-xl font-bold text-slate-800 mb-4">
+                    B) Gráfico velocidade × tempo
+                  </h3>
+
+                  <p className="text-slate-700 mb-4">
+                    No MRU, a velocidade é constante. Por isso, o gráfico é uma reta
+                    horizontal.
+                  </p>
+
+                  <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm mb-6">
+                    <VelocityTimeGraph />
+                  </div>
+
+                  <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                    <p className="font-bold text-green-900 mb-2">
+                      Propriedade da área:
+                    </p>
+
+                    <p className="text-green-800 text-sm leading-relaxed">
+                      A área sob o gráfico <MathFormula formula="v \times t" display={false} /> é
+                      numericamente igual ao deslocamento escalar.
+                    </p>
+
+                    <div className="mt-3">
+                      <MathFormula formula="\text{Área} \stackrel{N}{=} \Delta s = v \cdot \Delta t" display={true} />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                  <h3 className="text-xl font-bold text-slate-800 mb-4">
+                    C) Gráfico aceleração × tempo
+                  </h3>
+
+                  <p className="text-slate-700 mb-4">
+                    Como a velocidade não varia, a aceleração escalar é nula em todos
+                    os instantes.
+                  </p>
+
+                  <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                    <AccelerationTimeGraph />
+                  </div>
+                </div>
               </div>
             </section>
 
-            {/* ===== SEÇÃO 6: ARMADILHAS COMUNS ===== */}
             <section className="bg-white rounded-xl shadow-md p-8 border-l-4 border-red-600">
               <h2 className="text-3xl font-bold text-slate-900 mb-6">
-                6. Armadilhas e Erros Comuns
+                8. Armadilhas e erros comuns
               </h2>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="bg-red-50 border-l-4 border-red-400 p-5 rounded">
-                  <p className="font-semibold text-red-900 mb-2">⚠️ Armadilha 1: Esquecer a Posição Inicial</p>
+                  <p className="font-semibold text-red-900 mb-2">
+                    Armadilha 1: esquecer a posição inicial
+                  </p>
+
                   <p className="text-red-800 mb-3">
-                    Muitos alunos escrevem <MathFormula formula="s = vt" display={false} />, esquecendo do termo <MathFormula formula="s_0" display={false} />.
+                    Muitos alunos escrevem <MathFormula formula="s = vt" display={false} />,
+                    esquecendo o termo <MathFormula formula="s_0" display={false} />.
                   </p>
+
                   <div className="bg-white p-3 rounded border border-red-200">
-                    <p className="text-red-800 text-sm mb-2"><strong>Errado:</strong> <MathFormula formula="s = 25t" display={false} /></p>
-                    <p className="text-green-800 text-sm"><strong>Correto:</strong> <MathFormula formula="s = 20 + 25t" display={false} /></p>
-                  </div>
-                  <p className="text-red-800 mt-3 text-sm">
-                    A equação <MathFormula formula="s = vt" display={false} /> só é válida quando <MathFormula formula="s_0 = 0" display={false} />.
-                  </p>
-                </div>
-
-                <div className="bg-red-50 border-l-4 border-red-400 p-5 rounded">
-                  <p className="font-semibold text-red-900 mb-2">⚠️ Armadilha 2: Unidades Inconsistentes</p>
-                  <p className="text-red-800 mb-3">
-                    A velocidade deve estar na mesma unidade de tempo que o tempo na equação.
-                  </p>
-                  <div className="bg-white p-3 rounded border border-red-200">
-                    <p className="text-red-800 text-sm mb-2"><strong>Errado:</strong> v = 90 km/h, t = 10 s → s = 20 + 90 × 10 (unidades incompatíveis!)</p>
-                    <p className="text-green-800 text-sm"><strong>Correto:</strong> v = 25 m/s, t = 10 s → s = 20 + 25 × 10 = 270 m</p>
-                  </div>
-                  <p className="text-red-800 mt-3 text-sm">
-                    <strong>Conversão:</strong> 1 km/h = 1/3,6 m/s ou 1 m/s = 3,6 km/h
-                  </p>
-                </div>
-
-                <div className="bg-red-50 border-l-4 border-red-400 p-5 rounded">
-                  <p className="font-semibold text-red-900 mb-2">⚠️ Armadilha 3: Confundir Deslocamento com Distância</p>
-                  <p className="text-red-800 mb-3">
-                    O <strong>deslocamento</strong> (<MathFormula formula="\Delta s" display={false} />) é a variação de posição (pode ser negativa), enquanto a <strong>distância</strong> é sempre positiva.
-                  </p>
-                  <div className="bg-white p-3 rounded border border-red-200">
-                    <p className="text-red-800 text-sm mb-2">Se um móvel vai de s = 100 m para s = 50 m:</p>
-                    <p className="text-red-800 text-sm mb-1">Deslocamento: Δs = 50 - 100 = -50 m (negativo!)</p>
-                    <p className="text-red-800 text-sm">Distância: d = 50 m (sempre positiva)</p>
-                  </div>
-                </div>
-
-                <div className="bg-red-50 border-l-4 border-red-400 p-5 rounded">
-                  <p className="font-semibold text-red-900 mb-2">⚠️ Armadilha 4: Velocidade Negativa</p>
-                  <p className="text-red-800 mb-3">
-                    Quando v &lt; 0, o móvel está em movimento retrógrado (voltando). A equação ainda funciona, mas o espaço diminui com o tempo.
-                  </p>
-                  <div className="bg-white p-3 rounded border border-red-200">
-                    <p className="text-red-800 text-sm mb-2">Exemplo: s = 100 - 10t (v = -10 m/s)</p>
-                    <p className="text-red-800 text-sm mb-1">Em t = 0: s = 100 m</p>
-                    <p className="text-red-800 text-sm mb-1">Em t = 5: s = 100 - 50 = 50 m</p>
-                    <p className="text-red-800 text-sm">Em t = 10: s = 100 - 100 = 0 m (passa pela origem)</p>
-                  </div>
-                </div>
-
-                <div className="bg-red-50 border-l-4 border-red-400 p-5 rounded">
-                  <p className="font-semibold text-red-900 mb-2">⚠️ Armadilha 5: Confundir Velocidade com Aceleração</p>
-                  <p className="text-red-800 mb-3">
-                    No MRU, a velocidade é constante, então a aceleração é <strong>zero</strong>. Não confunda os dois conceitos!
-                  </p>
-                  <div className="bg-white p-3 rounded border border-red-200">
-                    <p className="text-red-800 text-sm mb-2"><strong>MRU:</strong> v = constante, a = 0</p>
-                    <p className="text-green-800 text-sm"><strong>MRUV:</strong> v = variável, a ≠ 0 (será estudado depois)</p>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* ===== SEÇÃO 6: GRÁFICOS E INTERPRETAÇÃO GRÁFICA ===== */}
-            <section className="bg-white rounded-xl shadow-md p-8 border-l-4 border-blue-600">
-              <h2 className="text-3xl font-bold text-slate-900 mb-6">
-                6. Gráficos e Interpretação Gráfica no MRU
-              </h2>
-              <div className="space-y-8">
-                <p className="text-slate-700 leading-relaxed">
-                  A análise gráfica é uma das ferramentas mais poderosas da física. No MRU, trabalhamos com três tipos principais de gráficos que descrevem o comportamento do móvel ao longo do tempo.
-                </p>
-
-                {/* Gráfico s x t */}
-                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">A</span>
-                    Gráfico Posição x Tempo (s × t)
-                  </h3>
-                  <p className="text-slate-700 mb-4">
-                    Como a equação horária <MathFormula formula="s = s_0 + vt" /> é uma função do 1º grau em relação ao tempo, o gráfico é sempre uma <strong>reta inclinada</strong>.
-                  </p>
-                  <div className="grid md:grid-cols-2 gap-6 mb-6">
-                    <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-                      <p className="font-semibold text-blue-900 mb-2">Movimento Progressivo (v &gt; 0)</p>
-                      <p className="text-sm text-slate-600 mb-3">A reta é <strong>ascendente</strong> (sobe para a direita).</p>
-                      <div className="h-32 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300">
-                        <span className="text-slate-400 text-xs italic">[Representação Visual: Reta subindo]</span>
-                      </div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-                      <p className="font-semibold text-red-900 mb-2">Movimento Retrógrado (v &lt; 0)</p>
-                      <p className="text-sm text-slate-600 mb-3">A reta é <strong>descendente</strong> (desce para a direita).</p>
-                      <div className="h-32 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300">
-                        <span className="text-slate-400 text-xs italic">[Representação Visual: Reta descendo]</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
-                    <p className="font-bold text-blue-900 mb-2">Propriedade Importante:</p>
-                    <p className="text-blue-800 text-sm leading-relaxed">
-                      A <strong>inclinação</strong> da reta (coeficiente angular) representa a <strong>velocidade escalar</strong> do móvel. Quanto mais inclinada a reta, maior o módulo da velocidade.
+                    <p className="text-red-800 text-sm mb-2">
+                      <strong>Errado:</strong> s = 25t
                     </p>
-                    <div className="mt-3">
-                      <MathFormula formula="\tan(\theta) = \frac{\Delta s}{\Delta t} = v" display={true} />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Gráfico v x t */}
-                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">B</span>
-                    Gráfico Velocidade x Tempo (v × t)
-                  </h3>
-                  <p className="text-slate-700 mb-4">
-                    No MRU, a velocidade é constante. Por isso, o gráfico é sempre uma <strong>reta horizontal</strong> (paralela ao eixo do tempo).
-                  </p>
-                  <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm mb-6">
-                    <div className="h-40 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300 relative">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                         <div className="w-3/4 h-0.5 bg-blue-600 relative">
-                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-blue-600 font-bold text-xs">v = constante</div>
-                         </div>
-                      </div>
-                      <span className="text-slate-400 text-xs italic mt-20">[Representação Visual: Reta Horizontal]</span>
-                    </div>
-                  </div>
-                  <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
-                    <p className="font-bold text-green-900 mb-2">Propriedade da Área (NÉPER):</p>
-                    <p className="text-green-800 text-sm leading-relaxed">
-                      A <strong>área</strong> sob a reta no gráfico <MathFormula formula="v \times t" /> é numericamente igual ao <strong>deslocamento escalar</strong> (<MathFormula formula="\Delta s" />) do móvel no intervalo de tempo considerado.
+                    <p className="text-green-800 text-sm">
+                      <strong>Correto:</strong> s = 20 + 25t
                     </p>
-                    <div className="mt-3">
-                      <MathFormula formula="\text{Área} \stackrel{N}{=} \Delta s = v \cdot \Delta t" display={true} />
-                    </div>
                   </div>
                 </div>
 
-                {/* Gráfico a x t */}
-                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">C</span>
-                    Gráfico Aceleração x Tempo (a × t)
-                  </h3>
-                  <p className="text-slate-700 mb-4">
-                    Como a velocidade não varia no MRU, a aceleração escalar é <strong>nula</strong> em todos os instantes.
+                <div className="bg-red-50 border-l-4 border-red-400 p-5 rounded">
+                  <p className="font-semibold text-red-900 mb-2">
+                    Armadilha 2: misturar unidades
                   </p>
-                  <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-                    <p className="text-sm text-slate-600 mb-2">O gráfico é uma reta coincidente com o eixo horizontal (eixo do tempo).</p>
-                    <div className="h-20 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300">
-                      <MathFormula formula="a = 0" display={true} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
 
-            {/* ===== SEÇÃO 6: GRÁFICOS E INTERPRETAÇÃO GRÁFICA ===== */}
-            <section className="bg-white rounded-xl shadow-md p-8 border-l-4 border-blue-600">
-              <h2 className="text-3xl font-bold text-slate-900 mb-6">
-                6. Gráficos e Interpretação Gráfica no MRU
-              </h2>
-              <div className="space-y-8">
-                <p className="text-slate-700 leading-relaxed">
-                  A análise gráfica é uma das ferramentas mais poderosas da física. No MRU, trabalhamos com três tipos principais de gráficos que descrevem o comportamento do móvel ao longo do tempo.
-                </p>
-
-                {/* Gráfico s x t */}
-                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">A</span>
-                    Gráfico Posição x Tempo (s × t)
-                  </h3>
-                  <p className="text-slate-700 mb-4">
-                    Como a equação horária <MathFormula formula="s = s_0 + vt" /> é uma função do 1º grau em relação ao tempo, o gráfico é sempre uma <strong>reta inclinada</strong>.
+                  <p className="text-red-800 mb-3">
+                    A velocidade deve estar compatível com a unidade de tempo.
                   </p>
-                  <div className="grid md:grid-cols-2 gap-6 mb-6">
-                    <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-                      <p className="font-semibold text-blue-900 mb-2">Movimento Progressivo (v &gt; 0)</p>
-                      <p className="text-sm text-slate-600 mb-3">A reta é <strong>ascendente</strong> (sobe para a direita).</p>
-                      <div className="h-32 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300">
-                        <span className="text-slate-400 text-xs italic">[Representação Visual: Reta subindo]</span>
-                      </div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-                      <p className="font-semibold text-red-900 mb-2">Movimento Retrógrado (v &lt; 0)</p>
-                      <p className="text-sm text-slate-600 mb-3">A reta é <strong>descendente</strong> (desce para a direita).</p>
-                      <div className="h-32 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300">
-                        <span className="text-slate-400 text-xs italic">[Representação Visual: Reta descendo]</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
-                    <p className="font-bold text-blue-900 mb-2">Propriedade Importante:</p>
-                    <p className="text-blue-800 text-sm leading-relaxed">
-                      A <strong>inclinação</strong> da reta (coeficiente angular) representa a <strong>velocidade escalar</strong> do móvel. Quanto mais inclinada a reta, maior o módulo da velocidade.
+
+                  <div className="bg-white p-3 rounded border border-red-200">
+                    <p className="text-red-800 text-sm mb-2">
+                      <strong>Errado:</strong> usar v = 90 km/h com t em segundos.
                     </p>
-                    <div className="mt-3">
-                      <MathFormula formula="\tan(\theta) = \frac{\Delta s}{\Delta t} = v" display={true} />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Gráfico v x t */}
-                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">B</span>
-                    Gráfico Velocidade x Tempo (v × t)
-                  </h3>
-                  <p className="text-slate-700 mb-4">
-                    No MRU, a velocidade é constante. Por isso, o gráfico é sempre uma <strong>reta horizontal</strong> (paralela ao eixo do tempo).
-                  </p>
-                  <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm mb-6">
-                    <div className="h-40 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300 relative">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                         <div className="w-3/4 h-0.5 bg-blue-600 relative">
-                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-blue-600 font-bold text-xs">v = constante</div>
-                         </div>
-                      </div>
-                      <span className="text-slate-400 text-xs italic mt-20">[Representação Visual: Reta Horizontal]</span>
-                    </div>
-                  </div>
-                  <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
-                    <p className="font-bold text-green-900 mb-2">Propriedade da Área (NÉPER):</p>
-                    <p className="text-green-800 text-sm leading-relaxed">
-                      A <strong>área</strong> sob a reta no gráfico <MathFormula formula="v \times t" /> é numericamente igual ao <strong>deslocamento escalar</strong> (<MathFormula formula="\Delta s" />) do móvel no intervalo de tempo considerado.
+                    <p className="text-green-800 text-sm">
+                      <strong>Correto:</strong> converter 90 km/h para 25 m/s.
                     </p>
-                    <div className="mt-3">
-                      <MathFormula formula="\text{Área} \stackrel{N}{=} \Delta s = v \cdot \Delta t" display={true} />
-                    </div>
                   </div>
                 </div>
 
-                {/* Gráfico a x t */}
-                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">C</span>
-                    Gráfico Aceleração x Tempo (a × t)
-                  </h3>
-                  <p className="text-slate-700 mb-4">
-                    Como a velocidade não varia no MRU, a aceleração escalar é <strong>nula</strong> em todos os instantes.
+                <div className="bg-red-50 border-l-4 border-red-400 p-5 rounded">
+                  <p className="font-semibold text-red-900 mb-2">
+                    Armadilha 3: confundir deslocamento com distância
                   </p>
-                  <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-                    <p className="text-sm text-slate-600 mb-2">O gráfico é uma reta coincidente com o eixo horizontal (eixo do tempo).</p>
-                    <div className="h-20 bg-slate-100 rounded flex items-center justify-center border border-dashed border-slate-300">
-                      <MathFormula formula="a = 0" display={true} />
-                    </div>
+
+                  <p className="text-red-800 mb-3">
+                    O deslocamento pode ser negativo. A distância percorrida não.
+                  </p>
+
+                  <div className="bg-white p-3 rounded border border-red-200">
+                    <p className="text-red-800 text-sm mb-1">
+                      De s = 100 m para s = 50 m:
+                    </p>
+                    <p className="text-red-800 text-sm mb-1">
+                      Deslocamento: Δs = -50 m.
+                    </p>
+                    <p className="text-red-800 text-sm">
+                      Distância: 50 m.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-red-50 border-l-4 border-red-400 p-5 rounded">
+                  <p className="font-semibold text-red-900 mb-2">
+                    Armadilha 4: errar o sentido da velocidade negativa
+                  </p>
+
+                  <p className="text-red-800 mb-3">
+                    Quando <MathFormula formula="v < 0" display={false} />, a posição diminui
+                    com o tempo.
+                  </p>
+
+                  <div className="bg-white p-3 rounded border border-red-200">
+                    <p className="text-red-800 text-sm">
+                      Exemplo: em <MathFormula formula="s = 100 - 10t" display={false} />,
+                      o móvel se aproxima da origem.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-red-50 border-l-4 border-red-400 p-5 rounded">
+                  <p className="font-semibold text-red-900 mb-2">
+                    Armadilha 5: confundir velocidade com aceleração
+                  </p>
+
+                  <p className="text-red-800 mb-3">
+                    No MRU, a velocidade é constante e a aceleração é zero.
+                  </p>
+
+                  <div className="bg-white p-3 rounded border border-red-200">
+                    <p className="text-red-800 text-sm mb-2">
+                      <strong>MRU:</strong> v constante, a = 0
+                    </p>
+                    <p className="text-green-800 text-sm">
+                      <strong>MRUV:</strong> v variável, a diferente de zero
+                    </p>
                   </div>
                 </div>
               </div>
@@ -741,10 +929,8 @@ export default function CinematicaTopicMRU() {
           </div>
         )}
 
-        {/* EXERCÍCIOS */}
         {activeTab === "exercicios" && (
           <div className="space-y-6">
-            {/* Exercício 1 */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-purple-600">
               <button
                 onClick={() => toggleExercise("ex1")}
@@ -752,12 +938,13 @@ export default function CinematicaTopicMRU() {
               >
                 <div className="text-left">
                   <h3 className="text-lg font-semibold text-slate-900">
-                    Exercício 1: Cálculo Básico de Velocidade e Posição
+                    Exercício 1: cálculo básico de velocidade
                   </h3>
                   <p className="text-sm text-slate-600 mt-1">
-                    Dificuldade: Fácil | Conceitos Básicos
+                    Dificuldade: fácil
                   </p>
                 </div>
+
                 {expandedExercise === "ex1" ? (
                   <ChevronUp className="w-6 h-6 text-purple-600" />
                 ) : (
@@ -767,46 +954,28 @@ export default function CinematicaTopicMRU() {
 
               {expandedExercise === "ex1" && (
                 <div className="px-6 pb-6 border-t border-slate-200 bg-slate-50">
-                  <div className="space-y-4">
+                  <div className="space-y-4 pt-5">
                     <div>
                       <p className="font-semibold text-slate-900 mb-2">Enunciado:</p>
                       <p className="text-slate-700">
-                        Um ciclista percorre 180 m em 9 s com velocidade constante. Determine:
+                        Um ciclista percorre 180 m em 9 s com velocidade constante.
+                        Determine a velocidade do ciclista e a distância percorrida em 30 s.
                       </p>
-                      <ol className="list-decimal list-inside text-slate-700 mt-2 ml-2">
-                        <li>A velocidade do ciclista</li>
-                        <li>A distância percorrida em 30 s</li>
-                      </ol>
                     </div>
 
                     <div className="bg-white p-4 rounded border border-slate-200">
                       <p className="font-semibold text-slate-900 mb-3">Resolução:</p>
-                      
-                      <p className="text-slate-700 mb-2">
-                        <strong>Item 1: Velocidade</strong>
-                      </p>
-                      <div className="bg-slate-50 p-3 rounded mb-3">
-                        <MathFormula formula="v = \frac{\Delta s}{\Delta t} = \frac{180}{9} = 20 \text{ m/s}" display={true} />
-                      </div>
 
-                      <p className="text-slate-700 mb-2">
-                        <strong>Item 2: Distância em 30 s</strong>
-                      </p>
-                      <p className="text-slate-700 mb-2">
-                        Como a velocidade é constante, usamos:
-                      </p>
-                      <div className="bg-slate-50 p-3 rounded mb-3">
-                        <MathFormula formula="\Delta s = v \cdot \Delta t = 20 \cdot 30 = 600 \text{ m}" display={true} />
+                      <FormulaBox formula="v = \frac{\Delta s}{\Delta t} = \frac{180}{9} = 20 \text{ m/s}" />
+
+                      <div className="mt-4">
+                        <FormulaBox formula="\Delta s = v \cdot \Delta t = 20 \cdot 30 = 600 \text{ m}" />
                       </div>
 
                       <div className="mt-4 bg-purple-100 p-3 rounded">
                         <p className="text-slate-800 font-semibold">
-                          Respostas:
+                          Respostas: 20 m/s e 600 m.
                         </p>
-                        <ol className="list-decimal list-inside text-slate-700 mt-2 ml-2">
-                          <li>v = 20 m/s</li>
-                          <li>Δs = 600 m</li>
-                        </ol>
                       </div>
                     </div>
                   </div>
@@ -814,7 +983,6 @@ export default function CinematicaTopicMRU() {
               )}
             </div>
 
-            {/* Exercício 2 */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-purple-600">
               <button
                 onClick={() => toggleExercise("ex2")}
@@ -822,12 +990,13 @@ export default function CinematicaTopicMRU() {
               >
                 <div className="text-left">
                   <h3 className="text-lg font-semibold text-slate-900">
-                    Exercício 2: Equação Horária com Posição Inicial Não-Nula
+                    Exercício 2: montagem da equação horária
                   </h3>
                   <p className="text-sm text-slate-600 mt-1">
-                    Dificuldade: Médio | Aplicação da Fórmula
+                    Dificuldade: média
                   </p>
                 </div>
+
                 {expandedExercise === "ex2" ? (
                   <ChevronUp className="w-6 h-6 text-purple-600" />
                 ) : (
@@ -837,69 +1006,72 @@ export default function CinematicaTopicMRU() {
 
               {expandedExercise === "ex2" && (
                 <div className="px-6 pb-6 border-t border-slate-200 bg-slate-50">
-                  <div className="space-y-4">
+                  <div className="space-y-4 pt-5">
                     <div>
                       <p className="font-semibold text-slate-900 mb-2">Enunciado:</p>
-                      <p className="text-slate-700 mb-3">
-                        Um trem se move em uma ferrovia retilínea com velocidade constante de 72 km/h. No instante t = 0, ele se encontra na posição s₀ = 50 m (50 metros após uma estação tomada como origem). Determine:
+
+                      <p className="text-slate-700">
+                        Um ponto material se move em trajetória retilínea e suas posições
+                        variam conforme a tabela:
                       </p>
-                      <ol className="list-decimal list-inside text-slate-700 space-y-2 ml-2">
-                        <li>A equação horária do espaço</li>
-                        <li>A posição do trem em t = 20 s</li>
-                        <li>O instante em que o trem passa pela posição s = 500 m</li>
-                      </ol>
+
+                      <div className="my-4 overflow-x-auto">
+                        <table className="min-w-full border border-slate-300 bg-white">
+                          <tbody>
+                            <tr>
+                              <th className="border border-slate-300 px-4 py-2 bg-slate-100">
+                                t (s)
+                              </th>
+                              <td className="border border-slate-300 px-4 py-2">0</td>
+                              <td className="border border-slate-300 px-4 py-2">1</td>
+                              <td className="border border-slate-300 px-4 py-2">2</td>
+                              <td className="border border-slate-300 px-4 py-2">3</td>
+                            </tr>
+
+                            <tr>
+                              <th className="border border-slate-300 px-4 py-2 bg-slate-100">
+                                s (m)
+                              </th>
+                              <td className="border border-slate-300 px-4 py-2">10</td>
+                              <td className="border border-slate-300 px-4 py-2">15</td>
+                              <td className="border border-slate-300 px-4 py-2">20</td>
+                              <td className="border border-slate-300 px-4 py-2">25</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <p className="text-slate-700">
+                        Determine a equação horária do movimento.
+                      </p>
                     </div>
 
                     <div className="bg-white p-4 rounded border border-slate-200">
                       <p className="font-semibold text-slate-900 mb-3">Resolução:</p>
-                      
-                      <p className="text-slate-700 mb-2">
-                        <strong>Passo 1: Conversão da velocidade</strong>
-                      </p>
-                      <div className="bg-slate-50 p-3 rounded mb-3">
-                        <MathFormula formula="v = 72 \text{ km/h} = \frac{72}{3,6} = 20 \text{ m/s}" display={true} />
-                      </div>
 
-                      <p className="text-slate-700 mb-2">
-                        <strong>Item 1: Equação Horária</strong>
+                      <p className="text-slate-700 mb-3">
+                        Quando t = 0, temos s = 10 m. Logo:
                       </p>
-                      <div className="bg-purple-100 p-3 rounded mb-3 border-2 border-purple-400">
-                        <MathFormula formula="s = 50 + 20t" display={true} />
-                      </div>
 
-                      <p className="text-slate-700 mb-2">
-                        <strong>Item 2: Posição em t = 20 s</strong>
+                      <FormulaBox formula="s_0 = 10 \text{ m}" />
+
+                      <p className="text-slate-700 my-3">
+                        A velocidade é:
                       </p>
-                      <div className="bg-slate-50 p-3 rounded mb-3">
-                        <MathFormula formula="s = 50 + 20 \cdot 20 = 50 + 400 = 450 \text{ m}" display={true} />
-                      </div>
 
-                      <p className="text-slate-700 mb-2">
-                        <strong>Item 3: Instante em que s = 500 m</strong>
+                      <FormulaBox formula="v = \frac{15 - 10}{1 - 0} = 5 \text{ m/s}" />
+
+                      <p className="text-slate-700 my-3">
+                        Portanto:
                       </p>
-                      <div className="bg-slate-50 p-3 rounded mb-3">
-                        <MathFormula formula="500 = 50 + 20t" display={true} />
-                        <MathFormula formula="450 = 20t" display={true} />
-                        <MathFormula formula="t = \frac{450}{20} = 22,5 \text{ s}" display={true} />
-                      </div>
 
-                      <div className="mt-4 bg-purple-100 p-3 rounded">
-                        <p className="text-slate-800 font-semibold">
-                          Respostas:
-                        </p>
-                        <ol className="list-decimal list-inside text-slate-700 mt-2 ml-2">
-                          <li>s = 50 + 20t</li>
-                          <li>s = 450 m</li>
-                          <li>t = 22,5 s</li>
-                        </ol>
-                      </div>
+                      <FormulaBox formula="s = 10 + 5t" highlight />
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Exercício 3 */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-purple-600">
               <button
                 onClick={() => toggleExercise("ex3")}
@@ -907,12 +1079,13 @@ export default function CinematicaTopicMRU() {
               >
                 <div className="text-left">
                   <h3 className="text-lg font-semibold text-slate-900">
-                    Exercício 3: Movimento Retrógrado
+                    Exercício 3: movimento retrógrado
                   </h3>
                   <p className="text-sm text-slate-600 mt-1">
-                    Dificuldade: Médio | Velocidade Negativa
+                    Dificuldade: média
                   </p>
                 </div>
+
                 {expandedExercise === "ex3" ? (
                   <ChevronUp className="w-6 h-6 text-purple-600" />
                 ) : (
@@ -922,74 +1095,38 @@ export default function CinematicaTopicMRU() {
 
               {expandedExercise === "ex3" && (
                 <div className="px-6 pb-6 border-t border-slate-200 bg-slate-50">
-                  <div className="space-y-4">
+                  <div className="space-y-4 pt-5">
                     <div>
                       <p className="font-semibold text-slate-900 mb-2">Enunciado:</p>
-                      <p className="text-slate-700 mb-3">
-                        Um automóvel se move em uma trajetória retilínea com velocidade constante de -30 m/s (movimento retrógrado). Sabendo que em t = 0 o automóvel está na posição s₀ = 300 m, determine:
+
+                      <p className="text-slate-700">
+                        Um móvel obedece à equação{" "}
+                        <MathFormula formula="s = 50 - 10t" display={false} />. Determine:
                       </p>
-                      <ol className="list-decimal list-inside text-slate-700 space-y-2 ml-2">
-                        <li>A equação horária do espaço</li>
-                        <li>Em que instante o automóvel passa pela origem (s = 0)?</li>
-                        <li>Qual é o deslocamento do automóvel entre t = 2 s e t = 8 s?</li>
+
+                      <ol className="list-decimal list-inside text-slate-700 mt-2 ml-2">
+                        <li>A posição inicial e a velocidade</li>
+                        <li>O instante em que passa pela origem</li>
+                        <li>A posição em t = 8 s</li>
                       </ol>
                     </div>
 
                     <div className="bg-white p-4 rounded border border-slate-200">
                       <p className="font-semibold text-slate-900 mb-3">Resolução:</p>
-                      
-                      <p className="text-slate-700 mb-2">
-                        <strong>Item 1: Equação Horária</strong>
-                      </p>
-                      <div className="bg-purple-100 p-3 rounded mb-3 border-2 border-purple-400">
-                        <MathFormula formula="s = 300 - 30t" display={true} />
-                      </div>
-                      <p className="text-slate-700 text-sm">
-                        Nota: v = -30 m/s (negativo indica movimento retrógrado)
+
+                      <p className="text-slate-700 mb-3">
+                        Comparando com{" "}
+                        <MathFormula formula="s = s_0 + vt" display={false} />:
                       </p>
 
-                      <p className="text-slate-700 mb-2 mt-4">
-                        <strong>Item 2: Instante em que s = 0</strong>
-                      </p>
-                      <div className="bg-slate-50 p-3 rounded mb-3">
-                        <MathFormula formula="0 = 300 - 30t" display={true} />
-                        <MathFormula formula="30t = 300" display={true} />
-                        <MathFormula formula="t = \frac{300}{30} = 10 \text{ s}" display={true} />
+                      <FormulaBox formula="s_0 = 50 \text{ m} \quad \text{e} \quad v = -10 \text{ m/s}" />
+
+                      <div className="mt-4">
+                        <FormulaBox formula="0 = 50 - 10t \Rightarrow t = 5 \text{ s}" />
                       </div>
 
-                      <p className="text-slate-700 mb-2">
-                        <strong>Item 3: Deslocamento entre t = 2 s e t = 8 s</strong>
-                      </p>
-                      <p className="text-slate-700 mb-2">
-                        Posição em t = 2 s:
-                      </p>
-                      <div className="bg-slate-50 p-3 rounded mb-3">
-                        <MathFormula formula="s_1 = 300 - 30 \cdot 2 = 300 - 60 = 240 \text{ m}" display={true} />
-                      </div>
-
-                      <p className="text-slate-700 mb-2">
-                        Posição em t = 8 s:
-                      </p>
-                      <div className="bg-slate-50 p-3 rounded mb-3">
-                        <MathFormula formula="s_2 = 300 - 30 \cdot 8 = 300 - 240 = 60 \text{ m}" display={true} />
-                      </div>
-
-                      <p className="text-slate-700 mb-2">
-                        Deslocamento:
-                      </p>
-                      <div className="bg-slate-50 p-3 rounded mb-3">
-                        <MathFormula formula="\Delta s = s_2 - s_1 = 60 - 240 = -180 \text{ m}" display={true} />
-                      </div>
-
-                      <div className="mt-4 bg-purple-100 p-3 rounded">
-                        <p className="text-slate-800 font-semibold">
-                          Respostas:
-                        </p>
-                        <ol className="list-decimal list-inside text-slate-700 mt-2 ml-2">
-                          <li>s = 300 - 30t</li>
-                          <li>t = 10 s</li>
-                          <li>Δs = -180 m (o automóvel se deslocou 180 m no sentido negativo)</li>
-                        </ol>
+                      <div className="mt-4">
+                        <FormulaBox formula="s = 50 - 10 \cdot 8 = -30 \text{ m}" />
                       </div>
                     </div>
                   </div>
@@ -997,7 +1134,6 @@ export default function CinematicaTopicMRU() {
               )}
             </div>
 
-            {/* Exercício 4 */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-purple-600">
               <button
                 onClick={() => toggleExercise("ex4")}
@@ -1005,12 +1141,13 @@ export default function CinematicaTopicMRU() {
               >
                 <div className="text-left">
                   <h3 className="text-lg font-semibold text-slate-900">
-                    Exercício 4: Problema Integrado com Conversão de Unidades
+                    Exercício 4: conversão de unidades
                   </h3>
                   <p className="text-sm text-slate-600 mt-1">
-                    Dificuldade: Difícil | Integração de Conceitos
+                    Dificuldade: difícil
                   </p>
                 </div>
+
                 {expandedExercise === "ex4" ? (
                   <ChevronUp className="w-6 h-6 text-purple-600" />
                 ) : (
@@ -1020,77 +1157,43 @@ export default function CinematicaTopicMRU() {
 
               {expandedExercise === "ex4" && (
                 <div className="px-6 pb-6 border-t border-slate-200 bg-slate-50">
-                  <div className="space-y-4">
+                  <div className="space-y-4 pt-5">
                     <div>
                       <p className="font-semibold text-slate-900 mb-2">Enunciado:</p>
-                      <p className="text-slate-700 mb-3">
-                        Um ônibus trafega em uma rodovia retilínea com velocidade constante de 108 km/h. No instante t = 0, ele se encontra na posição s₀ = 100 m. Determine:
+
+                      <p className="text-slate-700">
+                        Um ônibus trafega com velocidade constante de 108 km/h. No
+                        instante t = 0, ele está na posição s₀ = 100 m. Determine a equação
+                        horária, a posição após 1 minuto, o deslocamento em 2 minutos e o
+                        tempo para percorrer 5 km.
                       </p>
-                      <ol className="list-decimal list-inside text-slate-700 space-y-2 ml-2">
-                        <li>A equação horária do espaço (em unidades do SI)</li>
-                        <li>A posição do ônibus após 1 minuto de movimento</li>
-                        <li>Quantos metros o ônibus percorre em 2 minutos?</li>
-                        <li>Em quanto tempo o ônibus percorre 5 km?</li>
-                      </ol>
                     </div>
 
                     <div className="bg-white p-4 rounded border border-slate-200">
                       <p className="font-semibold text-slate-900 mb-3">Resolução:</p>
-                      
-                      <p className="text-slate-700 mb-2">
-                        <strong>Passo 1: Conversão da velocidade</strong>
-                      </p>
-                      <div className="bg-slate-50 p-3 rounded mb-3">
-                        <MathFormula formula="v = 108 \text{ km/h} = \frac{108}{3,6} = 30 \text{ m/s}" display={true} />
+
+                      <FormulaBox formula="v = \frac{108}{3,6} = 30 \text{ m/s}" />
+
+                      <div className="mt-4">
+                        <FormulaBox formula="s = 100 + 30t" highlight />
                       </div>
 
-                      <p className="text-slate-700 mb-2">
-                        <strong>Item 1: Equação Horária</strong>
-                      </p>
-                      <div className="bg-purple-100 p-3 rounded mb-3 border-2 border-purple-400">
-                        <MathFormula formula="s = 100 + 30t" display={true} />
+                      <div className="mt-4">
+                        <FormulaBox formula="s = 100 + 30 \cdot 60 = 1900 \text{ m}" />
                       </div>
 
-                      <p className="text-slate-700 mb-2">
-                        <strong>Item 2: Posição após 1 minuto</strong>
-                      </p>
-                      <p className="text-slate-700 mb-2">
-                        Convertemos 1 minuto para segundos: 1 min = 60 s
-                      </p>
-                      <div className="bg-slate-50 p-3 rounded mb-3">
-                        <MathFormula formula="s = 100 + 30 \cdot 60 = 100 + 1800 = 1900 \text{ m}" display={true} />
+                      <div className="mt-4">
+                        <FormulaBox formula="\Delta s = 30 \cdot 120 = 3600 \text{ m} = 3,6 \text{ km}" />
                       </div>
 
-                      <p className="text-slate-700 mb-2">
-                        <strong>Item 3: Distância percorrida em 2 minutos</strong>
-                      </p>
-                      <p className="text-slate-700 mb-2">
-                        2 minutos = 120 s. A distância percorrida é:
-                      </p>
-                      <div className="bg-slate-50 p-3 rounded mb-3">
-                        <MathFormula formula="\Delta s = v \cdot \Delta t = 30 \cdot 120 = 3600 \text{ m} = 3,6 \text{ km}" display={true} />
-                      </div>
-
-                      <p className="text-slate-700 mb-2">
-                        <strong>Item 4: Tempo para percorrer 5 km</strong>
-                      </p>
-                      <p className="text-slate-700 mb-2">
-                        Convertemos 5 km para metros: 5 km = 5000 m
-                      </p>
-                      <div className="bg-slate-50 p-3 rounded mb-3">
-                        <MathFormula formula="\Delta t = \frac{\Delta s}{v} = \frac{5000}{30} = 166,67 \text{ s} \approx 2 \text{ min } 47 \text{ s}" display={true} />
+                      <div className="mt-4">
+                        <FormulaBox formula="\Delta t = \frac{5000}{30} \approx 166,67 \text{ s}" />
                       </div>
 
                       <div className="mt-4 bg-purple-100 p-3 rounded">
                         <p className="text-slate-800 font-semibold">
-                          Respostas:
+                          Respostas: s = 100 + 30t; 1900 m; 3600 m; aproximadamente 166,67 s.
                         </p>
-                        <ol className="list-decimal list-inside text-slate-700 mt-2 ml-2">
-                          <li>s = 100 + 30t</li>
-                          <li>s = 1900 m</li>
-                          <li>Δs = 3600 m (ou 3,6 km)</li>
-                          <li>Δt ≈ 166,67 s (ou aproximadamente 2 min 47 s)</li>
-                        </ol>
                       </div>
                     </div>
                   </div>
