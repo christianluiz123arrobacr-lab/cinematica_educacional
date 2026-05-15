@@ -380,6 +380,44 @@ export default function CinematicaTopicMRUV() {
                     </div>
                   </div>
                 </div>
+
+                {/* Dedução Algébrica Completa de Torricelli */}
+                <div className="mt-6 pt-6 border-t border-slate-700">
+                  <h5 className="font-semibold text-amber-400 mb-4">📐 Dedução Algébrica Passo a Passo</h5>
+                  <div className="space-y-4 text-sm text-slate-300">
+                    <p className="leading-relaxed">
+                      A dedução de Torricelli é um excelente exercício de álgebra. Vamos usar a 4ª Equação (Velocidade Média) para tornar a dedução muito mais rápida e elegante do que usar o "Sorvetão".
+                    </p>
+                    
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 1: O Sistema de Equações</strong></p>
+                      <p>Temos duas equações fundamentais que conhecemos:</p>
+                      <ul className="list-disc list-inside ml-4 space-y-1 text-amber-200">
+                        <li>(1) Da aceleração: <MathFormula formula="a = \frac{v - v_0}{t} \implies t = \frac{v - v_0}{a}" display={false} /></li>
+                        <li>(2) Da velocidade média: <MathFormula formula="\Delta s = \left(\frac{v + v_0}{2}\right) \cdot t" display={false} /></li>
+                      </ul>
+                    </div>
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 2: A Substituição</strong></p>
+                      <p>Vamos pegar o tempo <MathFormula formula="t" display={false} /> da equação (1) e jogar dentro da equação (2):</p>
+                      <MathFormula formula="\Delta s = \left(\frac{v + v_0}{2}\right) \cdot \left(\frac{v - v_0}{a}\right)" display={true} />
+                    </div>
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 3: O Produto da Soma pela Diferença</strong></p>
+                      <p>Multiplicando as frações (numerador com numerador, denominador com denominador):</p>
+                      <MathFormula formula="\Delta s = \frac{(v + v_0)(v - v_0)}{2a}" display={true} />
+                      <p>Lembre-se da matemática básica: <MathFormula formula="(x+y)(x-y) = x^2 - y^2" display={false} />. Aplicando isso no numerador:</p>
+                      <MathFormula formula="\Delta s = \frac{v^2 - v_0^2}{2a}" display={true} />
+                    </div>
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 4: O Gran Finale</strong></p>
+                      <p>Passamos o <MathFormula formula="2a" display={false} /> multiplicando para o outro lado:</p>
+                      <MathFormula formula="2a \cdot \Delta s = v^2 - v_0^2" display={true} />
+                      <p>E isolamos a velocidade final ao quadrado (<MathFormula formula="v^2" display={false} />):</p>
+                      <MathFormula formula="v^2 = v_0^2 + 2a\Delta s" display={true} />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
