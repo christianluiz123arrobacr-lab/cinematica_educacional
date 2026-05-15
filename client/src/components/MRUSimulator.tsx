@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Slider } from "@/components/ui/slider";
+import { Card } from "@/components/ui/card";
 import { MathFormula } from "@/components/MathFormula";
 
 type MRUMode = "single" | "meeting";
@@ -20,10 +21,6 @@ const TWO_PI = 2 * Math.PI;
 
 const DEFAULT_TIME_WINDOW = 20;
 const DEFAULT_SIM_SPEED = 0.75;
-
-const clamp = (value: number, min: number, max: number) => {
-  return Math.max(min, Math.min(max, value));
-};
 
 const formatNumber = (value: number, digits = 2) => {
   if (!Number.isFinite(value)) return "—";
@@ -159,12 +156,7 @@ export const MRUSimulator: React.FC<MRUSimulatorProps> = ({
 
       setTime((previous) => {
         const next = previous + dt * simSpeed;
-
-        if (next > timeWindow) {
-          return 0;
-        }
-
-        return next;
+        return next > timeWindow ? 0 : next;
       });
 
       animationIdRef.current = requestAnimationFrame(animate);
@@ -219,35 +211,23 @@ export const MRUSimulator: React.FC<MRUSimulatorProps> = ({
   ]);
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-2xl bg-slate-50 p-4">
-        <div className="overflow-x-auto">
-          <canvas
-            ref={canvasRef}
-            width={980}
-            height={540}
-            className="mx-auto w-full min-w-[820px] rounded-xl border border-slate-200 bg-white"
-          />
-        </div>
-      </div>
+    <div className="w-full space-y-6">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+        <div className="space-y-4 xl:col-span-4">
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h3 className="text-lg font-bold text-slate-900">
+                Controles do MRU
+              </h3>
+              <p className="mt-1 text-sm text-slate-600">
+                Ajuste posição inicial, velocidade e compare móveis no encontro.
+              </p>
+            </div>
 
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-        <div className="space-y-5 xl:col-span-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-lg font-bold text-slate-900">
-              Controles do MRU
-            </h3>
-
-            <p className="mt-1 text-sm leading-6 text-slate-500">
-              Ajuste posição inicial, velocidade e compare dois móveis. É só
-              reta, mas o vestibular ainda consegue transformar isso em cilada,
-              porque claro.
-            </p>
-
-            <div className="mt-5 space-y-5">
+            <div className="space-y-5 p-5">
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                 <p className="mb-3 text-xs font-bold uppercase tracking-wide text-slate-500">
-                  Modo
+                  Modo de simulação
                 </p>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -314,7 +294,7 @@ export const MRUSimulator: React.FC<MRUSimulatorProps> = ({
 
               <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
                 <p className="mb-4 text-sm font-bold text-blue-900">
-                  Móvel A
+                  Carrinho A
                 </p>
 
                 <div className="space-y-5">
@@ -353,7 +333,7 @@ export const MRUSimulator: React.FC<MRUSimulatorProps> = ({
               {mode === "meeting" && (
                 <div className="rounded-xl border border-red-200 bg-red-50 p-4">
                   <p className="mb-4 text-sm font-bold text-red-900">
-                    Móvel B
+                    Carrinho B
                   </p>
 
                   <div className="space-y-5">
@@ -421,12 +401,16 @@ export const MRUSimulator: React.FC<MRUSimulatorProps> = ({
                 </button>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-lg font-bold text-slate-900">Resultados</h3>
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">
+                Resultados principais
+              </h4>
+            </div>
 
-            <div className="mt-4 space-y-3">
+            <div className="space-y-3 p-5">
               <MetricCard
                 label="Classificação de A"
                 value={motionA.label}
@@ -461,11 +445,6 @@ export const MRUSimulator: React.FC<MRUSimulatorProps> = ({
                   />
 
                   <MetricCard
-                    label="Deslocamento de B"
-                    value={formatUnit(displacementB, "m")}
-                  />
-
-                  <MetricCard
                     label="Distância entre A e B"
                     value={formatUnit(Math.abs(sB - sA), "m")}
                   />
@@ -487,18 +466,44 @@ export const MRUSimulator: React.FC<MRUSimulatorProps> = ({
                 </>
               )}
             </div>
-          </div>
+          </Card>
         </div>
 
-        <div className="space-y-5 xl:col-span-8">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-lg font-bold text-slate-900">
-              Cálculos rápidos
-            </h3>
+        <div className="space-y-4 xl:col-span-8">
+          <Card className="overflow-hidden border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">
+                Visualização do Movimento
+              </h4>
+              <p className="mt-1 text-sm text-slate-500">
+                Agora com carrinho, porque bolinha para MRU ficava parecendo simulação feita por um átomo perdido.
+              </p>
+            </div>
 
-            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="bg-slate-50 p-4 md:p-5">
+              <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                <div className="overflow-x-auto">
+                  <canvas
+                    ref={canvasRef}
+                    width={980}
+                    height={540}
+                    className="mx-auto w-full min-w-[820px] rounded-lg border border-slate-200 bg-slate-50"
+                  />
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">
+                Cálculos rápidos
+              </h4>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2">
               <CalcMiniCard
-                title="Móvel A"
+                title="Carrinho A"
                 values={[
                   ["s₀A", formatUnit(s0A, "m")],
                   ["vA", formatUnit(vA, "m/s")],
@@ -509,7 +514,7 @@ export const MRUSimulator: React.FC<MRUSimulatorProps> = ({
 
               {mode === "meeting" ? (
                 <CalcMiniCard
-                  title="Móvel B"
+                  title="Carrinho B"
                   values={[
                     ["s₀B", formatUnit(s0B, "m")],
                     ["vB", formatUnit(vB, "m/s")],
@@ -561,14 +566,16 @@ export const MRUSimulator: React.FC<MRUSimulatorProps> = ({
                 ]}
               />
             </div>
-          </div>
+          </Card>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-lg font-bold text-slate-900">
-              Equações do MRU
-            </h3>
+          <Card className="border border-slate-200 shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h4 className="text-base font-bold text-slate-900">
+                Equações do MRU
+              </h4>
+            </div>
 
-            <div className="mt-4 space-y-4">
+            <div className="space-y-5 p-5">
               <FormulaSection
                 title="Função horária da posição"
                 formulas={[
@@ -640,13 +647,15 @@ export const MRUSimulator: React.FC<MRUSimulatorProps> = ({
                 />
               )}
             </div>
-          </div>
+          </Card>
 
           {showTable && (
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h3 className="text-lg font-bold text-slate-900">
-                Tabela de valores
-              </h3>
+            <Card className="border border-slate-200 shadow-sm">
+              <div className="border-b border-slate-200 px-5 py-4">
+                <h4 className="text-base font-bold text-slate-900">
+                  Tabela de valores
+                </h4>
+              </div>
 
               <ValueTable
                 mode={mode}
@@ -656,7 +665,7 @@ export const MRUSimulator: React.FC<MRUSimulatorProps> = ({
                 vB={vB}
                 timeWindow={timeWindow}
               />
-            </div>
+            </Card>
           )}
         </div>
       </div>
@@ -686,235 +695,6 @@ function classifyMotion(velocity: number) {
     description: "A posição permanece constante.",
     className: "text-slate-700",
   };
-}
-
-function ModeButton({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-lg border px-3 py-2 text-sm font-bold ${
-        active
-          ? "border-indigo-300 bg-indigo-50 text-indigo-700"
-          : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
-
-function ToggleButton({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-lg border px-3 py-2 text-sm font-bold ${
-        active
-          ? "border-indigo-300 bg-indigo-50 text-indigo-700"
-          : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
-
-function ControlRow({
-  label,
-  symbol,
-  value,
-  children,
-}: {
-  label: string;
-  symbol: string;
-  value: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <div className="mb-2 flex items-center justify-between gap-4">
-        <label className="text-sm font-medium text-slate-700">
-          {label} <span className="text-slate-500">({symbol})</span>
-        </label>
-        <span className="text-sm font-bold text-slate-900">{value}</span>
-      </div>
-
-      {children}
-    </div>
-  );
-}
-
-function MetricCard({
-  label,
-  value,
-  description,
-  valueClassName = "text-slate-900",
-}: {
-  label: React.ReactNode;
-  value: string;
-  description?: string;
-  valueClassName?: string;
-}) {
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4">
-      <p className="text-sm font-medium text-slate-600">{label}</p>
-      <p className={`mt-2 text-lg font-bold ${valueClassName}`}>{value}</p>
-
-      {description && (
-        <p className="mt-1 text-xs leading-relaxed text-slate-500">
-          {description}
-        </p>
-      )}
-    </div>
-  );
-}
-
-function CalcMiniCard({
-  title,
-  values,
-}: {
-  title: string;
-  values: [string, string][];
-}) {
-  return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-      <p className="mb-3 text-sm font-bold text-slate-800">{title}</p>
-
-      <div className="space-y-2">
-        {values.map(([label, value]) => (
-          <div key={label} className="flex items-center justify-between gap-4">
-            <span className="text-sm text-slate-600">{label}</span>
-            <span className="text-sm font-bold text-slate-900">{value}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function FormulaSection({
-  title,
-  formulas,
-}: {
-  title: string;
-  formulas: string[];
-}) {
-  return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-      <p className="mb-3 text-sm font-semibold text-slate-700">{title}</p>
-
-      <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
-        {formulas.map((formula, index) => (
-          <MathFormula key={`${formula}-${index}`} formula={formula} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ValueTable({
-  mode,
-  s0A,
-  vA,
-  s0B,
-  vB,
-  timeWindow,
-}: {
-  mode: MRUMode;
-  s0A: number;
-  vA: number;
-  s0B: number;
-  vB: number;
-  timeWindow: number;
-}) {
-  const rows = useMemo(() => {
-    const times = [
-      0,
-      timeWindow * 0.25,
-      timeWindow * 0.5,
-      timeWindow * 0.75,
-      timeWindow,
-    ];
-
-    return times.map((t) => ({
-      t,
-      sA: s0A + vA * t,
-      sB: s0B + vB * t,
-    }));
-  }, [s0A, vA, s0B, vB, timeWindow]);
-
-  return (
-    <div className="mt-4 overflow-x-auto">
-      <table className="w-full min-w-[560px] border-collapse text-sm">
-        <thead>
-          <tr className="border-b border-slate-200 bg-slate-50">
-            <th className="px-4 py-3 text-left font-bold text-slate-700">
-              Tempo
-            </th>
-
-            <th className="px-4 py-3 text-left font-bold text-blue-700">
-              Posição A
-            </th>
-
-            {mode === "meeting" && (
-              <th className="px-4 py-3 text-left font-bold text-red-700">
-                Posição B
-              </th>
-            )}
-
-            {mode === "meeting" && (
-              <th className="px-4 py-3 text-left font-bold text-slate-700">
-                Distância
-              </th>
-            )}
-          </tr>
-        </thead>
-
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.t} className="border-b border-slate-100">
-              <td className="px-4 py-3 text-slate-700">
-                {formatUnit(row.t, "s")}
-              </td>
-
-              <td className="px-4 py-3 font-semibold text-blue-700">
-                {formatUnit(row.sA, "m")}
-              </td>
-
-              {mode === "meeting" && (
-                <td className="px-4 py-3 font-semibold text-red-700">
-                  {formatUnit(row.sB, "m")}
-                </td>
-              )}
-
-              {mode === "meeting" && (
-                <td className="px-4 py-3 text-slate-700">
-                  {formatUnit(Math.abs(row.sB - row.sA), "m")}
-                </td>
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
 }
 
 function drawMRUCanvas({
@@ -1101,21 +881,12 @@ function drawTrack({
 }) {
   const left = 70;
   const right = width - 70;
-  const yB = y + 62;
+  const yB = y + 70;
 
-  ctx.strokeStyle = "#334155";
-  ctx.lineWidth = 3;
-
-  ctx.beginPath();
-  ctx.moveTo(left, y);
-  ctx.lineTo(right, y);
-  ctx.stroke();
+  drawRoad(ctx, left, right, y);
 
   if (mode === "meeting") {
-    ctx.beginPath();
-    ctx.moveTo(left, yB);
-    ctx.lineTo(right, yB);
-    ctx.stroke();
+    drawRoad(ctx, left, right, yB);
   }
 
   drawTicks({
@@ -1123,7 +894,7 @@ function drawTrack({
     range,
     left,
     right,
-    y: mode === "meeting" ? yB : y,
+    y: mode === "meeting" ? yB + 30 : y + 30,
   });
 
   const originX = worldToCanvasX({ value: 0, range, left, right });
@@ -1131,13 +902,13 @@ function drawTrack({
   ctx.strokeStyle = "#0f172a";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(originX, y - 34);
-  ctx.lineTo(originX, mode === "meeting" ? yB + 34 : y + 34);
+  ctx.moveTo(originX, y - 55);
+  ctx.lineTo(originX, mode === "meeting" ? yB + 35 : y + 35);
   ctx.stroke();
 
   ctx.fillStyle = "#0f172a";
   ctx.font = "bold 12px Arial";
-  ctx.fillText("origem", originX + 8, y - 42);
+  ctx.fillText("origem", originX + 8, y - 62);
 
   drawTrail({
     ctx,
@@ -1161,7 +932,7 @@ function drawTrack({
     label: "s₀A",
   });
 
-  drawObject({
+  drawCar({
     ctx,
     range,
     left,
@@ -1170,6 +941,7 @@ function drawTrack({
     value: sA,
     color: "#2563eb",
     label: "A",
+    velocity: sA >= s0A ? 1 : -1,
   });
 
   if (mode === "meeting") {
@@ -1195,7 +967,7 @@ function drawTrack({
       label: "s₀B",
     });
 
-    drawObject({
+    drawCar({
       ctx,
       range,
       left,
@@ -1204,6 +976,7 @@ function drawTrack({
       value: sB,
       color: "#dc2626",
       label: "B",
+      velocity: sB >= s0B ? 1 : -1,
     });
   }
 
@@ -1224,8 +997,8 @@ function drawTrack({
     ctx.lineWidth = 2;
     ctx.setLineDash([6, 6]);
     ctx.beginPath();
-    ctx.moveTo(meetingX, y - 48);
-    ctx.lineTo(meetingX, yB + 44);
+    ctx.moveTo(meetingX, y - 58);
+    ctx.lineTo(meetingX, yB + 42);
     ctx.stroke();
     ctx.setLineDash([]);
 
@@ -1234,9 +1007,36 @@ function drawTrack({
     ctx.fillText(
       `encontro: ${formatNumber(meetingData.s, 1)} m`,
       meetingX + 8,
-      y - 54
+      y - 64
     );
   }
+}
+
+function drawRoad(
+  ctx: CanvasRenderingContext2D,
+  left: number,
+  right: number,
+  y: number
+) {
+  ctx.fillStyle = "#334155";
+  roundRect(ctx, left, y - 2, right - left, 38, 8);
+  ctx.fill();
+
+  ctx.strokeStyle = "#facc15";
+  ctx.lineWidth = 4;
+  ctx.setLineDash([26, 24]);
+  ctx.beginPath();
+  ctx.moveTo(left + 15, y + 18);
+  ctx.lineTo(right - 15, y + 18);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.strokeStyle = "#1e293b";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(left, y - 2);
+  ctx.lineTo(right, y - 2);
+  ctx.stroke();
 }
 
 function drawTicks({
@@ -1265,11 +1065,11 @@ function drawTicks({
     const x = left + alpha * (right - left);
 
     ctx.beginPath();
-    ctx.moveTo(x, y - 8);
-    ctx.lineTo(x, y + 8);
+    ctx.moveTo(x, y - 40);
+    ctx.lineTo(x, y - 22);
     ctx.stroke();
 
-    ctx.fillText(`${formatNumber(value, 0)} m`, x - 17, y + 26);
+    ctx.fillText(`${formatNumber(value, 0)} m`, x - 17, y);
   }
 }
 
@@ -1299,8 +1099,8 @@ function drawTrail({
   ctx.globalAlpha = 0.25;
   ctx.lineWidth = 6;
   ctx.beginPath();
-  ctx.moveTo(x1, y);
-  ctx.lineTo(x2, y);
+  ctx.moveTo(x1, y - 14);
+  ctx.lineTo(x2, y - 14);
   ctx.stroke();
   ctx.globalAlpha = 1;
 }
@@ -1327,18 +1127,18 @@ function drawInitialMarker({
   const x = worldToCanvasX({ value, range, left, right });
 
   ctx.fillStyle = color;
-  ctx.globalAlpha = 0.45;
+  ctx.globalAlpha = 0.5;
   ctx.beginPath();
-  ctx.arc(x, y, 6, 0, TWO_PI);
+  ctx.arc(x, y - 18, 6, 0, TWO_PI);
   ctx.fill();
   ctx.globalAlpha = 1;
 
   ctx.fillStyle = color;
   ctx.font = "bold 11px Arial";
-  ctx.fillText(label, x - 12, y - 18);
+  ctx.fillText(label, x - 12, y - 33);
 }
 
-function drawObject({
+function drawCar({
   ctx,
   range,
   left,
@@ -1347,6 +1147,7 @@ function drawObject({
   value,
   color,
   label,
+  velocity,
 }: {
   ctx: CanvasRenderingContext2D;
   range: { min: number; max: number };
@@ -1356,25 +1157,57 @@ function drawObject({
   value: number;
   color: string;
   label: string;
+  velocity: number;
 }) {
   const x = worldToCanvasX({ value, range, left, right });
+  const carY = y - 28;
+
+  ctx.save();
+
+  ctx.translate(x, carY);
+
+  if (velocity < 0) {
+    ctx.scale(-1, 1);
+  }
 
   ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.arc(x, y, 14, 0, TWO_PI);
+  roundRect(ctx, -28, -10, 56, 20, 5);
   ctx.fill();
 
-  ctx.strokeStyle = "#ffffff";
-  ctx.lineWidth = 4;
-  ctx.stroke();
+  ctx.fillStyle = shadeColor(color, 28);
+  roundRect(ctx, -14, -25, 28, 18, 5);
+  ctx.fill();
 
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 13px Arial";
-  ctx.fillText(label, x - 4, y + 5);
+  ctx.fillStyle = "#bfdbfe";
+  roundRect(ctx, -9, -22, 10, 10, 2);
+  ctx.fill();
+  roundRect(ctx, 3, -22, 10, 10, 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#111827";
+  ctx.beginPath();
+  ctx.arc(-17, 13, 7, 0, TWO_PI);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(17, 13, 7, 0, TWO_PI);
+  ctx.fill();
+
+  ctx.fillStyle = "#e5e7eb";
+  ctx.beginPath();
+  ctx.arc(-17, 13, 3, 0, TWO_PI);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(17, 13, 3, 0, TWO_PI);
+  ctx.fill();
+
+  ctx.restore();
 
   ctx.fillStyle = color;
   ctx.font = "bold 12px Arial";
-  ctx.fillText(`${formatNumber(value, 1)} m`, x - 24, y - 24);
+  ctx.fillText(`Carrinho ${label}`, x - 34, y - 62);
+  ctx.fillText(`s = ${formatNumber(value, 1)} m`, x - 32, y - 47);
 }
 
 function drawHUD({
@@ -1818,6 +1651,246 @@ function drawGraphLegend(
     ctx.fillStyle = "#475569";
     ctx.fillText("B", x + 60, y + 5);
   }
+}
+
+function shadeColor(hex: string, percent: number) {
+  const cleanHex = hex.replace("#", "");
+  const num = parseInt(cleanHex, 16);
+
+  const r = Math.min(255, Math.max(0, (num >> 16) + percent));
+  const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00ff) + percent));
+  const b = Math.min(255, Math.max(0, (num & 0x0000ff) + percent));
+
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+function ModeButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-lg border px-3 py-2 text-sm font-bold ${
+        active
+          ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+          : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function ToggleButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-lg border px-3 py-2 text-sm font-bold ${
+        active
+          ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+          : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function ControlRow({
+  label,
+  symbol,
+  value,
+  children,
+}: {
+  label: string;
+  symbol: string;
+  value: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between gap-4">
+        <label className="text-sm font-medium text-slate-700">
+          {label} <span className="text-slate-500">({symbol})</span>
+        </label>
+        <span className="text-sm font-bold text-slate-900">{value}</span>
+      </div>
+
+      {children}
+    </div>
+  );
+}
+
+function MetricCard({
+  label,
+  value,
+  description,
+  valueClassName = "text-slate-900",
+}: {
+  label: React.ReactNode;
+  value: string;
+  description?: string;
+  valueClassName?: string;
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <p className="text-sm font-medium text-slate-600">{label}</p>
+      <p className={`mt-2 text-lg font-bold ${valueClassName}`}>{value}</p>
+
+      {description && (
+        <p className="mt-1 text-xs leading-relaxed text-slate-500">
+          {description}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function CalcMiniCard({
+  title,
+  values,
+}: {
+  title: string;
+  values: [string, string][];
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <p className="mb-3 text-sm font-bold text-slate-800">{title}</p>
+
+      <div className="space-y-2">
+        {values.map(([label, value]) => (
+          <div key={label} className="flex items-center justify-between gap-4">
+            <span className="text-sm text-slate-600">{label}</span>
+            <span className="text-sm font-bold text-slate-900">{value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FormulaSection({
+  title,
+  formulas,
+}: {
+  title: string;
+  formulas: string[];
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <p className="mb-3 text-sm font-semibold text-slate-700">{title}</p>
+
+      <div className="space-y-3 overflow-x-auto rounded-lg border border-slate-200 bg-white p-4">
+        {formulas.map((formula, index) => (
+          <MathFormula key={`${formula}-${index}`} formula={formula} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ValueTable({
+  mode,
+  s0A,
+  vA,
+  s0B,
+  vB,
+  timeWindow,
+}: {
+  mode: MRUMode;
+  s0A: number;
+  vA: number;
+  s0B: number;
+  vB: number;
+  timeWindow: number;
+}) {
+  const rows = useMemo(() => {
+    const times = [
+      0,
+      timeWindow * 0.25,
+      timeWindow * 0.5,
+      timeWindow * 0.75,
+      timeWindow,
+    ];
+
+    return times.map((t) => ({
+      t,
+      sA: s0A + vA * t,
+      sB: s0B + vB * t,
+    }));
+  }, [s0A, vA, s0B, vB, timeWindow]);
+
+  return (
+    <div className="overflow-x-auto p-5">
+      <table className="w-full min-w-[560px] border-collapse text-sm">
+        <thead>
+          <tr className="border-b border-slate-200 bg-slate-50">
+            <th className="px-4 py-3 text-left font-bold text-slate-700">
+              Tempo
+            </th>
+
+            <th className="px-4 py-3 text-left font-bold text-blue-700">
+              Posição A
+            </th>
+
+            {mode === "meeting" && (
+              <th className="px-4 py-3 text-left font-bold text-red-700">
+                Posição B
+              </th>
+            )}
+
+            {mode === "meeting" && (
+              <th className="px-4 py-3 text-left font-bold text-slate-700">
+                Distância
+              </th>
+            )}
+          </tr>
+        </thead>
+
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.t} className="border-b border-slate-100">
+              <td className="px-4 py-3 text-slate-700">
+                {formatUnit(row.t, "s")}
+              </td>
+
+              <td className="px-4 py-3 font-semibold text-blue-700">
+                {formatUnit(row.sA, "m")}
+              </td>
+
+              {mode === "meeting" && (
+                <td className="px-4 py-3 font-semibold text-red-700">
+                  {formatUnit(row.sB, "m")}
+                </td>
+              )}
+
+              {mode === "meeting" && (
+                <td className="px-4 py-3 text-slate-700">
+                  {formatUnit(Math.abs(row.sB - row.sA), "m")}
+                </td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 function roundRect(
