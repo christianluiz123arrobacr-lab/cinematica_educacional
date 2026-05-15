@@ -191,6 +191,39 @@ export default function CinematicaTopicMRUV() {
                   </div>
                 </div>
               </div>
+
+              {/* Exemplo Resolvido: Equação da Velocidade */}
+              <div className="mt-8 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                <div className="bg-slate-50 p-4 border-b border-slate-200">
+                  <h5 className="font-bold text-slate-800 flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-blue-600" />
+                    Exemplo Resolvido: Acelerando na Rodovia
+                  </h5>
+                </div>
+                <div className="p-6 space-y-4">
+                  <p className="text-slate-700">
+                    Um carro entra em uma rodovia a 20 m/s e acelera constantemente a 2 m/s². Qual será a velocidade do carro após 8 segundos de aceleração?
+                  </p>
+                  
+                  <div className="bg-blue-50/50 p-4 rounded-lg border border-blue-100 space-y-3">
+                    <p className="font-semibold text-blue-900">1º Passo: Coleta de Dados</p>
+                    <ul className="list-disc list-inside text-slate-700 text-sm ml-2">
+                      <li>Velocidade inicial (<MathFormula formula="v_0" display={false} />): <strong>20 m/s</strong></li>
+                      <li>Aceleração (<MathFormula formula="a" display={false} />): <strong>2 m/s²</strong></li>
+                      <li>Tempo (<MathFormula formula="t" display={false} />): <strong>8 s</strong></li>
+                      <li>Distância (<MathFormula formula="\Delta s" display={false} />): <strong>Não temos e não queremos!</strong> (Alerta Equação 1)</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
+                    <p className="font-semibold text-slate-800">2º Passo: Aplicação da Fórmula</p>
+                    <MathFormula formula="v = v_0 + a \cdot t" display={true} />
+                    <MathFormula formula="v = 20 + 2 \cdot 8" display={true} />
+                    <MathFormula formula="v = 20 + 16" display={true} />
+                    <MathFormula formula="v = 36 \text{ m/s}" display={true} />
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* 2. Equação Horária do Espaço */}
@@ -305,6 +338,41 @@ export default function CinematicaTopicMRUV() {
                       <p>Como o deslocamento é a posição final menos a inicial (<MathFormula formula="\Delta s = s - s_0" display={false} />), passamos o <MathFormula formula="s_0" display={false} /> somando para o outro lado e a obra-prima está pronta:</p>
                       <MathFormula formula="s = s_0 + v_0t + \frac{at^2}{2}" display={true} />
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Exemplo Resolvido: Equação do Espaço */}
+              <div className="mt-8 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                <div className="bg-slate-50 p-4 border-b border-slate-200">
+                  <h5 className="font-bold text-slate-800 flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-purple-600" />
+                    Exemplo Resolvido: O Ponto de Encontro
+                  </h5>
+                </div>
+                <div className="p-6 space-y-4">
+                  <p className="text-slate-700">
+                    Um ciclista passa pelo marco zero (s₀ = 0) de uma ciclovia com velocidade de 5 m/s e aceleração constante de 1 m/s². Onde ele estará após 10 segundos?
+                  </p>
+                  
+                  <div className="bg-purple-50/50 p-4 rounded-lg border border-purple-100 space-y-3">
+                    <p className="font-semibold text-purple-900">1º Passo: Coleta de Dados</p>
+                    <ul className="list-disc list-inside text-slate-700 text-sm ml-2">
+                      <li>Posição inicial (<MathFormula formula="s_0" display={false} />): <strong>0 m</strong></li>
+                      <li>Velocidade inicial (<MathFormula formula="v_0" display={false} />): <strong>5 m/s</strong></li>
+                      <li>Aceleração (<MathFormula formula="a" display={false} />): <strong>1 m/s²</strong></li>
+                      <li>Tempo (<MathFormula formula="t" display={false} />): <strong>10 s</strong></li>
+                      <li>Velocidade Final (<MathFormula formula="v" display={false} />): <strong>Não temos e não queremos!</strong> (Alerta Sorvetão)</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
+                    <p className="font-semibold text-slate-800">2º Passo: Aplicação da Fórmula</p>
+                    <MathFormula formula="s = s_0 + v_0t + \frac{at^2}{2}" display={true} />
+                    <MathFormula formula="s = 0 + 5(10) + \frac{1(10)^2}{2}" display={true} />
+                    <MathFormula formula="s = 50 + \frac{100}{2}" display={true} />
+                    <MathFormula formula="s = 50 + 50" display={true} />
+                    <MathFormula formula="s = 100 \text{ metros}" display={true} />
                   </div>
                 </div>
               </div>
