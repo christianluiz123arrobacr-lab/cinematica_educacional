@@ -494,7 +494,6 @@ export default function CinematicaTopicMRUV() {
             </div>
           </div>
         </div>
-        </div>
 
       </section>
     </div>
