@@ -1,258 +1,262 @@
-import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { ArrowLeft, AlertCircle, Lightbulb } from "lucide-react";
 import { Link } from "wouter";
+import { ArrowLeft, Activity, Lightbulb, AlertTriangle, CheckCircle2, Info, Target, Compass, Zap, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/components/MathFormula";
+import { Card } from "@/components/ui/card";
 
-export default function DynamicsTopicNewton() {
-  useEffect(() => {
-    if ((window as any).MathJax) {
-      (window as any).MathJax.contentDocument = document;
-      (window as any).MathJax.typesetPromise().catch((err: any) => console.log(err));
-    }
-  }, []);
-
+export default function DinamicaTopicPrimeiraLei() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-slate-50 to-teal-50">
+      {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
-        <div className="container py-4 flex items-center gap-4">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/dinamica">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+            <Button variant="ghost" size="sm" className="gap-2">
+              <ArrowLeft className="w-4 h-4" />
               Voltar
             </Button>
           </Link>
-          <h1 className="text-2xl font-bold text-slate-900">As Três Leis de Newton</h1>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center shadow-md">
+              <Shield className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900">Dinâmica</h1>
+              <p className="text-xs text-slate-600 font-medium">Primeira Lei de Newton (Inércia)</p>
+            </div>
+          </div>
         </div>
       </header>
 
-      <section className="container py-6 md:py-12 space-y-6 md:space-y-12">
-        {/* Introdução */}
-        <Card className="p-4 md:p-8 shadow-lg border-0 bg-gradient-to-r from-purple-50 to-blue-50">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Por Que Precisamos das Leis de Newton?</h2>
-          <div className="space-y-4 text-slate-700 leading-relaxed">
-            <p>Imagine que você está em um ônibus em movimento. Quando o ônibus freia bruscamente, você é "jogado" para frente. Por quê? Porque seu corpo quer continuar se movendo. Isso é a Primeira Lei de Newton em ação!</p>
-            <p>As três Leis de Newton explicam <strong>por que as coisas se movem como se movem</strong>. Elas não descrevem apenas o movimento, mas também as <strong>causas</strong> do movimento. Essas leis são a base de toda a física moderna e engenharia.</p>
-          </div>
-        </Card>
+      <section className="container mx-auto px-4 py-12 max-w-5xl">
 
-        {/* Primeira Lei */}
-        <Card className="p-4 md:p-8 shadow-lg border-0">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Primeira Lei: Lei da Inércia</h2>
-          <div className="space-y-4 text-slate-700 leading-relaxed">
-            <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 my-4">
-              <p className="text-lg font-semibold"><strong>"Um objeto em repouso quer ficar em repouso. Um objeto em movimento quer continuar se movendo. A menos que algo o force a mudar!"</strong></p>
-            </div>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">O Que é Inércia?</h3>
-            <p>Inércia é a <strong>preguiça</strong> dos objetos de mudar seu estado de movimento. Quanto mais pesado o objeto, maior é sua inércia. Um carro pesado é mais "preguiçoso" para mudar de velocidade do que uma bicicleta leve.</p>
-
-            <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 my-4">
-              <p className="mb-2"><strong>Exemplo:</strong> Quando você está em um carro que freia bruscamente, seu corpo quer continuar para frente (inércia). O cinto de segurança é o que o força a parar junto com o carro.</p>
-            </div>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">A Fórmula da Primeira Lei</h3>
-            <div className="bg-blue-50 p-3 md:p-6 rounded-lg border border-blue-200 overflow-x-auto my-4">
-              <MathFormula formula={String.raw`$$$$\\sum \\vec{F} = 0 \\Rightarrow \\vec{a} = 0$$$$`} className="text-center text-lg md:text-2xl mb-4" />
-              <p className="text-sm text-slate-600 text-center">Se a força resultante é zero, não há aceleração (repouso ou movimento uniforme)</p>
-            </div>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Exemplos do Dia a Dia</h3>
-            <ul className="space-y-3 text-slate-700">
-              <li className="flex gap-3">
-                <span className="text-blue-600 font-bold">✓</span>
-                <span><strong>Carro freando:</strong> Você é "jogado" para frente porque seu corpo quer continuar se movendo.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-blue-600 font-bold">✓</span>
-                <span><strong>Truque da toalha:</strong> Puxe rapidamente uma toalha de mesa e os pratos ficam no lugar! Porque a toalha não exerce força suficiente nos pratos para vencer a inércia deles.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-blue-600 font-bold">✓</span>
-                <span><strong>Satélite em órbita:</strong> Um satélite continua orbitando a Terra para sempre porque não há força para pará-lo (no vácuo do espaço).</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-blue-600 font-bold">✓</span>
-                <span><strong>Pista de gelo:</strong> É difícil parar em uma pista de gelo porque há pouca fricção. Seu corpo quer continuar se movendo (inércia).</span>
-              </li>
-            </ul>
-          </div>
-        </Card>
-
-        {/* Segunda Lei */}
-        <Card className="p-4 md:p-8 shadow-lg border-0">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Segunda Lei: Lei Fundamental da Dinâmica</h2>
-          <div className="space-y-4 text-slate-700 leading-relaxed">
-            <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500 my-4">
-              <p className="text-lg font-semibold"><strong>"Quanto maior a força, maior a aceleração. Quanto maior a massa, menor a aceleração para a mesma força."</strong></p>
-            </div>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">A Fórmula Mais Importante da Física</h3>
-            <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto my-4">
-              <MathFormula formula={String.raw`$$$$F = m \\cdot a$$$$`} className="text-center text-lg md:text-2xl mb-4" />
-              <p className="text-sm text-slate-600 text-center"><strong>Força = Massa × Aceleração</strong></p>
-            </div>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">O Que Cada Letra Significa?</h3>
-            <ul className="space-y-3 text-slate-700">
-              <li className="flex gap-3">
-                <span className="font-bold text-green-600">F =</span>
-                <span>Força (em Newtons, N). É o "empurrão" ou "puxão" que você aplica.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="font-bold text-green-600">m =</span>
-                <span>Massa (em quilogramas, kg). É o "peso" do objeto (mais precisamente, a quantidade de matéria).</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="font-bold text-green-600">a =</span>
-                <span>Aceleração (em m/s²). É como a velocidade muda.</span>
-              </li>
-            </ul>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Entendendo a Relação</h3>
-            <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500 my-4">
-              <p className="mb-3"><strong>Regra 1: Mais força = Mais aceleração</strong></p>
-              <p className="mb-3">Se você empurra um carro com força de 100 N, ele acelera. Se você empurra com 200 N, ele acelera o dobro!</p>
+        {/* ===================== INTRODUÇÃO ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+            <Shield className="w-8 h-8 text-emerald-600" />
+            A Primeira Lei de Newton: O Princípio da Inércia
+          </h2>
+          
+          <div className="space-y-6">
+            <div className="bg-emerald-50 border-l-4 border-emerald-500 rounded p-6">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">A Quebra de um Paradigma de 2000 Anos</h3>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                Antes de entrarmos nas fórmulas, precisamos entender o tamanho da revolução que a Primeira Lei de Newton causou. Durante mais de dois milênios, a humanidade acreditou na física de <strong>Aristóteles</strong>.
+              </p>
               
-              <p className="mb-3 mt-4"><strong>Regra 2: Mais massa = Menos aceleração</strong></p>
-              <p>Se você empurra uma bicicleta (10 kg) com 100 N, ela acelera muito. Se você empurra um carro (1000 kg) com 100 N, ele acelera muito menos.</p>
+              <div className="grid md:grid-cols-2 gap-6 mt-6">
+                <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                  <h4 className="font-bold text-red-700 mb-2 flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5" />
+                    O Erro de Aristóteles
+                  </h4>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    Aristóteles dizia: <em>"O estado natural dos corpos é o repouso. Para que um corpo se mova, é necessária uma força constante empurrando-o."</em><br/><br/>
+                    Parece lógico, não? Se você empurra um livro na mesa e solta, ele para. O senso comum nos diz que o movimento precisa de força para existir.
+                  </p>
+                </div>
+                
+                <div className="bg-slate-900 p-5 rounded-xl border border-slate-700 shadow-sm text-slate-100">
+                  <h4 className="font-bold text-emerald-400 mb-2 flex items-center gap-2">
+                    <Lightbulb className="w-5 h-5" />
+                    A Genialidade de Galileu
+                  </h4>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    Galileu Galilei percebeu o erro: o livro não para porque "quer" parar, ele para por causa do <strong>atrito</strong>! Se tirarmos todo o atrito, o livro deslizaria para sempre.<br/><br/>
+                    Galileu concluiu: <em>"O movimento uniforme é tão natural quanto o repouso."</em>
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Exemplos Práticos</h3>
-            <ul className="space-y-4 text-slate-700">
-              <li className="flex gap-3">
-                <span className="text-green-600 font-bold">1.</span>
-                <div>
-                  <strong>Carro acelerando:</strong> Um carro de 1000 kg é empurrado com força de 2000 N.<br/>
-                  <span className="text-sm text-slate-600">a = F/m = 2000/1000 = 2 m/s²</span>
-                </div>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-green-600 font-bold">2.</span>
-                <div>
-                  <strong>Bola de futebol vs. Bola de boliche:</strong> Se você chuta ambas com a mesma força, a bola de futebol (menor massa) voa muito mais longe que a bola de boliche (maior massa)!
-                </div>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-green-600 font-bold">3.</span>
-                <div>
-                  <strong>Foguete:</strong> Um foguete expele gases para baixo com grande força. Pela Segunda Lei de Newton, isso cria uma força igual para cima, acelerando o foguete.
-                </div>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-green-600 font-bold">4.</span>
-                <div>
-                  <strong>Freio de carro:</strong> Para parar um carro de 1000 kg em 5 segundos, você precisa de uma força de frenagem de aproximadamente 2000 N (dependendo da velocidade inicial).
-                </div>
-              </li>
-            </ul>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">O Newton (N) - Unidade de Força</h3>
-            <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500 my-4">
-              <p>1 Newton é a força necessária para acelerar 1 kg a 1 m/s².</p>
-              <p className="mt-2">Ou seja: 1 N = 1 kg·m/s²</p>
-              <p className="mt-2"><strong>Na prática:</strong> Um maçã pesa aproximadamente 1 Newton!</p>
+            <div className="bg-teal-50 border border-teal-200 rounded p-6">
+              <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <Target className="w-5 h-5 text-teal-600" />
+                O Enunciado Oficial de Newton
+              </h4>
+              <blockquote className="border-l-4 border-teal-500 pl-4 italic text-slate-700 text-lg my-4">
+                "Todo corpo continua em seu estado de repouso ou de movimento retilíneo uniforme, a menos que seja forçado a mudar aquele estado por forças aplicadas sobre ele."
+              </blockquote>
+              <p className="text-slate-700 mt-4">
+                Em linguagem moderna e matemática: Se a força resultante sobre um corpo é nula (<MathFormula formula="\vec{F}_R = \vec{0}" display={false} />), sua aceleração é nula (<MathFormula formula="\vec{a} = \vec{0}" display={false} />).
+              </p>
             </div>
           </div>
-        </Card>
+        </div>
 
-        {/* Terceira Lei */}
-        <Card className="p-4 md:p-8 shadow-lg border-0">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Terceira Lei: Ação e Reação</h2>
-          <div className="space-y-4 text-slate-700 leading-relaxed">
-            <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500 my-4">
-              <p className="text-lg font-semibold"><strong>"Para cada ação, há uma reação igual e oposta."</strong></p>
+        {/* ===================== O CONCEITO DE INÉRCIA ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">🧠 O Que é Inércia, Afinal?</h2>
+          
+          <div className="space-y-8">
+            <p className="text-slate-700 leading-relaxed text-lg">
+              Inércia não é uma força. Inércia não é uma energia. <strong>Inércia é uma propriedade da matéria</strong>. É a "preguiça" cósmica que todo corpo tem de mudar o que está fazendo.
+            </p>
+
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 shadow-xl">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h4 className="font-semibold text-emerald-400 mb-4">A Medida da Inércia</h4>
+                  <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                    Como medimos o quão "preguiçoso" um corpo é? Através da sua <strong>Massa</strong>.
+                  </p>
+                  <ul className="space-y-3 text-sm text-slate-300">
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-400 mt-1">•</span>
+                      <span><strong>Muita Massa:</strong> Muita inércia. É muito difícil fazer um trem parado começar a andar, e igualmente difícil fazer um trem em movimento parar.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-400 mt-1">•</span>
+                      <span><strong>Pouca Massa:</strong> Pouca inércia. É fácil chutar uma bola de ping-pong e fácil pará-la.</span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                  <h4 className="font-semibold text-amber-400 mb-2 flex items-center gap-2">
+                    <Lightbulb className="w-4 h-4" />
+                    Propriedade de Ouro: A Equivalência
+                  </h4>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    Para a física, estar em <strong>Repouso</strong> ou em <strong>Movimento Retilíneo Uniforme (MRU)</strong> é exatamente a mesma coisa do ponto de vista dinâmico. Ambos são estados de <strong>Equilíbrio</strong> (Força Resultante = 0).
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <h3 className="text-lg font-bold text-slate-900 mt-6">O Que Isso Significa?</h3>
-            <p>Quando você empurra algo, esse algo também o empurra de volta com a mesma força! Essas forças são iguais em magnitude, mas apontam em direções opostas.</p>
-
-            <div className="bg-orange-50 p-3 md:p-6 rounded-lg border border-orange-200 overflow-x-auto my-4">
-              <MathFormula formula={String.raw`$$$$\\vec{F}_{A \\to B} = -\\vec{F}_{B \\to A}$$$$`} className="text-center text-lg md:text-2xl mb-4" />
-              <p className="text-sm text-slate-600 text-center">Força de A em B = - Força de B em A</p>
-            </div>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Ponto Importante!</h3>
-            <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500 my-4">
-              <p><strong>As forças de ação e reação NÃO se cancelam!</strong></p>
-              <p className="mt-2">Por quê? Porque elas atuam em corpos diferentes! A ação atua no corpo B, e a reação atua no corpo A. Não há como elas se cancelarem.</p>
-            </div>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Exemplos do Dia a Dia</h3>
-            <ul className="space-y-4 text-slate-700">
-              <li className="flex gap-3">
-                <span className="text-orange-600 font-bold">1.</span>
-                <div>
-                  <strong>Caminhar:</strong> Seus pés empurram o chão para trás (ação). O chão empurra seus pés para frente (reação) com força igual. É essa reação que o move para frente!
-                </div>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-orange-600 font-bold">2.</span>
-                <div>
-                  <strong>Nadar:</strong> Você empurra a água para trás (ação). A água empurra você para frente (reação). Por isso você se move!
-                </div>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-orange-600 font-bold">3.</span>
-                <div>
-                  <strong>Foguete:</strong> O foguete expele gases para baixo (ação). Os gases empurram o foguete para cima (reação). Por isso o foguete sobe!
-                </div>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-orange-600 font-bold">4.</span>
-                <div>
-                  <strong>Pular:</strong> Você empurra o chão para baixo (ação). O chão empurra você para cima (reação). Por isso você salta!
-                </div>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-orange-600 font-bold">5.</span>
-                <div>
-                  <strong>Bola na parede:</strong> Você lança uma bola na parede (ação). A parede empurra a bola de volta (reação). Por isso a bola volta!
-                </div>
-              </li>
-            </ul>
-          </div>
-        </Card>
-
-        {/* Erros Comuns */}
-        <Card className="p-4 md:p-8 shadow-lg border-0 bg-red-50">
-          <div className="flex items-start gap-4">
-            <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
+            {/* Exemplos do Cotidiano */}
             <div>
-              <h3 className="text-lg font-bold text-red-900 mb-4">⚠️ Erros Comuns</h3>
-              <ul className="space-y-3 text-red-900">
-                <li className="flex gap-3">
-                  <span className="font-bold">❌</span>
-                  <span><strong>Erro:</strong> "Ação e reação se cancelam"<br/><strong>Verdade:</strong> Elas atuam em corpos diferentes, então não se cancelam!</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="font-bold">❌</span>
-                  <span><strong>Erro:</strong> "Força maior sempre vence força menor"<br/><strong>Verdade:</strong> Depende também da massa! Uma força pequena em uma massa pequena pode ter grande aceleração.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="font-bold">❌</span>
-                  <span><strong>Erro:</strong> "Massa e peso são a mesma coisa"<br/><strong>Verdade:</strong> Massa é a quantidade de matéria. Peso é a força da gravidade sobre a massa.</span>
-                </li>
-              </ul>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4">A Inércia no Nosso Dia a Dia</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                  <h4 className="font-bold text-slate-800 mb-2">1. A Freada do Ônibus</h4>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    Você está em pé no ônibus a 60 km/h. O motorista freia bruscamente. Você é "jogado" para frente. Por quê?<br/><br/>
+                    O ônibus freou, mas <strong>você não</strong>. Por inércia, seu corpo tende a continuar a 60 km/h para frente. O cinto de segurança (ou sua mão na barra) é a força externa necessária para mudar seu estado.
+                  </p>
+                </div>
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                  <h4 className="font-bold text-slate-800 mb-2">2. A Arrancada do Carro</h4>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    Você está parado no semáforo. O sinal abre e o carro arranca rápido. Você é "colado" no banco. Por quê?<br/><br/>
+                    Seu corpo estava em repouso e tende a continuar em repouso. O carro vai para frente, e o banco empurra suas costas para obrigar você a acompanhar o movimento.
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-        </Card>
 
-        {/* Dicas Práticas */}
-        <Card className="p-4 md:p-8 shadow-lg border-0 bg-yellow-50">
-          <div className="flex items-start gap-4">
-            <Lightbulb className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
-            <div>
-              <h3 className="text-lg font-bold text-yellow-900 mb-4">💡 Resumo das Três Leis</h3>
-              <ul className="space-y-3 text-yellow-900">
-                <li><strong>1ª Lei:</strong> Objetos querem manter seu estado (repouso ou movimento)</li>
-                <li><strong>2ª Lei:</strong> F = m·a (Força causa aceleração)</li>
-                <li><strong>3ª Lei:</strong> Ação e reação são iguais e opostas</li>
-              </ul>
+          </div>
+        </div>
+
+        {/* ===================== ARMADILHAS E ERROS CONCEITUAIS ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">⚠️ Armadilhas e Erros Conceituais Clássicos</h2>
+          
+          <div className="space-y-6">
+            <p className="text-slate-700 leading-relaxed text-lg">
+              A Primeira Lei de Newton é a que mais derruba alunos em provas de alto nível (como ITA e IME), não por cálculos complexos, mas por <strong>pegadinhas conceituais</strong>.
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-red-50 border-l-4 border-red-500 p-5 rounded-r-xl">
+                <h4 className="font-bold text-red-900 mb-2">Erro 1: "Se não tem força, ele para"</h4>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  <strong>A Armadilha:</strong> Achar que o movimento precisa de força para se manter.<br/>
+                  <strong>A Verdade:</strong> Se a força resultante for zero, um corpo em movimento continuará em MRU para sempre. Ele só para se houver uma força contra (como o atrito).
+                </p>
+              </div>
+
+              <div className="bg-red-50 border-l-4 border-red-500 p-5 rounded-r-xl">
+                <h4 className="font-bold text-red-900 mb-2">Erro 2: "Força centrífuga é inércia"</h4>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  <strong>A Armadilha:</strong> Achar que a "força" que te joga para fora na curva é uma força real.<br/>
+                  <strong>A Verdade:</strong> Não existe força te puxando para fora. Seu corpo apenas quer seguir em <strong>linha reta</strong> (inércia). O carro faz a curva, você tenta seguir reto.
+                </p>
+              </div>
+
+              <div className="bg-red-50 border-l-4 border-red-500 p-5 rounded-r-xl">
+                <h4 className="font-bold text-red-900 mb-2">Erro 3: "Inércia depende da velocidade"</h4>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  <strong>A Armadilha:</strong> Achar que um caminhão a 100 km/h tem mais inércia que o mesmo caminhão a 10 km/h.<br/>
+                  <strong>A Verdade:</strong> A inércia depende <strong>exclusivamente da massa</strong>. A velocidade não altera a inércia do corpo (na física clássica).
+                </p>
+              </div>
+
+              <div className="bg-red-50 border-l-4 border-red-500 p-5 rounded-r-xl">
+                <h4 className="font-bold text-red-900 mb-2">Erro 4: "MRU e Repouso são diferentes"</h4>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  <strong>A Armadilha:</strong> Achar que a Força Resultante = 0 significa apenas que o corpo está parado.<br/>
+                  <strong>A Verdade:</strong> Força Resultante = 0 significa <strong>Equilíbrio</strong>. Pode ser Equilíbrio Estático (repouso) ou Equilíbrio Dinâmico (MRU).
+                </p>
+              </div>
             </div>
           </div>
-        </Card>
+        </div>
+
+        {/* ===================== EXEMPLOS RESOLVIDOS ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">📝 Exemplos Resolvidos</h2>
+
+          <div className="space-y-8">
+            {/* Exemplo 1 */}
+            <div className="border border-slate-200 rounded-xl overflow-hidden">
+              <div className="bg-slate-50 p-4 border-b border-slate-200">
+                <h5 className="font-bold text-slate-800 flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-emerald-600" />
+                  Exemplo 1: O Paraquedista
+                </h5>
+              </div>
+              <div className="p-6 space-y-4">
+                <p className="text-slate-700">
+                  Um paraquedista de 80 kg salta de um avião. Após alguns segundos, ele abre o paraquedas e atinge a chamada "velocidade terminal", caindo com velocidade constante de 5 m/s. Qual é a força resultante sobre o paraquedista neste momento?
+                </p>
+                
+                <div className="bg-emerald-50/50 p-4 rounded-lg border border-emerald-100 space-y-3">
+                  <p className="font-semibold text-emerald-900">Resolução Passo a Passo:</p>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    1. O problema afirma que ele cai com <strong>velocidade constante</strong> e em linha reta (para baixo).<br/>
+                    2. Movimento em linha reta com velocidade constante é a definição exata de <strong>MRU</strong>.<br/>
+                    3. Pela Primeira Lei de Newton, se um corpo está em MRU, ele está em Equilíbrio Dinâmico.<br/>
+                    4. Portanto, a força resultante sobre ele é obrigatoriamente <strong>ZERO</strong>.
+                  </p>
+                  <div className="bg-slate-900 p-3 rounded mt-2 text-center">
+                    <MathFormula formula="\vec{F}_R = 0 \text{ N}" display={true} className="text-emerald-400" />
+                  </div>
+                  <p className="text-slate-600 text-xs italic mt-2">
+                    *Nota: Isso significa que a força de resistência do ar para cima anulou exatamente a força peso para baixo.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Exemplo 2 */}
+            <div className="border border-slate-200 rounded-xl overflow-hidden">
+              <div className="bg-slate-50 p-4 border-b border-slate-200">
+                <h5 className="font-bold text-slate-800 flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-emerald-600" />
+                  Exemplo 2: A Moeda no Trem
+                </h5>
+              </div>
+              <div className="p-6 space-y-4">
+                <p className="text-slate-700">
+                  Um trem viaja em linha reta a uma velocidade constante de 100 km/h. Um passageiro joga uma moeda verticalmente para cima. Onde a moeda cairá? (Despreze a resistência do ar dentro do vagão).
+                </p>
+                
+                <div className="bg-emerald-50/50 p-4 rounded-lg border border-emerald-100 space-y-3">
+                  <p className="font-semibold text-emerald-900">Resolução Passo a Passo:</p>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    1. Antes de ser lançada, a moeda está na mão do passageiro, viajando a 100 km/h na horizontal.<br/>
+                    2. Ao ser lançada para cima, a moeda adquire um movimento vertical, mas <strong>por inércia</strong>, ela mantém sua velocidade horizontal de 100 km/h.<br/>
+                    3. Como o trem também continua a 100 km/h, a moeda e a mão do passageiro andam para frente juntos, na mesma velocidade.<br/>
+                    4. Portanto, a moeda cairá <strong>exatamente na mão do passageiro</strong>.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </section>
     </div>
   );
