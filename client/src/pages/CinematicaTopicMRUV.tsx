@@ -101,31 +101,53 @@ export default function CinematicaTopicMRUV() {
               
               <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
                 <div className="grid md:grid-cols-2 gap-8">
-                  <div>
+                  <div className="col-span-full">
                     <h4 className="font-semibold text-purple-400 mb-4">A Forma: Uma Parábola</h4>
                     <p className="text-slate-300 text-sm leading-relaxed mb-4">
-                      Como a equação do espaço é do 2º grau (<MathFormula formula="s = s_0 + v_0t + \frac{at^2}{2}" display={false} />), o gráfico s×t é sempre uma <strong>parábola</strong>.
+                      Como a equação do espaço é do 2º grau (<MathFormula formula="s = s_0 + v_0t + \frac{at^2}{2}" display={false} />), o gráfico s×t é sempre uma <strong>parábola</strong>. Cada ponto e curva dessa parábola tem um significado físico profundo.
                     </p>
-                    <ul className="space-y-3 text-sm text-slate-300">
-                      <li className="flex items-start gap-2">
-                        <span className="text-purple-400 mt-1">•</span>
-                        <span><strong>Concavidade para CIMA (U):</strong> Aceleração positiva (<MathFormula formula="a > 0" display={false} />). O corpo está "sorrindo".</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-purple-400 mt-1">•</span>
-                        <span><strong>Concavidade para BAIXO (∩):</strong> Aceleração negativa (<MathFormula formula="a < 0" display={false} />). O corpo está "triste".</span>
-                      </li>
-                    </ul>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                      <h4 className="font-semibold text-purple-300 mb-2">1. A Concavidade (O Sinal da Aceleração)</h4>
+                      <ul className="space-y-2 text-sm text-slate-300">
+                        <li className="flex items-start gap-2">
+                          <span className="text-purple-400 mt-1">∪</span>
+                          <span><strong>Para CIMA:</strong> Aceleração positiva (<MathFormula formula="a > 0" display={false} />). O corpo está "sorrindo".</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-purple-400 mt-1">∩</span>
+                          <span><strong>Para BAIXO:</strong> Aceleração negativa (<MathFormula formula="a < 0" display={false} />). O corpo está "triste".</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                      <h4 className="font-semibold text-purple-300 mb-2">2. Interseção com o Eixo Vertical (s)</h4>
+                      <p className="text-slate-300 text-sm leading-relaxed">
+                        O ponto onde a parábola corta o eixo vertical (quando <MathFormula formula="t = 0" display={false} />) representa a <strong>posição inicial</strong> (<MathFormula formula="s_0" display={false} />) do móvel.
+                      </p>
+                    </div>
                   </div>
                   
-                  <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
-                    <h4 className="font-semibold text-amber-400 mb-2 flex items-center gap-2">
-                      <Lightbulb className="w-4 h-4" />
-                      Propriedade de Ouro: O Vértice
-                    </h4>
-                    <p className="text-slate-300 text-sm leading-relaxed">
-                      O vértice da parábola é o ponto de <strong>inversão de sentido</strong>. Neste exato instante, o corpo para para dar meia-volta. Portanto, no vértice da parábola, a velocidade instantânea é <strong>ZERO</strong> (<MathFormula formula="v = 0" display={false} />).
-                    </p>
+                  <div className="space-y-4">
+                    <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                      <h4 className="font-semibold text-amber-400 mb-2 flex items-center gap-2">
+                        <Lightbulb className="w-4 h-4" />
+                        3. O Vértice (Inversão de Sentido)
+                      </h4>
+                      <p className="text-slate-300 text-sm leading-relaxed">
+                        O vértice é o ponto de máximo ou mínimo da parábola. Fisicamente, é o exato instante em que o corpo <strong>para para dar meia-volta</strong>. Portanto, no vértice, a velocidade instantânea é <strong>ZERO</strong> (<MathFormula formula="v = 0" display={false} />).
+                      </p>
+                    </div>
+
+                    <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                      <h4 className="font-semibold text-purple-300 mb-2">4. As Raízes (Passagem pela Origem)</h4>
+                      <p className="text-slate-300 text-sm leading-relaxed">
+                        Os pontos onde a parábola corta o eixo horizontal (quando <MathFormula formula="s = 0" display={false} />) são os instantes em que o móvel <strong>passa pela origem da trajetória</strong>. Pode haver duas raízes, uma ou nenhuma (se ele nunca passar pela origem).
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
