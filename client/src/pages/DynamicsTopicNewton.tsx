@@ -400,6 +400,20 @@ export default function DinamicaTopicPrimeiraLei() {
               </div>
             </div>
 
+            {/* Por que funciona? */}
+            <div className="bg-indigo-50 border-l-4 border-indigo-500 rounded p-6 mt-8">
+              <h4 className="font-bold text-indigo-900 mb-3 flex items-center gap-2">
+                <Info className="w-5 h-5" />
+                Por que a Segunda Lei funciona tão bem?
+              </h4>
+              <p className="text-slate-700 leading-relaxed mb-3">
+                A Segunda Lei de Newton é uma das equações mais bem-sucedidas da história da ciência porque ela estabelece uma ponte perfeita entre o mundo invisível das causas (Forças) e o mundo visível dos efeitos (Movimento). Antes de Newton, os cientistas tentavam descrever o movimento apenas observando-o (Cinemática). Newton deu o passo além: ele descobriu a "engrenagem" por trás do movimento.
+              </p>
+              <p className="text-slate-700 leading-relaxed">
+                Ela funciona porque a natureza é determinística em escalas macroscópicas. Se você conhece a massa de um objeto e todas as forças atuando sobre ele, você pode prever exatamente onde ele estará e qual será sua velocidade em qualquer instante futuro. Foi usando exatamente essa equação (<MathFormula formula="F = ma" display={false} />) que a NASA calculou as trajetórias para enviar o homem à Lua!
+              </p>
+            </div>
+
             {/* Questão de Vestibular */}
             <div className="border border-slate-200 rounded-xl overflow-hidden mt-8">
               <div className="bg-slate-800 p-4 border-b border-slate-700">
@@ -442,6 +456,162 @@ export default function DinamicaTopicPrimeiraLei() {
                   
                   <p className="text-slate-800 font-bold mt-4">
                     Resposta: A força de frenagem foi de 4000 Newtons.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* ===================== TERCEIRA LEI DE NEWTON ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200 mt-12">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+            <Compass className="w-8 h-8 text-rose-500" />
+            A Terceira Lei de Newton: Ação e Reação
+          </h2>
+          
+          <div className="space-y-8">
+            {/* Contexto Histórico */}
+            <div className="bg-gradient-to-r from-rose-50 to-pink-50 border-l-4 border-rose-500 p-6 rounded-r-xl">
+              <h3 className="text-xl font-bold text-rose-900 mb-3 flex items-center gap-2">
+                <Lightbulb className="w-5 h-5" />
+                Contexto Histórico: A Simetria do Universo
+              </h3>
+              <p className="text-slate-700 leading-relaxed mb-3">
+                A Primeira Lei define a inércia. A Segunda Lei quantifica a força. Mas Newton percebeu que faltava uma peça fundamental no quebra-cabeça: <strong>de onde vêm as forças?</strong>
+              </p>
+              <p className="text-slate-700 leading-relaxed mb-3">
+                Até então, pensava-se que a força era algo que um corpo "possuía" e simplesmente "jogava" sobre outro, como um raio. Newton, com sua visão genial, percebeu que as forças não são entidades isoladas, mas sim <strong>interações mútuas</strong> entre dois corpos. Não existe força solitária no universo. Toda força nasce de um "aperto de mãos" entre duas massas.
+              </p>
+              <p className="text-slate-700 leading-relaxed">
+                Essa descoberta revelou uma simetria profunda na natureza: você não pode tocar sem ser tocado. Se você empurra o universo, o universo empurra você de volta com a exata mesma intensidade.
+              </p>
+            </div>
+
+            {/* O Enunciado Oficial */}
+            <div className="bg-rose-50 border border-rose-200 rounded p-6">
+              <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <Target className="w-5 h-5 text-rose-600" />
+                O Enunciado Oficial
+              </h4>
+              <blockquote className="border-l-4 border-rose-500 pl-4 italic text-slate-700 text-lg my-4">
+                "A toda ação há sempre uma reação oposta e de igual intensidade: as ações mútuas de dois corpos um sobre o outro são sempre iguais e dirigidas em sentidos opostos."
+              </blockquote>
+            </div>
+
+            {/* A Equação Fundamental e Demonstração */}
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
+              <div className="flex flex-col items-center justify-center mb-8">
+                <h3 className="text-rose-400 font-bold tracking-widest uppercase text-sm mb-4">A Simetria Matemática</h3>
+                <div className="bg-black/50 p-6 rounded-xl border border-slate-600 shadow-inner">
+                  <MathFormula formula="\vec{F}_{AB} = -\vec{F}_{BA}" display={true} className="text-4xl text-white" />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-10">
+                <div className="bg-slate-800/80 p-5 rounded-xl border border-slate-600">
+                  <div className="text-rose-400 font-bold text-xl mb-2">F<sub className="text-sm">AB</sub></div>
+                  <h4 className="text-white font-semibold mb-2">Ação</h4>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    A força que o corpo <strong>A</strong> exerce sobre o corpo <strong>B</strong>.
+                  </p>
+                </div>
+                
+                <div className="bg-slate-800/80 p-5 rounded-xl border border-slate-600">
+                  <div className="text-pink-400 font-bold text-xl mb-2">-F<sub className="text-sm">BA</sub></div>
+                  <h4 className="text-white font-semibold mb-2">Reação</h4>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    A força que o corpo <strong>B</strong> exerce de volta sobre o corpo <strong>A</strong>. O sinal negativo indica que ela tem <strong>sentido oposto</strong>.
+                  </p>
+                </div>
+              </div>
+
+              <h4 className="font-semibold text-rose-400 mb-4 text-xl border-t border-slate-700 pt-6">As 3 Regras de Ouro do Par Ação-Reação</h4>
+              <p className="text-slate-300 leading-relaxed mb-6">
+                Para que duas forças formem um par de Ação e Reação, elas precisam obrigatoriamente obedecer a três regras simultâneas:
+              </p>
+              
+              <div className="space-y-4">
+                <div className="bg-slate-800/50 p-4 rounded-lg">
+                  <p className="font-semibold text-rose-400 mb-2">Regra 1: Mesma Natureza</p>
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    Ambas as forças devem ser do mesmo tipo. Se a ação é uma força gravitacional, a reação também é gravitacional. Se a ação é magnética, a reação é magnética. Se a ação é de contato (Normal), a reação é de contato.
+                  </p>
+                </div>
+                
+                <div className="bg-slate-800/50 p-4 rounded-lg">
+                  <p className="font-semibold text-rose-400 mb-2">Regra 2: Mesma Intensidade e Direção, Sentidos Opostos</p>
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    Se você empurra a parede com 50 N na horizontal para a direita, a parede te empurra com exatos 50 N na horizontal para a esquerda. A simetria é perfeita.
+                  </p>
+                </div>
+                
+                <div className="bg-slate-800/50 p-4 rounded-lg border border-rose-500/30">
+                  <p className="font-semibold text-rose-400 mb-2">Regra 3: Corpos Diferentes (A Regra Suprema)</p>
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    A ação atua no corpo B. A reação atua no corpo A. <strong>Por atuarem em corpos diferentes, as forças de ação e reação NUNCA se anulam!</strong> Você não pode somar as duas para calcular a força resultante em um único corpo.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Por que funciona? */}
+            <div className="bg-indigo-50 border-l-4 border-indigo-500 rounded p-6 mt-8">
+              <h4 className="font-bold text-indigo-900 mb-3 flex items-center gap-2">
+                <Info className="w-5 h-5" />
+                Por que a Terceira Lei funciona? (A Conservação do Momento)
+              </h4>
+              <p className="text-slate-700 leading-relaxed mb-3">
+                A Terceira Lei não é apenas uma regra arbitrária inventada por Newton. Ela é a manifestação macroscópica de um dos princípios mais sagrados e inquebráveis de todo o universo: a <strong>Conservação do Momento Linear</strong>.
+              </p>
+              <p className="text-slate-700 leading-relaxed">
+                Em um sistema isolado (sem forças externas), a quantidade total de movimento não pode mudar. Se o corpo A ganha momento para a direita ao empurrar o corpo B, o corpo B <strong>precisa</strong> ganhar a exata mesma quantidade de momento para a esquerda, para que a soma total continue sendo a mesma. A única forma matemática de isso acontecer é se a força que A faz em B for exatamente igual e oposta à força que B faz em A. A Terceira Lei é a garantia de que o universo não cria movimento do nada!
+              </p>
+            </div>
+
+            {/* Armadilhas e Erros Conceituais */}
+            <div className="mt-10">
+              <h3 className="text-2xl font-bold text-slate-800 mb-6">⚠️ Armadilhas Clássicas de Prova</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-red-50 border-l-4 border-red-500 p-5 rounded-r-xl">
+                  <h4 className="font-bold text-red-900 mb-2">Erro 1: Peso e Normal são Ação e Reação</h4>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    <strong>A Armadilha:</strong> Como o Peso puxa para baixo e a Normal empurra para cima, e ambas se anulam num livro sobre a mesa, muitos acham que formam um par.<br/>
+                    <strong>A Verdade:</strong> É o erro mais comum! Elas violam duas regras: atuam no <strong>mesmo corpo</strong> (o livro) e têm <strong>naturezas diferentes</strong> (Peso é gravitacional, Normal é eletromagnética de contato). A reação do Peso do livro está no centro da Terra. A reação da Normal está na mesa.
+                  </p>
+                </div>
+
+                <div className="bg-red-50 border-l-4 border-red-500 p-5 rounded-r-xl">
+                  <h4 className="font-bold text-red-900 mb-2">Erro 2: O mais forte faz mais força</h4>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    <strong>A Armadilha:</strong> Achar que num choque entre um caminhão e um fusca, o caminhão faz uma força maior no fusca do que o fusca faz no caminhão.<br/>
+                    <strong>A Verdade:</strong> As forças são <strong>exatamente iguais</strong>. O fusca amassa mais não porque sofreu mais força, mas porque sua estrutura é mais frágil e sua massa é menor (logo, sofre maior aceleração, pela 2ª Lei: <MathFormula formula="a = F/m" display={false} />).
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Exemplos Práticos */}
+            <div className="mt-10">
+              <h3 className="text-2xl font-bold text-slate-800 mb-6">Como usamos a Terceira Lei na prática?</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 shadow-sm">
+                  <h4 className="font-bold text-slate-800 mb-3 text-lg">1. Como nós andamos?</h4>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    Você já parou para pensar em como consegue andar para frente? Você não se empurra para frente. O que você faz é empurrar o chão para <strong>trás</strong> com o seu pé (força de atrito).
+                  </p>
+                  <p className="text-slate-700 text-sm leading-relaxed mt-2">
+                    Pela Terceira Lei, o chão reage e empurra o seu pé para <strong>frente</strong> com a mesma intensidade. É a força do chão sobre você que te faz andar! Se não houvesse atrito (como no gelo liso), você não conseguiria empurrar o chão para trás, o chão não te empurraria para frente, e você não sairia do lugar.
+                  </p>
+                </div>
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 shadow-sm">
+                  <h4 className="font-bold text-slate-800 mb-3 text-lg">2. O Foguete no Espaço</h4>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    Como um foguete acelera no vácuo do espaço, onde não há ar para ele "se apoiar" ou empurrar contra?
+                  </p>
+                  <p className="text-slate-700 text-sm leading-relaxed mt-2">
+                    Ele não precisa de ar. O motor do foguete faz uma força colossal empurrando os gases da combustão para <strong>trás</strong> (Ação). Imediatamente, os gases reagem e empurram o foguete para <strong>frente</strong> com a mesma força (Reação). É uma aplicação pura e direta da Terceira Lei de Newton.
                   </p>
                 </div>
               </div>
