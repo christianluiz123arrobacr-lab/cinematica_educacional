@@ -592,8 +592,58 @@ export default function DinamicaTopicPrimeiraLei() {
               </div>
             </div>
 
+            {/* Aprofundamento: A Força Normal e o Plano Inclinado */}
+            <div className="mt-12 bg-slate-900 rounded-2xl p-8 shadow-xl border border-slate-700 text-slate-100">
+              <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <Zap className="w-7 h-7 text-amber-400" />
+                Aprofundamento de Elite: A Força Normal e o Plano Inclinado
+              </h3>
+              
+              <p className="text-slate-300 leading-relaxed mb-6">
+                A Força Normal (<MathFormula formula="\vec{N}" display={false} />) é a força de contato que uma superfície exerce sobre um corpo apoiado nela. Ela é a <strong>reação</strong> da superfície à compressão que o corpo faz sobre ela. Entender a Normal é o segredo para resolver 90% das questões de dinâmica, especialmente em planos inclinados.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-8 mb-8">
+                {/* Superfície Horizontal */}
+                <div className="bg-slate-800/80 p-6 rounded-xl border border-slate-600">
+                  <h4 className="font-bold text-amber-400 mb-4 text-lg border-b border-slate-700 pb-2">1. Superfície Horizontal</h4>
+                  <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                    Quando um bloco está em repouso sobre uma mesa horizontal, ele comprime a mesa com uma força igual ao seu Peso. A mesa reage empurrando o bloco para cima com a Força Normal.
+                  </p>
+                  <div className="bg-black/40 p-4 rounded-lg text-center mb-4">
+                    <MathFormula formula="N = P = m \cdot g" display={true} className="text-white" />
+                  </div>
+                  <p className="text-slate-400 text-xs italic">
+                    *Atenção: N = P apenas porque não há outras forças verticais e a superfície é horizontal. Elas se anulam, mas <strong>não são</strong> par de ação e reação!
+                  </p>
+                </div>
+
+                {/* Plano Inclinado */}
+                <div className="bg-slate-800/80 p-6 rounded-xl border border-slate-600">
+                  <h4 className="font-bold text-amber-400 mb-4 text-lg border-b border-slate-700 pb-2">2. O Plano Inclinado</h4>
+                  <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                    Se inclinarmos a superfície em um ângulo <MathFormula formula="\theta" display={false} />, o Peso continua apontando para o centro da Terra, mas a Normal continua perpendicular (90°) à superfície. O Peso se decompõe em duas partes:
+                  </p>
+                  <ul className="space-y-3 text-sm text-slate-300 mb-4">
+                    <li><span className="text-amber-400 font-bold">P<sub>x</sub>:</span> Puxa o bloco rampa abaixo (<MathFormula formula="P_x = P \cdot \sin(\theta)" display={false} />)</li>
+                    <li><span className="text-amber-400 font-bold">P<sub>y</sub>:</span> Comprime o bloco contra a rampa (<MathFormula formula="P_y = P \cdot \cos(\theta)" display={false} />)</li>
+                  </ul>
+                  <div className="bg-black/40 p-4 rounded-lg text-center">
+                    <MathFormula formula="N = P_y = m \cdot g \cdot \cos(\theta)" display={true} className="text-white" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-amber-900/30 border-l-4 border-amber-500 p-5 rounded-r-xl">
+                <h4 className="font-bold text-amber-400 mb-2">Por que isso é tão cobrado?</h4>
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  A Força Normal é crucial porque ela determina a <strong>Força de Atrito</strong> (<MathFormula formula="F_{at} = \mu \cdot N" display={false} />). No plano inclinado, como a Normal é menor que o Peso (<MathFormula formula="\cos(\theta) < 1" display={false} />), o atrito máximo possível também diminui. É por isso que é mais fácil escorregar em uma rampa íngreme: não é só porque a gravidade puxa mais forte para baixo (<MathFormula formula="P_x" display={false} />), mas também porque o atrito fica mais fraco (a Normal diminui)!
+                </p>
+              </div>
+            </div>
+
             {/* Exemplos Práticos */}
-            <div className="mt-10">
+            <div className="mt-12">
               <h3 className="text-2xl font-bold text-slate-800 mb-6">Como usamos a Terceira Lei na prática?</h3>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 shadow-sm">
