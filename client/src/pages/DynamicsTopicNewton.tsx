@@ -242,7 +242,7 @@ export default function DinamicaTopicPrimeiraLei() {
               </div>
             </div>
 
-            {/* Exemplo 2 */}
+                        {/* Exemplo 2 */}
             <div className="border border-slate-200 rounded-xl overflow-hidden">
               <div className="bg-slate-50 p-4 border-b border-slate-200">
                 <h5 className="font-bold text-slate-800 flex items-center gap-2">
@@ -254,7 +254,6 @@ export default function DinamicaTopicPrimeiraLei() {
                 <p className="text-slate-700">
                   Um trem viaja em linha reta a uma velocidade constante de 100 km/h. Um passageiro joga uma moeda verticalmente para cima. Onde a moeda cairá? (Despreze a resistência do ar dentro do vagão).
                 </p>
-                
                 <div className="bg-emerald-50/50 p-4 rounded-lg border border-emerald-100 space-y-3">
                   <p className="font-semibold text-emerald-900">Resolução Passo a Passo:</p>
                   <p className="text-slate-700 text-sm leading-relaxed">
@@ -262,6 +261,103 @@ export default function DinamicaTopicPrimeiraLei() {
                     2. Ao ser lançada para cima, a moeda adquire um movimento vertical, mas <strong>por inércia</strong>, ela mantém sua velocidade horizontal de 100 km/h.<br/>
                     3. Como o trem também continua a 100 km/h, a moeda e a mão do passageiro andam para frente juntos, na mesma velocidade.<br/>
                     4. Portanto, a moeda cairá <strong>exatamente na mão do passageiro</strong>.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===================== SEGUNDA LEI DE NEWTON ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200 mt-12">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+            <Zap className="w-8 h-8 text-amber-500" />
+            A Segunda Lei de Newton: O Princípio Fundamental da Dinâmica
+          </h2>
+          
+          <div className="space-y-8">
+            <p className="text-slate-700 leading-relaxed text-lg">
+              A Primeira Lei nos disse o que acontece quando a Força Resultante é zero (o corpo fica em MRU ou repouso). Mas e se a Força Resultante <strong>não for zero</strong>? O que acontece quando o equilíbrio é quebrado? A Segunda Lei de Newton responde a essa pergunta com a equação mais famosa da física clássica.
+            </p>
+
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-8 shadow-xl border border-slate-700">
+              <div className="flex flex-col items-center justify-center mb-8">
+                <h3 className="text-amber-400 font-bold tracking-widest uppercase text-sm mb-4">A Equação Fundamental</h3>
+                <div className="bg-black/50 p-6 rounded-xl border border-slate-600 shadow-inner">
+                  <MathFormula formula="\vec{F}_R = m \cdot \vec{a}" display={true} className="text-4xl text-white" />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="bg-slate-800/80 p-5 rounded-xl border border-slate-600">
+                  <div className="text-amber-400 font-bold text-xl mb-2">F<sub className="text-sm">R</sub></div>
+                  <h4 className="text-white font-semibold mb-2">Força Resultante</h4>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    A soma vetorial de <strong>todas</strong> as forças que atuam no corpo. É a causa da mudança de movimento. Medida em Newtons (N).
+                  </p>
+                </div>
+                
+                <div className="bg-slate-800/80 p-5 rounded-xl border border-slate-600">
+                  <div className="text-emerald-400 font-bold text-xl mb-2">m</div>
+                  <h4 className="text-white font-semibold mb-2">Massa (Inércia)</h4>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    A resistência do corpo à mudança. Quanto maior a massa, mais força é necessária para gerar a mesma aceleração. Medida em quilogramas (kg).
+                  </p>
+                </div>
+
+                <div className="bg-slate-800/80 p-5 rounded-xl border border-slate-600">
+                  <div className="text-blue-400 font-bold text-xl mb-2">a</div>
+                  <h4 className="text-white font-semibold mb-2">Aceleração</h4>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    A consequência da força. É a taxa de variação da velocidade. A aceleração tem <strong>sempre a mesma direção e sentido</strong> da Força Resultante. Medida em m/s².
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-amber-50 border-l-4 border-amber-500 rounded p-6">
+              <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <Lightbulb className="w-5 h-5 text-amber-600" />
+                A Lógica Intuitiva da Fórmula
+              </h4>
+              <p className="text-slate-700 leading-relaxed mb-3">
+                A equação <MathFormula formula="F = m \cdot a" display={false} /> não é apenas uma decoreba matemática, ela conta uma história lógica perfeita:
+              </p>
+              <ul className="space-y-3 text-slate-700 ml-4 list-disc">
+                <li>Se você quer acelerar um carro (aumentar o <strong>a</strong>), você precisa pisar mais fundo no acelerador (aumentar o <strong>F</strong>).</li>
+                <li>Se você tentar empurrar um fusca (massa pequena) e depois um caminhão (massa grande) com a mesma força <strong>F</strong>, o fusca vai acelerar muito mais. A massa <strong>m</strong> é o "freio natural" da aceleração.</li>
+              </ul>
+            </div>
+
+            {/* Exemplo Resolvido da 2ª Lei */}
+            <div className="border border-slate-200 rounded-xl overflow-hidden mt-8">
+              <div className="bg-slate-50 p-4 border-b border-slate-200">
+                <h5 className="font-bold text-slate-800 flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-amber-600" />
+                  Exemplo 3: O Bloco Empurrado
+                </h5>
+              </div>
+              <div className="p-6 space-y-4">
+                <p className="text-slate-700">
+                  Um bloco de massa <strong>m = 5 kg</strong> está em repouso sobre uma superfície horizontal sem atrito. Uma força constante de <strong>20 N</strong> é aplicada sobre ele. Qual será a velocidade do bloco após 4 segundos?
+                </p>
+                
+                <div className="bg-amber-50/50 p-4 rounded-lg border border-amber-100 space-y-3">
+                  <p className="font-semibold text-amber-900">Resolução Passo a Passo:</p>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    1. Primeiro, usamos a <strong>Segunda Lei de Newton</strong> para descobrir a aceleração que essa força gera no bloco.
+                  </p>
+                  <div className="bg-white p-3 rounded border border-slate-200 text-center my-2">
+                    <MathFormula formula="F_R = m \cdot a \implies 20 = 5 \cdot a \implies a = \frac{20}{5} = 4 \text{ m/s}^2" display={true} />
+                  </div>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    2. Agora que sabemos a aceleração, o problema vira uma questão de <strong>Cinemática (MRUV)</strong>. Queremos a velocidade após 4 segundos, partindo do repouso (<MathFormula formula="v_0 = 0" display={false} />). Usamos a Equação da Velocidade:
+                  </p>
+                  <div className="bg-white p-3 rounded border border-slate-200 text-center my-2">
+                    <MathFormula formula="v = v_0 + a \cdot t \implies v = 0 + 4 \cdot 4 \implies v = 16 \text{ m/s}" display={true} />
+                  </div>
+                  <p className="text-slate-700 text-sm font-bold mt-2">
+                    Resposta: A velocidade será de 16 m/s.
                   </p>
                 </div>
               </div>
