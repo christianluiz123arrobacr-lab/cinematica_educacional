@@ -276,12 +276,16 @@ export default function DinamicaTopicPrimeiraLei() {
           </h2>
           
           <div className="space-y-8">
-            <div className="bg-amber-50 border-l-4 border-amber-500 rounded p-6">
-              <h3 className="text-xl font-bold text-slate-900 mb-3">O Contexto Histórico: A Quantificação do Movimento</h3>
-              <p className="text-slate-700 leading-relaxed mb-4">
+            {/* Contexto Histórico */}
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-500 p-6 rounded-r-xl">
+              <h3 className="text-xl font-bold text-amber-900 mb-3 flex items-center gap-2">
+                <Lightbulb className="w-5 h-5" />
+                Contexto Histórico: A Quantificação do Movimento
+              </h3>
+              <p className="text-slate-700 leading-relaxed mb-3">
                 A Primeira Lei nos disse o que acontece quando a Força Resultante é zero (o corpo fica em MRU ou repouso). Mas e se a Força Resultante <strong>não for zero</strong>? O que acontece quando o equilíbrio é quebrado?
               </p>
-              <p className="text-slate-700 leading-relaxed mb-4">
+              <p className="text-slate-700 leading-relaxed mb-3">
                 No século XVII, Isaac Newton publicou sua obra-prima, o <em>Principia Mathematica</em>. Nele, Newton não apenas disse que uma força causa mudança de movimento, ele <strong>quantificou</strong> essa mudança. Ele percebeu que a força não gera velocidade diretamente, mas sim <strong>aceleração</strong> (a taxa de variação da velocidade). E mais: ele percebeu que a massa do corpo atua como uma resistência natural a essa aceleração.
               </p>
               <p className="text-slate-700 leading-relaxed">
@@ -289,7 +293,8 @@ export default function DinamicaTopicPrimeiraLei() {
               </p>
             </div>
 
-            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-8 shadow-xl border border-slate-700">
+            {/* A Equação Fundamental e Demonstração */}
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
               <div className="flex flex-col items-center justify-center mb-8">
                 <h3 className="text-amber-400 font-bold tracking-widest uppercase text-sm mb-4">A Equação Fundamental</h3>
                 <div className="bg-black/50 p-6 rounded-xl border border-slate-600 shadow-inner">
@@ -297,7 +302,7 @@ export default function DinamicaTopicPrimeiraLei() {
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="grid md:grid-cols-3 gap-6 mb-10">
                 <div className="bg-slate-800/80 p-5 rounded-xl border border-slate-600">
                   <div className="text-amber-400 font-bold text-xl mb-2">F<sub className="text-sm">R</sub></div>
                   <h4 className="text-white font-semibold mb-2">Força Resultante</h4>
@@ -322,39 +327,40 @@ export default function DinamicaTopicPrimeiraLei() {
                   </p>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-              <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2 text-xl">
-                <Target className="w-6 h-6 text-indigo-600" />
-                A Demonstração Lógica (Como Newton chegou lá?)
-              </h4>
-              <p className="text-slate-700 leading-relaxed mb-4">
-                A equação <MathFormula formula="F = m \cdot a" display={false} /> não caiu do céu. Ela é a união de duas observações experimentais diretas:
+              <h4 className="font-semibold text-amber-400 mb-4 text-xl border-t border-slate-700 pt-6">A Demonstração Lógica (Como Newton chegou lá?)</h4>
+              <p className="text-slate-300 leading-relaxed mb-6">
+                A equação <MathFormula formula="F = m \cdot a" display={false} /> não caiu do céu. Ela é a união de duas observações experimentais diretas que você mesmo pode testar no dia a dia:
               </p>
               
               <div className="space-y-4">
-                <div className="flex items-start gap-4 bg-slate-50 p-4 rounded-lg border border-slate-100">
-                  <div className="bg-indigo-100 text-indigo-700 font-bold w-8 h-8 rounded-full flex items-center justify-center shrink-0">1</div>
-                  <div>
-                    <h5 className="font-bold text-slate-800">Aceleração é diretamente proporcional à Força</h5>
-                    <p className="text-slate-600 text-sm mt-1">Se você empurrar um carrinho de supermercado com o dobro da força, ele vai acelerar o dobro. (<MathFormula formula="a \propto F" display={false} />)</p>
+                <div className="bg-slate-800/50 p-4 rounded-lg">
+                  <p className="font-semibold text-amber-400 mb-2">Passo 1: Aceleração é diretamente proporcional à Força</p>
+                  <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                    Se você empurrar um carrinho de supermercado com o dobro da força, ele vai acelerar o dobro. Se triplicar a força, a aceleração triplica. Matematicamente, escrevemos:
+                  </p>
+                  <div className="bg-slate-900 p-2 rounded text-center border border-slate-700">
+                    <MathFormula formula="a \propto F" display={true} />
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-4 bg-slate-50 p-4 rounded-lg border border-slate-100">
-                  <div className="bg-indigo-100 text-indigo-700 font-bold w-8 h-8 rounded-full flex items-center justify-center shrink-0">2</div>
-                  <div>
-                    <h5 className="font-bold text-slate-800">Aceleração é inversamente proporcional à Massa</h5>
-                    <p className="text-slate-600 text-sm mt-1">Se você aplicar a mesma força em um carrinho vazio e em um carrinho cheio (com o dobro da massa), o carrinho cheio terá apenas metade da aceleração. (<MathFormula formula="a \propto \frac{1}{m}" display={false} />)</p>
+                <div className="bg-slate-800/50 p-4 rounded-lg">
+                  <p className="font-semibold text-amber-400 mb-2">Passo 2: Aceleração é inversamente proporcional à Massa</p>
+                  <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                    Se você aplicar a mesma força em um carrinho vazio e em um carrinho cheio (com o dobro da massa), o carrinho cheio terá apenas metade da aceleração. A massa "freia" a aceleração. Matematicamente:
+                  </p>
+                  <div className="bg-slate-900 p-2 rounded text-center border border-slate-700">
+                    <MathFormula formula="a \propto \frac{1}{m}" display={true} />
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-4 bg-indigo-50 p-4 rounded-lg border border-indigo-200">
-                  <div className="bg-indigo-600 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center shrink-0">3</div>
-                  <div>
-                    <h5 className="font-bold text-indigo-900">A Síntese</h5>
-                    <p className="text-indigo-800 text-sm mt-1">Juntando as duas observações, temos <MathFormula formula="a = \frac{F}{m}" display={false} />. Multiplicando cruzado, chegamos à forma clássica: <MathFormula formula="F = m \cdot a" display={false} />.</p>
+                <div className="bg-slate-800/50 p-4 rounded-lg border border-amber-500/30">
+                  <p className="font-semibold text-amber-400 mb-2">Passo 3: A Síntese Genial</p>
+                  <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                    Juntando as duas observações em uma única equação, Newton concluiu que a aceleração é igual à força dividida pela massa. Multiplicando cruzado, chegamos à forma clássica:
+                  </p>
+                  <div className="bg-slate-900 p-3 rounded text-center border border-amber-500/50">
+                    <MathFormula formula="a = \frac{F}{m} \implies F = m \cdot a" display={true} />
                   </div>
                 </div>
               </div>
