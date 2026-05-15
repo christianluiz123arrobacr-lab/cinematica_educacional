@@ -1,14 +1,13 @@
-import { COOKIE_NAME } from "../shared/const";
-import { getSessionCookieOptions } from "./_core/cookies";
-import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
-import { invokeLLM } from "./_core/llm";
-import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { supabaseAdmin } from "./_core/supabaseAdmin";
+import { z } from "zod";
+import { COOKIE_NAME } from "../shared/const.js";
+import { getSessionCookieOptions } from "./_core/cookies.js";
+import { systemRouter } from "./_core/systemRouter.js";
+import { publicProcedure, router } from "./_core/trpc.js";
+import { invokeLLM } from "./_core/llm.js";
+import { supabaseAdmin } from "./_core/supabaseAdmin.js";
 
 export const appRouter = router({
-  // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
 
   auth: router({
@@ -48,12 +47,15 @@ export const appRouter = router({
           });
         }
 
+        const nome = input.nome.trim();
+        const email = input.email.trim().toLowerCase();
+
         const { data, error } = await supabaseAdmin.auth.admin.createUser({
-          email: input.email,
+          email,
           password: input.senha,
           email_confirm: true,
           user_metadata: {
-            nome: input.nome,
+            nome,
           },
         });
 
@@ -66,22 +68,25 @@ export const appRouter = router({
 
         const { error: profileError } = await supabaseAdmin
           .from("profiles")
-          .insert({
-            id: data.user.id,
-            nome: input.nome,
-            email: input.email,
-            role: "student",
-            ativo: true,
-          });
+          .upsert(
+            {
+              id: data.user.id,
+              nome,
+              email,
+              role: "student",
+              ativo: true,
+            },
+            {
+              onConflict: "id",
+            }
+          );
 
         if (profileError) {
-          // tenta limpar o usuário criado no auth se falhar ao criar profile
           await supabaseAdmin.auth.admin.deleteUser(data.user.id);
 
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message:
-              profileError.message ?? "Erro ao criar perfil do aluno.",
+            message: profileError.message ?? "Erro ao criar perfil do aluno.",
           });
         }
 
@@ -92,7 +97,6 @@ export const appRouter = router({
       }),
   }),
 
-  // AI Solver Router
   ai: router({
     solvePhysics: publicProcedure
       .input(
@@ -123,7 +127,7 @@ export const appRouter = router({
         const userContent: any[] = [];
 
         if (text) {
-          userContent.push({ type: "text", text: text });
+          userContent.push({ type: "text", text });
         }
 
         if (imageBase64 && imageMimeType) {
@@ -148,13 +152,6 @@ export const appRouter = router({
         return { result: resultText };
       }),
   }),
-
-  // TODO: add feature routers here, e.g.
-  // todo: router({
-  //   list: protectedProcedure.query(({ ctx }) =>
-  //     db.getUserTodos(ctx.user.id)
-  //   ),
-  // }),
 });
 
 export type AppRouter = typeof appRouter;
