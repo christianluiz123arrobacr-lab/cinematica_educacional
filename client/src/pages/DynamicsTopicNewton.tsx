@@ -670,6 +670,181 @@ export default function DinamicaTopicPrimeiraLei() {
           </div>
         </div>
 
+        {/* ===================== FORÇA PESO E GRAVIDADE ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200 mt-12">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+            <Target className="w-8 h-8 text-blue-600" />
+            A Força Peso: A Gravidade em Ação
+          </h2>
+          
+          <div className="space-y-8">
+            {/* Contexto Histórico */}
+            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-blue-500 p-6 rounded-r-xl">
+              <h3 className="text-xl font-bold text-blue-900 mb-3 flex items-center gap-2">
+                <Lightbulb className="w-5 h-5" />
+                Contexto Histórico: A Maçã e a Lua
+              </h3>
+              <p className="text-slate-700 leading-relaxed mb-3">
+                A lenda diz que Newton descobriu a gravidade quando uma maçã caiu em sua cabeça. A verdade é muito mais profunda: a genialidade de Newton não foi descobrir que as coisas caem (qualquer um sabia disso), mas sim perceber que <strong>a força que puxa a maçã para o chão é a exata mesma força que mantém a Lua orbitando a Terra</strong>.
+              </p>
+              <p className="text-slate-700 leading-relaxed">
+                Ele unificou a física terrestre e a física celeste. O Peso nada mais é do que a Força de Atração Gravitacional que um planeta (ou estrela) exerce sobre os corpos próximos à sua superfície.
+              </p>
+            </div>
+
+            {/* A Equação Fundamental */}
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
+              <div className="flex flex-col items-center justify-center mb-8">
+                <h3 className="text-blue-400 font-bold tracking-widest uppercase text-sm mb-4">A Equação do Peso</h3>
+                <div className="bg-black/50 p-6 rounded-xl border border-slate-600 shadow-inner">
+                  <MathFormula formula="\vec{P} = m \cdot \vec{g}" display={true} className="text-4xl text-white" />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6 mb-6">
+                <div className="bg-slate-800/80 p-5 rounded-xl border border-slate-600">
+                  <div className="text-blue-400 font-bold text-xl mb-2">P</div>
+                  <h4 className="text-white font-semibold mb-2">Força Peso (N)</h4>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    A força de atração. É um vetor que aponta <strong>sempre</strong> para o centro do planeta, não importa a inclinação da superfície.
+                  </p>
+                </div>
+                
+                <div className="bg-slate-800/80 p-5 rounded-xl border border-slate-600">
+                  <div className="text-cyan-400 font-bold text-xl mb-2">m</div>
+                  <h4 className="text-white font-semibold mb-2">Massa (kg)</h4>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    A quantidade de matéria. É uma propriedade intrínseca do corpo. <strong>A massa não muda</strong> se você for para a Lua ou para Marte.
+                  </p>
+                </div>
+
+                <div className="bg-slate-800/80 p-5 rounded-xl border border-slate-600">
+                  <div className="text-teal-400 font-bold text-xl mb-2">g</div>
+                  <h4 className="text-white font-semibold mb-2">Gravidade (m/s²)</h4>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    A aceleração gravitacional local. Na Terra é ~9,8 m/s² (frequentemente arredondada para 10 m/s² em provas).
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Demonstração: De onde vem P = mg? */}
+            <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
+              <h4 className="font-bold text-blue-900 mb-3 flex items-center gap-2">
+                <Info className="w-5 h-5" />
+                Demonstração: De onde vem a fórmula do Peso?
+              </h4>
+              <p className="text-slate-700 leading-relaxed mb-3">
+                A fórmula do Peso não é uma lei nova. Ela é simplesmente a <strong>Segunda Lei de Newton (<MathFormula formula="F = ma" display={false} />)</strong> aplicada ao caso específico da queda livre!
+              </p>
+              <ul className="space-y-2 text-slate-700 mb-4 ml-4 list-disc">
+                <li>Se você solta um corpo no ar, a única força atuando sobre ele é a atração da Terra (o Peso). Logo, <MathFormula formula="F_R = P" display={false} />.</li>
+                <li>A aceleração que esse corpo sofre ao cair é a aceleração da gravidade. Logo, <MathFormula formula="a = g" display={false} />.</li>
+              </ul>
+              <div className="bg-white p-4 rounded border border-blue-200 text-center">
+                <MathFormula formula="F_R = m \cdot a \implies P = m \cdot g" display={true} />
+              </div>
+            </div>
+
+            {/* Armadilhas */}
+            <div className="grid md:grid-cols-2 gap-6 mt-8">
+              <div className="bg-red-50 border-l-4 border-red-500 p-5 rounded-r-xl">
+                <h4 className="font-bold text-red-900 mb-2">Erro Clássico: Massa vs. Peso</h4>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  <strong>A Armadilha:</strong> Dizer "Eu peso 70 kg".<br/>
+                  <strong>A Verdade:</strong> Na física, isso é um crime! 70 kg é a sua <strong>massa</strong> (quantidade de matéria). O seu <strong>Peso</strong> na Terra é uma força de aproximadamente 700 Newtons (<MathFormula formula="P = 70 \cdot 10" display={false} />). Se você for para a Lua, sua massa continua 70 kg, mas seu Peso cai para cerca de 112 N, porque a gravidade lá é menor.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===================== FORÇA DE TRAÇÃO ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200 mt-12">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+            <Activity className="w-8 h-8 text-purple-600" />
+            A Força de Tração (ou Tensão)
+          </h2>
+          
+          <div className="space-y-8">
+            <p className="text-slate-700 leading-relaxed text-lg">
+              A Tração (<MathFormula formula="\vec{T}" display={false} />) é a força transmitida através de fios, cordas, cabos ou correntes quando eles são esticados. Ela é a "mensageira" das forças na dinâmica.
+            </p>
+
+            {/* O Fio Ideal */}
+            <div className="bg-purple-50 border-l-4 border-purple-500 rounded p-6">
+              <h4 className="font-bold text-purple-900 mb-3 flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5" />
+                O Conceito de "Fio Ideal"
+              </h4>
+              <p className="text-slate-700 leading-relaxed mb-3">
+                Em 99% das questões de vestibular, você lerá a expressão "fio ideal" ou "fio inextensível e de massa desprezível". Isso não está ali à toa. Tem duas consequências matemáticas vitais:
+              </p>
+              <ul className="space-y-3 text-slate-700 ml-4">
+                <li><span className="font-bold text-purple-800">1. Inextensível (não estica como elástico):</span> Garante que todos os blocos ligados por esse fio terão exatamente a <strong>mesma aceleração</strong> e a mesma velocidade. Eles se movem como um sistema único.</li>
+                <li><span className="font-bold text-purple-800">2. Massa desprezível:</span> Garante que a força de Tração é <strong>igual em todos os pontos do fio</strong>. A força que puxa uma ponta é exatamente a mesma que puxa a outra ponta.</li>
+              </ul>
+            </div>
+
+            {/* Exemplo Prático: Máquina de Atwood */}
+            <div className="border border-slate-200 rounded-xl overflow-hidden mt-8">
+              <div className="bg-slate-800 p-4 border-b border-slate-700">
+                <h5 className="font-bold text-white flex items-center gap-2">
+                  <Target className="w-5 h-5 text-purple-400" />
+                  Exemplo Clássico: A Máquina de Atwood (Polia)
+                </h5>
+              </div>
+              <div className="p-6 space-y-4 bg-slate-50">
+                <p className="text-slate-700">
+                  Dois blocos, A (massa = 6 kg) e B (massa = 4 kg), estão ligados por um fio ideal que passa por uma polia ideal (sem atrito e sem massa). O sistema é solto do repouso. Calcule a aceleração do sistema e a Tração no fio. (Adote <MathFormula formula="g = 10 \text{ m/s}^2" display={false} />).
+                </p>
+                
+                <div className="bg-white p-5 rounded-lg border border-slate-200 space-y-4">
+                  <p className="font-semibold text-slate-800">Resolução pelo Método do Sistema (O mais rápido):</p>
+                  
+                  <div className="space-y-2">
+                    <p className="text-slate-700 text-sm font-bold">Passo 1: Olhar para o sistema como um todo</p>
+                    <p className="text-slate-600 text-sm leading-relaxed">
+                      As forças de Tração são forças <strong>internas</strong> ao sistema (A puxa B, B puxa A). Para achar a aceleração, ignoramos a Tração e olhamos só para as forças externas que tentam mover o sistema.
+                    </p>
+                    <ul className="text-slate-600 text-sm ml-4 list-disc">
+                      <li>O Peso de A tenta girar a polia para um lado: <MathFormula formula="P_A = 6 \cdot 10 = 60 \text{ N}" display={false} /></li>
+                      <li>O Peso de B tenta girar para o outro: <MathFormula formula="P_B = 4 \cdot 10 = 40 \text{ N}" display={false} /></li>
+                    </ul>
+                    <p className="text-slate-600 text-sm">A força resultante externa é a diferença entre eles (quem ganha o cabo de guerra):</p>
+                    <div className="bg-slate-50 p-2 rounded text-center">
+                      <MathFormula formula="F_R = P_A - P_B = 60 - 40 = 20 \text{ N}" display={true} />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-slate-700 text-sm font-bold">Passo 2: Aplicar a 2ª Lei para o sistema inteiro</p>
+                    <p className="text-slate-600 text-sm">A massa total que essa força de 20 N precisa arrastar é a soma das massas (<MathFormula formula="6 + 4 = 10 \text{ kg}" display={false} />).</p>
+                    <div className="bg-slate-50 p-2 rounded text-center">
+                      <MathFormula formula="F_R = m_{total} \cdot a \implies 20 = 10 \cdot a \implies a = 2 \text{ m/s}^2" display={true} />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-slate-700 text-sm font-bold">Passo 3: Isolar um bloco para achar a Tração</p>
+                    <p className="text-slate-600 text-sm leading-relaxed">
+                      Agora que sabemos a aceleração, olhamos para apenas um bloco (ex: Bloco B). O bloco B sobe acelerado a 2 m/s². Isso significa que a Tração puxando para cima é maior que o Peso dele puxando para baixo.
+                    </p>
+                    <div className="bg-slate-50 p-2 rounded text-center">
+                      <MathFormula formula="F_{R(B)} = m_B \cdot a \implies T - P_B = m_B \cdot a \implies T - 40 = 4 \cdot 2 \implies T = 48 \text{ N}" display={true} />
+                    </div>
+                  </div>
+                  
+                  <p className="text-slate-800 font-bold mt-4">
+                    Resposta: A aceleração é 2 m/s² e a Tração no fio é 48 N.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </section>
     </div>
   );
