@@ -102,8 +102,16 @@ export default function CinematicaTopicMRUV() {
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
                 <h4 className="font-bold text-slate-800 mb-3">A Lógica Intuitiva</h4>
                 <p className="text-slate-700 leading-relaxed mb-4">
-                  Se você quer saber a velocidade de um carro agora, precisa saber de duas coisas: <strong>qual era a velocidade inicial dele</strong> e <strong>o quanto ele acelerou (ou freou)</strong> durante o tempo de viagem.
+                  Pense como um detetive: se você quer descobrir a velocidade de um carro neste exato momento, você precisa saber de duas coisas fundamentais: <strong>qual era a velocidade dele quando você começou a olhar</strong> (velocidade inicial) e <strong>o quanto ele ganhou ou perdeu de velocidade</strong> durante o tempo em que você ficou olhando.
                 </p>
+                <p className="text-slate-700 leading-relaxed mb-4">
+                  O "quanto ele ganhou" é simplesmente a aceleração multiplicada pelo tempo. Se ele ganha 2 m/s a cada segundo, em 5 segundos ele ganhou 10 m/s. Simples assim!
+                </p>
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                  <p className="text-slate-700 text-sm">
+                    <strong>Regra de Ouro:</strong> A equação da velocidade no MRUV é uma função polinomial do 1º grau. O gráfico será sempre uma reta inclinada.
+                  </p>
+                </div>
               </div>
 
               <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
@@ -118,20 +126,45 @@ export default function CinematicaTopicMRUV() {
                       <p className="font-semibold text-blue-400 mb-2">Termo a Termo:</p>
                       <ul className="space-y-2 text-sm text-slate-300">
                         <li><MathFormula formula="v" display={false} />: <strong>Velocidade Final</strong> (m/s) — A velocidade no instante t.</li>
-                        <li><MathFormula formula="v_0" display={false} />: <strong>Velocidade Inicial</strong> (m/s) — A velocidade em t = 0.</li>
-                        <li><MathFormula formula="a" display={false} />: <strong>Aceleração</strong> (m/s²) — A taxa constante de variação da velocidade.</li>
-                        <li><MathFormula formula="t" display={false} />: <strong>Tempo</strong> (s) — O instante cronometrado.</li>
+                        <li><MathFormula formula="v_0" display={false} />: <strong>Velocidade Inicial</strong> (m/s) — A velocidade no momento do disparo do cronômetro (t = 0).</li>
+                        <li><MathFormula formula="a" display={false} />: <strong>Aceleração</strong> (m/s²) — O "ritmo" constante de mudança da velocidade.</li>
+                        <li><MathFormula formula="t" display={false} />: <strong>Tempo</strong> (s) — O tempo decorrido.</li>
                       </ul>
                     </div>
                     <div className="bg-slate-800/50 p-4 rounded-lg">
-                      <p className="font-semibold text-blue-400 mb-2">Dedução Física:</p>
-                      <p className="text-sm text-slate-300 leading-relaxed mb-2">
-                        Nasce diretamente da definição de aceleração média:
-                      </p>
-                      <MathFormula formula="a = \frac{\Delta v}{\Delta t} = \frac{v - v_0}{t - 0}" display={true} />
-                      <p className="text-sm text-slate-300 leading-relaxed mt-2">
-                        Multiplicando cruzado e isolando o <MathFormula formula="v" display={false} />, chegamos à equação.
-                      </p>
+                      <p className="font-semibold text-blue-400 mb-2">Por Que Essa Estrutura?</p>
+                      <ul className="space-y-2 text-sm text-slate-300">
+                        <li>É idêntica à equação da matemática: <MathFormula formula="y = b + ax" display={false} /></li>
+                        <li>Onde <MathFormula formula="y" display={false} /> é a velocidade <MathFormula formula="v" display={false} /></li>
+                        <li>Onde <MathFormula formula="b" display={false} /> (coeficiente linear) é a velocidade inicial <MathFormula formula="v_0" display={false} /></li>
+                        <li>Onde <MathFormula formula="a" display={false} /> (coeficiente angular) é a aceleração <MathFormula formula="a" display={false} /></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dedução Física */}
+                <div className="mt-6 pt-6 border-t border-slate-700">
+                  <h5 className="font-semibold text-blue-400 mb-4">📐 Dedução Física Passo a Passo</h5>
+                  <div className="space-y-4 text-sm text-slate-300">
+                    <p className="leading-relaxed">
+                      Esta equação não caiu do céu. Ela é a consequência direta da definição de aceleração média.
+                    </p>
+                    
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 1: A Definição</strong></p>
+                      <p>Aceleração é a variação da velocidade dividida pelo tempo. Como no MRUV a aceleração é constante, a aceleração instantânea é igual à média (<MathFormula formula="a_m = a" display={false} />).</p>
+                      <MathFormula formula="a = \frac{\Delta v}{\Delta t} = \frac{v - v_0}{t - t_0}" display={true} />
+                    </div>
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 2: Simplificando o Cronômetro</strong></p>
+                      <p>Sempre ligamos o cronômetro no início do movimento, logo <MathFormula formula="t_0 = 0" display={false} />.</p>
+                      <MathFormula formula="a = \frac{v - v_0}{t}" display={true} />
+                    </div>
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 3: Isolando a Velocidade Final (v)</strong></p>
+                      <p>Passamos o tempo multiplicando a aceleração, e depois a velocidade inicial somando:</p>
+                      <MathFormula formula="a \cdot t = v - v_0 \implies v = v_0 + a \cdot t" display={true} />
                     </div>
                   </div>
                 </div>
@@ -148,8 +181,16 @@ export default function CinematicaTopicMRUV() {
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
                 <h4 className="font-bold text-slate-800 mb-3">A Lógica Intuitiva</h4>
                 <p className="text-slate-700 leading-relaxed mb-4">
-                  Esta é a equação mais famosa da cinemática. Ela nos diz a posição do corpo em qualquer instante de tempo. Como a velocidade está mudando, o corpo percorre distâncias cada vez maiores (se estiver acelerando) ou menores (se estiver freando) a cada segundo. Por isso, o tempo aparece elevado ao quadrado!
+                  Esta é a equação mais famosa (e temida) da cinemática, carinhosamente apelidada de "Sorvetão". Ela nos diz a posição exata do corpo em qualquer instante de tempo.
                 </p>
+                <p className="text-slate-700 leading-relaxed mb-4">
+                  Por que ela é tão grande? Porque a posição final depende de três fatores somados: <strong>de onde ele saiu</strong> (<MathFormula formula="s_0" display={false} />), <strong>o quanto ele andaria se mantivesse a velocidade inicial</strong> (<MathFormula formula="v_0 \cdot t" display={false} />), e <strong>o bônus (ou penalidade) de distância causado pela aceleração</strong> (<MathFormula formula="\frac{a \cdot t^2}{2}" display={false} />).
+                </p>
+                <div className="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-r-lg">
+                  <p className="text-slate-700 text-sm">
+                    <strong>Regra de Ouro:</strong> Como o tempo aparece elevado ao quadrado (<MathFormula formula="t^2" display={false} />), o corpo percorre distâncias cada vez maiores (ou menores) a cada segundo. O gráfico será obrigatoriamente uma <strong>parábola</strong>.
+                  </p>
+                </div>
               </div>
 
               <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
@@ -163,18 +204,20 @@ export default function CinematicaTopicMRUV() {
                     <div className="bg-slate-800/50 p-4 rounded-lg">
                       <p className="font-semibold text-purple-400 mb-2">Termo a Termo:</p>
                       <ul className="space-y-2 text-sm text-slate-300">
-                        <li><MathFormula formula="s" display={false} />: <strong>Posição Final</strong> (m)</li>
-                        <li><MathFormula formula="s_0" display={false} />: <strong>Posição Inicial</strong> (m)</li>
-                        <li><MathFormula formula="v_0 \cdot t" display={false} />: <strong>Deslocamento devido à velocidade inicial</strong></li>
-                        <li><MathFormula formula="\frac{a \cdot t^2}{2}" display={false} />: <strong>Deslocamento devido à aceleração</strong></li>
+                        <li><MathFormula formula="s" display={false} />: <strong>Posição Final</strong> (m) — Onde ele está.</li>
+                        <li><MathFormula formula="s_0" display={false} />: <strong>Posição Inicial</strong> (m) — De onde ele saiu.</li>
+                        <li><MathFormula formula="v_0 \cdot t" display={false} />: <strong>Parcela Inercial</strong> — Distância que percorreria se não houvesse aceleração.</li>
+                        <li><MathFormula formula="\frac{a \cdot t^2}{2}" display={false} />: <strong>Parcela Acelerada</strong> — Distância extra (ou a menos) causada pela aceleração.</li>
                       </ul>
                     </div>
                     <div className="bg-slate-800/50 p-4 rounded-lg">
                       <p className="font-semibold text-purple-400 mb-2">Por Que Essa Estrutura?</p>
                       <ul className="space-y-2 text-sm text-slate-300">
-                        <li>É uma função quadrática: <MathFormula formula="y = c + bx + ax^2" display={false} /></li>
-                        <li>O gráfico será obrigatoriamente uma <strong>parábola</strong>.</li>
-                        <li>O termo <MathFormula formula="t^2" display={false} /> mostra que a posição cresce (ou decresce) de forma não linear.</li>
+                        <li>É uma função quadrática da matemática: <MathFormula formula="y = c + bx + ax^2" display={false} /></li>
+                        <li>Onde <MathFormula formula="y" display={false} /> é a posição <MathFormula formula="s" display={false} /></li>
+                        <li>Onde <MathFormula formula="c" display={false} /> (termo independente) é <MathFormula formula="s_0" display={false} /></li>
+                        <li>Onde <MathFormula formula="b" display={false} /> (coeficiente de x) é <MathFormula formula="v_0" display={false} /></li>
+                        <li>Onde <MathFormula formula="a" display={false} /> (coeficiente de x²) é <MathFormula formula="\frac{a}{2}" display={false} /> (metade da aceleração!)</li>
                       </ul>
                     </div>
                   </div>
@@ -182,35 +225,41 @@ export default function CinematicaTopicMRUV() {
 
                 {/* Dedução Física da Equação do Espaço */}
                 <div className="mt-6 pt-6 border-t border-slate-700">
-                  <h5 className="font-semibold text-purple-400 mb-4">📐 Dedução Física (O Método da Área)</h5>
+                  <h5 className="font-semibold text-purple-400 mb-4">📐 Dedução Física (O Método da Área do Trapézio)</h5>
                   <div className="space-y-4 text-sm text-slate-300">
                     <p className="leading-relaxed">
-                      A forma mais elegante de deduzir esta equação é usando a propriedade gráfica: a área sob o gráfico Velocidade × Tempo é igual ao deslocamento (<MathFormula formula="\Delta s" display={false} />).
+                      A forma mais elegante e cobrada em vestibulares de alto nível para deduzir esta equação é usando a <strong>Propriedade Gráfica</strong>: a área sob o gráfico Velocidade × Tempo é numericamente igual ao deslocamento (<MathFormula formula="\Delta s" display={false} />).
                     </p>
                     
                     <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
-                      <p><strong>Passo 1: O Gráfico v × t no MRUV</strong></p>
-                      <p>No MRUV, a velocidade muda linearmente, então o gráfico é uma reta inclinada. A figura formada entre a reta e o eixo do tempo é um <strong>trapézio</strong>.</p>
+                      <p><strong>Passo 1: A Geometria do Gráfico v × t</strong></p>
+                      <p>No MRUV, a velocidade muda linearmente, então o gráfico é uma reta inclinada. A figura geométrica formada entre essa reta e o eixo do tempo é um <strong>trapézio</strong>.</p>
                     </div>
                     <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
-                      <p><strong>Passo 2: A Área do Trapézio</strong></p>
-                      <p>A área do trapézio é dada por: <MathFormula formula="\text{Área} = \frac{(\text{Base Maior} + \text{Base Menor}) \cdot \text{Altura}}{2}" display={false} /></p>
-                      <p>No nosso gráfico:</p>
-                      <ul className="list-disc list-inside ml-4 space-y-1">
-                        <li>Base Maior = <MathFormula formula="v" display={false} /> (velocidade final)</li>
-                        <li>Base Menor = <MathFormula formula="v_0" display={false} /> (velocidade inicial)</li>
-                        <li>Altura = <MathFormula formula="t" display={false} /> (tempo)</li>
+                      <p><strong>Passo 2: Calculando a Área do Trapézio</strong></p>
+                      <p>A área do trapézio é a soma das bases multiplicada pela altura, dividida por dois: <MathFormula formula="\text{Área} = \frac{(B + b) \cdot h}{2}" display={false} /></p>
+                      <p>Traduzindo a geometria para a física do nosso gráfico:</p>
+                      <ul className="list-disc list-inside ml-4 space-y-1 text-purple-200">
+                        <li>Base Maior (<MathFormula formula="B" display={false} />) = <MathFormula formula="v" display={false} /> (velocidade final)</li>
+                        <li>Base Menor (<MathFormula formula="b" display={false} />) = <MathFormula formula="v_0" display={false} /> (velocidade inicial)</li>
+                        <li>Altura (<MathFormula formula="h" display={false} />) = <MathFormula formula="t" display={false} /> (tempo decorrido)</li>
                       </ul>
                       <MathFormula formula="\Delta s = \frac{(v + v_0) \cdot t}{2}" display={true} />
+                      <p className="text-xs text-slate-400 italic mt-1">*Nota: Esta equação intermediária é a famosa fórmula da Velocidade Média no MRUV!</p>
                     </div>
                     <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
-                      <p><strong>Passo 3: Substituindo a Velocidade Final</strong></p>
-                      <p>Sabemos da primeira equação que <MathFormula formula="v = v_0 + at" display={false} />. Vamos substituir isso na fórmula da área:</p>
+                      <p><strong>Passo 3: A Substituição Mágica</strong></p>
+                      <p>Nós não queremos a velocidade final (<MathFormula formula="v" display={false} />) na nossa equação do espaço. Então, usamos a primeira equação (<MathFormula formula="v = v_0 + at" display={false} />) para substituir o <MathFormula formula="v" display={false} /> dentro da fórmula da área:</p>
                       <MathFormula formula="\Delta s = \frac{((v_0 + at) + v_0) \cdot t}{2}" display={true} />
+                      <p>Somamos os <MathFormula formula="v_0" display={false} />:</p>
                       <MathFormula formula="\Delta s = \frac{(2v_0 + at) \cdot t}{2}" display={true} />
+                      <p>Fazemos a distributiva do tempo (<MathFormula formula="t" display={false} />):</p>
                       <MathFormula formula="\Delta s = \frac{2v_0t + at^2}{2}" display={true} />
+                      <p>Separamos a fração em duas partes e simplificamos o 2:</p>
                       <MathFormula formula="\Delta s = v_0t + \frac{at^2}{2}" display={true} />
-                      <p className="mt-2">Como <MathFormula formula="\Delta s = s - s_0" display={false} />, passamos o <MathFormula formula="s_0" display={false} /> somando e chegamos à equação final!</p>
+                      <p className="mt-3 font-semibold text-purple-300">Passo Final:</p>
+                      <p>Como o deslocamento é a posição final menos a inicial (<MathFormula formula="\Delta s = s - s_0" display={false} />), passamos o <MathFormula formula="s_0" display={false} /> somando para o outro lado e a obra-prima está pronta:</p>
+                      <MathFormula formula="s = s_0 + v_0t + \frac{at^2}{2}" display={true} />
                     </div>
                   </div>
                 </div>
@@ -227,11 +276,14 @@ export default function CinematicaTopicMRUV() {
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
                 <h4 className="font-bold text-slate-800 mb-3">A Lógica Intuitiva</h4>
                 <p className="text-slate-700 leading-relaxed mb-4">
-                  Evangelista Torricelli percebeu um problema prático: muitas vezes, em experimentos ou problemas de física, <strong>nós não temos um cronômetro</strong>. Sabemos a distância, sabemos a aceleração, mas não sabemos o tempo. Ele manipulou a matemática para criar uma equação que relaciona velocidade e espaço diretamente, <strong>sem depender do tempo</strong>.
+                  Evangelista Torricelli (aluno de Galileu) percebeu um problema prático grave: muitas vezes, em experimentos reais ou problemas de física, <strong>nós não temos um cronômetro</strong>. Sabemos a distância da frenagem, sabemos a aceleração do carro, mas não sabemos quanto tempo durou.
+                </p>
+                <p className="text-slate-700 leading-relaxed mb-4">
+                  Ele usou a matemática para "fundir" as duas primeiras equações e eliminar a variável tempo (<MathFormula formula="t" display={false} />), criando uma relação direta entre velocidade e espaço percorrido.
                 </p>
                 <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
                   <p className="text-slate-700 text-sm">
-                    <strong>Regra de Ouro:</strong> Se o problema não deu o tempo e não pediu o tempo, use Torricelli!
+                    <strong>Regra de Ouro Suprema:</strong> Se o problema não forneceu o tempo e não perguntou o tempo, <strong>use Torricelli!</strong> É o atalho perfeito.
                   </p>
                 </div>
               </div>
@@ -247,20 +299,20 @@ export default function CinematicaTopicMRUV() {
                     <div className="bg-slate-800/50 p-4 rounded-lg">
                       <p className="font-semibold text-amber-400 mb-2">Termo a Termo:</p>
                       <ul className="space-y-2 text-sm text-slate-300">
-                        <li><MathFormula formula="v^2" display={false} />: <strong>Velocidade Final ao quadrado</strong></li>
+                        <li><MathFormula formula="v^2" display={false} />: <strong>Velocidade Final ao quadrado</strong> — Cuidado para não esquecer de tirar a raiz no final da conta!</li>
                         <li><MathFormula formula="v_0^2" display={false} />: <strong>Velocidade Inicial ao quadrado</strong></li>
-                        <li><MathFormula formula="a" display={false} />: <strong>Aceleração</strong></li>
-                        <li><MathFormula formula="\Delta s" display={false} />: <strong>Deslocamento</strong> (<MathFormula formula="s - s_0" display={false} />)</li>
+                        <li><MathFormula formula="a" display={false} />: <strong>Aceleração</strong> (m/s²)</li>
+                        <li><MathFormula formula="\Delta s" display={false} />: <strong>Deslocamento</strong> (m) — A distância percorrida (<MathFormula formula="s - s_0" display={false} />).</li>
                       </ul>
                     </div>
                     <div className="bg-slate-800/50 p-4 rounded-lg">
-                      <p className="font-semibold text-amber-400 mb-2">Dedução Algébrica:</p>
+                      <p className="font-semibold text-amber-400 mb-2">A Matemática por Trás:</p>
                       <p className="text-sm text-slate-300 leading-relaxed mb-2">
-                        Torricelli simplesmente isolou o tempo (<MathFormula formula="t" display={false} />) na equação da velocidade:
+                        A dedução é puramente algébrica. Torricelli isolou o tempo na equação da velocidade:
                       </p>
                       <MathFormula formula="t = \frac{v - v_0}{a}" display={true} />
                       <p className="text-sm text-slate-300 leading-relaxed mt-2">
-                        E substituiu esse <MathFormula formula="t" display={false} /> dentro da equação horária do espaço. Após alguma álgebra pesada (produtos notáveis), o tempo desaparece e a equação surge.
+                        E substituiu esse "bloco" no lugar do <MathFormula formula="t" display={false} /> na equação do espaço. Após resolver produtos notáveis e simplificar frações, o tempo desaparece completamente.
                       </p>
                     </div>
                   </div>
