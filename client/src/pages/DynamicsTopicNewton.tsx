@@ -685,10 +685,10 @@ export default function DinamicaTopicPrimeiraLei() {
                 Contexto Histórico: A Maçã e a Lua
               </h3>
               <p className="text-slate-700 leading-relaxed mb-3">
-                A lenda diz que Newton descobriu a gravidade quando uma maçã caiu em sua cabeça. A verdade é muito mais profunda: a genialidade de Newton não foi descobrir que as coisas caem (qualquer um sabia disso), mas sim perceber que <strong>a força que puxa a maçã para o chão é a exata mesma força que mantém a Lua orbitando a Terra</strong>.
+                A lenda diz que Newton descobriu a gravidade quando uma maçã caiu em sua cabeça. A verdade é muito mais profunda e revolucionária: a genialidade de Newton não foi descobrir que as coisas caem (qualquer camponês sabia disso), mas sim perceber que <strong>a força que puxa a maçã para o chão é a exata mesma força que mantém a Lua orbitando a Terra</strong>.
               </p>
               <p className="text-slate-700 leading-relaxed">
-                Ele unificou a física terrestre e a física celeste. O Peso nada mais é do que a Força de Atração Gravitacional que um planeta (ou estrela) exerce sobre os corpos próximos à sua superfície.
+                Antes de Newton, acreditava-se que as leis que governavam a Terra (física terrestre) eram completamente diferentes das leis que governavam os astros (física celeste). Newton unificou o universo. O Peso que você sente nas suas pernas agora nada mais é do que a Força de Atração Gravitacional que o planeta Terra exerce sobre a sua massa.
               </p>
             </div>
 
@@ -706,7 +706,7 @@ export default function DinamicaTopicPrimeiraLei() {
                   <div className="text-blue-400 font-bold text-xl mb-2">P</div>
                   <h4 className="text-white font-semibold mb-2">Força Peso (N)</h4>
                   <p className="text-slate-300 text-sm leading-relaxed">
-                    A força de atração. É um vetor que aponta <strong>sempre</strong> para o centro do planeta, não importa a inclinação da superfície.
+                    A força de atração gravitacional. É um vetor que aponta <strong>sempre e invariavelmente</strong> para o centro do planeta. Não importa se o corpo está em um plano inclinado, voando ou caindo: o Peso aponta para baixo.
                   </p>
                 </div>
                 
@@ -714,7 +714,7 @@ export default function DinamicaTopicPrimeiraLei() {
                   <div className="text-cyan-400 font-bold text-xl mb-2">m</div>
                   <h4 className="text-white font-semibold mb-2">Massa (kg)</h4>
                   <p className="text-slate-300 text-sm leading-relaxed">
-                    A quantidade de matéria. É uma propriedade intrínseca do corpo. <strong>A massa não muda</strong> se você for para a Lua ou para Marte.
+                    A quantidade de matéria e a medida da inércia. É uma propriedade intrínseca e absoluta do corpo. <strong>A massa não muda</strong> se você for para a Lua, para Marte ou para o espaço profundo.
                   </p>
                 </div>
 
@@ -722,7 +722,7 @@ export default function DinamicaTopicPrimeiraLei() {
                   <div className="text-teal-400 font-bold text-xl mb-2">g</div>
                   <h4 className="text-white font-semibold mb-2">Gravidade (m/s²)</h4>
                   <p className="text-slate-300 text-sm leading-relaxed">
-                    A aceleração gravitacional local. Na Terra é ~9,8 m/s² (frequentemente arredondada para 10 m/s² em provas).
+                    A aceleração gravitacional local. Depende da massa do planeta e da distância até o centro dele. Na superfície da Terra é ~9,8 m/s² (frequentemente arredondada para 10 m/s² em provas para facilitar os cálculos).
                   </p>
                 </div>
               </div>
@@ -735,14 +735,15 @@ export default function DinamicaTopicPrimeiraLei() {
                 Demonstração: De onde vem a fórmula do Peso?
               </h4>
               <p className="text-slate-700 leading-relaxed mb-3">
-                A fórmula do Peso não é uma lei nova. Ela é simplesmente a <strong>Segunda Lei de Newton (<MathFormula formula="F = ma" display={false} />)</strong> aplicada ao caso específico da queda livre!
+                Muitos alunos acham que <MathFormula formula="P = mg" display={false} /> é uma lei nova e independente. Não é! Ela é simplesmente a <strong>Segunda Lei de Newton (<MathFormula formula="F = ma" display={false} />)</strong> aplicada ao caso específico da queda livre. Veja como a dedução é elegante e direta:
               </p>
-              <ul className="space-y-2 text-slate-700 mb-4 ml-4 list-disc">
-                <li>Se você solta um corpo no ar, a única força atuando sobre ele é a atração da Terra (o Peso). Logo, <MathFormula formula="F_R = P" display={false} />.</li>
-                <li>A aceleração que esse corpo sofre ao cair é a aceleração da gravidade. Logo, <MathFormula formula="a = g" display={false} />.</li>
+              <ul className="space-y-4 text-slate-700 mb-6 ml-4 list-disc">
+                <li><strong>Passo 1:</strong> Imagine que você solta uma pedra no ar. Se ignorarmos a resistência do ar, a única força atuando sobre ela é a atração da Terra (o Peso). Logo, a Força Resultante é o próprio Peso: <MathFormula formula="F_R = P" display={false} />.</li>
+                <li><strong>Passo 2:</strong> Galileu já havia provado que todos os corpos em queda livre caem com a mesma aceleração, que chamamos de aceleração da gravidade (<MathFormula formula="g" display={false} />). Logo, a aceleração do corpo é: <MathFormula formula="a = g" display={false} />.</li>
+                <li><strong>Passo 3:</strong> Substituindo essas duas verdades na Segunda Lei de Newton (<MathFormula formula="F_R = m \cdot a" display={false} />), chegamos inevitavelmente à fórmula do Peso.</li>
               </ul>
-              <div className="bg-white p-4 rounded border border-blue-200 text-center">
-                <MathFormula formula="F_R = m \cdot a \implies P = m \cdot g" display={true} />
+              <div className="bg-white p-5 rounded-lg border border-blue-200 text-center shadow-sm">
+                <MathFormula formula="F_R = m \cdot a \implies P = m \cdot g" display={true} className="text-xl" />
               </div>
             </div>
 
@@ -751,8 +752,15 @@ export default function DinamicaTopicPrimeiraLei() {
               <div className="bg-red-50 border-l-4 border-red-500 p-5 rounded-r-xl">
                 <h4 className="font-bold text-red-900 mb-2">Erro Clássico: Massa vs. Peso</h4>
                 <p className="text-slate-700 text-sm leading-relaxed">
-                  <strong>A Armadilha:</strong> Dizer "Eu peso 70 kg".<br/>
-                  <strong>A Verdade:</strong> Na física, isso é um crime! 70 kg é a sua <strong>massa</strong> (quantidade de matéria). O seu <strong>Peso</strong> na Terra é uma força de aproximadamente 700 Newtons (<MathFormula formula="P = 70 \cdot 10" display={false} />). Se você for para a Lua, sua massa continua 70 kg, mas seu Peso cai para cerca de 112 N, porque a gravidade lá é menor.
+                  <strong>A Armadilha:</strong> Subir na balança da farmácia e dizer "Eu peso 70 kg".<br/><br/>
+                  <strong>A Verdade:</strong> Na física, isso é um crime conceitual grave! 70 kg é a sua <strong>massa</strong> (a quantidade de matéria que forma o seu corpo). O seu <strong>Peso</strong> na Terra é uma força, medida em Newtons, de aproximadamente 700 N (<MathFormula formula="P = 70 \cdot 10" display={false} />). Se você viajar para a Lua, sua massa continuará sendo exatamente 70 kg (você não perdeu pedaços do seu corpo na viagem), mas o seu Peso cairá para cerca de 112 N, porque a gravidade lunar é muito mais fraca. A balança da farmácia, na verdade, mede a Força Normal e divide por 10 para te mostrar a massa.
+                </p>
+              </div>
+              <div className="bg-red-50 border-l-4 border-red-500 p-5 rounded-r-xl">
+                <h4 className="font-bold text-red-900 mb-2">Erro Clássico: O Peso no Plano Inclinado</h4>
+                <p className="text-slate-700 text-sm leading-relaxed">
+                  <strong>A Armadilha:</strong> Desenhar o vetor Peso perpendicular à rampa em um plano inclinado.<br/><br/>
+                  <strong>A Verdade:</strong> O Peso <strong>nunca</strong> se importa com a inclinação do chão onde você está pisando. Ele é a atração entre o seu centro de massa e o centro da Terra. Portanto, o vetor Peso deve ser desenhado <strong>sempre perfeitamente na vertical, apontando para baixo</strong>. Quem fica perpendicular à rampa é a Força Normal, não o Peso!
                 </p>
               </div>
             </div>
@@ -768,76 +776,107 @@ export default function DinamicaTopicPrimeiraLei() {
           
           <div className="space-y-8">
             <p className="text-slate-700 leading-relaxed text-lg">
-              A Tração (<MathFormula formula="\vec{T}" display={false} />) é a força transmitida através de fios, cordas, cabos ou correntes quando eles são esticados. Ela é a "mensageira" das forças na dinâmica.
+              A Tração (<MathFormula formula="\vec{T}" display={false} />) é a força transmitida através de fios, cordas, cabos ou correntes quando eles são esticados. Diferente do Peso (que atua à distância) ou da Normal (que atua por compressão), a Tração atua exclusivamente por <strong>tração</strong> (puxão). Você não consegue empurrar um bloco usando uma corda mole; você só consegue puxá-lo. A corda é a "mensageira" que transmite a força de uma ponta à outra.
             </p>
 
             {/* O Fio Ideal */}
             <div className="bg-purple-50 border-l-4 border-purple-500 rounded p-6">
               <h4 className="font-bold text-purple-900 mb-3 flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5" />
-                O Conceito de "Fio Ideal"
+                O Pulo do Gato: O Conceito de "Fio Ideal"
               </h4>
-              <p className="text-slate-700 leading-relaxed mb-3">
-                Em 99% das questões de vestibular, você lerá a expressão "fio ideal" ou "fio inextensível e de massa desprezível". Isso não está ali à toa. Tem duas consequências matemáticas vitais:
+              <p className="text-slate-700 leading-relaxed mb-4">
+                Em 99% das questões de vestibular e concursos militares, você lerá a expressão "fio ideal" ou "fio inextensível e de massa desprezível". Muitos alunos ignoram essa frase achando que é apenas "enfeite" do enunciado. Não é! Essa frase é a autorização matemática para você resolver a questão. Ela tem duas consequências vitais:
               </p>
-              <ul className="space-y-3 text-slate-700 ml-4">
-                <li><span className="font-bold text-purple-800">1. Inextensível (não estica como elástico):</span> Garante que todos os blocos ligados por esse fio terão exatamente a <strong>mesma aceleração</strong> e a mesma velocidade. Eles se movem como um sistema único.</li>
-                <li><span className="font-bold text-purple-800">2. Massa desprezível:</span> Garante que a força de Tração é <strong>igual em todos os pontos do fio</strong>. A força que puxa uma ponta é exatamente a mesma que puxa a outra ponta.</li>
-              </ul>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-white p-5 rounded-lg border border-purple-200 shadow-sm">
+                  <h5 className="font-bold text-purple-800 mb-2">1. Inextensível (Não estica)</h5>
+                  <p className="text-slate-600 text-sm leading-relaxed">
+                    Se o fio não estica como um elástico, isso garante que todos os blocos ligados por ele andarão exatamente a mesma distância, no mesmo tempo. Conclusão de ouro: <strong>todos os blocos do sistema terão exatamente a mesma velocidade e a mesma aceleração escalar</strong>. Eles se movem como se fossem um corpo único.
+                  </p>
+                </div>
+                <div className="bg-white p-5 rounded-lg border border-purple-200 shadow-sm">
+                  <h5 className="font-bold text-purple-800 mb-2">2. Massa Desprezível (Sem peso próprio)</h5>
+                  <p className="text-slate-600 text-sm leading-relaxed">
+                    Se a corda não tem massa, ela não "gasta" força para ser acelerada (<MathFormula formula="F = 0 \cdot a = 0" display={false} />). Conclusão de ouro: <strong>a força de Tração é rigorosamente igual em todos os pontos do fio</strong>. A força que puxa o bloco A numa ponta é a exata mesma força que puxa o bloco B na outra ponta.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Exemplo Prático: Máquina de Atwood */}
             <div className="border border-slate-200 rounded-xl overflow-hidden mt-8">
-              <div className="bg-slate-800 p-4 border-b border-slate-700">
-                <h5 className="font-bold text-white flex items-center gap-2">
-                  <Target className="w-5 h-5 text-purple-400" />
-                  Exemplo Clássico: A Máquina de Atwood (Polia)
+              <div className="bg-slate-800 p-5 border-b border-slate-700">
+                <h5 className="font-bold text-white flex items-center gap-2 text-lg">
+                  <Target className="w-6 h-6 text-purple-400" />
+                  Exemplo Clássico e Resolvido: A Máquina de Atwood (Polia)
                 </h5>
               </div>
-              <div className="p-6 space-y-4 bg-slate-50">
-                <p className="text-slate-700">
-                  Dois blocos, A (massa = 6 kg) e B (massa = 4 kg), estão ligados por um fio ideal que passa por uma polia ideal (sem atrito e sem massa). O sistema é solto do repouso. Calcule a aceleração do sistema e a Tração no fio. (Adote <MathFormula formula="g = 10 \text{ m/s}^2" display={false} />).
-                </p>
+              <div className="p-8 space-y-6 bg-slate-50">
+                <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                  <p className="text-slate-700 leading-relaxed">
+                    <strong>O Problema:</strong> Dois blocos, A (massa = 6 kg) e B (massa = 4 kg), estão ligados por um fio ideal que passa por uma polia ideal (sem atrito e sem massa), pendurados um de cada lado. O sistema é solto do repouso. Calcule a aceleração do sistema e a Tração no fio. (Adote <MathFormula formula="g = 10 \text{ m/s}^2" display={false} />).
+                  </p>
+                </div>
                 
-                <div className="bg-white p-5 rounded-lg border border-slate-200 space-y-4">
-                  <p className="font-semibold text-slate-800">Resolução pelo Método do Sistema (O mais rápido):</p>
+                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+                  <h6 className="font-bold text-slate-800 text-lg border-b border-slate-100 pb-3">Resolução pelo Método do Sistema (O mais rápido e seguro):</h6>
                   
-                  <div className="space-y-2">
-                    <p className="text-slate-700 text-sm font-bold">Passo 1: Olhar para o sistema como um todo</p>
-                    <p className="text-slate-600 text-sm leading-relaxed">
-                      As forças de Tração são forças <strong>internas</strong> ao sistema (A puxa B, B puxa A). Para achar a aceleração, ignoramos a Tração e olhamos só para as forças externas que tentam mover o sistema.
+                  <div className="space-y-3">
+                    <p className="text-slate-800 font-bold flex items-center gap-2">
+                      <span className="bg-purple-100 text-purple-800 w-6 h-6 rounded-full flex items-center justify-center text-sm">1</span>
+                      Olhar para o sistema como um todo (O "Cabo de Guerra")
                     </p>
-                    <ul className="text-slate-600 text-sm ml-4 list-disc">
-                      <li>O Peso de A tenta girar a polia para um lado: <MathFormula formula="P_A = 6 \cdot 10 = 60 \text{ N}" display={false} /></li>
-                      <li>O Peso de B tenta girar para o outro: <MathFormula formula="P_B = 4 \cdot 10 = 40 \text{ N}" display={false} /></li>
+                    <p className="text-slate-600 text-sm leading-relaxed pl-8">
+                      As forças de Tração são forças <strong>internas</strong> ao sistema (A puxa B para cima, B puxa A para cima). Para achar a aceleração global, nós ignoramos as forças internas e olhamos apenas para as forças externas que tentam mover o sistema. É um cabo de guerra entre os Pesos!
+                    </p>
+                    <ul className="text-slate-600 text-sm ml-12 list-disc space-y-1">
+                      <li>O Peso de A tenta girar a polia para o lado dele: <MathFormula formula="P_A = m_A \cdot g = 6 \cdot 10 = 60 \text{ N}" display={false} /></li>
+                      <li>O Peso de B tenta girar a polia para o outro lado: <MathFormula formula="P_B = m_B \cdot g = 4 \cdot 10 = 40 \text{ N}" display={false} /></li>
                     </ul>
-                    <p className="text-slate-600 text-sm">A força resultante externa é a diferença entre eles (quem ganha o cabo de guerra):</p>
-                    <div className="bg-slate-50 p-2 rounded text-center">
+                    <p className="text-slate-600 text-sm pl-8 mt-2">A força resultante externa é a diferença entre eles (o bloco A ganha o cabo de guerra):</p>
+                    <div className="bg-slate-50 p-3 rounded-lg text-center ml-8 border border-slate-100">
                       <MathFormula formula="F_R = P_A - P_B = 60 - 40 = 20 \text{ N}" display={true} />
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <p className="text-slate-700 text-sm font-bold">Passo 2: Aplicar a 2ª Lei para o sistema inteiro</p>
-                    <p className="text-slate-600 text-sm">A massa total que essa força de 20 N precisa arrastar é a soma das massas (<MathFormula formula="6 + 4 = 10 \text{ kg}" display={false} />).</p>
-                    <div className="bg-slate-50 p-2 rounded text-center">
+                  <div className="space-y-3">
+                    <p className="text-slate-800 font-bold flex items-center gap-2">
+                      <span className="bg-purple-100 text-purple-800 w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span>
+                      Aplicar a 2ª Lei de Newton para o sistema inteiro
+                    </p>
+                    <p className="text-slate-600 text-sm leading-relaxed pl-8">
+                      A massa total que essa força resultante de 20 N precisa arrastar é a soma das massas de todos os blocos presos ao fio (<MathFormula formula="6 + 4 = 10 \text{ kg}" display={false} />).
+                    </p>
+                    <div className="bg-slate-50 p-3 rounded-lg text-center ml-8 border border-slate-100">
                       <MathFormula formula="F_R = m_{total} \cdot a \implies 20 = 10 \cdot a \implies a = 2 \text{ m/s}^2" display={true} />
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <p className="text-slate-700 text-sm font-bold">Passo 3: Isolar um bloco para achar a Tração</p>
-                    <p className="text-slate-600 text-sm leading-relaxed">
-                      Agora que sabemos a aceleração, olhamos para apenas um bloco (ex: Bloco B). O bloco B sobe acelerado a 2 m/s². Isso significa que a Tração puxando para cima é maior que o Peso dele puxando para baixo.
+                  <div className="space-y-3">
+                    <p className="text-slate-800 font-bold flex items-center gap-2">
+                      <span className="bg-purple-100 text-purple-800 w-6 h-6 rounded-full flex items-center justify-center text-sm">3</span>
+                      Isolar um bloco para achar a Tração (Força Interna)
                     </p>
-                    <div className="bg-slate-50 p-2 rounded text-center">
-                      <MathFormula formula="F_{R(B)} = m_B \cdot a \implies T - P_B = m_B \cdot a \implies T - 40 = 4 \cdot 2 \implies T = 48 \text{ N}" display={true} />
+                    <p className="text-slate-600 text-sm leading-relaxed pl-8">
+                      Agora que sabemos a aceleração do sistema (2 m/s²), podemos olhar para apenas um bloco isoladamente para "enxergar" a Tração. Vamos escolher o Bloco B. Sabemos que o Bloco A é mais pesado, então o Bloco B está <strong>subindo acelerado</strong> a 2 m/s². Se ele sobe acelerado, a força que puxa para cima (Tração) tem que ser maior que a força que puxa para baixo (Peso de B).
+                    </p>
+                    <div className="bg-slate-50 p-4 rounded-lg text-center ml-8 border border-slate-100">
+                      <MathFormula formula="F_{R(B)} = m_B \cdot a" display={true} className="mb-2" />
+                      <MathFormula formula="T - P_B = m_B \cdot a" display={true} className="mb-2" />
+                      <MathFormula formula="T - 40 = 4 \cdot 2" display={true} className="mb-2" />
+                      <MathFormula formula="T = 40 + 8 \implies T = 48 \text{ N}" display={true} />
                     </div>
+                    <p className="text-slate-500 text-xs italic pl-8 mt-2">
+                      *Dica de prova: Se você fizesse o cálculo isolando o Bloco A (que está descendo, logo <MathFormula formula="P_A - T = m_A \cdot a" display={false} />), o resultado da Tração daria exatamente os mesmos 48 N. Isso prova que o fio é ideal!
+                    </p>
                   </div>
                   
-                  <p className="text-slate-800 font-bold mt-4">
-                    Resposta: A aceleração é 2 m/s² e a Tração no fio é 48 N.
-                  </p>
+                  <div className="bg-purple-900 text-white p-4 rounded-lg text-center mt-6 shadow-md">
+                    <p className="font-bold text-lg">
+                      Resposta Final: A aceleração é 2 m/s² e a Tração no fio é 48 N.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
