@@ -111,17 +111,20 @@ export default function CinematicaTopicMRU() {
             <div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-sm font-bold text-blue-700">1</span>
-                A Fórmula Fundamental
+                A Fórmula Fundamental (A Máquina do Tempo)
               </h3>
               
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
-                <h4 className="font-bold text-slate-800 mb-3">Explicação Simples</h4>
+                <h4 className="font-bold text-slate-800 mb-3">A Lógica Intuitiva</h4>
                 <p className="text-slate-700 leading-relaxed mb-4">
-                  A física não apenas descreve conceitos, ela os quantifica. A <strong>equação horária do espaço</strong> é a ferramenta matemática suprema do MRU. Ela funciona como uma "máquina do tempo": se você me der o instante de tempo (<MathFormula formula="t" display={false} />), eu te digo exatamente onde o corpo está (<MathFormula formula="s" display={false} />).
+                  A física não apenas descreve conceitos, ela os quantifica. A <strong>equação horária do espaço</strong> é a ferramenta matemática suprema do MRU. Ela funciona literalmente como uma "máquina do tempo": se você me der o instante de tempo (<MathFormula formula="t" display={false} />), eu te digo exatamente onde o corpo está (<MathFormula formula="s" display={false} />).
+                </p>
+                <p className="text-slate-700 leading-relaxed mb-4">
+                  Pense de forma lógica: se você quer saber onde um carro está agora, você precisa saber de duas coisas: <strong>de onde ele saiu</strong> e <strong>o quanto ele andou</strong>. O quanto ele andou é simplesmente a velocidade multiplicada pelo tempo de viagem.
                 </p>
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
                   <p className="text-slate-700 text-sm">
-                    <strong>Regra de Ouro:</strong> A equação horária é uma função do 1º grau em relação ao tempo.
+                    <strong>Regra de Ouro:</strong> A equação horária é uma função polinomial do 1º grau em relação ao tempo. O tempo (<MathFormula formula="t" display={false} />) é a variável independente, e a posição (<MathFormula formula="s" display={false} />) é a variável dependente.
                   </p>
                 </div>
               </div>
@@ -138,18 +141,18 @@ export default function CinematicaTopicMRU() {
                       <p className="font-semibold text-blue-400 mb-2">Termo a Termo:</p>
                       <ul className="space-y-2 text-sm text-slate-300">
                         <li><MathFormula formula="s" display={false} />: <strong>Posição Final</strong> (m) — Onde o móvel está no instante t.</li>
-                        <li><MathFormula formula="s_0" display={false} />: <strong>Posição Inicial</strong> (m) — Onde o móvel estava em t = 0.</li>
+                        <li><MathFormula formula="s_0" display={false} />: <strong>Posição Inicial</strong> (m) — Onde o móvel estava em t = 0 (o "ponto de partida").</li>
                         <li><MathFormula formula="v" display={false} />: <strong>Velocidade</strong> (m/s) — A taxa constante de variação da posição.</li>
-                        <li><MathFormula formula="t" display={false} />: <strong>Tempo</strong> (s) — O instante cronometrado.</li>
+                        <li><MathFormula formula="t" display={false} />: <strong>Tempo</strong> (s) — O instante cronometrado desde o início.</li>
                       </ul>
                     </div>
                     <div className="bg-slate-800/50 p-4 rounded-lg">
                       <p className="font-semibold text-blue-400 mb-2">Por Que Essa Estrutura?</p>
                       <ul className="space-y-2 text-sm text-slate-300">
-                        <li>É uma função linear: <MathFormula formula="y = b + ax" display={false} /></li>
-                        <li>Onde <MathFormula formula="y" display={false} /> é a posição <MathFormula formula="s" display={false} /></li>
-                        <li>Onde <MathFormula formula="b" display={false} /> é a posição inicial <MathFormula formula="s_0" display={false} /></li>
-                        <li>Onde <MathFormula formula="a" display={false} /> é a velocidade <MathFormula formula="v" display={false} /></li>
+                        <li>É uma função linear clássica da matemática: <MathFormula formula="y = b + ax" display={false} /></li>
+                        <li>Onde <MathFormula formula="y" display={false} /> (eixo vertical) é a posição <MathFormula formula="s" display={false} /></li>
+                        <li>Onde <MathFormula formula="b" display={false} /> (coeficiente linear) é a posição inicial <MathFormula formula="s_0" display={false} /></li>
+                        <li>Onde <MathFormula formula="a" display={false} /> (coeficiente angular) é a velocidade <MathFormula formula="v" display={false} /></li>
                       </ul>
                     </div>
                   </div>
@@ -160,25 +163,65 @@ export default function CinematicaTopicMRU() {
                   <h5 className="font-semibold text-blue-400 mb-4">📐 Dedução Física da Equação</h5>
                   <div className="space-y-4 text-sm text-slate-300">
                     <p className="leading-relaxed">
-                      Na física, não decoramos fórmulas cegamente; nós as construímos. A equação horária nasce da própria definição de velocidade média.
+                      Na física de alto nível, não decoramos fórmulas cegamente; nós as construímos. A equação horária nasce da própria definição fundamental de velocidade média.
                     </p>
                     
                     <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
-                      <p><strong>Passo 1: A Definição</strong></p>
-                      <p>Sabemos que a velocidade média é a razão entre o deslocamento e o tempo. Como no MRU a velocidade é constante, <MathFormula formula="v_m = v" display={false} />.</p>
+                      <p><strong>Passo 1: A Definição Universal</strong></p>
+                      <p>Sabemos que a velocidade média é a razão entre o deslocamento (<MathFormula formula="\Delta s" display={false} />) e o intervalo de tempo (<MathFormula formula="\Delta t" display={false} />). Como no MRU a velocidade é estritamente constante, a velocidade instantânea é igual à média (<MathFormula formula="v_m = v" display={false} />).</p>
                       <MathFormula formula="v = \frac{\Delta s}{\Delta t} = \frac{s - s_0}{t - t_0}" display={true} />
                     </div>
                     <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
-                      <p><strong>Passo 2: Simplificando o Tempo</strong></p>
-                      <p>Por convenção, sempre disparamos o cronômetro no início do movimento. Portanto, o tempo inicial é zero (<MathFormula formula="t_0 = 0" display={false} />).</p>
-                      <MathFormula formula="v = \frac{s - s_0}{t}" display={true} />
+                      <p><strong>Passo 2: Simplificando o Cronômetro</strong></p>
+                      <p>Por convenção universal, sempre disparamos o cronômetro no exato início do movimento que queremos analisar. Portanto, o tempo inicial é zero (<MathFormula formula="t_0 = 0" display={false} />).</p>
+                      <MathFormula formula="v = \frac{s - s_0}{t - 0} \implies v = \frac{s - s_0}{t}" display={true} />
                     </div>
                     <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
-                      <p><strong>Passo 3: Isolando a Posição (s)</strong></p>
-                      <p>Multiplicamos cruzado e passamos o <MathFormula formula="s_0" display={false} /> somando:</p>
+                      <p><strong>Passo 3: Isolando a Posição Final (s)</strong></p>
+                      <p>Multiplicamos cruzado (passando o <MathFormula formula="t" display={false} /> multiplicando a velocidade) e depois passamos a posição inicial (<MathFormula formula="s_0" display={false} />) somando para o outro lado:</p>
                       <MathFormula formula="v \cdot t = s - s_0 \implies s = s_0 + v \cdot t" display={true} />
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Aprofundamento Teórico */}
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+                <h4 className="font-bold text-blue-900 mb-3 flex items-center gap-2">
+                  <Info className="w-5 h-5" />
+                  Aprofundamento: O Significado Físico de s₀
+                </h4>
+                <p className="text-slate-700 leading-relaxed mb-3">
+                  Muitos alunos confundem <strong>Posição Inicial (<MathFormula formula="s_0" display={false} />)</strong> com <strong>Origem da Trajetória (<MathFormula formula="s = 0" display={false} />)</strong>. Elas não são a mesma coisa!
+                </p>
+                <ul className="list-disc list-inside text-slate-700 space-y-2 ml-2">
+                  <li>A <strong>Origem da Trajetória</strong> é o marco zero da estrada (o km 0). É o ponto de referência espacial.</li>
+                  <li>A <strong>Posição Inicial (<MathFormula formula="s_0" display={false} />)</strong> é onde o corpo estava no exato momento em que você apertou o botão do cronômetro (<MathFormula formula="t = 0" display={false} />).</li>
+                </ul>
+                <p className="text-slate-700 leading-relaxed mt-3">
+                  Se você ligar o cronômetro quando o carro estiver passando pelo km 50, então <MathFormula formula="s_0 = 50" display={false} />. O carro não partiu do nada, ele partiu do km 50 <em>em relação ao seu cronômetro</em>.
+                </p>
+              </div>
+
+              {/* Novos Exemplos de Fixação */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                  <h5 className="font-bold text-slate-800 mb-2 border-b border-slate-100 pb-2">Exemplo Rápido 1: Leitura da Equação</h5>
+                  <p className="text-slate-700 text-sm mb-3">Dada a equação no SI: <MathFormula formula="s = -20 + 5t" display={false} /></p>
+                  <ul className="text-sm text-slate-600 space-y-1">
+                    <li>• <strong>De onde partiu?</strong> Da posição -20 metros (antes da origem).</li>
+                    <li>• <strong>Qual a velocidade?</strong> +5 m/s.</li>
+                    <li>• <strong>Qual o sentido?</strong> Progressivo (velocidade positiva).</li>
+                  </ul>
+                </div>
+                <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                  <h5 className="font-bold text-slate-800 mb-2 border-b border-slate-100 pb-2">Exemplo Rápido 2: Previsão do Futuro</h5>
+                  <p className="text-slate-700 text-sm mb-3">Usando a mesma equação <MathFormula formula="s = -20 + 5t" display={false} />, onde ele estará após 10 segundos?</p>
+                  <div className="bg-slate-50 p-2 rounded text-center">
+                    <MathFormula formula="s = -20 + 5(10)" display={true} />
+                    <MathFormula formula="s = -20 + 50 = \mathbf{30 \text{ m}}" display={true} />
+                  </div>
+                  <p className="text-xs text-slate-500 text-center mt-2">Ele cruzou a origem e chegou no marco 30m.</p>
                 </div>
               </div>
             </div>
