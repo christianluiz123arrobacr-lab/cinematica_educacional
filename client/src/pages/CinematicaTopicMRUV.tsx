@@ -83,6 +83,136 @@ export default function CinematicaTopicMRUV() {
           </div>
         </div>
 
+        {/* ===================== GRÁFICOS DO MRUV ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">📈 Gráficos do MRUV</h2>
+          
+          <div className="space-y-8">
+            <p className="text-slate-700 leading-relaxed text-lg">
+              A cinemática não é feita apenas de fórmulas. Os gráficos contam a mesma história, mas de forma visual. No MRUV, temos três gráficos fundamentais, e cada um revela uma propriedade crucial do movimento.
+            </p>
+
+            {/* 1. Gráfico s x t */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-sm font-bold text-purple-700">1</span>
+                Gráfico Posição × Tempo (s × t)
+              </h3>
+              
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div>
+                    <h4 className="font-semibold text-purple-400 mb-4">A Forma: Uma Parábola</h4>
+                    <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                      Como a equação do espaço é do 2º grau (<MathFormula formula="s = s_0 + v_0t + \frac{at^2}{2}" display={false} />), o gráfico s×t é sempre uma <strong>parábola</strong>.
+                    </p>
+                    <ul className="space-y-3 text-sm text-slate-300">
+                      <li className="flex items-start gap-2">
+                        <span className="text-purple-400 mt-1">•</span>
+                        <span><strong>Concavidade para CIMA (U):</strong> Aceleração positiva (<MathFormula formula="a > 0" display={false} />). O corpo está "sorrindo".</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-purple-400 mt-1">•</span>
+                        <span><strong>Concavidade para BAIXO (∩):</strong> Aceleração negativa (<MathFormula formula="a < 0" display={false} />). O corpo está "triste".</span>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                    <h4 className="font-semibold text-amber-400 mb-2 flex items-center gap-2">
+                      <Lightbulb className="w-4 h-4" />
+                      Propriedade de Ouro: O Vértice
+                    </h4>
+                    <p className="text-slate-300 text-sm leading-relaxed">
+                      O vértice da parábola é o ponto de <strong>inversão de sentido</strong>. Neste exato instante, o corpo para para dar meia-volta. Portanto, no vértice da parábola, a velocidade instantânea é <strong>ZERO</strong> (<MathFormula formula="v = 0" display={false} />).
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Gráfico v x t */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-sm font-bold text-blue-700">2</span>
+                Gráfico Velocidade × Tempo (v × t)
+              </h3>
+              
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div>
+                    <h4 className="font-semibold text-blue-400 mb-4">A Forma: Uma Reta Inclinada</h4>
+                    <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                      Como a equação da velocidade é do 1º grau (<MathFormula formula="v = v_0 + at" display={false} />), o gráfico v×t é sempre uma <strong>reta inclinada</strong>.
+                    </p>
+                    <ul className="space-y-3 text-sm text-slate-300">
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-400 mt-1">•</span>
+                        <span><strong>Reta Crescente:</strong> Aceleração positiva (<MathFormula formula="a > 0" display={false} />).</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-400 mt-1">•</span>
+                        <span><strong>Reta Decrescente:</strong> Aceleração negativa (<MathFormula formula="a < 0" display={false} />).</span>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                      <h4 className="font-semibold text-green-400 mb-2 flex items-center gap-2">
+                        <Target className="w-4 h-4" />
+                        Propriedade 1: A Área
+                      </h4>
+                      <p className="text-slate-300 text-sm">
+                        A área sob o gráfico v×t é numericamente igual ao <strong>deslocamento</strong> (<MathFormula formula="\Delta s" display={false} />).
+                      </p>
+                    </div>
+                    <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                      <h4 className="font-semibold text-amber-400 mb-2 flex items-center gap-2">
+                        <Lightbulb className="w-4 h-4" />
+                        Propriedade 2: A Inclinação
+                      </h4>
+                      <p className="text-slate-300 text-sm">
+                        A inclinação (tangente do ângulo) da reta é numericamente igual à <strong>aceleração</strong> (<MathFormula formula="a" display={false} />).
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Gráfico a x t */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center text-sm font-bold text-red-700">3</span>
+                Gráfico Aceleração × Tempo (a × t)
+              </h3>
+              
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div>
+                    <h4 className="font-semibold text-red-400 mb-4">A Forma: Uma Reta Horizontal</h4>
+                    <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                      Como a aceleração é constante no MRUV, o gráfico a×t é sempre uma <strong>reta horizontal</strong> paralela ao eixo do tempo.
+                    </p>
+                  </div>
+                  
+                  <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                    <h4 className="font-semibold text-green-400 mb-2 flex items-center gap-2">
+                      <Target className="w-4 h-4" />
+                      Propriedade de Ouro: A Área
+                    </h4>
+                    <p className="text-slate-300 text-sm leading-relaxed">
+                      A área sob o gráfico a×t é numericamente igual à <strong>variação de velocidade</strong> (<MathFormula formula="\Delta v" display={false} />).
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
         {/* ===================== AS EQUAÇÕES FUNDAMENTAIS ===================== */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
           <h2 className="text-3xl font-bold text-slate-900 mb-6">⚙️ As Equações Fundamentais</h2>
