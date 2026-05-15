@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { supabaseAdmin } from "./supabaseAdmin";
+import { supabaseAdmin } from "./supabaseAdmin.js";
 
 export type AuthUser = {
   id: string;
