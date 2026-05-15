@@ -419,108 +419,81 @@ export default function CinematicaTopicMRUV() {
                   </div>
                 </div>
               </div>
-            </div>
+
+              {/* Exemplos Resolvidos de Torricelli */}
+              <div className="mt-8 space-y-6">
+                <h4 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-amber-600" />
+                  Exemplos Resolvidos: Torricelli na Prática
+                </h4>
+
+                {/* Exemplo 1 */}
+                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="bg-slate-50 p-4 border-b border-slate-200">
+                    <h5 className="font-bold text-slate-800">Exemplo 1: A Frenagem de Emergência</h5>
+                  </div>
+                  <div className="p-6 space-y-4">
+                    <p className="text-slate-700">
+                      Um carro viaja a 108 km/h quando o motorista avista um obstáculo e pisa no freio, aplicando uma desaceleração constante de 5 m/s². Qual a distância mínima que o carro percorre até parar completamente?
+                    </p>
+                    
+                    <div className="bg-amber-50/50 p-4 rounded-lg border border-amber-100 space-y-3">
+                      <p className="font-semibold text-amber-900">1º Passo: Coleta de Dados e Conversão</p>
+                      <ul className="list-disc list-inside text-slate-700 text-sm ml-2">
+                        <li>Velocidade inicial (<MathFormula formula="v_0" display={false} />): 108 km/h ÷ 3,6 = <strong>30 m/s</strong></li>
+                        <li>Velocidade final (<MathFormula formula="v" display={false} />): <strong>0 m/s</strong> (ele vai parar)</li>
+                        <li>Aceleração (<MathFormula formula="a" display={false} />): <strong>-5 m/s²</strong> (negativa pois está freando!)</li>
+                        <li>Tempo (<MathFormula formula="t" display={false} />): <strong>Não temos e não queremos!</strong> (Alerta Torricelli)</li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
+                      <p className="font-semibold text-slate-800">2º Passo: Aplicação da Fórmula</p>
+                      <MathFormula formula="v^2 = v_0^2 + 2a\Delta s" display={true} />
+                      <MathFormula formula="0^2 = 30^2 + 2(-5)\Delta s" display={true} />
+                      <MathFormula formula="0 = 900 - 10\Delta s" display={true} />
+                      <MathFormula formula="10\Delta s = 900" display={true} />
+                      <MathFormula formula="\Delta s = 90 \text{ metros}" display={true} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Exemplo 2 */}
+                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="bg-slate-50 p-4 border-b border-slate-200">
+                    <h5 className="font-bold text-slate-800">Exemplo 2: O Avião na Pista</h5>
+                  </div>
+                  <div className="p-6 space-y-4">
+                    <p className="text-slate-700">
+                      Um avião parte do repouso e acelera a 4 m/s² em uma pista de 800 metros. Qual será a velocidade do avião no momento em que ele decolar (ao final da pista)?
+                    </p>
+                    
+                    <div className="bg-amber-50/50 p-4 rounded-lg border border-amber-100 space-y-3">
+                      <p className="font-semibold text-amber-900">1º Passo: Coleta de Dados</p>
+                      <ul className="list-disc list-inside text-slate-700 text-sm ml-2">
+                        <li>Velocidade inicial (<MathFormula formula="v_0" display={false} />): <strong>0 m/s</strong> (partiu do repouso)</li>
+                        <li>Aceleração (<MathFormula formula="a" display={false} />): <strong>4 m/s²</strong></li>
+                        <li>Deslocamento (<MathFormula formula="\Delta s" display={false} />): <strong>800 m</strong></li>
+                        <li>Tempo (<MathFormula formula="t" display={false} />): <strong>Não temos!</strong> (Alerta Torricelli)</li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
+                      <p className="font-semibold text-slate-800">2º Passo: Aplicação da Fórmula</p>
+                      <MathFormula formula="v^2 = v_0^2 + 2a\Delta s" display={true} />
+                      <MathFormula formula="v^2 = 0^2 + 2(4)(800)" display={true} />
+                      <MathFormula formula="v^2 = 8 \cdot 800" display={true} />
+                      <MathFormula formula="v^2 = 6400" display={true} />
+                      <p className="text-sm text-red-600 font-semibold mt-2">⚠️ Cuidado com a armadilha! Não esqueça a raiz quadrada:</p>
+                      <MathFormula formula="v = \sqrt{6400} = 80 \text{ m/s}" display={true} />
+                    </div>
+                  </div>
+                </div>
+              </div>
 
             </div>
           </div>
         </div>
-
-        {/* ===================== TABELA DE DECISÃO ===================== */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
-          <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-            <Target className="w-6 h-6 text-indigo-600" />
-            Qual Equação Usar? (O Guia de Sobrevivência)
-          </h2>
-          <p className="text-slate-700 mb-6">
-            O maior desafio do MRUV não é fazer a conta, é escolher a equação certa. Use esta tabela para decidir rapidamente com base no que o problema <strong>não</strong> forneceu.
-          </p>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-100 text-slate-800">
-                  <th className="p-4 border-b-2 border-slate-200 font-bold">Equação</th>
-                  <th className="p-4 border-b-2 border-slate-200 font-bold">Fórmula</th>
-                  <th className="p-4 border-b-2 border-slate-200 font-bold text-red-600">O que ELA NÃO TEM?</th>
-                  <th className="p-4 border-b-2 border-slate-200 font-bold text-green-600">Quando usar?</th>
-                </tr>
-              </thead>
-              <tbody className="text-slate-700">
-                <tr className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                  <td className="p-4 font-semibold text-blue-700">1. Velocidade</td>
-                  <td className="p-4"><MathFormula formula="v = v_0 + at" display={false} /></td>
-                  <td className="p-4 font-bold text-red-500">Distância (<MathFormula formula="\Delta s" display={false} />)</td>
-                  <td className="p-4">O problema não fala de distância e nem pede distância.</td>
-                </tr>
-                <tr className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                  <td className="p-4 font-semibold text-purple-700">2. Espaço (Sorvetão)</td>
-                  <td className="p-4"><MathFormula formula="s = s_0 + v_0t + \frac{at^2}{2}" display={false} /></td>
-                  <td className="p-4 font-bold text-red-500">Velocidade Final (<MathFormula formula="v" display={false} />)</td>
-                  <td className="p-4">O problema pede onde ele está, mas não diz a que velocidade ele chegou lá.</td>
-                </tr>
-                <tr className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                  <td className="p-4 font-semibold text-amber-700">3. Torricelli</td>
-                  <td className="p-4"><MathFormula formula="v^2 = v_0^2 + 2a\Delta s" display={false} /></td>
-                  <td className="p-4 font-bold text-red-500">Tempo (<MathFormula formula="t" display={false} />)</td>
-                  <td className="p-4">O problema não dá o tempo e não quer saber do tempo.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* ===================== APROFUNDAMENTO: ACELERADO VS RETARDADO ===================== */}
-        <div className="grid md:grid-cols-2 gap-8 mb-8">
-          <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-              <Activity className="w-6 h-6 text-emerald-600" />
-              Acelerado vs. Retardado
-            </h2>
-            <p className="text-slate-700 mb-6">
-              Um dos maiores <strong>erros conceituais</strong> é achar que "aceleração negativa significa que o carro está freando". Isso é falso! O que define se ele freia ou acelera é a <strong>combinação dos sinais</strong> da velocidade e da aceleração.
-            </p>
-            
-            <div className="space-y-4">
-              <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded">
-                <h4 className="font-bold text-emerald-900 mb-1">Movimento Acelerado</h4>
-                <p className="text-slate-700 text-sm mb-2">O módulo da velocidade aumenta. Velocidade e Aceleração têm o <strong>mesmo sinal</strong> (ajudam um ao outro).</p>
-                <ul className="text-sm text-slate-600 list-disc list-inside">
-                  <li><MathFormula formula="v > 0" display={false} /> e <MathFormula formula="a > 0" display={false} /> (Acelera para frente)</li>
-                  <li><MathFormula formula="v < 0" display={false} /> e <MathFormula formula="a < 0" display={false} /> (Acelera de ré)</li>
-                </ul>
-              </div>
-              
-              <div className="bg-rose-50 border-l-4 border-rose-500 p-4 rounded">
-                <h4 className="font-bold text-rose-900 mb-1">Movimento Retardado</h4>
-                <p className="text-slate-700 text-sm mb-2">O módulo da velocidade diminui (freia). Velocidade e Aceleração têm <strong>sinais opostos</strong> (brigam entre si).</p>
-                <ul className="text-sm text-slate-600 list-disc list-inside">
-                  <li><MathFormula formula="v > 0" display={false} /> e <MathFormula formula="a < 0" display={false} /> (Indo pra frente, mas freando)</li>
-                  <li><MathFormula formula="v < 0" display={false} /> e <MathFormula formula="a > 0" display={false} /> (Indo de ré, mas freando)</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* ===================== A 4ª EQUAÇÃO SECRETA ===================== */}
-          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-lg p-8 border border-slate-700 text-slate-100">
-            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-              <Lightbulb className="w-6 h-6 text-yellow-400" />
-              A 4ª Equação "Secreta"
-            </h2>
-            <p className="text-slate-300 mb-6">
-              Existe uma propriedade matemática exclusiva do MRUV que salva vidas em provas difíceis: <strong>A Velocidade Média no MRUV é a média aritmética das velocidades!</strong>
-            </p>
-            
-            <div className="bg-slate-800/80 p-6 rounded-xl border border-slate-600 mb-6">
-              <MathFormula formula="v_m = \frac{\Delta s}{\Delta t} = \frac{v_0 + v}{2}" display={true} className="text-2xl text-yellow-400" />
-            </div>
-            
-            <div className="bg-yellow-500/10 border-l-4 border-yellow-500 p-4 rounded">
-              <p className="text-yellow-200 text-sm">
-                <strong>O Pulo do Gato:</strong> Se o problema te der a velocidade inicial, a velocidade final e o tempo, você pode achar a distância (<MathFormula formula="\Delta s" display={false} />) <strong>sem precisar descobrir a aceleração!</strong> Basta igualar as duas partes da fórmula acima.
-              </p>
-            </div>
-          </div>
         </div>
 
       </section>
