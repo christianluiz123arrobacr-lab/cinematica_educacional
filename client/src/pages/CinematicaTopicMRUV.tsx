@@ -383,6 +383,105 @@ export default function CinematicaTopicMRUV() {
               </div>
             </div>
 
+            </div>
+          </div>
+        </div>
+
+        {/* ===================== TABELA DE DECISÃO ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+            <Target className="w-6 h-6 text-indigo-600" />
+            Qual Equação Usar? (O Guia de Sobrevivência)
+          </h2>
+          <p className="text-slate-700 mb-6">
+            O maior desafio do MRUV não é fazer a conta, é escolher a equação certa. Use esta tabela para decidir rapidamente com base no que o problema <strong>não</strong> forneceu.
+          </p>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-100 text-slate-800">
+                  <th className="p-4 border-b-2 border-slate-200 font-bold">Equação</th>
+                  <th className="p-4 border-b-2 border-slate-200 font-bold">Fórmula</th>
+                  <th className="p-4 border-b-2 border-slate-200 font-bold text-red-600">O que ELA NÃO TEM?</th>
+                  <th className="p-4 border-b-2 border-slate-200 font-bold text-green-600">Quando usar?</th>
+                </tr>
+              </thead>
+              <tbody className="text-slate-700">
+                <tr className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                  <td className="p-4 font-semibold text-blue-700">1. Velocidade</td>
+                  <td className="p-4"><MathFormula formula="v = v_0 + at" display={false} /></td>
+                  <td className="p-4 font-bold text-red-500">Distância (<MathFormula formula="\Delta s" display={false} />)</td>
+                  <td className="p-4">O problema não fala de distância e nem pede distância.</td>
+                </tr>
+                <tr className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                  <td className="p-4 font-semibold text-purple-700">2. Espaço (Sorvetão)</td>
+                  <td className="p-4"><MathFormula formula="s = s_0 + v_0t + \frac{at^2}{2}" display={false} /></td>
+                  <td className="p-4 font-bold text-red-500">Velocidade Final (<MathFormula formula="v" display={false} />)</td>
+                  <td className="p-4">O problema pede onde ele está, mas não diz a que velocidade ele chegou lá.</td>
+                </tr>
+                <tr className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                  <td className="p-4 font-semibold text-amber-700">3. Torricelli</td>
+                  <td className="p-4"><MathFormula formula="v^2 = v_0^2 + 2a\Delta s" display={false} /></td>
+                  <td className="p-4 font-bold text-red-500">Tempo (<MathFormula formula="t" display={false} />)</td>
+                  <td className="p-4">O problema não dá o tempo e não quer saber do tempo.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* ===================== APROFUNDAMENTO: ACELERADO VS RETARDADO ===================== */}
+        <div className="grid md:grid-cols-2 gap-8 mb-8">
+          <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+              <Activity className="w-6 h-6 text-emerald-600" />
+              Acelerado vs. Retardado
+            </h2>
+            <p className="text-slate-700 mb-6">
+              Um dos maiores <strong>erros conceituais</strong> é achar que "aceleração negativa significa que o carro está freando". Isso é falso! O que define se ele freia ou acelera é a <strong>combinação dos sinais</strong> da velocidade e da aceleração.
+            </p>
+            
+            <div className="space-y-4">
+              <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded">
+                <h4 className="font-bold text-emerald-900 mb-1">Movimento Acelerado</h4>
+                <p className="text-slate-700 text-sm mb-2">O módulo da velocidade aumenta. Velocidade e Aceleração têm o <strong>mesmo sinal</strong> (ajudam um ao outro).</p>
+                <ul className="text-sm text-slate-600 list-disc list-inside">
+                  <li><MathFormula formula="v > 0" display={false} /> e <MathFormula formula="a > 0" display={false} /> (Acelera para frente)</li>
+                  <li><MathFormula formula="v < 0" display={false} /> e <MathFormula formula="a < 0" display={false} /> (Acelera de ré)</li>
+                </ul>
+              </div>
+              
+              <div className="bg-rose-50 border-l-4 border-rose-500 p-4 rounded">
+                <h4 className="font-bold text-rose-900 mb-1">Movimento Retardado</h4>
+                <p className="text-slate-700 text-sm mb-2">O módulo da velocidade diminui (freia). Velocidade e Aceleração têm <strong>sinais opostos</strong> (brigam entre si).</p>
+                <ul className="text-sm text-slate-600 list-disc list-inside">
+                  <li><MathFormula formula="v > 0" display={false} /> e <MathFormula formula="a < 0" display={false} /> (Indo pra frente, mas freando)</li>
+                  <li><MathFormula formula="v < 0" display={false} /> e <MathFormula formula="a > 0" display={false} /> (Indo de ré, mas freando)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* ===================== A 4ª EQUAÇÃO SECRETA ===================== */}
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-lg p-8 border border-slate-700 text-slate-100">
+            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+              <Lightbulb className="w-6 h-6 text-yellow-400" />
+              A 4ª Equação "Secreta"
+            </h2>
+            <p className="text-slate-300 mb-6">
+              Existe uma propriedade matemática exclusiva do MRUV que salva vidas em provas difíceis: <strong>A Velocidade Média no MRUV é a média aritmética das velocidades!</strong>
+            </p>
+            
+            <div className="bg-slate-800/80 p-6 rounded-xl border border-slate-600 mb-6">
+              <MathFormula formula="v_m = \frac{\Delta s}{\Delta t} = \frac{v_0 + v}{2}" display={true} className="text-2xl text-yellow-400" />
+            </div>
+            
+            <div className="bg-yellow-500/10 border-l-4 border-yellow-500 p-4 rounded">
+              <p className="text-yellow-200 text-sm">
+                <strong>O Pulo do Gato:</strong> Se o problema te der a velocidade inicial, a velocidade final e o tempo, você pode achar a distância (<MathFormula formula="\Delta s" display={false} />) <strong>sem precisar descobrir a aceleração!</strong> Basta igualar as duas partes da fórmula acima.
+              </p>
+            </div>
           </div>
         </div>
 
