@@ -100,17 +100,39 @@ export default function CinematicaTopicMRUV() {
               </h3>
               
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
-                <h4 className="font-bold text-slate-800 mb-3">A Lógica Intuitiva</h4>
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Compass className="w-6 h-6 text-amber-700" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-800">Contexto Histórico</h4>
+                    <p className="text-slate-700 text-sm leading-relaxed">
+                      Galileu Galilei, ao estudar planos inclinados, percebeu que a velocidade de uma esfera rolando não aumentava de forma caótica, mas sim em proporção direta ao tempo de descida. Ele foi o primeiro a entender que a "taxa de ganho de velocidade" (aceleração) era constante. Essa equação é a tradução matemática dessa descoberta revolucionária.
+                    </p>
+                  </div>
+                </div>
+
+                <h4 className="font-bold text-slate-800 mb-3 mt-6 border-t border-slate-200 pt-4">A Lógica Intuitiva</h4>
                 <p className="text-slate-700 leading-relaxed mb-4">
                   Pense como um detetive: se você quer descobrir a velocidade de um carro neste exato momento, você precisa saber de duas coisas fundamentais: <strong>qual era a velocidade dele quando você começou a olhar</strong> (velocidade inicial) e <strong>o quanto ele ganhou ou perdeu de velocidade</strong> durante o tempo em que você ficou olhando.
                 </p>
                 <p className="text-slate-700 leading-relaxed mb-4">
                   O "quanto ele ganhou" é simplesmente a aceleração multiplicada pelo tempo. Se ele ganha 2 m/s a cada segundo, em 5 segundos ele ganhou 10 m/s. Simples assim!
                 </p>
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
-                  <p className="text-slate-700 text-sm">
-                    <strong>Regra de Ouro:</strong> A equação da velocidade no MRUV é uma função polinomial do 1º grau. O gráfico será sempre uma reta inclinada.
-                  </p>
+                
+                <div className="grid md:grid-cols-2 gap-4 mt-4">
+                  <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                    <p className="text-blue-900 font-bold text-sm mb-1 flex items-center gap-1"><CheckCircle2 className="w-4 h-4"/> Quando usar?</p>
+                    <p className="text-slate-700 text-sm">
+                      Use quando o problema envolver <strong>Velocidade</strong> e <strong>Tempo</strong>, mas não mencionar nada sobre a <strong>Distância</strong> percorrida.
+                    </p>
+                  </div>
+                  <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                    <p className="text-red-900 font-bold text-sm mb-1 flex items-center gap-1"><AlertTriangle className="w-4 h-4"/> Armadilha Clássica</p>
+                    <p className="text-slate-700 text-sm">
+                      Esquecer o sinal da aceleração! Se o corpo está freando, a aceleração deve entrar na fórmula com sinal <strong>negativo</strong>.
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -179,17 +201,39 @@ export default function CinematicaTopicMRUV() {
               </h3>
               
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
-                <h4 className="font-bold text-slate-800 mb-3">A Lógica Intuitiva</h4>
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Compass className="w-6 h-6 text-amber-700" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-800">Contexto Histórico</h4>
+                    <p className="text-slate-700 text-sm leading-relaxed">
+                      Antes de Galileu, acreditava-se que um corpo em queda livre caía com velocidade constante. Galileu provou que a distância percorrida na queda era proporcional ao <strong>quadrado do tempo</strong> (<MathFormula formula="s \propto t^2" display={false} />). Essa foi a primeira vez na história da humanidade que uma lei da natureza foi descrita por uma função quadrática.
+                    </p>
+                  </div>
+                </div>
+
+                <h4 className="font-bold text-slate-800 mb-3 mt-6 border-t border-slate-200 pt-4">A Lógica Intuitiva</h4>
                 <p className="text-slate-700 leading-relaxed mb-4">
                   Esta é a equação mais famosa (e temida) da cinemática, carinhosamente apelidada de "Sorvetão". Ela nos diz a posição exata do corpo em qualquer instante de tempo.
                 </p>
                 <p className="text-slate-700 leading-relaxed mb-4">
                   Por que ela é tão grande? Porque a posição final depende de três fatores somados: <strong>de onde ele saiu</strong> (<MathFormula formula="s_0" display={false} />), <strong>o quanto ele andaria se mantivesse a velocidade inicial</strong> (<MathFormula formula="v_0 \cdot t" display={false} />), e <strong>o bônus (ou penalidade) de distância causado pela aceleração</strong> (<MathFormula formula="\frac{a \cdot t^2}{2}" display={false} />).
                 </p>
-                <div className="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-r-lg">
-                  <p className="text-slate-700 text-sm">
-                    <strong>Regra de Ouro:</strong> Como o tempo aparece elevado ao quadrado (<MathFormula formula="t^2" display={false} />), o corpo percorre distâncias cada vez maiores (ou menores) a cada segundo. O gráfico será obrigatoriamente uma <strong>parábola</strong>.
-                  </p>
+                
+                <div className="grid md:grid-cols-2 gap-4 mt-4">
+                  <div className="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-r-lg">
+                    <p className="text-purple-900 font-bold text-sm mb-1 flex items-center gap-1"><CheckCircle2 className="w-4 h-4"/> Quando usar?</p>
+                    <p className="text-slate-700 text-sm">
+                      Use quando o problema relacionar <strong>Posição/Distância</strong> com o <strong>Tempo</strong>. Se o problema pede "onde ele estará após 5s", é ela!
+                    </p>
+                  </div>
+                  <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                    <p className="text-red-900 font-bold text-sm mb-1 flex items-center gap-1"><AlertTriangle className="w-4 h-4"/> Armadilha Clássica</p>
+                    <p className="text-slate-700 text-sm">
+                      Esquecer de dividir a aceleração por 2! O termo é <MathFormula formula="\frac{a}{2}t^2" display={false} />. Se a equação dada for <MathFormula formula="s = 10 + 5t + 3t^2" display={false} />, a aceleração <strong>não é 3</strong>, ela é <strong>6</strong> (pois 6/2 = 3).
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -274,17 +318,36 @@ export default function CinematicaTopicMRUV() {
               </h3>
               
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
-                <h4 className="font-bold text-slate-800 mb-3">A Lógica Intuitiva</h4>
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Compass className="w-6 h-6 text-amber-700" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-800">Contexto Histórico</h4>
+                    <p className="text-slate-700 text-sm leading-relaxed">
+                      Evangelista Torricelli foi aluno e sucessor de Galileu. Ele percebeu um problema prático grave: em muitos experimentos de balística (como o disparo de canhões), era fácil medir a distância percorrida e a velocidade, mas era quase impossível medir o tempo exato com a tecnologia da época (século XVII). Ele precisava de uma equação que "pulasse" o tempo.
+                    </p>
+                  </div>
+                </div>
+
+                <h4 className="font-bold text-slate-800 mb-3 mt-6 border-t border-slate-200 pt-4">A Lógica Intuitiva</h4>
                 <p className="text-slate-700 leading-relaxed mb-4">
-                  Evangelista Torricelli (aluno de Galileu) percebeu um problema prático grave: muitas vezes, em experimentos reais ou problemas de física, <strong>nós não temos um cronômetro</strong>. Sabemos a distância da frenagem, sabemos a aceleração do carro, mas não sabemos quanto tempo durou.
+                  Torricelli usou a álgebra pesada para "fundir" as duas primeiras equações e eliminar a variável tempo (<MathFormula formula="t" display={false} />). O resultado é uma ferramenta poderosa que cria uma relação direta entre a velocidade de um corpo e o espaço que ele percorreu.
                 </p>
-                <p className="text-slate-700 leading-relaxed mb-4">
-                  Ele usou a matemática para "fundir" as duas primeiras equações e eliminar a variável tempo (<MathFormula formula="t" display={false} />), criando uma relação direta entre velocidade e espaço percorrido.
-                </p>
-                <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
-                  <p className="text-slate-700 text-sm">
-                    <strong>Regra de Ouro Suprema:</strong> Se o problema não forneceu o tempo e não perguntou o tempo, <strong>use Torricelli!</strong> É o atalho perfeito.
-                  </p>
+                
+                <div className="grid md:grid-cols-2 gap-4 mt-4">
+                  <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
+                    <p className="text-amber-900 font-bold text-sm mb-1 flex items-center gap-1"><CheckCircle2 className="w-4 h-4"/> Quando usar?</p>
+                    <p className="text-slate-700 text-sm">
+                      <strong>Regra de Ouro Suprema:</strong> Se o problema não forneceu o tempo e não perguntou o tempo, <strong>use Torricelli!</strong> É o atalho perfeito.
+                    </p>
+                  </div>
+                  <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                    <p className="text-red-900 font-bold text-sm mb-1 flex items-center gap-1"><AlertTriangle className="w-4 h-4"/> Armadilha Clássica</p>
+                    <p className="text-slate-700 text-sm">
+                      Esquecer de tirar a raiz quadrada no final! A equação calcula <MathFormula formula="v^2" display={false} />. Se você achar <MathFormula formula="v^2 = 400" display={false} />, a resposta final é <MathFormula formula="v = 20" display={false} />.
+                    </p>
+                  </div>
                 </div>
               </div>
 
