@@ -1,212 +1,276 @@
-import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { ArrowLeft, AlertCircle, Lightbulb } from "lucide-react";
 import { Link } from "wouter";
+import { ArrowLeft, Activity, Lightbulb, AlertTriangle, CheckCircle2, Info, Target, Compass, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/components/MathFormula";
+import { Card } from "@/components/ui/card";
 
 export default function CinematicaTopicMRUV() {
-  useEffect(() => {
-    if ((window as any).MathJax) {
-      (window as any).MathJax.contentDocument = document;
-      (window as any).MathJax.typesetPromise().catch((err: any) => console.log(err));
-    }
-  }, []);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-slate-50 to-indigo-50">
+      {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
-        <div className="container py-4 flex items-center gap-4">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/cinematica">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+            <Button variant="ghost" size="sm" className="gap-2">
+              <ArrowLeft className="w-4 h-4" />
               Voltar
             </Button>
           </Link>
-          <h1 className="text-2xl font-bold text-slate-900">Movimento Uniformemente Variado (MRUV)</h1>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-md">
+              <Zap className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900">Cinemática</h1>
+              <p className="text-xs text-slate-600 font-medium">Equações Fundamentais — MRUV</p>
+            </div>
+          </div>
         </div>
       </header>
 
-      <section className="container py-6 md:py-12 space-y-6 md:space-y-12">
-        {/* Introdução */}
-        <Card className="p-4 md:p-8 shadow-lg border-0 bg-gradient-to-r from-blue-50 to-orange-50">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">O Movimento Mais Realista</h2>
-          <div className="space-y-4 text-slate-700 leading-relaxed">
-            <p>Na vida real, quase nada se move com velocidade constante. Quando você sai de casa, o carro acelera. Quando chega perto de um sinal, freia. Isso é MRUV!</p>
-            <p>MRUV é o movimento onde a velocidade muda de forma <strong>uniforme</strong> (sempre da mesma forma). Se você acelera a 2 m/s a cada segundo, isso continua acontecendo o tempo todo.</p>
-          </div>
-        </Card>
+      <section className="container mx-auto px-4 py-12 max-w-5xl">
 
-        {/* O Que é MRUV */}
-        <Card className="p-4 md:p-8 shadow-lg border-0">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">O Que Significa MRUV?</h2>
-          <div className="space-y-4 text-slate-700 leading-relaxed">
-            <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500 my-4">
-              <p><strong>M</strong> = Movimento (está se movendo)</p>
-              <p><strong>R</strong> = Retilíneo (em linha reta)</p>
-              <p><strong>U</strong> = Uniformemente (sempre da mesma forma)</p>
-              <p><strong>V</strong> = Variado (velocidade muda)</p>
+        {/* ===================== INTRODUÇÃO ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+            <Zap className="w-8 h-8 text-blue-600" />
+            Movimento Retilíneo Uniformemente Variado (MRUV)
+          </h2>
+          
+          <div className="space-y-6">
+            <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">O que é o MRUV?</h3>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                Enquanto o MRU descreve um mundo ideal sem aceleração, o <strong>Movimento Retilíneo Uniformemente Variado (MRUV)</strong> nos traz para a realidade. É o movimento de um carro freando no semáforo, de um avião decolando na pista ou de uma maçã caindo da árvore.
+              </p>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                A palavra-chave aqui é <strong>Uniformemente Variado</strong>. Isso significa que a velocidade do corpo muda, mas ela muda de forma <strong>constante e previsível</strong>. A taxa com que a velocidade muda é o que chamamos de <strong>Aceleração</strong>.
+              </p>
+              <div className="bg-white p-4 rounded-lg border border-blue-100 mt-4">
+                <p className="font-semibold text-blue-900 mb-2">Exemplo Intuitivo:</p>
+                <p className="text-slate-700 text-sm">
+                  Imagine um carro esportivo acelerando a <MathFormula formula="5 \text{ m/s}^2" display={false} />. Isso significa que a cada 1 segundo que passa, a velocidade dele aumenta em 5 m/s.
+                  Se ele partiu do repouso (0 m/s), após 1 segundo ele estará a 5 m/s. Após 2 segundos, a 10 m/s. Após 3 segundos, a 15 m/s. A velocidade muda, mas o <em>ritmo</em> da mudança é sempre o mesmo.
+                </p>
+              </div>
             </div>
 
-            <h3 className="text-lg font-bold text-slate-900 mt-6">As Características Principais</h3>
-            <ul className="space-y-3 text-slate-700">
-              <li className="flex gap-3">
-                <span className="text-orange-600 font-bold">✓</span>
-                <span><strong>Aceleração Constante:</strong> A velocidade muda sempre da mesma forma.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-orange-600 font-bold">✓</span>
-                <span><strong>Velocidade Variável:</strong> Aumenta ou diminui, mas de forma previsível.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-orange-600 font-bold">✓</span>
-                <span><strong>Linha Reta:</strong> Sem curvas, sem mudança de direção.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-orange-600 font-bold">✓</span>
-                <span><strong>Deslocamentos Diferentes em Tempos Iguais:</strong> Cada segundo você percorre uma distância diferente.</span>
-              </li>
-            </ul>
-
-            <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500 my-4">
-              <p className="mb-2"><strong>Exemplo prático:</strong></p>
-              <p>Um carro que sai do repouso e acelera a 5 m/s a cada segundo. No 1º segundo, vai de 0 a 5 m/s. No 2º segundo, vai de 5 a 10 m/s. No 3º segundo, vai de 10 a 15 m/s. A aceleração é sempre a mesma (5 m/s por segundo), mas a velocidade muda.</p>
-            </div>
-          </div>
-        </Card>
-
-        {/* As Fórmulas do MRUV */}
-        <Card className="p-4 md:p-8 shadow-lg border-0">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">As Fórmulas do MRUV</h2>
-          <div className="space-y-4 text-slate-700 leading-relaxed">
-            <p>No MRUV, temos <strong>3 fórmulas principais</strong>. Cada uma é útil para situações diferentes.</p>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Fórmula 1: Velocidade Final</h3>
-            <p>Quando você quer saber qual será a velocidade após um certo tempo.</p>
-            
-            <div className="bg-orange-50 p-3 md:p-6 rounded-lg border border-orange-200 overflow-x-auto my-4">
-              <MathFormula formula={String.raw`$$$$v = v_0 + a \\cdot t$$$$`} className="text-center text-lg md:text-2xl mb-4" />
-              <p className="text-sm text-slate-600 text-center"><strong>Lê-se:</strong> "Velocidade final = Velocidade inicial + Aceleração × Tempo"</p>
-            </div>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Fórmula 2: Posição Final</h3>
-            <p>Quando você quer saber onde o objeto estará após um certo tempo.</p>
-            
-            <div className="bg-blue-50 p-3 md:p-6 rounded-lg border border-blue-200 overflow-x-auto my-4">
-              <MathFormula formula={String.raw`$$$$s = s_0 + v_0 \\cdot t + \\frac{a \\cdot t^2}{2}$$$$`} className="text-center text-lg md:text-2xl mb-4" />
-              <p className="text-sm text-slate-600 text-center"><strong>Lê-se:</strong> "Posição = Posição inicial + Velocidade inicial × Tempo + (Aceleração × Tempo²) / 2"</p>
-            </div>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Fórmula 3: Equação de Torricelli (A Mais Útil!)</h3>
-            <p>Quando você não sabe o tempo, mas sabe a distância percorrida.</p>
-            
-            <div className="bg-green-50 p-3 md:p-6 rounded-lg border border-green-200 overflow-x-auto my-4">
-              <MathFormula formula={String.raw`$$$$v^2 = v_0^2 + 2 \\cdot a \\cdot \\Delta s$$$$`} className="text-center text-lg md:text-2xl mb-4" />
-              <p className="text-sm text-slate-600 text-center"><strong>Lê-se:</strong> "Velocidade final² = Velocidade inicial² + 2 × Aceleração × Deslocamento"</p>
-            </div>
-
-            <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500 my-4">
-              <p className="mb-2"><strong>Por que é útil?</strong> Porque às vezes você sabe quanto o objeto se moveu, mas não sabe quanto tempo levou. Essa fórmula resolve isso!</p>
-            </div>
-          </div>
-        </Card>
-
-        {/* Exemplos Práticos */}
-        <Card className="p-4 md:p-8 shadow-lg border-0">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Exemplos do Mundo Real</h2>
-          <div className="space-y-4 text-slate-700 leading-relaxed">
-            <ul className="space-y-4 text-slate-700">
-              <li className="flex gap-3">
-                <span className="text-orange-600 font-bold">1.</span>
-                <div>
-                  <strong>Carro acelerando:</strong> Sai do repouso e acelera a 3 m/s². Após 10 segundos, qual é sua velocidade?<br/>
-                  <span className="text-sm text-slate-600">Resposta: v = 0 + 3 × 10 = 30 m/s</span>
-                </div>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-orange-600 font-bold">2.</span>
-                <div>
-                  <strong>Carro freando:</strong> Viaja a 30 m/s e freia com aceleração de -5 m/s². Quanto tempo leva para parar?<br/>
-                  <span className="text-sm text-slate-600">Resposta: 0 = 30 - 5 × t → t = 6 segundos</span>
-                </div>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-orange-600 font-bold">3.</span>
-                <div>
-                  <strong>Queda de um objeto:</strong> Um objeto cai com aceleração de 10 m/s². Qual é sua velocidade após cair 20 metros?<br/>
-                  <span className="text-sm text-slate-600">Resposta: v² = 0 + 2 × 10 × 20 = 400 → v = 20 m/s</span>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </Card>
-
-        {/* Gráficos */}
-        <Card className="p-4 md:p-8 shadow-lg border-0">
-          <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-4">Os Gráficos do MRUV</h2>
-          <div className="space-y-4 text-slate-700 leading-relaxed">
-            <h3 className="text-lg font-bold text-slate-900">Gráfico 1: Posição vs. Tempo</h3>
-            <p>Uma <strong>parábola</strong> (curva). Não é uma reta como no MRU, porque a velocidade está mudando.</p>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Gráfico 2: Velocidade vs. Tempo</h3>
-            <p>Uma <strong>reta inclinada</strong>. Porque a velocidade muda linearmente com o tempo.</p>
-
-            <h3 className="text-lg font-bold text-slate-900 mt-6">Gráfico 3: Aceleração vs. Tempo</h3>
-            <p>Uma <strong>reta horizontal</strong> (no valor da aceleração). Porque a aceleração é constante.</p>
-          </div>
-        </Card>
-
-        {/* Erros Comuns */}
-        <Card className="p-4 md:p-8 shadow-lg border-0 bg-red-50">
-          <div className="flex items-start gap-4">
-            <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
-            <div>
-              <h3 className="text-lg font-bold text-red-900 mb-4">⚠️ Erros Comuns</h3>
-              <ul className="space-y-3 text-red-900">
-                <li className="flex gap-3">
-                  <span className="font-bold">❌</span>
-                  <span><strong>Erro:</strong> "Usar a fórmula do MRU quando há aceleração"<br/><strong>Verdade:</strong> Se há aceleração, use MRUV! A fórmula do MRU só funciona quando a velocidade é constante.</span>
+            <div className="bg-indigo-50 border border-indigo-200 rounded p-6">
+              <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <Target className="w-5 h-5 text-indigo-600" />
+                Os Três Pilares do MRUV
+              </h4>
+              <ul className="space-y-3 text-slate-700">
+                <li className="flex items-start gap-3">
+                  <span className="text-indigo-600 font-bold mt-1">1.</span>
+                  <div>
+                    <p><strong>Aceleração Constante:</strong> A aceleração instantânea é sempre igual à aceleração média, e diferente de zero.</p>
+                    <MathFormula formula="a = a_m = \text{constante} \neq 0" display={false} />
+                  </div>
                 </li>
-                <li className="flex gap-3">
-                  <span className="font-bold">❌</span>
-                  <span><strong>Erro:</strong> "Esquecer de elevar o tempo ao quadrado na fórmula"<br/><strong>Verdade:</strong> A fórmula é s = s₀ + v₀·t + (a·t²)/2. O t está ao quadrado!</span>
+                <li className="flex items-start gap-3">
+                  <span className="text-indigo-600 font-bold mt-1">2.</span>
+                  <div>
+                    <p><strong>Velocidade Variável:</strong> A velocidade muda linearmente com o tempo.</p>
+                  </div>
                 </li>
-                <li className="flex gap-3">
-                  <span className="font-bold">❌</span>
-                  <span><strong>Erro:</strong> "Confundir velocidade final com velocidade média"<br/><strong>Verdade:</strong> São coisas diferentes! A velocidade média é (v₀ + v)/2</span>
+                <li className="flex items-start gap-3">
+                  <span className="text-indigo-600 font-bold mt-1">3.</span>
+                  <p><strong>Trajetória Retilínea:</strong> O movimento ocorre em uma única dimensão (linha reta), sem fazer curvas.</p>
                 </li>
               </ul>
             </div>
           </div>
-        </Card>
+        </div>
 
-        {/* Dicas Práticas */}
-        <Card className="p-4 md:p-8 shadow-lg border-0 bg-yellow-50">
-          <div className="flex items-start gap-4">
-            <Lightbulb className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
+        {/* ===================== AS EQUAÇÕES FUNDAMENTAIS ===================== */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-slate-200">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">⚙️ As Equações Fundamentais</h2>
+          
+          <div className="space-y-8">
+            <p className="text-slate-700 leading-relaxed text-lg">
+              Diferente do MRU que possui apenas uma equação, o MRUV é governado por <strong>três equações principais</strong>. Cada uma delas é uma ferramenta específica para um tipo de problema. Dominar o MRUV é saber escolher a ferramenta certa.
+            </p>
+
+            {/* 1. Equação Horária da Velocidade */}
             <div>
-              <h3 className="text-lg font-bold text-yellow-900 mb-4">💡 Dicas para Resolver Problemas</h3>
-              <ul className="space-y-3 text-yellow-900">
-                <li><strong>Passo 1:</strong> Organize os dados: v₀, v, a, t, s</li>
-                <li><strong>Passo 2:</strong> Veja qual informação falta</li>
-                <li><strong>Passo 3:</strong> Escolha a fórmula que tem as informações que você tem e a que você quer</li>
-                <li><strong>Passo 4:</strong> Cuidado com as unidades! Tudo deve estar no mesmo sistema.</li>
-                <li><strong>Dica:</strong> A Equação de Torricelli é a mais versátil quando você não tem tempo!</li>
-              </ul>
-            </div>
-          </div>
-        </Card>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-sm font-bold text-blue-700">1</span>
+                Equação Horária da Velocidade (A Função do 1º Grau)
+              </h3>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                <h4 className="font-bold text-slate-800 mb-3">A Lógica Intuitiva</h4>
+                <p className="text-slate-700 leading-relaxed mb-4">
+                  Se você quer saber a velocidade de um carro agora, precisa saber de duas coisas: <strong>qual era a velocidade inicial dele</strong> e <strong>o quanto ele acelerou (ou freou)</strong> durante o tempo de viagem.
+                </p>
+              </div>
 
-        {/* Resumo */}
-        <Card className="p-4 md:p-8 shadow-lg border-0 bg-gradient-to-r from-blue-50 to-orange-50">
-          <h3 className="text-lg font-bold text-slate-900 mb-4">📌 Resumo Rápido</h3>
-          <div className="space-y-3 text-slate-700">
-            <p><strong>MRUV:</strong> Movimento em linha reta com aceleração constante</p>
-            <p><strong>Fórmulas:</strong> v = v₀ + at | s = s₀ + v₀t + at²/2 | v² = v₀² + 2aΔs</p>
-            <p><strong>Gráficos:</strong> Posição é parábola, velocidade é reta inclinada, aceleração é reta horizontal</p>
-            <p><strong>Quando usar:</strong> Quando há aceleração constante (carro acelerando, queda livre, etc.)</p>
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
+                <h4 className="font-semibold text-blue-400 mb-4">A Equação e Seus Termos</h4>
+                <div className="space-y-4">
+                  <div className="flex justify-center mb-6">
+                    <MathFormula formula="v = v_0 + a \cdot t" display={true} className="text-4xl" />
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-4 mt-6 pt-6 border-t border-slate-700">
+                    <div className="bg-slate-800/50 p-4 rounded-lg">
+                      <p className="font-semibold text-blue-400 mb-2">Termo a Termo:</p>
+                      <ul className="space-y-2 text-sm text-slate-300">
+                        <li><MathFormula formula="v" display={false} />: <strong>Velocidade Final</strong> (m/s) — A velocidade no instante t.</li>
+                        <li><MathFormula formula="v_0" display={false} />: <strong>Velocidade Inicial</strong> (m/s) — A velocidade em t = 0.</li>
+                        <li><MathFormula formula="a" display={false} />: <strong>Aceleração</strong> (m/s²) — A taxa constante de variação da velocidade.</li>
+                        <li><MathFormula formula="t" display={false} />: <strong>Tempo</strong> (s) — O instante cronometrado.</li>
+                      </ul>
+                    </div>
+                    <div className="bg-slate-800/50 p-4 rounded-lg">
+                      <p className="font-semibold text-blue-400 mb-2">Dedução Física:</p>
+                      <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                        Nasce diretamente da definição de aceleração média:
+                      </p>
+                      <MathFormula formula="a = \frac{\Delta v}{\Delta t} = \frac{v - v_0}{t - 0}" display={true} />
+                      <p className="text-sm text-slate-300 leading-relaxed mt-2">
+                        Multiplicando cruzado e isolando o <MathFormula formula="v" display={false} />, chegamos à equação.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Equação Horária do Espaço */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-sm font-bold text-purple-700">2</span>
+                Equação Horária do Espaço (A Função do 2º Grau)
+              </h3>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                <h4 className="font-bold text-slate-800 mb-3">A Lógica Intuitiva</h4>
+                <p className="text-slate-700 leading-relaxed mb-4">
+                  Esta é a equação mais famosa da cinemática. Ela nos diz a posição do corpo em qualquer instante de tempo. Como a velocidade está mudando, o corpo percorre distâncias cada vez maiores (se estiver acelerando) ou menores (se estiver freando) a cada segundo. Por isso, o tempo aparece elevado ao quadrado!
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
+                <h4 className="font-semibold text-purple-400 mb-4">A Equação e Seus Termos</h4>
+                <div className="space-y-4">
+                  <div className="flex justify-center mb-6">
+                    <MathFormula formula="s = s_0 + v_0 \cdot t + \frac{a \cdot t^2}{2}" display={true} className="text-4xl" />
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-4 mt-6 pt-6 border-t border-slate-700">
+                    <div className="bg-slate-800/50 p-4 rounded-lg">
+                      <p className="font-semibold text-purple-400 mb-2">Termo a Termo:</p>
+                      <ul className="space-y-2 text-sm text-slate-300">
+                        <li><MathFormula formula="s" display={false} />: <strong>Posição Final</strong> (m)</li>
+                        <li><MathFormula formula="s_0" display={false} />: <strong>Posição Inicial</strong> (m)</li>
+                        <li><MathFormula formula="v_0 \cdot t" display={false} />: <strong>Deslocamento devido à velocidade inicial</strong></li>
+                        <li><MathFormula formula="\frac{a \cdot t^2}{2}" display={false} />: <strong>Deslocamento devido à aceleração</strong></li>
+                      </ul>
+                    </div>
+                    <div className="bg-slate-800/50 p-4 rounded-lg">
+                      <p className="font-semibold text-purple-400 mb-2">Por Que Essa Estrutura?</p>
+                      <ul className="space-y-2 text-sm text-slate-300">
+                        <li>É uma função quadrática: <MathFormula formula="y = c + bx + ax^2" display={false} /></li>
+                        <li>O gráfico será obrigatoriamente uma <strong>parábola</strong>.</li>
+                        <li>O termo <MathFormula formula="t^2" display={false} /> mostra que a posição cresce (ou decresce) de forma não linear.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dedução Física da Equação do Espaço */}
+                <div className="mt-6 pt-6 border-t border-slate-700">
+                  <h5 className="font-semibold text-purple-400 mb-4">📐 Dedução Física (O Método da Área)</h5>
+                  <div className="space-y-4 text-sm text-slate-300">
+                    <p className="leading-relaxed">
+                      A forma mais elegante de deduzir esta equação é usando a propriedade gráfica: a área sob o gráfico Velocidade × Tempo é igual ao deslocamento (<MathFormula formula="\Delta s" display={false} />).
+                    </p>
+                    
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 1: O Gráfico v × t no MRUV</strong></p>
+                      <p>No MRUV, a velocidade muda linearmente, então o gráfico é uma reta inclinada. A figura formada entre a reta e o eixo do tempo é um <strong>trapézio</strong>.</p>
+                    </div>
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 2: A Área do Trapézio</strong></p>
+                      <p>A área do trapézio é dada por: <MathFormula formula="\text{Área} = \frac{(\text{Base Maior} + \text{Base Menor}) \cdot \text{Altura}}{2}" display={false} /></p>
+                      <p>No nosso gráfico:</p>
+                      <ul className="list-disc list-inside ml-4 space-y-1">
+                        <li>Base Maior = <MathFormula formula="v" display={false} /> (velocidade final)</li>
+                        <li>Base Menor = <MathFormula formula="v_0" display={false} /> (velocidade inicial)</li>
+                        <li>Altura = <MathFormula formula="t" display={false} /> (tempo)</li>
+                      </ul>
+                      <MathFormula formula="\Delta s = \frac{(v + v_0) \cdot t}{2}" display={true} />
+                    </div>
+                    <div className="bg-slate-800/70 p-4 rounded-lg space-y-3">
+                      <p><strong>Passo 3: Substituindo a Velocidade Final</strong></p>
+                      <p>Sabemos da primeira equação que <MathFormula formula="v = v_0 + at" display={false} />. Vamos substituir isso na fórmula da área:</p>
+                      <MathFormula formula="\Delta s = \frac{((v_0 + at) + v_0) \cdot t}{2}" display={true} />
+                      <MathFormula formula="\Delta s = \frac{(2v_0 + at) \cdot t}{2}" display={true} />
+                      <MathFormula formula="\Delta s = \frac{2v_0t + at^2}{2}" display={true} />
+                      <MathFormula formula="\Delta s = v_0t + \frac{at^2}{2}" display={true} />
+                      <p className="mt-2">Como <MathFormula formula="\Delta s = s - s_0" display={false} />, passamos o <MathFormula formula="s_0" display={false} /> somando e chegamos à equação final!</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Equação de Torricelli */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center text-sm font-bold text-amber-700">3</span>
+                Equação de Torricelli (A Equação Sem Tempo)
+              </h3>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                <h4 className="font-bold text-slate-800 mb-3">A Lógica Intuitiva</h4>
+                <p className="text-slate-700 leading-relaxed mb-4">
+                  Evangelista Torricelli percebeu um problema prático: muitas vezes, em experimentos ou problemas de física, <strong>nós não temos um cronômetro</strong>. Sabemos a distância, sabemos a aceleração, mas não sabemos o tempo. Ele manipulou a matemática para criar uma equação que relaciona velocidade e espaço diretamente, <strong>sem depender do tempo</strong>.
+                </p>
+                <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
+                  <p className="text-slate-700 text-sm">
+                    <strong>Regra de Ouro:</strong> Se o problema não deu o tempo e não pediu o tempo, use Torricelli!
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 mb-6 shadow-xl">
+                <h4 className="font-semibold text-amber-400 mb-4">A Equação e Seus Termos</h4>
+                <div className="space-y-4">
+                  <div className="flex justify-center mb-6">
+                    <MathFormula formula="v^2 = v_0^2 + 2 \cdot a \cdot \Delta s" display={true} className="text-4xl" />
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-4 mt-6 pt-6 border-t border-slate-700">
+                    <div className="bg-slate-800/50 p-4 rounded-lg">
+                      <p className="font-semibold text-amber-400 mb-2">Termo a Termo:</p>
+                      <ul className="space-y-2 text-sm text-slate-300">
+                        <li><MathFormula formula="v^2" display={false} />: <strong>Velocidade Final ao quadrado</strong></li>
+                        <li><MathFormula formula="v_0^2" display={false} />: <strong>Velocidade Inicial ao quadrado</strong></li>
+                        <li><MathFormula formula="a" display={false} />: <strong>Aceleração</strong></li>
+                        <li><MathFormula formula="\Delta s" display={false} />: <strong>Deslocamento</strong> (<MathFormula formula="s - s_0" display={false} />)</li>
+                      </ul>
+                    </div>
+                    <div className="bg-slate-800/50 p-4 rounded-lg">
+                      <p className="font-semibold text-amber-400 mb-2">Dedução Algébrica:</p>
+                      <p className="text-sm text-slate-300 leading-relaxed mb-2">
+                        Torricelli simplesmente isolou o tempo (<MathFormula formula="t" display={false} />) na equação da velocidade:
+                      </p>
+                      <MathFormula formula="t = \frac{v - v_0}{a}" display={true} />
+                      <p className="text-sm text-slate-300 leading-relaxed mt-2">
+                        E substituiu esse <MathFormula formula="t" display={false} /> dentro da equação horária do espaço. Após alguma álgebra pesada (produtos notáveis), o tempo desaparece e a equação surge.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
-        </Card>
+        </div>
+
       </section>
     </div>
   );
