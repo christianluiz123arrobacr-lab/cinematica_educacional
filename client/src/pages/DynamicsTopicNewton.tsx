@@ -276,9 +276,18 @@ export default function DinamicaTopicPrimeiraLei() {
           </h2>
           
           <div className="space-y-8">
-            <p className="text-slate-700 leading-relaxed text-lg">
-              A Primeira Lei nos disse o que acontece quando a Força Resultante é zero (o corpo fica em MRU ou repouso). Mas e se a Força Resultante <strong>não for zero</strong>? O que acontece quando o equilíbrio é quebrado? A Segunda Lei de Newton responde a essa pergunta com a equação mais famosa da física clássica.
-            </p>
+            <div className="bg-amber-50 border-l-4 border-amber-500 rounded p-6">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">O Contexto Histórico: A Quantificação do Movimento</h3>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                A Primeira Lei nos disse o que acontece quando a Força Resultante é zero (o corpo fica em MRU ou repouso). Mas e se a Força Resultante <strong>não for zero</strong>? O que acontece quando o equilíbrio é quebrado?
+              </p>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                No século XVII, Isaac Newton publicou sua obra-prima, o <em>Principia Mathematica</em>. Nele, Newton não apenas disse que uma força causa mudança de movimento, ele <strong>quantificou</strong> essa mudança. Ele percebeu que a força não gera velocidade diretamente, mas sim <strong>aceleração</strong> (a taxa de variação da velocidade). E mais: ele percebeu que a massa do corpo atua como uma resistência natural a essa aceleração.
+              </p>
+              <p className="text-slate-700 leading-relaxed">
+                Newton originalmente formulou essa lei em termos de "Quantidade de Movimento" (Momento Linear), afirmando que a força resultante é a derivada do momento no tempo (<MathFormula formula="\vec{F} = \frac{d\vec{p}}{dt}" display={false} />). Para corpos de massa constante, essa genialidade matemática se simplifica na equação mais famosa da física clássica.
+              </p>
+            </div>
 
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-8 shadow-xl border border-slate-700">
               <div className="flex flex-col items-center justify-center mb-8">
@@ -293,7 +302,7 @@ export default function DinamicaTopicPrimeiraLei() {
                   <div className="text-amber-400 font-bold text-xl mb-2">F<sub className="text-sm">R</sub></div>
                   <h4 className="text-white font-semibold mb-2">Força Resultante</h4>
                   <p className="text-slate-300 text-sm leading-relaxed">
-                    A soma vetorial de <strong>todas</strong> as forças que atuam no corpo. É a causa da mudança de movimento. Medida em Newtons (N).
+                    A soma vetorial de <strong>todas</strong> as forças que atuam no corpo. É a <strong>causa</strong> da mudança de movimento. Medida em Newtons (N).
                   </p>
                 </div>
                 
@@ -309,24 +318,46 @@ export default function DinamicaTopicPrimeiraLei() {
                   <div className="text-blue-400 font-bold text-xl mb-2">a</div>
                   <h4 className="text-white font-semibold mb-2">Aceleração</h4>
                   <p className="text-slate-300 text-sm leading-relaxed">
-                    A consequência da força. É a taxa de variação da velocidade. A aceleração tem <strong>sempre a mesma direção e sentido</strong> da Força Resultante. Medida em m/s².
+                    A <strong>consequência</strong> da força. É a taxa de variação da velocidade. A aceleração tem <strong>sempre a mesma direção e sentido</strong> da Força Resultante. Medida em m/s².
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-amber-50 border-l-4 border-amber-500 rounded p-6">
-              <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
-                <Lightbulb className="w-5 h-5 text-amber-600" />
-                A Lógica Intuitiva da Fórmula
+            <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+              <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2 text-xl">
+                <Target className="w-6 h-6 text-indigo-600" />
+                A Demonstração Lógica (Como Newton chegou lá?)
               </h4>
-              <p className="text-slate-700 leading-relaxed mb-3">
-                A equação <MathFormula formula="F = m \cdot a" display={false} /> não é apenas uma decoreba matemática, ela conta uma história lógica perfeita:
+              <p className="text-slate-700 leading-relaxed mb-4">
+                A equação <MathFormula formula="F = m \cdot a" display={false} /> não caiu do céu. Ela é a união de duas observações experimentais diretas:
               </p>
-              <ul className="space-y-3 text-slate-700 ml-4 list-disc">
-                <li>Se você quer acelerar um carro (aumentar o <strong>a</strong>), você precisa pisar mais fundo no acelerador (aumentar o <strong>F</strong>).</li>
-                <li>Se você tentar empurrar um fusca (massa pequena) e depois um caminhão (massa grande) com a mesma força <strong>F</strong>, o fusca vai acelerar muito mais. A massa <strong>m</strong> é o "freio natural" da aceleração.</li>
-              </ul>
+              
+              <div className="space-y-4">
+                <div className="flex items-start gap-4 bg-slate-50 p-4 rounded-lg border border-slate-100">
+                  <div className="bg-indigo-100 text-indigo-700 font-bold w-8 h-8 rounded-full flex items-center justify-center shrink-0">1</div>
+                  <div>
+                    <h5 className="font-bold text-slate-800">Aceleração é diretamente proporcional à Força</h5>
+                    <p className="text-slate-600 text-sm mt-1">Se você empurrar um carrinho de supermercado com o dobro da força, ele vai acelerar o dobro. (<MathFormula formula="a \propto F" display={false} />)</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4 bg-slate-50 p-4 rounded-lg border border-slate-100">
+                  <div className="bg-indigo-100 text-indigo-700 font-bold w-8 h-8 rounded-full flex items-center justify-center shrink-0">2</div>
+                  <div>
+                    <h5 className="font-bold text-slate-800">Aceleração é inversamente proporcional à Massa</h5>
+                    <p className="text-slate-600 text-sm mt-1">Se você aplicar a mesma força em um carrinho vazio e em um carrinho cheio (com o dobro da massa), o carrinho cheio terá apenas metade da aceleração. (<MathFormula formula="a \propto \frac{1}{m}" display={false} />)</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4 bg-indigo-50 p-4 rounded-lg border border-indigo-200">
+                  <div className="bg-indigo-600 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center shrink-0">3</div>
+                  <div>
+                    <h5 className="font-bold text-indigo-900">A Síntese</h5>
+                    <p className="text-indigo-800 text-sm mt-1">Juntando as duas observações, temos <MathFormula formula="a = \frac{F}{m}" display={false} />. Multiplicando cruzado, chegamos à forma clássica: <MathFormula formula="F = m \cdot a" display={false} />.</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Exemplo Resolvido da 2ª Lei */}
@@ -334,7 +365,7 @@ export default function DinamicaTopicPrimeiraLei() {
               <div className="bg-slate-50 p-4 border-b border-slate-200">
                 <h5 className="font-bold text-slate-800 flex items-center gap-2">
                   <Activity className="w-5 h-5 text-amber-600" />
-                  Exemplo 3: O Bloco Empurrado
+                  Exemplo 3: O Bloco Empurrado (Conexão com a Cinemática)
                 </h5>
               </div>
               <div className="p-6 space-y-4">
@@ -345,7 +376,7 @@ export default function DinamicaTopicPrimeiraLei() {
                 <div className="bg-amber-50/50 p-4 rounded-lg border border-amber-100 space-y-3">
                   <p className="font-semibold text-amber-900">Resolução Passo a Passo:</p>
                   <p className="text-slate-700 text-sm leading-relaxed">
-                    1. Primeiro, usamos a <strong>Segunda Lei de Newton</strong> para descobrir a aceleração que essa força gera no bloco.
+                    1. Primeiro, usamos a <strong>Segunda Lei de Newton</strong> para descobrir a aceleração que essa força gera no bloco. A dinâmica nos dá a "causa".
                   </p>
                   <div className="bg-white p-3 rounded border border-slate-200 text-center my-2">
                     <MathFormula formula="F_R = m \cdot a \implies 20 = 5 \cdot a \implies a = \frac{20}{5} = 4 \text{ m/s}^2" display={true} />
@@ -358,6 +389,53 @@ export default function DinamicaTopicPrimeiraLei() {
                   </div>
                   <p className="text-slate-700 text-sm font-bold mt-2">
                     Resposta: A velocidade será de 16 m/s.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Questão de Vestibular */}
+            <div className="border border-slate-200 rounded-xl overflow-hidden mt-8">
+              <div className="bg-slate-800 p-4 border-b border-slate-700">
+                <h5 className="font-bold text-white flex items-center gap-2">
+                  <Target className="w-5 h-5 text-amber-400" />
+                  Como cai no Vestibular? (Exemplo Prático)
+                </h5>
+              </div>
+              <div className="p-6 space-y-4 bg-slate-50">
+                <p className="text-slate-700 italic">
+                  "Um carro de 1000 kg viaja a 72 km/h quando o motorista avista um obstáculo e pisa no freio, parando completamente após 5 segundos. Qual foi a intensidade da força de frenagem aplicada pelos freios?"
+                </p>
+                
+                <div className="bg-white p-5 rounded-lg border border-slate-200 space-y-4">
+                  <p className="font-semibold text-slate-800">Resolução:</p>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    Neste tipo de questão, fazemos o caminho inverso do Exemplo 3. A cinemática nos dá os dados do movimento, e nós usamos isso para descobrir a força.
+                  </p>
+                  
+                  <div className="space-y-2">
+                    <p className="text-slate-700 text-sm font-bold">Passo 1: Converter unidades</p>
+                    <p className="text-slate-600 text-sm">Velocidade inicial: <MathFormula formula="v_0 = 72 \text{ km/h} \div 3,6 = 20 \text{ m/s}" display={false} /></p>
+                    <p className="text-slate-600 text-sm">Velocidade final: <MathFormula formula="v = 0" display={false} /> (ele parou)</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-slate-700 text-sm font-bold">Passo 2: Achar a aceleração (Cinemática)</p>
+                    <div className="bg-slate-50 p-2 rounded text-center">
+                      <MathFormula formula="v = v_0 + a \cdot t \implies 0 = 20 + a \cdot 5 \implies 5a = -20 \implies a = -4 \text{ m/s}^2" display={true} />
+                    </div>
+                    <p className="text-slate-600 text-xs italic text-center">O sinal negativo indica que é uma desaceleração (frenagem).</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-slate-700 text-sm font-bold">Passo 3: Achar a Força (Dinâmica)</p>
+                    <div className="bg-slate-50 p-2 rounded text-center">
+                      <MathFormula formula="F_R = m \cdot |a| \implies F_R = 1000 \cdot 4 = 4000 \text{ N}" display={true} />
+                    </div>
+                  </div>
+                  
+                  <p className="text-slate-800 font-bold mt-4">
+                    Resposta: A força de frenagem foi de 4000 Newtons.
                   </p>
                 </div>
               </div>
