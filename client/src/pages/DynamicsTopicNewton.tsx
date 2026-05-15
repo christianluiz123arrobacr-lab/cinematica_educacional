@@ -41,29 +41,33 @@ export default function DinamicaTopicPrimeiraLei() {
             <div className="bg-emerald-50 border-l-4 border-emerald-500 rounded p-6">
               <h3 className="text-xl font-bold text-slate-900 mb-3">A Quebra de um Paradigma de 2000 Anos</h3>
               <p className="text-slate-700 leading-relaxed mb-4">
-                Antes de entrarmos nas fórmulas, precisamos entender o tamanho da revolução que a Primeira Lei de Newton causou. Durante mais de dois milênios, a humanidade acreditou na física de <strong>Aristóteles</strong>.
+                Antes de entrarmos nas fórmulas e definições matemáticas, precisamos entender o tamanho da revolução intelectual que a Primeira Lei de Newton causou. Para compreender a inércia, você precisa primeiro desaprender o que o seu próprio "senso comum" diz sobre o movimento. Durante mais de dois milênios, a humanidade inteira — incluindo os maiores sábios da antiguidade — acreditou na física proposta pelo filósofo grego <strong>Aristóteles</strong>.
               </p>
               
               <div className="grid md:grid-cols-2 gap-6 mt-6">
-                <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                  <h4 className="font-bold text-red-700 mb-2 flex items-center gap-2">
-                    <AlertTriangle className="w-5 h-5" />
-                    O Erro de Aristóteles
+                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                  <h4 className="font-bold text-red-700 mb-3 flex items-center gap-2">
+                    <AlertTriangle className="w-6 h-6" />
+                    O Erro do Senso Comum (Aristóteles)
                   </h4>
+                  <p className="text-slate-700 text-sm leading-relaxed mb-3">
+                    Aristóteles observava o mundo ao seu redor e concluía: <em>"O estado natural e perfeito de todos os corpos é o repouso absoluto. Para que um corpo se mova, e continue se movendo, é estritamente necessária a ação de uma força constante empurrando-o."</em>
+                  </p>
                   <p className="text-slate-700 text-sm leading-relaxed">
-                    Aristóteles dizia: <em>"O estado natural dos corpos é o repouso. Para que um corpo se mova, é necessária uma força constante empurrando-o."</em><br/><br/>
-                    Parece lógico, não? Se você empurra um livro na mesa e solta, ele para. O senso comum nos diz que o movimento precisa de força para existir.
+                    Parece extremamente lógico, não é? Se você empurra um livro pesado sobre uma mesa de madeira e solta, o que acontece? Ele para quase imediatamente. Se você para de pedalar uma bicicleta em uma rua plana, ela vai perdendo velocidade até parar. O nosso cérebro, baseado na experiência diária, nos diz que o movimento "morre" naturalmente e precisa de força para "viver". Esse foi o erro que travou a ciência por 2000 anos.
                   </p>
                 </div>
                 
-                <div className="bg-slate-900 p-5 rounded-xl border border-slate-700 shadow-sm text-slate-100">
-                  <h4 className="font-bold text-emerald-400 mb-2 flex items-center gap-2">
-                    <Lightbulb className="w-5 h-5" />
-                    A Genialidade de Galileu
+                <div className="bg-slate-900 p-6 rounded-xl border border-slate-700 shadow-sm text-slate-100">
+                  <h4 className="font-bold text-emerald-400 mb-3 flex items-center gap-2">
+                    <Lightbulb className="w-6 h-6" />
+                    A Genialidade de Galileu Galilei
                   </h4>
+                  <p className="text-slate-300 text-sm leading-relaxed mb-3">
+                    No século XVII, Galileu Galilei fez o que ninguém havia feito: ele imaginou um mundo ideal. Ele percebeu que o livro não para porque "quer" parar ou porque o repouso é seu estado natural. O livro para porque existe uma força invisível "roubando" seu movimento: o <strong>atrito</strong>!
+                  </p>
                   <p className="text-slate-300 text-sm leading-relaxed">
-                    Galileu Galilei percebeu o erro: o livro não para porque "quer" parar, ele para por causa do <strong>atrito</strong>! Se tirarmos todo o atrito, o livro deslizaria para sempre.<br/><br/>
-                    Galileu concluiu: <em>"O movimento uniforme é tão natural quanto o repouso."</em>
+                    Galileu propôs um experimento mental revolucionário: imagine uma superfície perfeitamente lisa, como gelo polido, e uma esfera perfeitamente redonda. Se você der um empurrão nessa esfera, e não houver atrito nem resistência do ar, ela não vai parar nunca. Ela deslizará em linha reta, com velocidade constante, pela eternidade. Galileu concluiu a maior verdade da cinemática: <em>"O movimento retilíneo uniforme é um estado tão natural e eterno quanto o próprio repouso."</em>
                   </p>
                 </div>
               </div>
@@ -90,56 +94,65 @@ export default function DinamicaTopicPrimeiraLei() {
           
           <div className="space-y-8">
             <p className="text-slate-700 leading-relaxed text-lg">
-              Inércia não é uma força. Inércia não é uma energia. <strong>Inércia é uma propriedade da matéria</strong>. É a "preguiça" cósmica que todo corpo tem de mudar o que está fazendo.
+              A primeira coisa que você precisa gravar na mente é: <strong>Inércia não é uma força. Inércia não é uma energia.</strong> Você nunca vai calcular "quantos Newtons de inércia" um corpo tem. Inércia é uma <strong>propriedade intrínseca da matéria</strong>. É a "preguiça" cósmica, a teimosia absoluta que todo corpo tem de manter exatamente o que está fazendo no momento. Se ele está parado, ele "quer" continuar parado. Se ele está a 100 km/h para o norte, ele "quer" continuar a 100 km/h para o norte, para sempre.
             </p>
 
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 shadow-xl">
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
-                  <h4 className="font-semibold text-emerald-400 mb-4">A Medida da Inércia</h4>
+                  <h4 className="font-semibold text-emerald-400 mb-4">A Medida da Inércia: A Massa</h4>
                   <p className="text-slate-300 text-sm leading-relaxed mb-4">
-                    Como medimos o quão "preguiçoso" um corpo é? Através da sua <strong>Massa</strong>.
+                    Como medimos o quão "preguiçoso" ou "teimoso" um corpo é? Através da sua <strong>Massa</strong>. A massa de um corpo é a medida quantitativa da sua inércia. Quanto maior a massa, maior a dificuldade de alterar seu estado de movimento.
                   </p>
-                  <ul className="space-y-3 text-sm text-slate-300">
-                    <li className="flex items-start gap-2">
-                      <span className="text-emerald-400 mt-1">•</span>
-                      <span><strong>Muita Massa:</strong> Muita inércia. É muito difícil fazer um trem parado começar a andar, e igualmente difícil fazer um trem em movimento parar.</span>
+                  <ul className="space-y-4 text-sm text-slate-300">
+                    <li className="flex items-start gap-3">
+                      <span className="text-emerald-400 mt-1 text-lg">•</span>
+                      <span><strong>Muita Massa (Muita Inércia):</strong> Imagine um trem de carga de 500 toneladas parado. É preciso uma força colossal das locomotivas para fazê-lo começar a andar. Agora imagine esse mesmo trem a 80 km/h. É preciso uma força de frenagem absurda, ao longo de quilômetros, para obrigá-lo a parar. A inércia dele é gigantesca.</span>
                     </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-emerald-400 mt-1">•</span>
-                      <span><strong>Pouca Massa:</strong> Pouca inércia. É fácil chutar uma bola de ping-pong e fácil pará-la.</span>
+                    <li className="flex items-start gap-3">
+                      <span className="text-emerald-400 mt-1 text-lg">•</span>
+                      <span><strong>Pouca Massa (Pouca Inércia):</strong> Imagine uma bola de ping-pong de 2 gramas. Um leve sopro a tira do repouso. Se ela estiver voando na sua direção, você a para com um dedo sem sentir dor. A inércia dela é minúscula.</span>
                     </li>
                   </ul>
                 </div>
                 
-                <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
-                  <h4 className="font-semibold text-amber-400 mb-2 flex items-center gap-2">
-                    <Lightbulb className="w-4 h-4" />
-                    Propriedade de Ouro: A Equivalência
+                <div className="bg-slate-800/50 p-5 rounded-lg border border-slate-700 flex flex-col justify-center">
+                  <h4 className="font-semibold text-amber-400 mb-3 flex items-center gap-2 text-lg">
+                    <Lightbulb className="w-5 h-5" />
+                    Propriedade de Ouro: A Equivalência Dinâmica
                   </h4>
-                  <p className="text-slate-300 text-sm leading-relaxed">
-                    Para a física, estar em <strong>Repouso</strong> ou em <strong>Movimento Retilíneo Uniforme (MRU)</strong> é exatamente a mesma coisa do ponto de vista dinâmico. Ambos são estados de <strong>Equilíbrio</strong> (Força Resultante = 0).
+                  <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                    Para a física newtoniana, estar em <strong>Repouso Absoluto</strong> ou estar em <strong>Movimento Retilíneo Uniforme (MRU)</strong> é exatamente a mesma coisa do ponto de vista dinâmico. Não há diferença matemática nas forças.
                   </p>
+                  <div className="bg-slate-900 p-3 rounded border border-slate-600 text-center">
+                    <p className="text-emerald-400 font-mono text-sm">Repouso = Equilíbrio Estático</p>
+                    <p className="text-emerald-400 font-mono text-sm mt-1">MRU = Equilíbrio Dinâmico</p>
+                    <p className="text-white font-bold mt-2">Em ambos: Força Resultante = 0</p>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Exemplos do Cotidiano */}
-            <div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">A Inércia no Nosso Dia a Dia</h3>
+            <div className="mt-10">
+              <h3 className="text-2xl font-bold text-slate-800 mb-6">A Inércia no Nosso Dia a Dia (Por que usamos cinto de segurança?)</h3>
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
-                  <h4 className="font-bold text-slate-800 mb-2">1. A Freada do Ônibus</h4>
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                  <h4 className="font-bold text-slate-800 mb-3 text-lg">1. A Freada Brusca do Ônibus</h4>
                   <p className="text-slate-700 text-sm leading-relaxed">
-                    Você está em pé no ônibus a 60 km/h. O motorista freia bruscamente. Você é "jogado" para frente. Por quê?<br/><br/>
-                    O ônibus freou, mas <strong>você não</strong>. Por inércia, seu corpo tende a continuar a 60 km/h para frente. O cinto de segurança (ou sua mão na barra) é a força externa necessária para mudar seu estado.
+                    Você está em pé no corredor de um ônibus viajando a 60 km/h. De repente, um cachorro cruza a rua e o motorista pisa fundo no freio. O que acontece com você? Você é violentamente "jogado" para frente. Mas preste atenção na física: você não foi jogado para frente. Não existe nenhuma força te empurrando.
+                  </p>
+                  <p className="text-slate-700 text-sm leading-relaxed mt-2">
+                    O que realmente aconteceu: O ônibus freou (sofreu uma força externa), mas <strong>você não</strong>. Por inércia, o seu corpo apenas tentou continuar fazendo o que já estava fazendo: viajar a 60 km/h para frente. O ônibus parou, você continuou. É por isso que precisamos nos segurar nas barras: para que a barra aplique em nós a força necessária para mudarmos nosso estado de movimento junto com o ônibus.
                   </p>
                 </div>
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
-                  <h4 className="font-bold text-slate-800 mb-2">2. A Arrancada do Carro</h4>
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                  <h4 className="font-bold text-slate-800 mb-3 text-lg">2. A Arrancada do Carro Esportivo</h4>
                   <p className="text-slate-700 text-sm leading-relaxed">
-                    Você está parado no semáforo. O sinal abre e o carro arranca rápido. Você é "colado" no banco. Por quê?<br/><br/>
-                    Seu corpo estava em repouso e tende a continuar em repouso. O carro vai para frente, e o banco empurra suas costas para obrigar você a acompanhar o movimento.
+                    Você está sentado no banco do passageiro de um carro esportivo parado no semáforo. O sinal fica verde e o motorista acelera com tudo. Você sente suas costas sendo "esmagadas" contra o banco. Novamente, não há uma força te empurrando para trás.
+                  </p>
+                  <p className="text-slate-700 text-sm leading-relaxed mt-2">
+                    O que realmente aconteceu: Seu corpo estava em repouso e, por inércia, a tendência natural dele é continuar exatamente ali, parado em relação ao solo. O carro, no entanto, foi violentamente acelerado para frente. O banco do carro avança contra as suas costas e te empurra para frente, obrigando o seu corpo a sair do repouso e acompanhar o carro. A sensação de ser esmagado é apenas a força normal do banco vencendo a sua inércia.
                   </p>
                 </div>
               </div>
