@@ -444,40 +444,57 @@ export default function CinematicaTopicMRU() {
           </h2>
           
           <div className="space-y-8">
-            <p className="text-slate-700 leading-relaxed text-lg">
-              Os problemas de encontro e perseguição são os mais clássicos da cinemática. Eles testam sua capacidade de modelar fisicamente uma situação real. O segredo para resolver <strong>qualquer</strong> problema desse tipo é sempre o mesmo: <strong>igualar as posições</strong>.
-            </p>
+            <div className="bg-purple-50 border-l-4 border-purple-500 rounded p-6">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">A Lógica Física do Encontro</h3>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                Os problemas de encontro e perseguição são os mais clássicos da cinemática. Eles testam sua capacidade de modelar fisicamente uma situação real. O segredo para resolver <strong>qualquer</strong> problema desse tipo é sempre o mesmo: <strong>igualar as posições</strong>.
+              </p>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                Por que igualamos as posições? Porque, na física, um "encontro" ou uma "ultrapassagem" significa que dois corpos ocupam <strong>exatamente o mesmo lugar no espaço, no mesmo instante de tempo</strong>. Se o carro A está no km 100 e o carro B também está no km 100 ao mesmo tempo, eles se encontraram.
+              </p>
+              <div className="bg-white p-4 rounded-lg border border-purple-100 mt-4 flex justify-center">
+                <MathFormula formula="s_A(t) = s_B(t)" display={true} className="text-2xl text-purple-900" />
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Encontro Frontal */}
               <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 shadow-xl">
                 <h3 className="font-bold text-purple-400 mb-4 text-xl border-b border-slate-700 pb-2">💥 Encontro Frontal</h3>
-                <p className="text-slate-300 mb-4">
-                  Dois móveis viajam em sentidos opostos. Um tem velocidade positiva (progressivo) e o outro negativa (retrógrado).
+                <p className="text-slate-300 mb-4 leading-relaxed">
+                  Ocorre quando dois móveis viajam em <strong>sentidos opostos</strong>. Para que isso aconteça na mesma trajetória, um deve ter velocidade positiva (movimento progressivo) e o outro negativa (movimento retrógrado).
                 </p>
                 <div className="bg-slate-800/50 p-4 rounded-lg mb-4">
-                  <p className="text-sm text-slate-400 mb-2">Características:</p>
-                  <ul className="list-disc list-inside text-sm text-slate-300 space-y-1">
-                    <li><MathFormula formula="v_A > 0" display={false} /> e <MathFormula formula="v_B < 0" display={false} /></li>
-                    <li>A distância entre eles diminui rapidamente.</li>
-                    <li>A velocidade relativa de aproximação é a soma dos módulos: <MathFormula formula="v_{rel} = |v_A| + |v_B|" display={false} /></li>
-                  </ul>
+                  <p className="text-sm font-semibold text-purple-300 mb-2">Por que a distância diminui rápido?</p>
+                  <p className="text-sm text-slate-300 leading-relaxed mb-3">
+                    Imagine um carro a 60 km/h e outro a 40 km/h vindo em sua direção. A cada hora, o primeiro avança 60 km e o segundo avança 40 km. A distância entre eles diminui 100 km por hora!
+                  </p>
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    Fisicamente, dizemos que a <strong>velocidade relativa de aproximação</strong> é a soma dos módulos das velocidades:
+                  </p>
+                  <div className="mt-3 flex justify-center">
+                    <MathFormula formula="v_{rel} = |v_A| + |v_B|" display={true} />
+                  </div>
                 </div>
               </div>
 
               {/* Perseguição */}
               <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-6 shadow-xl">
                 <h3 className="font-bold text-purple-400 mb-4 text-xl border-b border-slate-700 pb-2">🏃 Perseguição (Ultrapassagem)</h3>
-                <p className="text-slate-300 mb-4">
-                  Dois móveis viajam no mesmo sentido. O de trás precisa ser mais rápido que o da frente para alcançá-lo.
+                <p className="text-slate-300 mb-4 leading-relaxed">
+                  Ocorre quando dois móveis viajam no <strong>mesmo sentido</strong>. Para haver encontro, existe uma condição física inegociável: <strong>o móvel de trás deve ser mais rápido que o da frente</strong>.
                 </p>
                 <div className="bg-slate-800/50 p-4 rounded-lg mb-4">
-                  <p className="text-sm text-slate-400 mb-2">Características:</p>
-                  <ul className="list-disc list-inside text-sm text-slate-300 space-y-1">
-                    <li><MathFormula formula="v_A > 0" display={false} /> e <MathFormula formula="v_B > 0" display={false} /></li>
-                    <li>Para A alcançar B, obrigatoriamente <MathFormula formula="v_A > v_B" display={false} />.</li>
-                    <li>A velocidade relativa de aproximação é a diferença: <MathFormula formula="v_{rel} = v_A - v_B" display={false} /></li>
-                  </ul>
+                  <p className="text-sm font-semibold text-purple-300 mb-2">Por que a aproximação é lenta?</p>
+                  <p className="text-sm text-slate-300 leading-relaxed mb-3">
+                    Se você está a 100 km/h perseguindo um carro a 80 km/h, a cada hora você avança 100 km, mas ele foge 80 km. O seu ganho real é de apenas 20 km por hora.
+                  </p>
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    Fisicamente, a <strong>velocidade relativa de aproximação</strong> é a diferença entre as velocidades:
+                  </p>
+                  <div className="mt-3 flex justify-center">
+                    <MathFormula formula="v_{rel} = |v_A| - |v_B|" display={true} />
+                  </div>
                 </div>
               </div>
             </div>
@@ -487,9 +504,9 @@ export default function CinematicaTopicMRU() {
               <div className="bg-slate-100 p-6 border-b border-slate-200">
                 <div className="flex items-center gap-3 mb-2">
                   <span className="bg-purple-600 text-white px-3 py-1 rounded text-sm font-bold">Exemplo 3</span>
-                  <h3 className="font-bold text-slate-800 text-lg">O Ladrão e a Viatura (Perseguição)</h3>
+                  <h3 className="font-bold text-slate-800 text-lg">O Ladrão e a Viatura (Perseguição com Atraso)</h3>
                 </div>
-                <p className="text-slate-700 text-lg">
+                <p className="text-slate-700 text-lg leading-relaxed">
                   Um carro roubado passa por um posto policial a uma velocidade constante de <strong>30 m/s</strong>. Exatamente <strong>10 segundos depois</strong>, uma viatura policial parte do mesmo posto em perseguição, mantendo uma velocidade constante de <strong>40 m/s</strong>. 
                   <br/><br/>
                   Quanto tempo a viatura leva para alcançar o carro roubado após iniciar a perseguição?
@@ -497,32 +514,56 @@ export default function CinematicaTopicMRU() {
               </div>
               
               <div className="p-6 space-y-6 bg-white">
-                <div className="bg-purple-50 p-5 rounded-xl border border-purple-100">
-                  <h4 className="font-bold text-purple-900 mb-2">O Pulo do Gato (Atraso de Tempo):</h4>
-                  <p className="text-slate-700 mb-3">
-                    Como a viatura sai 10 segundos <em>depois</em>, os tempos de movimento não são iguais. Se chamarmos o tempo da viatura de <MathFormula formula="t" display={false} />, o carro roubado já estava se movendo há 10 segundos a mais. Logo, o tempo do carro roubado é <MathFormula formula="(t + 10)" display={false} />.
+                <div className="bg-purple-50 p-6 rounded-xl border border-purple-100">
+                  <h4 className="font-bold text-purple-900 mb-3 text-xl">O Pulo do Gato: A Sincronização do Tempo</h4>
+                  <p className="text-slate-700 mb-4 leading-relaxed">
+                    O maior erro dos alunos neste problema é usar o mesmo <MathFormula formula="t" display={false} /> para os dois veículos. <strong>Isso é um erro físico grave!</strong> O tempo <MathFormula formula="t" display={false} /> na equação horária representa o tempo que o corpo passou em movimento.
                   </p>
+                  <p className="text-slate-700 mb-4 leading-relaxed">
+                    Como a viatura sai 10 segundos <em>depois</em>, o carro roubado já estava se movendo. Se o cronômetro da viatura marca <MathFormula formula="t" display={false} /> segundos de perseguição, o carro roubado já está se movendo há <MathFormula formula="t" display={false} /> segundos <strong>mais</strong> os 10 segundos de vantagem inicial.
+                  </p>
+                  <div className="bg-white p-4 rounded-lg border border-purple-200 mb-6">
+                    <ul className="text-slate-800 font-medium space-y-2">
+                      <li>⏱️ Tempo de movimento da Viatura = <MathFormula formula="t" display={false} /></li>
+                      <li>⏱️ Tempo de movimento do Ladrão = <MathFormula formula="(t + 10)" display={false} /></li>
+                    </ul>
+                  </div>
                   
-                  <h4 className="font-bold text-purple-900 mb-2 mt-4">Passo 1: Montar as Equações</h4>
-                  <p className="text-slate-700 mb-2">Ambos partem do posto policial, então a posição inicial de ambos é zero (<MathFormula formula="s_0 = 0" display={false} />).</p>
-                  <ul className="text-slate-700 mb-4 ml-4 space-y-2">
-                    <li>• Viatura: <MathFormula formula="s_V = 0 + 40 \cdot t \implies s_V = 40t" display={false} /></li>
-                    <li>• Carro Roubado: <MathFormula formula="s_C = 0 + 30 \cdot (t + 10) \implies s_C = 30(t + 10)" display={false} /></li>
-                  </ul>
+                  <h4 className="font-bold text-purple-900 mb-3">Passo 1: Montar as Equações Horárias</h4>
+                  <p className="text-slate-700 mb-3">Ambos partem do posto policial. Vamos definir o posto como a origem das posições (<MathFormula formula="s_0 = 0" display={false} />).</p>
+                  <div className="bg-white p-4 rounded-lg border border-purple-200 mb-6 space-y-4">
+                    <div>
+                      <p className="text-slate-600 text-sm font-bold mb-1">Equação da Viatura:</p>
+                      <MathFormula formula="s_V = 0 + 40 \cdot t \implies s_V = 40t" display={true} />
+                    </div>
+                    <div className="border-t border-purple-100 pt-4">
+                      <p className="text-slate-600 text-sm font-bold mb-1">Equação do Carro Roubado:</p>
+                      <MathFormula formula="s_C = 0 + 30 \cdot (t + 10) \implies s_C = 30(t + 10)" display={true} />
+                    </div>
+                  </div>
 
-                  <h4 className="font-bold text-purple-900 mb-2">Passo 2: Igualar as Posições</h4>
-                  <p className="text-slate-700 mb-3">No momento da captura, eles estão na mesma posição (<MathFormula formula="s_V = s_C" display={false} />):</p>
-                  <div className="bg-white p-4 rounded border border-purple-200 flex justify-center mb-4">
-                    <MathFormula formula="40t = 30(t + 10)" display={true} />
+                  <h4 className="font-bold text-purple-900 mb-3">Passo 2: A Condição de Encontro</h4>
+                  <p className="text-slate-700 mb-3">No momento exato da captura, a viatura e o carro roubado ocupam a mesma posição na estrada. Fisicamente, impomos a condição:</p>
+                  <div className="bg-white p-4 rounded-lg border border-purple-200 flex justify-center mb-6">
+                    <MathFormula formula="s_V = s_C" display={true} className="text-xl" />
                   </div>
                   
-                  <h4 className="font-bold text-purple-900 mb-2">Passo 3: Resolver a Equação</h4>
-                  <div className="bg-white p-4 rounded border border-purple-200 flex justify-center">
-                    <MathFormula formula="40t = 30t + 300 \implies 40t - 30t = 300 \implies 10t = 300 \implies \mathbf{t = 30 \text{ s}}" display={true} />
+                  <h4 className="font-bold text-purple-900 mb-3">Passo 3: Resolução Algébrica</h4>
+                  <p className="text-slate-700 mb-3">Substituímos as equações e aplicamos a propriedade distributiva (o "chuveirinho"):</p>
+                  <div className="bg-white p-5 rounded-lg border border-purple-200 space-y-4">
+                    <MathFormula formula="40t = 30(t + 10)" display={true} />
+                    <MathFormula formula="40t = 30t + 300" display={true} />
+                    <p className="text-slate-500 text-sm text-center italic">Passamos o 30t para o outro lado subtraindo:</p>
+                    <MathFormula formula="40t - 30t = 300" display={true} />
+                    <MathFormula formula="10t = 300" display={true} />
+                    <MathFormula formula="t = \frac{300}{10} \implies \mathbf{t = 30 \text{ s}}" display={true} className="text-xl text-purple-900" />
                   </div>
-                  <p className="text-slate-700 mt-3 font-semibold text-center">
-                    A viatura alcançará o carro roubado 30 segundos após iniciar a perseguição.
-                  </p>
+                  
+                  <div className="mt-6 bg-purple-900 text-white p-4 rounded-lg text-center shadow-md">
+                    <p className="font-bold text-lg">
+                      A viatura alcançará o carro roubado exatamente 30 segundos após iniciar a perseguição.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
