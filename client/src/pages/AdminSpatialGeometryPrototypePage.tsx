@@ -11,6 +11,7 @@ import {
   Eye,
   EyeOff,
   Layers,
+  MousePointerClick,
   PauseCircle,
   PlayCircle,
   Rotate3D,
@@ -83,6 +84,24 @@ type RenderTheme = {
   opacity: number;
   label: string;
 };
+
+type InspectorFormula = {
+  label: string;
+  formula: string;
+  substitution: string;
+};
+
+type InspectorData = {
+  title: string;
+  description: string;
+  formulas: InspectorFormula[];
+};
+
+const VIEWBOX_WIDTH = 980;
+const VIEWBOX_HEIGHT = 720;
+const CENTER_X = VIEWBOX_WIDTH / 2;
+const CENTER_Y = VIEWBOX_HEIGHT / 2;
+const PROJECT_SCALE = 138;
 
 const SOLIDS: SolidDefinition[] = [
   {
@@ -198,12 +217,11 @@ function projectPoint(
 ): ProjectedPoint {
   const rotated = rotatePoint(point, angleX, angleY);
   const distance = 7;
-  const scale = 104;
   const perspective = distance / (distance - rotated.z);
 
   return {
-    x: 390 + rotated.x * scale * perspective,
-    y: 290 - rotated.y * scale * perspective,
+    x: CENTER_X + rotated.x * PROJECT_SCALE * perspective,
+    y: CENTER_Y - rotated.y * PROJECT_SCALE * perspective,
     z: rotated.z,
     perspective,
   };
@@ -332,7 +350,7 @@ function createPyramidMesh(
 function createCylinderMesh(
   radius: number,
   height: number,
-  segments = 48
+  segments = 64
 ): SolidMesh {
   const bottom = createRegularPolygon(segments, radius, -height / 2);
   const top = createRegularPolygon(segments, radius, height / 2);
@@ -360,7 +378,7 @@ function createCylinderMesh(
 function createConeMesh(
   radius: number,
   height: number,
-  segments = 48
+  segments = 64
 ): SolidMesh {
   const base = createRegularPolygon(segments, radius, -height / 2);
   const apex = { x: 0, y: height / 2, z: 0 };
@@ -384,17 +402,17 @@ function createConeMesh(
 function getMeshForSolid(type: SolidType, sides: number): SolidMesh {
   switch (type) {
     case "cube":
-      return createBoxMesh(2.2, 2.2, 2.2);
+      return createBoxMesh(2.35, 2.35, 2.35);
     case "box":
-      return createBoxMesh(2.8, 2, 1.7);
+      return createBoxMesh(3.05, 2.15, 1.85);
     case "regularPrism":
-      return createPrismMesh(sides, 1.25, 2.2);
+      return createPrismMesh(sides, 1.35, 2.4);
     case "pyramid":
-      return createPyramidMesh(sides, 1.35, 2.5);
+      return createPyramidMesh(sides, 1.45, 2.65);
     case "cylinder":
-      return createCylinderMesh(1.25, 2.25);
+      return createCylinderMesh(1.35, 2.45);
     case "cone":
-      return createConeMesh(1.25, 2.35);
+      return createConeMesh(1.35, 2.55);
     default:
       return { faces: [], edges: [] };
   }
@@ -415,6 +433,7 @@ function renderMesh({
   scale,
   offset,
   theme,
+  onGeometryClick,
 }: {
   mesh: SolidMesh;
   angleX: number;
@@ -422,6 +441,7 @@ function renderMesh({
   scale: number;
   offset: Vec3;
   theme: RenderTheme;
+  onGeometryClick?: () => void;
 }) {
   const transformedFaces = mesh.faces.map((face, index) => {
     const transformed = face.points.map((point) =>
@@ -470,18 +490,36 @@ function renderMesh({
       {[...transformedEdges]
         .sort((a, b) => a.avgZ - b.avgZ)
         .map((edge) => (
-          <line
-            key={`edge-${theme.label}-${edge.index}`}
-            x1={edge.projected[0].x}
-            y1={edge.projected[0].y}
-            x2={edge.projected[1].x}
-            y2={edge.projected[1].y}
-            stroke={theme.edge}
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeDasharray={theme.dashed ? "8 8" : undefined}
-            opacity={theme.dashed ? 0.75 : 0.95}
-          />
+          <g key={`edge-group-${theme.label}-${edge.index}`}>
+            <line
+              x1={edge.projected[0].x}
+              y1={edge.projected[0].y}
+              x2={edge.projected[1].x}
+              y2={edge.projected[1].y}
+              stroke={theme.edge}
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeDasharray={theme.dashed ? "8 8" : undefined}
+              opacity={theme.dashed ? 0.75 : 0.95}
+            />
+
+            {onGeometryClick ? (
+              <line
+                x1={edge.projected[0].x}
+                y1={edge.projected[0].y}
+                x2={edge.projected[1].x}
+                y2={edge.projected[1].y}
+                stroke="transparent"
+                strokeWidth="20"
+                strokeLinecap="round"
+                className="cursor-pointer"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onGeometryClick();
+                }}
+              />
+            ) : null}
+          </g>
         ))}
     </g>
   );
@@ -493,18 +531,27 @@ function renderSphere({
   scale,
   offset,
   theme,
+  onGeometryClick,
 }: {
   angleX: number;
   angleY: number;
   scale: number;
   offset: Vec3;
   theme: RenderTheme;
+  onGeometryClick?: () => void;
 }) {
   const center = projectPoint(offset, angleX, angleY);
-  const radius = 118 * scale * center.perspective;
+  const radius = 145 * scale * center.perspective;
 
   return (
-    <g>
+    <g
+      onClick={(event) => {
+        if (!onGeometryClick) return;
+        event.stopPropagation();
+        onGeometryClick();
+      }}
+      className={onGeometryClick ? "cursor-pointer" : undefined}
+    >
       <circle
         cx={center.x}
         cy={center.y}
@@ -556,6 +603,10 @@ function baseAreaRegularPolygon(sides: number, side: number) {
 
 function apothemRegularPolygon(sides: number, side: number) {
   return side / (2 * Math.tan(Math.PI / sides));
+}
+
+function circumradiusRegularPolygon(sides: number, side: number) {
+  return side / (2 * Math.sin(Math.PI / sides));
 }
 
 function getSolidMetrics({
@@ -759,6 +810,218 @@ function getSolidMetrics({
   };
 }
 
+function getInspectorForSolid({
+  type,
+  sides,
+  side,
+  width,
+  depth,
+  height,
+  radius,
+}: {
+  type: SolidType;
+  sides: number;
+  side: number;
+  width: number;
+  depth: number;
+  height: number;
+  radius: number;
+}): InspectorData {
+  if (type === "cube") {
+    const faceDiagonal = side * Math.sqrt(2);
+    const spaceDiagonal = side * Math.sqrt(3);
+
+    return {
+      title: "Aresta do cubo selecionada",
+      description:
+        "No cubo, uma aresta determina tudo: diagonal da face, diagonal espacial, área e volume. Sim, o cubo é organizado, diferente da maioria dos projetos de frontend.",
+      formulas: [
+        {
+          label: "Diagonal da face",
+          formula: String.raw`d_f = a\sqrt{2}`,
+          substitution: String.raw`d_f = ${formatNumber(
+            side
+          )}\sqrt{2} = ${formatNumber(faceDiagonal)}`,
+        },
+        {
+          label: "Diagonal espacial",
+          formula: String.raw`D = a\sqrt{3}`,
+          substitution: String.raw`D = ${formatNumber(
+            side
+          )}\sqrt{3} = ${formatNumber(spaceDiagonal)}`,
+        },
+      ],
+    };
+  }
+
+  if (type === "box") {
+    const baseDiagonal = Math.sqrt(width ** 2 + depth ** 2);
+    const spaceDiagonal = Math.sqrt(width ** 2 + depth ** 2 + height ** 2);
+
+    return {
+      title: "Aresta do paralelepípedo selecionada",
+      description:
+        "No paralelepípedo, as diagonais aparecem por Pitágoras: primeiro na base, depois no espaço.",
+      formulas: [
+        {
+          label: "Diagonal da base",
+          formula: String.raw`d_b = \sqrt{c^2 + l^2}`,
+          substitution: String.raw`d_b = \sqrt{${formatNumber(
+            width
+          )}^2 + ${formatNumber(depth)}^2} = ${formatNumber(baseDiagonal)}`,
+        },
+        {
+          label: "Diagonal espacial",
+          formula: String.raw`D = \sqrt{c^2 + l^2 + h^2}`,
+          substitution: String.raw`D = \sqrt{${formatNumber(
+            width
+          )}^2 + ${formatNumber(depth)}^2 + ${formatNumber(
+            height
+          )}^2} = ${formatNumber(spaceDiagonal)}`,
+        },
+      ],
+    };
+  }
+
+  if (type === "regularPrism") {
+    const apothem = apothemRegularPolygon(sides, side);
+    const circumradius = circumradiusRegularPolygon(sides, side);
+    const baseArea = baseAreaRegularPolygon(sides, side);
+
+    return {
+      title: "Aresta da base do prisma selecionada",
+      description:
+        "Em prismas regulares, a aresta da base permite descobrir apótema, raio circunscrito e área da base. Isso é ouro em questão de sólido inscrito.",
+      formulas: [
+        {
+          label: "Apótema da base",
+          formula: String.raw`a_p = \frac{l}{2\tan\left(\frac{\pi}{n}\right)}`,
+          substitution: String.raw`a_p = \frac{${formatNumber(
+            side
+          )}}{2\tan\left(\frac{\pi}{${sides}}\right)} = ${formatNumber(
+            apothem
+          )}`,
+        },
+        {
+          label: "Raio circunscrito",
+          formula: String.raw`R = \frac{l}{2\sin\left(\frac{\pi}{n}\right)}`,
+          substitution: String.raw`R = \frac{${formatNumber(
+            side
+          )}}{2\sin\left(\frac{\pi}{${sides}}\right)} = ${formatNumber(
+            circumradius
+          )}`,
+        },
+        {
+          label: "Área da base",
+          formula: String.raw`A_b = \frac{nla_p}{2}`,
+          substitution: String.raw`A_b = \frac{${sides}\cdot ${formatNumber(
+            side
+          )}\cdot ${formatNumber(apothem)}}{2} = ${formatNumber(baseArea)}`,
+        },
+      ],
+    };
+  }
+
+  if (type === "pyramid") {
+    const apothem = apothemRegularPolygon(sides, side);
+    const geratriz = Math.sqrt(height ** 2 + apothem ** 2);
+
+    return {
+      title: "Aresta da pirâmide selecionada",
+      description:
+        "Na pirâmide regular, o triângulo formado pela altura, apótema da base e geratriz manda na maioria das contas.",
+      formulas: [
+        {
+          label: "Apótema da base",
+          formula: String.raw`a_p = \frac{l}{2\tan\left(\frac{\pi}{n}\right)}`,
+          substitution: String.raw`a_p = ${formatNumber(apothem)}`,
+        },
+        {
+          label: "Geratriz",
+          formula: String.raw`g = \sqrt{h^2 + a_p^2}`,
+          substitution: String.raw`g = \sqrt{${formatNumber(
+            height
+          )}^2 + ${formatNumber(apothem)}^2} = ${formatNumber(geratriz)}`,
+        },
+      ],
+    };
+  }
+
+  if (type === "cylinder") {
+    return {
+      title: "Geratriz/aresta visual do cilindro selecionada",
+      description:
+        "No cilindro, o ponto principal é perceber que ele funciona como um prisma de base circular.",
+      formulas: [
+        {
+          label: "Diâmetro da base",
+          formula: String.raw`d = 2r`,
+          substitution: String.raw`d = 2\cdot ${formatNumber(
+            radius
+          )} = ${formatNumber(2 * radius)}`,
+        },
+        {
+          label: "Área da base",
+          formula: String.raw`A_b = \pi r^2`,
+          substitution: String.raw`A_b = \pi \cdot ${formatNumber(
+            radius
+          )}^2 = ${formatNumber(Math.PI * radius ** 2)}`,
+        },
+      ],
+    };
+  }
+
+  if (type === "cone") {
+    const geratriz = Math.sqrt(radius ** 2 + height ** 2);
+
+    return {
+      title: "Geratriz do cone selecionada",
+      description:
+        "No cone reto, raio, altura e geratriz formam um triângulo retângulo. É Pitágoras usando chapéu de festa.",
+      formulas: [
+        {
+          label: "Geratriz",
+          formula: String.raw`g = \sqrt{r^2+h^2}`,
+          substitution: String.raw`g = \sqrt{${formatNumber(
+            radius
+          )}^2 + ${formatNumber(height)}^2} = ${formatNumber(geratriz)}`,
+        },
+        {
+          label: "Área lateral",
+          formula: String.raw`A_L = \pi rg`,
+          substitution: String.raw`A_L = \pi \cdot ${formatNumber(
+            radius
+          )}\cdot ${formatNumber(geratriz)} = ${formatNumber(
+            Math.PI * radius * geratriz
+          )}`,
+        },
+      ],
+    };
+  }
+
+  return {
+    title: "Esfera selecionada",
+    description:
+      "A esfera não possui arestas. Aqui, a medida central é o raio, que determina diâmetro, área e volume.",
+    formulas: [
+      {
+        label: "Diâmetro",
+        formula: String.raw`d = 2r`,
+        substitution: String.raw`d = 2\cdot ${formatNumber(
+          radius
+        )} = ${formatNumber(2 * radius)}`,
+      },
+      {
+        label: "Círculo máximo",
+        formula: String.raw`A = \pi r^2`,
+        substitution: String.raw`A = \pi \cdot ${formatNumber(
+          radius
+        )}^2 = ${formatNumber(Math.PI * radius ** 2)}`,
+      },
+    ],
+  };
+}
+
 function getInscribedRelationship({
   outerSolid,
   innerSolid,
@@ -857,6 +1120,7 @@ export default function AdminSpatialGeometryPrototypePage() {
   const [autoRotate, setAutoRotate] = useState(false);
   const [showInnerSolid, setShowInnerSolid] = useState(true);
   const [showFaces, setShowFaces] = useState(true);
+  const [inspector, setInspector] = useState<InspectorData | null>(null);
 
   useEffect(() => {
     if (!autoRotate) return;
@@ -933,6 +1197,9 @@ export default function AdminSpatialGeometryPrototypePage() {
   const occupation =
     outerMetrics.volume > 0 ? (innerMetrics.volume / outerMetrics.volume) * 100 : 0;
 
+  const outerMesh = getMeshForSolid(activeSolid, polygonSides);
+  const innerMesh = getMeshForSolid(innerSolid, polygonSides);
+
   function resetRotation() {
     setRotationX(18);
     setRotationY(-28);
@@ -955,10 +1222,22 @@ export default function AdminSpatialGeometryPrototypePage() {
     setInnerOffsetY(0);
     setInnerOffsetZ(0);
     setInnerScale(0.78);
+    setInspector(null);
   }
 
-  const outerMesh = getMeshForSolid(activeSolid, polygonSides);
-  const innerMesh = getMeshForSolid(innerSolid, polygonSides);
+  function inspectSolid(type: SolidType) {
+    const data = getInspectorForSolid({
+      type,
+      sides: polygonSides,
+      side,
+      width,
+      depth,
+      height,
+      radius,
+    });
+
+    setInspector(data);
+  }
 
   return (
     <AdminGuard allowedRoles={["admin"]}>
@@ -966,7 +1245,7 @@ export default function AdminSpatialGeometryPrototypePage() {
         title="Protótipo: Geometria espacial"
         subtitle="Visualização 3D interna para sólidos, volumes, áreas e relações de inscrição."
       >
-        <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+        <div className="grid gap-6 xl:grid-cols-[1.25fr_0.75fr]">
           <Card className="overflow-hidden border-slate-200 bg-white">
             <div className="border-b border-slate-100 p-5">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -998,7 +1277,10 @@ export default function AdminSpatialGeometryPrototypePage() {
                     type="button"
                     variant={mode === "simple" ? "default" : "outline"}
                     className="rounded-2xl"
-                    onClick={() => setMode("simple")}
+                    onClick={() => {
+                      setMode("simple");
+                      setInspector(null);
+                    }}
                   >
                     Sólido simples
                   </Button>
@@ -1007,7 +1289,10 @@ export default function AdminSpatialGeometryPrototypePage() {
                     type="button"
                     variant={mode === "inscribed" ? "default" : "outline"}
                     className="rounded-2xl"
-                    onClick={() => setMode("inscribed")}
+                    onClick={() => {
+                      setMode("inscribed");
+                      setInspector(null);
+                    }}
                   >
                     Sólido inscrito
                   </Button>
@@ -1015,130 +1300,167 @@ export default function AdminSpatialGeometryPrototypePage() {
               </div>
             </div>
 
-            <div className="grid gap-0 lg:grid-cols-[1fr_300px]">
-              <div className="relative min-h-[560px] overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950">
-                <div className="absolute left-6 top-6 z-20 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-white backdrop-blur">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-indigo-200">
-                    Volume externo
+            <div className="relative min-h-[700px] overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950">
+              <div className="absolute left-6 top-6 z-20 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-white backdrop-blur">
+                <p className="text-xs font-semibold uppercase tracking-wide text-indigo-200">
+                  Volume externo
+                </p>
+                <p className="mt-1 text-2xl font-black">
+                  {formatNumber(outerMetrics.volume)} u³
+                </p>
+              </div>
+
+              <div className="absolute right-6 top-6 z-20 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-white backdrop-blur">
+                <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-cyan-200">
+                  <MousePointerClick className="h-4 w-4" />
+                  Clique nas arestas
+                </p>
+                <p className="mt-1 max-w-[220px] text-xs leading-5 text-slate-200">
+                  Selecione uma aresta ou sólido para abrir relações de diagonal,
+                  apótema, raio e geratriz.
+                </p>
+              </div>
+
+              {mode === "inscribed" ? (
+                <div className="absolute bottom-6 left-6 z-20 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-white backdrop-blur">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-orange-200">
+                    Ocupação
                   </p>
-                  <p className="mt-1 text-2xl font-black">
-                    {formatNumber(outerMetrics.volume)} u³
+                  <p className="mt-1 text-xl font-black">
+                    {formatNumber(occupation)}%
                   </p>
                 </div>
+              ) : null}
 
-                {mode === "inscribed" ? (
-                  <div className="absolute bottom-6 left-6 z-20 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-white backdrop-blur">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-orange-200">
-                      Ocupação
-                    </p>
-                    <p className="mt-1 text-xl font-black">
-                      {formatNumber(occupation)}%
-                    </p>
-                  </div>
-                ) : null}
+              <svg
+                className="absolute inset-0 h-full w-full"
+                viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
+                preserveAspectRatio="xMidYMid meet"
+              >
+                <defs>
+                  <radialGradient id="spatialGlow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#818cf8" stopOpacity="0.5" />
+                    <stop offset="100%" stopColor="#312e81" stopOpacity="0" />
+                  </radialGradient>
+                </defs>
 
-                <svg
-                  className="absolute inset-0 h-full w-full"
-                  viewBox="0 0 780 580"
-                  preserveAspectRatio="xMidYMid meet"
-                >
-                  <defs>
-                    <radialGradient id="spatialGlow" cx="50%" cy="50%" r="50%">
-                      <stop offset="0%" stopColor="#818cf8" stopOpacity="0.5" />
-                      <stop offset="100%" stopColor="#312e81" stopOpacity="0" />
-                    </radialGradient>
-                  </defs>
+                <rect width={VIEWBOX_WIDTH} height={VIEWBOX_HEIGHT} fill="transparent" />
+                <circle cx={CENTER_X} cy={CENTER_Y} r="310" fill="url(#spatialGlow)" />
 
-                  <rect width="780" height="580" fill="transparent" />
-                  <circle cx="390" cy="290" r="245" fill="url(#spatialGlow)" />
+                {activeSolid === "sphere"
+                  ? renderSphere({
+                      angleX: rotationX,
+                      angleY: rotationY,
+                      scale: 1,
+                      offset: { x: 0, y: 0, z: 0 },
+                      onGeometryClick: () => inspectSolid(activeSolid),
+                      theme: {
+                        face: "#38bdf8",
+                        edge: "#bae6fd",
+                        opacity: showFaces ? 0.18 : 0.04,
+                        label: "outer-sphere",
+                      },
+                    })
+                  : renderMesh({
+                      mesh: outerMesh,
+                      angleX: rotationX,
+                      angleY: rotationY,
+                      scale: 1,
+                      offset: { x: 0, y: 0, z: 0 },
+                      onGeometryClick: () => inspectSolid(activeSolid),
+                      theme: {
+                        face: "#38bdf8",
+                        edge: "#bae6fd",
+                        opacity: showFaces ? 0.18 : 0.04,
+                        label: "outer",
+                      },
+                    })}
 
-                  {activeSolid === "sphere"
+                {mode === "inscribed" && showInnerSolid
+                  ? innerSolid === "sphere"
                     ? renderSphere({
                         angleX: rotationX,
                         angleY: rotationY,
-                        scale: 1,
-                        offset: { x: 0, y: 0, z: 0 },
+                        scale: innerScale,
+                        offset: {
+                          x: innerOffsetX,
+                          y: innerOffsetY,
+                          z: innerOffsetZ,
+                        },
+                        onGeometryClick: () => inspectSolid(innerSolid),
                         theme: {
-                          face: "#38bdf8",
-                          edge: "#bae6fd",
-                          opacity: showFaces ? 0.18 : 0.04,
-                          label: "outer-sphere",
+                          face: "#f97316",
+                          edge: "#fed7aa",
+                          opacity: showFaces ? 0.34 : 0.08,
+                          dashed: true,
+                          label: "inner-sphere",
                         },
                       })
                     : renderMesh({
-                        mesh: outerMesh,
+                        mesh: innerMesh,
                         angleX: rotationX,
                         angleY: rotationY,
-                        scale: 1,
-                        offset: { x: 0, y: 0, z: 0 },
-                        theme: {
-                          face: "#38bdf8",
-                          edge: "#bae6fd",
-                          opacity: showFaces ? 0.18 : 0.04,
-                          label: "outer",
+                        scale: innerScale,
+                        offset: {
+                          x: innerOffsetX,
+                          y: innerOffsetY,
+                          z: innerOffsetZ,
                         },
-                      })}
+                        onGeometryClick: () => inspectSolid(innerSolid),
+                        theme: {
+                          face: "#f97316",
+                          edge: "#fed7aa",
+                          opacity: showFaces ? 0.3 : 0.08,
+                          dashed: true,
+                          label: "inner",
+                        },
+                      })
+                  : null}
+              </svg>
+            </div>
 
-                  {mode === "inscribed" && showInnerSolid
-                    ? innerSolid === "sphere"
-                      ? renderSphere({
-                          angleX: rotationX,
-                          angleY: rotationY,
-                          scale: innerScale,
-                          offset: {
-                            x: innerOffsetX,
-                            y: innerOffsetY,
-                            z: innerOffsetZ,
-                          },
-                          theme: {
-                            face: "#f97316",
-                            edge: "#fed7aa",
-                            opacity: showFaces ? 0.34 : 0.08,
-                            dashed: true,
-                            label: "inner-sphere",
-                          },
-                        })
-                      : renderMesh({
-                          mesh: innerMesh,
-                          angleX: rotationX,
-                          angleY: rotationY,
-                          scale: innerScale,
-                          offset: {
-                            x: innerOffsetX,
-                            y: innerOffsetY,
-                            z: innerOffsetZ,
-                          },
-                          theme: {
-                            face: "#f97316",
-                            edge: "#fed7aa",
-                            opacity: showFaces ? 0.3 : 0.08,
-                            dashed: true,
-                            label: "inner",
-                          },
-                        })
-                    : null}
-                </svg>
+            <div className="border-t border-slate-100 bg-slate-50 p-5">
+              <div className="mb-4 flex items-center gap-2 text-sm font-bold text-slate-900">
+                <Rotate3D className="h-4 w-4" />
+                Controles do simulador
               </div>
 
-              <div className="border-l border-slate-100 bg-slate-50 p-5">
-                <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
-                  <Rotate3D className="h-4 w-4" />
-                  Controles
+              <div className="grid gap-4 lg:grid-cols-4">
+                <div>
+                  <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-500">
+                    {mode === "simple" ? "Sólido" : "Sólido externo"}
+                  </label>
+
+                  <select
+                    value={mode === "simple" ? selectedSolid : outerSolid}
+                    onChange={(event) => {
+                      mode === "simple"
+                        ? setSelectedSolid(event.target.value as SolidType)
+                        : setOuterSolid(event.target.value as SolidType);
+                      setInspector(null);
+                    }}
+                    className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-slate-900"
+                  >
+                    {SOLIDS.map((solid) => (
+                      <option key={solid.type} value={solid.type}>
+                        {solid.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
-                <div className="mt-5 space-y-5">
+                {mode === "inscribed" ? (
                   <div>
                     <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-500">
-                      {mode === "simple" ? "Sólido" : "Sólido externo"}
+                      Sólido interno
                     </label>
 
                     <select
-                      value={mode === "simple" ? selectedSolid : outerSolid}
-                      onChange={(event) =>
-                        mode === "simple"
-                          ? setSelectedSolid(event.target.value as SolidType)
-                          : setOuterSolid(event.target.value as SolidType)
-                      }
+                      value={innerSolid}
+                      onChange={(event) => {
+                        setInnerSolid(event.target.value as SolidType);
+                        setInspector(null);
+                      }}
                       className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-slate-900"
                     >
                       {SOLIDS.map((solid) => (
@@ -1148,142 +1470,92 @@ export default function AdminSpatialGeometryPrototypePage() {
                       ))}
                     </select>
                   </div>
+                ) : null}
 
-                  {mode === "inscribed" ? (
-                    <div>
-                      <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-500">
-                        Sólido interno
-                      </label>
-
-                      <select
-                        value={innerSolid}
-                        onChange={(event) =>
-                          setInnerSolid(event.target.value as SolidType)
-                        }
-                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-slate-900"
-                      >
-                        {SOLIDS.map((solid) => (
-                          <option key={solid.type} value={solid.type}>
-                            {solid.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  ) : null}
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setAutoRotate((current) => !current)}
-                      className="gap-2 rounded-2xl"
-                    >
-                      {autoRotate ? (
-                        <PauseCircle className="h-4 w-4" />
-                      ) : (
-                        <PlayCircle className="h-4 w-4" />
-                      )}
-                      {autoRotate ? "Pausar" : "Girar"}
-                    </Button>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={resetRotation}
-                      className="gap-2 rounded-2xl"
-                    >
-                      <RotateCcw className="h-4 w-4" />
-                      Resetar
-                    </Button>
+                <div>
+                  <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-500">
+                    <span>Rotação vertical</span>
+                    <span>{rotationX}°</span>
                   </div>
-
-                  <div>
-                    <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-500">
-                      <span>Rotação vertical</span>
-                      <span>{rotationX}°</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="-80"
-                      max="80"
-                      value={rotationX}
-                      onChange={(event) =>
-                        setRotationX(Number(event.target.value))
-                      }
-                      className="w-full"
-                    />
-                  </div>
-
-                  <div>
-                    <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-500">
-                      <span>Rotação horizontal</span>
-                      <span>{Math.round(rotationY)}°</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="-180"
-                      max="180"
-                      value={rotationY}
-                      onChange={(event) =>
-                        setRotationY(Number(event.target.value))
-                      }
-                      className="w-full"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowFaces((current) => !current)}
-                      className="gap-2 rounded-2xl"
-                    >
-                      {showFaces ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                      Faces
-                    </Button>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowInnerSolid((current) => !current)}
-                      disabled={mode !== "inscribed"}
-                      className="gap-2 rounded-2xl"
-                    >
-                      {showInnerSolid ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                      Interno
-                    </Button>
-                  </div>
-
-                  <div className="rounded-2xl border border-indigo-100 bg-white p-4">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
-                      Leitura rápida
-                    </p>
-                    <div className="mt-3 space-y-2 text-sm text-slate-700">
-                      <div className="flex justify-between gap-3">
-                        <span>Volume</span>
-                        <strong>{formatNumber(outerMetrics.volume)} u³</strong>
-                      </div>
-                      <div className="flex justify-between gap-3">
-                        <span>Área total</span>
-                        <strong>{formatNumber(outerMetrics.totalArea)} u²</strong>
-                      </div>
-                      {mode === "inscribed" ? (
-                        <div className="flex justify-between gap-3">
-                          <span>Interno</span>
-                          <strong>{formatNumber(innerMetrics.volume)} u³</strong>
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
+                  <input
+                    type="range"
+                    min="-80"
+                    max="80"
+                    value={rotationX}
+                    onChange={(event) => setRotationX(Number(event.target.value))}
+                    className="w-full"
+                  />
                 </div>
+
+                <div>
+                  <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-500">
+                    <span>Rotação horizontal</span>
+                    <span>{Math.round(rotationY)}°</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="-180"
+                    max="180"
+                    value={rotationY}
+                    onChange={(event) => setRotationY(Number(event.target.value))}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setAutoRotate((current) => !current)}
+                  className="gap-2 rounded-2xl"
+                >
+                  {autoRotate ? (
+                    <PauseCircle className="h-4 w-4" />
+                  ) : (
+                    <PlayCircle className="h-4 w-4" />
+                  )}
+                  {autoRotate ? "Pausar" : "Girar"}
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={resetRotation}
+                  className="gap-2 rounded-2xl"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  Resetar
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowFaces((current) => !current)}
+                  className="gap-2 rounded-2xl"
+                >
+                  {showFaces ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                  {showFaces ? "Ocultar faces" : "Mostrar faces"}
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowInnerSolid((current) => !current)}
+                  disabled={mode !== "inscribed"}
+                  className="gap-2 rounded-2xl"
+                >
+                  {showInnerSolid ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                  Interno
+                </Button>
               </div>
             </div>
 
@@ -1300,10 +1572,9 @@ export default function AdminSpatialGeometryPrototypePage() {
                   </h3>
 
                   <p className="mt-2 text-sm leading-6 text-slate-600">
-                    Use esses controles para testar como volume, área e relações de
-                    inscrição mudam. A parte 3D é didática: serve para visualizar
-                    a estrutura e entender a conta, não para fingir que o navegador
-                    virou laboratório da NASA.
+                    Use esses controles para testar como volume, área e relações
+                    de inscrição mudam. Depois clique nas arestas do sólido para
+                    ver relações geométricas específicas.
                   </p>
                 </div>
 
@@ -1316,7 +1587,10 @@ export default function AdminSpatialGeometryPrototypePage() {
                       type="number"
                       min="1"
                       value={side}
-                      onChange={(event) => setSide(Number(event.target.value))}
+                      onChange={(event) => {
+                        setSide(Number(event.target.value));
+                        setInspector(null);
+                      }}
                       className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-slate-900"
                     />
                   </div>
@@ -1329,7 +1603,10 @@ export default function AdminSpatialGeometryPrototypePage() {
                       type="number"
                       min="1"
                       value={height}
-                      onChange={(event) => setHeight(Number(event.target.value))}
+                      onChange={(event) => {
+                        setHeight(Number(event.target.value));
+                        setInspector(null);
+                      }}
                       className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-slate-900"
                     />
                   </div>
@@ -1342,7 +1619,10 @@ export default function AdminSpatialGeometryPrototypePage() {
                       type="number"
                       min="1"
                       value={radius}
-                      onChange={(event) => setRadius(Number(event.target.value))}
+                      onChange={(event) => {
+                        setRadius(Number(event.target.value));
+                        setInspector(null);
+                      }}
                       className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-slate-900"
                     />
                   </div>
@@ -1353,9 +1633,10 @@ export default function AdminSpatialGeometryPrototypePage() {
                     </label>
                     <select
                       value={polygonSides}
-                      onChange={(event) =>
-                        setPolygonSides(Number(event.target.value))
-                      }
+                      onChange={(event) => {
+                        setPolygonSides(Number(event.target.value));
+                        setInspector(null);
+                      }}
                       className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-slate-900"
                     >
                       {[3, 4, 5, 6, 8, 12].map((value) => (
@@ -1374,7 +1655,10 @@ export default function AdminSpatialGeometryPrototypePage() {
                       type="number"
                       min="1"
                       value={width}
-                      onChange={(event) => setWidth(Number(event.target.value))}
+                      onChange={(event) => {
+                        setWidth(Number(event.target.value));
+                        setInspector(null);
+                      }}
                       className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-slate-900"
                     />
                   </div>
@@ -1387,7 +1671,10 @@ export default function AdminSpatialGeometryPrototypePage() {
                       type="number"
                       min="1"
                       value={depth}
-                      onChange={(event) => setDepth(Number(event.target.value))}
+                      onChange={(event) => {
+                        setDepth(Number(event.target.value));
+                        setInspector(null);
+                      }}
                       className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-slate-900"
                     />
                   </div>
@@ -1442,6 +1729,57 @@ export default function AdminSpatialGeometryPrototypePage() {
               <p className="mt-5 text-sm leading-7 text-slate-700">
                 {outerMetrics.explanation}
               </p>
+            </Card>
+
+            <Card className="border-slate-200 p-6">
+              <div className="flex items-center gap-2 text-sm font-semibold text-cyan-700">
+                <MousePointerClick className="h-4 w-4" />
+                Inspetor geométrico
+              </div>
+
+              <h2 className="mt-2 text-2xl font-black text-slate-900">
+                Clique numa aresta
+              </h2>
+
+              {inspector ? (
+                <div className="mt-5 rounded-2xl border border-cyan-200 bg-cyan-50 p-4">
+                  <p className="text-sm font-black text-cyan-950">
+                    {inspector.title}
+                  </p>
+
+                  <p className="mt-2 text-sm leading-7 text-cyan-900">
+                    {inspector.description}
+                  </p>
+
+                  <div className="mt-4 space-y-3">
+                    {inspector.formulas.map((item) => (
+                      <div
+                        key={item.label}
+                        className="rounded-2xl border border-cyan-100 bg-white p-4"
+                      >
+                        <p className="text-xs font-bold uppercase tracking-wide text-cyan-700">
+                          {item.label}
+                        </p>
+                        <div className="mt-2">
+                          <MathFormula formula={item.formula} display={true} />
+                        </div>
+                        <div className="mt-2">
+                          <MathFormula formula={item.substitution} display={true} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm leading-7 text-slate-700">
+                    Clique em uma aresta do sólido no painel 3D. O simulador vai
+                    mostrar relações como diagonal da face, diagonal espacial,
+                    apótema, raio circunscrito, geratriz ou diâmetro. Ou seja,
+                    finalmente a aresta deixa de ser só um risquinho bonito.
+                  </p>
+                </div>
+              )}
             </Card>
 
             <Card className="border-slate-200 p-6">
