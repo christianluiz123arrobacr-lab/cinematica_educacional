@@ -39,6 +39,7 @@ import AdminQuestionEditPage from "./pages/AdminQuestionEditPage";
 import AdminQuestionReportsPage from "./pages/AdminQuestionReportsPage";
 import AdminBillingPage from "./pages/AdminBillingPage";
 import AdminMolecularGeometryPrototypePage from "./pages/AdminMolecularGeometryPrototypePage";
+import AdminSpatialGeometryPrototypePage from "./pages/AdminSpatialGeometryPrototypePage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import DinamicaHome from "./pages/DinamicaHome";
@@ -161,6 +162,7 @@ function PrivateRouter() {
         <Route path="/admin/vet" component={AdminVetPage} />
         <Route path="/admin/logs" component={AdminLogsPage} />
         <Route path="/admin/reports" component={AdminQuestionReportsPage} />
+        <Route path="/admin/matematica/geometria-espacial"component={AdminSpatialGeometryPrototypePage}/>
 
         <Route path="/fisica-i" component={FisicaIHome} />
         <Route path="/fisica-ii" component={FisicaIIHome} />
