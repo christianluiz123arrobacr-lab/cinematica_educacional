@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   MessageSquareWarning,
   CreditCard,
+  Box,
 } from "lucide-react";
 
 const adminItems = [
@@ -22,6 +23,8 @@ const adminItems = [
   { href: "/admin/uploads", label: "Uploads", icon: Image },
   { href: "/admin/vet", label: "VET", icon: BrainCircuit },
   { href: "/admin/logs", label: "Logs", icon: ScrollText },
+  { href: "/admin/matematica/geometria-espacial", label: "Geometria 3D", icon: Box,
+},
 ];
 
 export default function AdminSidebar() {
